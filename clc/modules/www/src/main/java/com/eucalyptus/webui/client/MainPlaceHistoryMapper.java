@@ -12,12 +12,14 @@ import com.eucalyptus.webui.client.place.PolicyPlace;
 import com.eucalyptus.webui.client.place.RejectPlace;
 import com.eucalyptus.webui.client.place.ReportPlace;
 import com.eucalyptus.webui.client.place.StartPlace;
+import com.eucalyptus.webui.client.place.TestPlace;
 import com.eucalyptus.webui.client.place.UserPlace;
 import com.eucalyptus.webui.client.place.VmTypePlace;
 import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.place.shared.WithTokenizers;
 
 @WithTokenizers( {
+  TestPlace.Tokenizer.class,
   StartPlace.Tokenizer.class,
   ErrorSinkPlace.Tokenizer.class,
   ConfigPlace.Tokenizer.class,
@@ -32,6 +34,7 @@ import com.google.gwt.place.shared.WithTokenizers;
   ImagePlace.Tokenizer.class,
   ApprovePlace.Tokenizer.class,
   RejectPlace.Tokenizer.class
+  
 } )
 public interface MainPlaceHistoryMapper extends PlaceHistoryMapper {
 

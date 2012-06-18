@@ -23,6 +23,7 @@ import com.eucalyptus.webui.client.view.PolicyView;
 import com.eucalyptus.webui.client.view.ReportView;
 import com.eucalyptus.webui.client.view.ShellView;
 import com.eucalyptus.webui.client.view.StartView;
+import com.eucalyptus.webui.client.view.TestView;
 import com.eucalyptus.webui.client.view.UserView;
 import com.eucalyptus.webui.client.view.VmTypeView;
 import com.google.gwt.activity.shared.ActivityManager;
@@ -131,5 +132,7 @@ public interface ClientFactory {
   ItemView createItemView( );
   
   CloudRegistrationView getCloudRegistrationView( );
+  
+  TestView getTestView( );
   
 }

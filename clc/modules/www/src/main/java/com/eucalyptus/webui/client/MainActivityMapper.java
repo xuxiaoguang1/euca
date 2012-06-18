@@ -13,6 +13,7 @@ import com.eucalyptus.webui.client.activity.PolicyActivity;
 import com.eucalyptus.webui.client.activity.RejectActivity;
 import com.eucalyptus.webui.client.activity.ReportActivity;
 import com.eucalyptus.webui.client.activity.StartActivity;
+import com.eucalyptus.webui.client.activity.TestActivity;
 import com.eucalyptus.webui.client.activity.UserActivity;
 import com.eucalyptus.webui.client.activity.VmTypeActivity;
 import com.eucalyptus.webui.client.place.AccountPlace;
@@ -28,6 +29,7 @@ import com.eucalyptus.webui.client.place.PolicyPlace;
 import com.eucalyptus.webui.client.place.RejectPlace;
 import com.eucalyptus.webui.client.place.ReportPlace;
 import com.eucalyptus.webui.client.place.StartPlace;
+import com.eucalyptus.webui.client.place.TestPlace;
 import com.eucalyptus.webui.client.place.UserPlace;
 import com.eucalyptus.webui.client.place.VmTypePlace;
 import com.google.gwt.activity.shared.Activity;
@@ -75,6 +77,8 @@ public class MainActivityMapper implements ActivityMapper {
       return new ApproveActivity( ( ApprovePlace )place, this.clientFactory );
     } else if ( place instanceof RejectPlace ) {
       return new RejectActivity( ( RejectPlace )place, this.clientFactory );
+    } else if ( place instanceof TestPlace ) {
+    	return new TestActivity( ( TestPlace )place, this.clientFactory );
     }
     return null;
   }

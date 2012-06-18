@@ -2,7 +2,7 @@ package com.eucalyptus.webui.client.service;
 
 import java.io.Serializable;
 
-import com.eucalyptus.auth.principal.Account;
+//import com.eucalyptus.auth.principal.Account;
 
 public class LoginUserProfile implements Serializable {
 

@@ -60,7 +60,10 @@ public class StartGuideWebBackend {
                                                                    "vmtype" ),
                                                     new GuideItem( "Generate cloud resource usage report",
                                                                    QueryBuilder.get( ).start( QueryType.report ).url( ),
-                                                                   "report" ) ) );
+                                                                   "report" ),
+                                                    new GuideItem( "Test",
+                                                    			   QueryBuilder.get( ).start( QueryType.test ).url( ),
+                                                    			   "test" ) ) );
   }
   
 }

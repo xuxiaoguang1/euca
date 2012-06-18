@@ -47,6 +47,8 @@ import com.eucalyptus.webui.client.view.ShellView;
 import com.eucalyptus.webui.client.view.ShellViewImpl;
 import com.eucalyptus.webui.client.view.StartView;
 import com.eucalyptus.webui.client.view.StartViewImpl;
+import com.eucalyptus.webui.client.view.TestView;
+import com.eucalyptus.webui.client.view.TestViewImpl;
 import com.eucalyptus.webui.client.view.UserView;
 import com.eucalyptus.webui.client.view.UserViewImpl;
 import com.eucalyptus.webui.client.view.VmTypeView;
@@ -98,6 +100,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private CertView certView;
 	private ImageView imageView;
 	private ActionResultView actionResultView;
+	private TestView testView;
 
 	// Dialogs
 	private ConfirmationView confirmationView;
@@ -347,6 +350,14 @@ public class ClientFactoryImpl implements ClientFactory {
       cloudRegView = new CloudRegistrationViewImpl( );
     }
     return cloudRegView;
+  }
+
+  @Override
+  public TestView getTestView() {
+	if (testView == null) {
+		testView = new TestViewImpl( );
+	}
+	return testView;
   }
   
 }

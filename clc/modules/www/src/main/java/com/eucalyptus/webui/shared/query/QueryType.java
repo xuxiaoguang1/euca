@@ -1,7 +1,8 @@
 package com.eucalyptus.webui.shared.query;
 
-public enum QueryType {
-  
+public enum QueryType {  
+  test, 
+
   start,
   config,
   
