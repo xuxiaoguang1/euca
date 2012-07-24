@@ -16,7 +16,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class ImageActivity extends AbstractSearchActivity implements ImageView.Presenter, DetailView.Presenter {
   
-  public static final String TITLE = "VIRTUAL MACHINE IMAGES";
+  public static final String TITLE = "镜像管理";
   
   private static final Logger LOG = Logger.getLogger( ImageActivity.class.getName( ) );
   
@@ -28,7 +28,7 @@ public class ImageActivity extends AbstractSearchActivity implements ImageView.P
 
   @Override
   protected void doSearch( String query, SearchRange range ) {
-    this.clientFactory.getBackendService( ).lookupImage( this.clientFactory.getLocalSession( ).getSession( ), search, range,
+    this.clientFactory.getBackendAwsService( ).lookupImage( this.clientFactory.getLocalSession( ).getSession( ), search, range,
                                                            new AsyncCallback<SearchResult>( ) {
       
       @Override

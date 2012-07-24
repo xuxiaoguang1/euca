@@ -2,6 +2,7 @@ package com.eucalyptus.webui.shared.query;
 
 public enum QueryType {  
   test, 
+  instance,
 
   start,
   config,
@@ -24,6 +25,11 @@ public enum QueryType {
   reject,
   
   confirm,
-  reset
+  reset, 
+  
+  nodeCtrl,
+  clusterCtrl,
+  storageCtrl,
+  walrusCtrl
   
 }

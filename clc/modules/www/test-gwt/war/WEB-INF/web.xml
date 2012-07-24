@@ -11,10 +11,32 @@
     <servlet-class>com.eucalyptus.webui.server.EucalyptusServiceImpl</servlet-class>
   </servlet>
 
+  <servlet>
+    <servlet-name>AwsServiceImpl</servlet-name>
+    <servlet-class>com.eucalyptus.webui.server.AwsServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>CmdServiceImpl</servlet-name>
+    <servlet-class>com.eucalyptus.webui.server.CmdServiceImpl</servlet-class>
+  </servlet>
+  
+
   <servlet-mapping>
 	<servlet-name>EucalyptusServiceImpl</servlet-name>
 	<url-pattern>/webui/backend</url-pattern>
   </servlet-mapping>
+
+  <servlet-mapping>
+	<servlet-name>AwsServiceImpl</servlet-name>
+	<url-pattern>/webui/awsBackend</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+	<servlet-name>CmdServiceImpl</servlet-name>
+	<url-pattern>/webui/cmdBackend</url-pattern>
+  </servlet-mapping>
+  
 
   <!-- Default page to serve -->
   <welcome-file-list>

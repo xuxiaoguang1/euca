@@ -52,3 +52,5 @@ clc/.deprecated/*/build
 
 .settings/grze_localhost.launch
 .settings/grze_office.launch
+
+.*.swp

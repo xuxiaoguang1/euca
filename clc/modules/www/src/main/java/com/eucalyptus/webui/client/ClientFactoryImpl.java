@@ -2,6 +2,10 @@ package com.eucalyptus.webui.client;
 
 import com.eucalyptus.webui.client.place.ErrorSinkPlace;
 import com.eucalyptus.webui.client.place.StartPlace;
+import com.eucalyptus.webui.client.service.AwsService;
+import com.eucalyptus.webui.client.service.AwsServiceAsync;
+import com.eucalyptus.webui.client.service.CmdService;
+import com.eucalyptus.webui.client.service.CmdServiceAsync;
 import com.eucalyptus.webui.client.service.EucalyptusService;
 import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
 import com.eucalyptus.webui.client.session.LocalSession;
@@ -15,6 +19,8 @@ import com.eucalyptus.webui.client.view.CertView;
 import com.eucalyptus.webui.client.view.CertViewImpl;
 import com.eucalyptus.webui.client.view.CloudRegistrationView;
 import com.eucalyptus.webui.client.view.CloudRegistrationViewImpl;
+import com.eucalyptus.webui.client.view.ClusterCtrlView;
+import com.eucalyptus.webui.client.view.ClusterCtrlViewImpl;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.ConfirmationViewImpl;
 import com.eucalyptus.webui.client.view.DownloadView;
@@ -27,6 +33,8 @@ import com.eucalyptus.webui.client.view.ImageView;
 import com.eucalyptus.webui.client.view.ImageViewImpl;
 import com.eucalyptus.webui.client.view.InputView;
 import com.eucalyptus.webui.client.view.InputViewImpl;
+import com.eucalyptus.webui.client.view.InstanceView;
+import com.eucalyptus.webui.client.view.InstanceViewImpl;
 import com.eucalyptus.webui.client.view.ItemView;
 import com.eucalyptus.webui.client.view.ItemViewImpl;
 import com.eucalyptus.webui.client.view.KeyView;
@@ -39,6 +47,8 @@ import com.eucalyptus.webui.client.view.LoginView;
 import com.eucalyptus.webui.client.view.LoginViewImpl;
 import com.eucalyptus.webui.client.view.ConfigView;
 import com.eucalyptus.webui.client.view.ConfigViewImpl;
+import com.eucalyptus.webui.client.view.NodeCtrlView;
+import com.eucalyptus.webui.client.view.NodeCtrlViewImpl;
 import com.eucalyptus.webui.client.view.PolicyView;
 import com.eucalyptus.webui.client.view.PolicyViewImpl;
 import com.eucalyptus.webui.client.view.ReportView;
@@ -47,12 +57,16 @@ import com.eucalyptus.webui.client.view.ShellView;
 import com.eucalyptus.webui.client.view.ShellViewImpl;
 import com.eucalyptus.webui.client.view.StartView;
 import com.eucalyptus.webui.client.view.StartViewImpl;
+import com.eucalyptus.webui.client.view.StorageCtrlView;
+import com.eucalyptus.webui.client.view.StorageCtrlViewImpl;
 import com.eucalyptus.webui.client.view.TestView;
 import com.eucalyptus.webui.client.view.TestViewImpl;
 import com.eucalyptus.webui.client.view.UserView;
 import com.eucalyptus.webui.client.view.UserViewImpl;
 import com.eucalyptus.webui.client.view.VmTypeView;
 import com.eucalyptus.webui.client.view.VmTypeViewImpl;
+import com.eucalyptus.webui.client.view.WalrusCtrlView;
+import com.eucalyptus.webui.client.view.WalrusCtrlViewImpl;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.core.client.GWT;
@@ -82,6 +96,8 @@ public class ClientFactoryImpl implements ClientFactory {
 	private SessionData sessionData = new SessionData( );
 	
 	private EucalyptusServiceAsync backendService = GWT.create( EucalyptusService.class );
+	private AwsServiceAsync backendAwsService = GWT.create( AwsService.class );
+	private CmdServiceAsync backendCmdService = GWT.create( CmdService.class );
 
 	private LoginView loginView;
 	private LoadingProgressView loadingProgressView;
@@ -101,7 +117,12 @@ public class ClientFactoryImpl implements ClientFactory {
 	private ImageView imageView;
 	private ActionResultView actionResultView;
 	private TestView testView;
-
+	private InstanceView instanceView;
+	private NodeCtrlView nodeCtrlView;
+	private ClusterCtrlView clusterCtrlView;
+	private WalrusCtrlView walrusCtrlView;
+	private StorageCtrlView storageCtrlView;
+	
 	// Dialogs
 	private ConfirmationView confirmationView;
 	private InputView inputView;
@@ -119,6 +140,18 @@ public class ClientFactoryImpl implements ClientFactory {
   public EucalyptusServiceAsync getBackendService( ) {
     return backendService;
   }
+  
+  @Override
+  public AwsServiceAsync getBackendAwsService( ) {
+    return backendAwsService;
+  }
+  
+  @Override
+  public CmdServiceAsync getBackendCmdService() {
+  	return backendCmdService;
+  }
+
+  
 
   @Override
   public EventBus getMainEventBus( ) {
@@ -360,4 +393,43 @@ public class ClientFactoryImpl implements ClientFactory {
 	return testView;
   }
   
+  @Override
+  public InstanceView getInstanceView() {
+	if (instanceView == null) {
+		instanceView = new InstanceViewImpl( );
+	}
+	return instanceView;
+  }
+
+
+  @Override
+  public NodeCtrlView getNodeCtrlView() {
+	if (nodeCtrlView == null) {
+		nodeCtrlView = new NodeCtrlViewImpl( );
+	}
+	return nodeCtrlView;
+  }
+
+  @Override
+  public ClusterCtrlView getClusterCtrlView() {
+	if (clusterCtrlView == null) {
+		clusterCtrlView = new ClusterCtrlViewImpl( );
+	}
+	return clusterCtrlView;
+  }
+  @Override
+  public WalrusCtrlView getWalrusCtrlView() {
+	if (walrusCtrlView == null) {
+		walrusCtrlView = new WalrusCtrlViewImpl( );
+	}
+	return walrusCtrlView;
+  }
+  @Override
+  public StorageCtrlView getStorageCtrlView() {
+	if (storageCtrlView == null) {
+		storageCtrlView = new StorageCtrlViewImpl( );
+	}
+	return storageCtrlView;
+  }
+
 }

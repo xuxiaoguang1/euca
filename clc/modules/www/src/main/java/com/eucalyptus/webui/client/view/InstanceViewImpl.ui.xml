@@ -1,0 +1,30 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:euca="urn:import:com.eucalyptus.webui.client.view">
+    
+    <ui:style>
+        .toolbar {
+        	width:99%;
+        }
+    </ui:style>
+    
+    <ui:with field="global" type="com.eucalyptus.webui.client.view.GlobalResources"/>
+    <g:DockLayoutPanel unit="PX">
+        <g:north size="41">
+        	<g:FlowPanel >
+        		<g:Button text="产品体验"/>
+        		<g:Button text="管理密钥"/>
+        		<g:Button text="开机/关机" ui:field="stopButton"/>
+        		<g:Button text="连接服务器" ui:field="startButton"/>
+        		<g:Button text="延续服务"/>
+        		<g:Button text="变更"/>
+        		<g:Button text="删除"/>
+        	</g:FlowPanel>
+        </g:north>
+        <g:center size="1000">
+            <g:LayoutPanel ui:field="tablePanel"/>
+        </g:center>
+    </g:DockLayoutPanel>
+   
+</ui:UiBinder> 

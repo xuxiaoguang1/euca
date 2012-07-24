@@ -3,35 +3,45 @@ package com.eucalyptus.webui.client;
 import com.eucalyptus.webui.client.activity.AccountActivity;
 import com.eucalyptus.webui.client.activity.ApproveActivity;
 import com.eucalyptus.webui.client.activity.CertActivity;
+import com.eucalyptus.webui.client.activity.ClusterCtrlActivity;
 import com.eucalyptus.webui.client.activity.ErrorSinkActivity;
 import com.eucalyptus.webui.client.activity.GroupActivity;
 import com.eucalyptus.webui.client.activity.ImageActivity;
+import com.eucalyptus.webui.client.activity.InstanceActivity;
 import com.eucalyptus.webui.client.activity.KeyActivity;
 import com.eucalyptus.webui.client.activity.LogoutActivity;
 import com.eucalyptus.webui.client.activity.ConfigActivity;
+import com.eucalyptus.webui.client.activity.NodeCtrlActivity;
 import com.eucalyptus.webui.client.activity.PolicyActivity;
 import com.eucalyptus.webui.client.activity.RejectActivity;
 import com.eucalyptus.webui.client.activity.ReportActivity;
 import com.eucalyptus.webui.client.activity.StartActivity;
+import com.eucalyptus.webui.client.activity.StorageCtrlActivity;
 import com.eucalyptus.webui.client.activity.TestActivity;
 import com.eucalyptus.webui.client.activity.UserActivity;
 import com.eucalyptus.webui.client.activity.VmTypeActivity;
+import com.eucalyptus.webui.client.activity.WalrusCtrlActivity;
 import com.eucalyptus.webui.client.place.AccountPlace;
 import com.eucalyptus.webui.client.place.ApprovePlace;
 import com.eucalyptus.webui.client.place.CertPlace;
+import com.eucalyptus.webui.client.place.ClusterCtrlPlace;
 import com.eucalyptus.webui.client.place.ErrorSinkPlace;
 import com.eucalyptus.webui.client.place.GroupPlace;
 import com.eucalyptus.webui.client.place.ImagePlace;
+import com.eucalyptus.webui.client.place.InstancePlace;
 import com.eucalyptus.webui.client.place.KeyPlace;
 import com.eucalyptus.webui.client.place.LogoutPlace;
 import com.eucalyptus.webui.client.place.ConfigPlace;
+import com.eucalyptus.webui.client.place.NodeCtrlPlace;
 import com.eucalyptus.webui.client.place.PolicyPlace;
 import com.eucalyptus.webui.client.place.RejectPlace;
 import com.eucalyptus.webui.client.place.ReportPlace;
 import com.eucalyptus.webui.client.place.StartPlace;
+import com.eucalyptus.webui.client.place.StorageCtrlPlace;
 import com.eucalyptus.webui.client.place.TestPlace;
 import com.eucalyptus.webui.client.place.UserPlace;
 import com.eucalyptus.webui.client.place.VmTypePlace;
+import com.eucalyptus.webui.client.place.WalrusCtrlPlace;
 import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.place.shared.Place;
@@ -79,7 +89,17 @@ public class MainActivityMapper implements ActivityMapper {
       return new RejectActivity( ( RejectPlace )place, this.clientFactory );
     } else if ( place instanceof TestPlace ) {
     	return new TestActivity( ( TestPlace )place, this.clientFactory );
-    }
+    } else if ( place instanceof InstancePlace ) {
+    	return new InstanceActivity( ( InstancePlace )place, this.clientFactory );
+    } else if ( place instanceof NodeCtrlPlace ) {
+    	return new NodeCtrlActivity( ( NodeCtrlPlace )place, this.clientFactory );
+    } else if ( place instanceof ClusterCtrlPlace ) {
+    	return new ClusterCtrlActivity( ( ClusterCtrlPlace )place, this.clientFactory );
+    } else if ( place instanceof WalrusCtrlPlace ) {
+    	return new WalrusCtrlActivity( ( WalrusCtrlPlace )place, this.clientFactory );
+    } else if ( place instanceof StorageCtrlPlace ) {
+    	return new StorageCtrlActivity( ( StorageCtrlPlace )place, this.clientFactory );
+    } 
     return null;
   }
   
