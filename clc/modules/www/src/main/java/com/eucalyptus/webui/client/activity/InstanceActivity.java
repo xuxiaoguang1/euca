@@ -57,28 +57,7 @@ public class InstanceActivity extends AbstractSearchActivity
       }
       
     } );
-    final String[] cmd = {"uname", "-a"};
-    this.clientFactory.getBackendCmdService().sshRun(null, cmd, new AsyncCallback<String>( ) {
-	      @Override
-	      public void onFailure( Throwable caught ) {
-	        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-	        // Log
-	        System.out.println("@@");
-	      }
-	      @Override
-	      public void onSuccess( String arg ) {
-	    	  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "!! " + arg, FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-	    	  System.out.println("!!" + arg);
-	    	  clientFactory.getShellView().getLogView().log(LogType.INFO, arg);
-	    	// Log
-	      }
-  	
-  });
-  clientFactory.getShellView().getLogView().log(LogType.INFO, "aaaaaa");
-
-    
-    
-    
+   
   }
 
   @Override
@@ -135,7 +114,7 @@ public void onStartInstances() {
     for ( SearchResultRow row : currentSelected ) {
         ids.add(row.getField(0));
     }
-    /*
+    
 	this.clientFactory.getBackendAwsService().startInstances(clientFactory.getLocalSession( ).getSession( ), ids, new AsyncCallback<ArrayList<String>>( ) {
 	      @Override
 	      public void onFailure( Throwable caught ) {
@@ -148,7 +127,6 @@ public void onStartInstances() {
 	    	// Log
 	      }
 	});
-	*/
 	
 }
 
