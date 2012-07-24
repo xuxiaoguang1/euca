@@ -1,0 +1,70 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.important {
+			font-weight: bold;
+		}
+	</ui:style>
+	<g:HTMLPanel ui:field="panel">
+		<g:AbsolutePanel height="188px" width="479px">
+			<g:at left="26" top="24">
+				<g:Label text="ID" horizontalAlignment="ALIGN_LEFT" width="16px" height="16px"/>
+			</g:at>
+			<g:at left="74" top="20">
+				<g:TextBox ui:field="nameInput" alignment="LEFT" width="134px" height="17px"/>
+			</g:at>
+			<g:at left="250" top="24">
+				<g:Label text="姓名"/>
+			</g:at>
+			<g:at left="300" top="20">
+				<g:TextBox ui:field="titleInput" width="148px" height="17px"/>
+			</g:at>
+			<g:at left="26" top="64">
+				<g:Label text="手机" width="32px" height="16px"/>
+			</g:at>
+			<g:at left="74" top="60">
+				<g:TextBox ui:field="mobileInput" width="134px" height="17px"/>
+			</g:at>
+			<g:at left="250" top="64">
+				<g:Label text="Email"/>
+			</g:at>
+			<g:at left="300" top="60">
+				<g:TextBox ui:field="emailInput" width="148px" height="17px"/>
+			</g:at>
+			<g:at left="26" top="104">
+				<g:Label text="类型"/>
+			</g:at>
+			<g:at left="74" top="100">
+				<g:RadioButton name="userType" text="管理员" width="70px" height="24px" ui:field="userTypeAdminRadio"/>
+			</g:at>
+			<g:at left="150" top="100">
+				<g:RadioButton name="userType" text="普通用户" ui:field="userTypeUserRadio" width="86px" height="24px"/>
+			</g:at>
+			<g:at left="26" top="144">
+				<g:Label text="状态"/>
+			</g:at>
+			<g:at left="74" top="142">
+				<g:RadioButton name="userState" text="正常" ui:field="userStateNormalRadio"/>
+			</g:at>
+			<g:at left="128" top="142">
+				<g:RadioButton name="userState" text="暂停" ui:field="userStatePauseRadio"/>
+			</g:at>
+			<g:at left="182" top="142">
+				<g:RadioButton name="userState" text="禁止" ui:field="userStateBanRadio"/>
+			</g:at>
+			<g:at left="300" top="138">
+				<g:Button ui:field="okButton" text="确定" width="61px" height="28px"/>
+			</g:at>
+			<g:at left="393" top="138">
+				<g:Button ui:field="cancleButton" text="取消" width="61px" height="28px"/>
+			</g:at>
+			<g:at left="250" top="104">
+				<g:Label text="账户" ui:field="accountLable"/>
+			</g:at>
+			<g:at left="300" top="100">
+				<g:ListBox width="154px" height="25px" ui:field="accountCombo"/>
+			</g:at>
+		</g:AbsolutePanel>		
+	</g:HTMLPanel>
+</ui:UiBinder> 

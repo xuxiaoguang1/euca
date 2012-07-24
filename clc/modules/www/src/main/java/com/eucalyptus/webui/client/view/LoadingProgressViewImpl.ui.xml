@@ -20,7 +20,7 @@
     </ui:style>
     
     <g:HTMLPanel>
-        <div class="{style.status}">Loading...</div>
+        <div class="{style.status}">正载入页面...</div>
         <euca:ProgressBar styleName="{style.bar}" ui:field="progressBar"/>
     </g:HTMLPanel>
     

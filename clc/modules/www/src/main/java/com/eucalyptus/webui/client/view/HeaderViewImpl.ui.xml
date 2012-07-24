@@ -66,16 +66,37 @@
     <g:HTMLPanel styleName="{style.headerBar}">
         <div class="{style.horizontalLeft} {style.logoDiv}">
             <div class="{style.vcenter}">
-                <img alt="Eucalyptus" src="themes/active/logo.png"/></div>
-            </div>
+                <img alt="Eucalyptus" src="themes/active/logo.gif"/></div>
+        </div>
         <div class="{style.horizontalLeft} {style.userDiv}">
             <div class="{style.vcenter}">
-                <euca:UserLink ui:field="userLink"/>
+                <g:Label text="云管理系统" horizontalAlignment="ALIGN_CENTER" width="148" height="24" ui:field="userLable"/>
             </div>
         </div>
+        <div class="{style.horizontalLeft} {style.userDiv}">
+			<div class="{style.vcenter}">
+	        	<g:Label text="欢迎：  " horizontalAlignment="ALIGN_CENTER" width="48" height="24" ui:field="welcomeLable"/>
+	        </div>
+	        <div class="{style.vcenter}">
+	       	 <g:Label text="Admin" horizontalAlignment="ALIGN_CENTER" width="48" height="24" ui:field="userNameLable"/>
+	        </div>
+	        <div class="{style.vcenter}">
+	        	<g:Label text="   |   " horizontalAlignment="ALIGN_CENTER" width="15" height="24" />
+	        </div>
+	        <div class="{style.vcenter}">
+	        	<g:Anchor ui:field="modifyIndividualInfo" text="[个人管理]">个人管理</g:Anchor>
+	        </div>
+	        <div class="{style.vcenter}">
+	        	<g:Label text="   " horizontalAlignment="ALIGN_CENTER" width="15" height="24" />
+	        </div>
+			<div class="{style.vcenter}">
+	        	<g:Anchor ui:field="logoutLink" text="[退出]">退出</g:Anchor>
+	        </div>
+        </div>
+       
         <div class="{style.horizontalRight} {style.searchDiv}">
             <div class="{style.vcenter}">
-                <euca:SearchBox ui:field="searchBox"/>
+                <euca:SearchBox ui:field="searchBox" width="258"/>
             </div>
         </div>
     </g:HTMLPanel>

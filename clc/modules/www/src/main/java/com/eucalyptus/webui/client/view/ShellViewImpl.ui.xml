@@ -47,12 +47,12 @@
         <g:west size="12">
             <g:Anchor styleName="{style.splitter} {shellStyle.left}" ui:field="splitter"/>
         </g:west>
-        <g:east size="0">
-            <euca:DetailViewImpl ui:field="detail"/>
-        </g:east>
         <g:center>
             <euca:ContentViewImpl ui:field="content"/>
         </g:center>
+        <g:south size="0">
+            <euca:DetailsViewImpl ui:field="detail"/>
+        </g:south>
     </g:DockLayoutPanel>
     
 </ui:UiBinder> 

@@ -9,7 +9,6 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -51,27 +50,24 @@ public class LoginViewImpl extends Composite implements LoginView {
   @UiField
   Label prompt;
   
-  @UiField
-  Anchor userSignup;
-  
   public LoginViewImpl( ) {
     initWidget( uiBinder.createAndBindUi( this ) );
     injectLoginForm( );
     // temporarily disable user signup based on support team's suggestions.
     // TODO(wenye): really remove it or recover it.
-    userSignup.setVisible( false );
+    //userSignup.setVisible( false );
   }
 
-  @UiHandler( "accountSignup" )
-  void handleAccountSignupButtonClick( ClickEvent e ) {
-    this.presenter.onAccountSignup( );
-  }
-
-  @UiHandler( "userSignup" )
-  void handleUserSignupButtonClick( ClickEvent e ) {
-    this.presenter.onUserSignup( );
-  }
-
+//  @UiHandler( "accountSignup" )
+//  void handleAccountSignupButtonClick( ClickEvent e ) {
+//    this.presenter.onAccountSignup( );
+//  }
+//
+//  @UiHandler( "userSignup" )
+//  void handleUserSignupButtonClick( ClickEvent e ) {
+//    this.presenter.onUserSignup( );
+//  }
+//
   @UiHandler( "recover" )
   void handleRecoverButtonClick( ClickEvent e ) {
     this.presenter.onRecoverPassword( );
@@ -88,15 +84,13 @@ public class LoginViewImpl extends Composite implements LoginView {
   
   private void injectLoginFormStyle( ) {
     Document.get( ).getElementById( LOGINFORM_ID ).addClassName( formStyle.loginBox( ) );
-    Document.get( ).getElementById( LOGINFORM_USERNAMELABEL_ID ).addClassName( formStyle.loginLabel( ) );
-    Document.get( ).getElementById( LOGINFORM_USERNAME_ID ).addClassName( formStyle.loginInput( ) );
     Document.get( ).getElementById( LOGINFORM_ACCOUNTNAMELABEL_ID ).addClassName( formStyle.loginLabel( ) );
     Document.get( ).getElementById( LOGINFORM_ACCOUNTNAME_ID ).addClassName( formStyle.loginInput( ) );
+    Document.get( ).getElementById( LOGINFORM_USERNAMELABEL_ID ).addClassName( formStyle.loginLabel( ) );
+    Document.get( ).getElementById( LOGINFORM_USERNAME_ID ).addClassName( formStyle.loginInput( ) );
     Document.get( ).getElementById( LOGINFORM_PASSWORDLABEL_ID ).addClassName( formStyle.loginLabel( ) );
     Document.get( ).getElementById( LOGINFORM_PASSWORD_ID ).addClassName( formStyle.loginInput( ) );
     Document.get( ).getElementById( LOGINFORM_STAYSIGNEDINLABEL_ID ).addClassName( formStyle.checkLabel( ) );
-    Document.get( ).getElementById( LOGINFORM_SIGNINLABEL_ID ).addClassName( formStyle.loginLabel( ) );
-    Document.get( ).getElementById( LOGINFORM_EUCALABEL_ID ).addClassName( formStyle.loginLabel( ) );
   }
   
   private native void injectLoginFormAction( LoginView view ) /*-{
@@ -106,11 +100,11 @@ public class LoginViewImpl extends Composite implements LoginView {
   }-*/;
   
   private void login( ) {
-    String accountName = ( ( InputElement ) Document.get( ).getElementById( LOGINFORM_ACCOUNTNAME_ID ) ).getValue( );
-    String userName = ( ( InputElement ) Document.get( ).getElementById( LOGINFORM_USERNAME_ID ) ).getValue( );
-    String password = ( ( InputElement ) Document.get( ).getElementById( LOGINFORM_PASSWORD_ID ) ).getValue( );
-    boolean staySignedIn = ( ( InputElement ) Document.get( ).getElementById( LOGINFORM_STAYSIGNEDIN_ID ) ).isChecked( );
-    this.presenter.login( accountName, userName, password, staySignedIn );
+	  String accountName = ( ( InputElement ) Document.get( ).getElementById( LOGINFORM_ACCOUNTNAME_ID ) ).getValue( );
+	  String userName = ( ( InputElement ) Document.get( ).getElementById( LOGINFORM_USERNAME_ID ) ).getValue( );
+	  String password = ( ( InputElement ) Document.get( ).getElementById( LOGINFORM_PASSWORD_ID ) ).getValue( );
+	  boolean staySignedIn = ( ( InputElement ) Document.get( ).getElementById( LOGINFORM_STAYSIGNEDIN_ID ) ).isChecked( );
+	  this.presenter.login( accountName, userName, password, staySignedIn );
   }
   
   @Override

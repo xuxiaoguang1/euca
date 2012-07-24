@@ -9,56 +9,69 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
+import com.google.gwt.user.client.ui.Button;
 
 public class GroupViewImpl extends Composite implements GroupView {
   
-  private static final Logger LOG = Logger.getLogger( GroupViewImpl.class.getName( ) );
+	private static final Logger LOG = Logger.getLogger( GroupViewImpl.class.getName( ) );
   
-  private static GroupViewImplUiBinder uiBinder = GWT.create( GroupViewImplUiBinder.class );
+	private static GroupViewImplUiBinder uiBinder = GWT.create( GroupViewImplUiBinder.class );
   
-  interface GroupViewImplUiBinder extends UiBinder<Widget, GroupViewImpl> {}
+	interface GroupViewImplUiBinder extends UiBinder<Widget, GroupViewImpl> {}
   
-  @UiField
-  LayoutPanel tablePanel;
+	@UiField
+	LayoutPanel tablePanel;
   
-  private MultiSelectionModel<SearchResultRow> selectionModel;
+	@UiField Button addGroupButton;
+	@UiField Button removeGroupButton;
   
-  private SearchResultTable table;
+	@UiField Button resumeGroupButton;
+	@UiField Button pauseGroupButton;
+	@UiField Button banGroupButton;
   
-  private Presenter presenter;
+	private MultiSelectionModel<SearchResultRow> selectionModel;
   
-  @UiHandler( "delButton" )
-  void handleDelButtonClick( ClickEvent e ) {
-    this.presenter.onDeleteGroup( );
-  }
+	private SearchResultTable table;
   
-  @UiHandler( "addUsersButton" )
-  void handleAddUsesrButtonClick( ClickEvent e ) {
-    this.presenter.onAddUsers( );
-  }
-
-  @UiHandler( "removeUsersButton" )
-  void handleRemoveUsersButtonClick( ClickEvent e ) {
-    this.presenter.onRemoveUsers( );
-  }
+	private Presenter presenter;
   
-  @UiHandler( "addPolicyButton" )
-  void handleAddPolicyButtonClick( ClickEvent e ) {
-    this.presenter.onAddPolicy( );
-  }
-
-  public GroupViewImpl( ) {
-    initWidget( uiBinder.createAndBindUi( this ) );
-  }
+	@UiHandler("addGroupButton")
+	void onBUTTON_ADD_GROUPClick(ClickEvent event) {
+		this.presenter.onAddGroup();
+	}
+	@UiHandler( "removeGroupButton" )
+	void handleDelButtonClick( ClickEvent e ) {
+		this.presenter.onDeleteGroup( );
+	}
+	
+	@UiHandler("resumeGroupButton")
+	void onBUTTON_RESUMEClick(ClickEvent event) {
+		this.presenter.onResumeGroup();
+	}	
+	@UiHandler("pauseGroupButton")
+	void onBUTTON_PAUSEClick(ClickEvent event) {
+		this.presenter.onPauseGroup();
+	}
+	@UiHandler("banGroupButton")
+	void onBUTTON_BANClick(ClickEvent event) {
+		this.presenter.onBanGroup();
+	}
+  
+	public GroupViewImpl( ) {
+		initWidget( uiBinder.createAndBindUi( this ) );
+	}
 
   public void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
     tablePanel.clear( );
@@ -72,6 +85,16 @@ public class GroupViewImpl extends Composite implements GroupView {
       }
     } );
     table = new SearchResultTable( pageSize, fieldDescs, this.presenter, selectionModel );
+    
+    DoubleClickHandler handler = new DoubleClickHandler() {
+
+		@Override
+		public void onDoubleClick(DoubleClickEvent event) {
+			presenter.onDoubleClick(event);
+		}
+	};
+	table.addDoublClickHandler(handler);
+	
     tablePanel.add( table );
     table.load( );
   }
@@ -99,5 +122,5 @@ public class GroupViewImpl extends Composite implements GroupView {
   public void clearSelection( ) {
     this.selectionModel.clear( );
   }
-  
+
 }

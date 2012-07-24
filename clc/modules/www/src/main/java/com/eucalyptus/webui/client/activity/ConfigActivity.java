@@ -7,7 +7,6 @@ import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.ConfigPlace;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.DetailView;
 import com.eucalyptus.webui.client.view.FooterView;
@@ -101,7 +100,7 @@ public class ConfigActivity extends AbstractSearchActivity implements ConfigView
       public void onSuccess( Void arg0 ) {
         clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Service configuration changed", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
         clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Successfully changed service configuration: " + result );        
-        clientFactory.getShellView( ).getDetailView( ).disableSave( );
+        //clientFactory.getShellView( ).getDetailView( ).disableSave( );
         reloadCurrentRange( );
       }
       

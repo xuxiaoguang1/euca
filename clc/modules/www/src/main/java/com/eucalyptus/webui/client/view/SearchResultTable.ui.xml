@@ -36,8 +36,7 @@
  
     <g:DockLayoutPanel unit="PX">
         <g:south size="32">
-            <g:FlowPanel>
-                <g:Label addStyleNames="{style.tip}" ui:field="tip"/>            
+            <g:FlowPanel>      
                 <c:SimplePager addStyleNames="{style.pager}" ui:field="pager" />
             </g:FlowPanel>
         </g:south>

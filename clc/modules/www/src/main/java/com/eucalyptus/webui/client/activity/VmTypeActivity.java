@@ -46,7 +46,7 @@ public class VmTypeActivity extends AbstractSearchActivity implements VmTypeView
     ArrayList<SearchResultFieldDesc> descs = new ArrayList<SearchResultFieldDesc>( );
     descs.addAll( cache.getDescs( ) );
     descs.addAll( currentSelected.getExtraFieldDescs( ) );
-    this.clientFactory.getShellView( ).getDetailView( ).showData( descs, currentSelected.getRow( ) );          
+    //this.clientFactory.getShellView( ).getDetailView( ).showData( descs, currentSelected.getRow( ) );          
   }
 
   @Override
@@ -77,7 +77,7 @@ public class VmTypeActivity extends AbstractSearchActivity implements VmTypeView
       public void onSuccess( Void arg0 ) {
         clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "VM type changed", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
         clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Successfully changed VM type: " + result );        
-        clientFactory.getShellView( ).getDetailView( ).disableSave( );
+        //clientFactory.getShellView( ).getDetailView( ).disableSave( );
         reloadCurrentRange( );
       }
       

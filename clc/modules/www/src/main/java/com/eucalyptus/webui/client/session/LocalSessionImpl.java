@@ -3,7 +3,7 @@ package com.eucalyptus.webui.client.session;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.eucalyptus.webui.client.service.Session;
+
 import com.google.gwt.user.client.Cookies;
 
 public class LocalSessionImpl implements LocalSession {
@@ -16,7 +16,13 @@ public class LocalSessionImpl implements LocalSession {
   
   private Session session;
   
-  public LocalSessionImpl( ) {
+  private static final LocalSession localSession = new LocalSessionImpl();;
+  
+  static public LocalSession Get() {
+	  return localSession;
+  }
+  
+  private LocalSessionImpl( ) {
     this.session = null;
   }
   

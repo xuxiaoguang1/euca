@@ -7,7 +7,8 @@ import com.eucalyptus.webui.client.place.ApplyPlace;
 import com.eucalyptus.webui.client.place.ApplyPlace.ApplyType;
 import com.eucalyptus.webui.client.place.LoginPlace;
 import com.eucalyptus.webui.client.place.ShellPlace;
-import com.eucalyptus.webui.client.service.Session;
+import com.eucalyptus.webui.client.service.EucalyptusServiceException;
+import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.LoginView;
 import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.event.shared.EventBus;
@@ -50,15 +51,17 @@ public class LoginActivity extends AbstractActivity implements LoginView.Present
 
       @Override
       public void onFailure( Throwable caught ) {
-        LOG.log( Level.WARNING, "Login failed: " + caught );
-        clientFactory.getLoginView( ).setPrompt( LoginPlace.LOGIN_FAILURE_PROMPT );
+        LOG.log( Level.WARNING, "登录失败: " + caught );
+        EucalyptusServiceException exception = (EucalyptusServiceException) caught;
+        clientFactory.getLoginView( ).setPrompt( exception.getMessage() );
+        clientFactory.getLoginView().clearPassword();
       }
 
       @Override
       public void onSuccess( Session session ) {
         if ( session == null ) {
-          LOG.log( Level.WARNING, "Login failed: empty session" );
-          clientFactory.getLoginView( ).setPrompt( LoginPlace.LOGIN_FAILURE_PROMPT );
+          LOG.log( Level.WARNING, "登录失败: 空对话" );
+          clientFactory.getLoginView( ).setPrompt( LoginPlace.LOGIN_FAILURE_PROMPT[1] );
         } else {
           // Login success. Save the session (persistent if the user wants to stay signed in)
           clientFactory.getLocalSession( ).saveSession( session, staySignedIn );
@@ -80,16 +83,6 @@ public class LoginActivity extends AbstractActivity implements LoginView.Present
     } else {
       this.clientFactory.getLifecyclePlaceController( ).goTo( new ShellPlace( session ) );
     }
-  }
-
-  @Override
-  public void onAccountSignup( ) {
-    this.clientFactory.getLifecyclePlaceController( ).goTo( new ApplyPlace( ApplyType.ACCOUNT ) );
-  }
-
-  @Override
-  public void onUserSignup( ) {
-    this.clientFactory.getLifecyclePlaceController( ).goTo( new ApplyPlace( ApplyType.USER ) );
   }
 
   @Override

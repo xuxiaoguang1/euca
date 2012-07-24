@@ -1,6 +1,5 @@
 package com.eucalyptus.webui.client.place;
 
-import com.google.gwt.http.client.URL;
 import com.google.gwt.place.shared.Place;
 
 public class SearchPlace extends Place {

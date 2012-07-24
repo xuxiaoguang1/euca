@@ -1,0 +1,25 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.important {
+			font-weight: bold;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		<g:AbsolutePanel height="120px" width="336px">
+			<g:at left="27" top="24">
+				<g:Label text="组名" width="73px" ui:field="lableGrouName" height="21px"/>
+			</g:at>
+			<g:at left="121" top="20">
+				<g:ListBox ui:field="comboGroupList" width="178px" height="25px"/>
+			</g:at>
+			<g:at left="165" top="71">
+				<g:Button text="确定" ui:field="buttonOk"/>
+			</g:at>
+			<g:at left="240" top="71">
+				<g:Button ui:field="buttonCancle" text="取消" width="54px" height="28px"/>
+			</g:at>
+		</g:AbsolutePanel>
+	</g:HTMLPanel>
+</ui:UiBinder> 

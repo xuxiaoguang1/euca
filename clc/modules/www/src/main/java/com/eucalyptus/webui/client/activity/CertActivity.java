@@ -12,7 +12,6 @@ import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.CertView;
 import com.eucalyptus.webui.client.view.ConfirmationView;
-import com.eucalyptus.webui.client.view.DetailView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
@@ -93,7 +92,7 @@ public class CertActivity extends AbstractSearchActivity implements CertView.Pre
       public void onSuccess( Void arg0 ) {
         clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Successfully modified certificate", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
         clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Modified certificate " + certId );
-        clientFactory.getShellView( ).getDetailView( ).disableSave( );
+        //clientFactory.getShellView( ).getDetailView( ).disableSave( );
         reloadCurrentRange( );
       }
       

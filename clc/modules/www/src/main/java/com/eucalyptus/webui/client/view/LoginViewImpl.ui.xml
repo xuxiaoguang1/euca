@@ -100,11 +100,10 @@
     <g:DockLayoutPanel unit="PX">
         <g:north size="28">
             <g:HTMLPanel addStyleNames="{style.top}">
-                <g:Anchor ui:field="accountSignup">Signup Account</g:Anchor>
-                <g:Anchor ui:field="userSignup">Signup User</g:Anchor>
-                <g:Anchor ui:field="recover">Reset Password</g:Anchor>
-            </g:HTMLPanel>   
+                <g:Anchor ui:field="recover" text="重置密码">Reset Password</g:Anchor>
+            </g:HTMLPanel>
         </g:north>
+    
         <g:center>
             <g:HTMLPanel addStyleNames="{style.vcenterParent}">
                 <div class="{style.vcenterChild}" ui:field="loginArea" >

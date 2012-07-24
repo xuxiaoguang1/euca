@@ -8,10 +8,19 @@ import com.eucalyptus.webui.client.view.ActionResultView;
 import com.eucalyptus.webui.client.view.CertView;
 import com.eucalyptus.webui.client.view.CloudRegistrationView;
 import com.eucalyptus.webui.client.view.ConfirmationView;
-import com.eucalyptus.webui.client.view.DownloadView;
+import com.eucalyptus.webui.client.view.DeviceBWView;
+import com.eucalyptus.webui.client.view.DeviceCPUView;
+import com.eucalyptus.webui.client.view.DeviceDiskView;
+import com.eucalyptus.webui.client.view.DeviceMemoryView;
+import com.eucalyptus.webui.client.view.DeviceServerView;
+import com.eucalyptus.webui.client.view.DeviceVMView;
 import com.eucalyptus.webui.client.view.ErrorSinkView;
+import com.eucalyptus.webui.client.view.GroupAddView;
+import com.eucalyptus.webui.client.view.GroupDetailView;
+import com.eucalyptus.webui.client.view.GroupListView;
 import com.eucalyptus.webui.client.view.GroupView;
 import com.eucalyptus.webui.client.view.ImageView;
+import com.eucalyptus.webui.client.view.IndividualView;
 import com.eucalyptus.webui.client.view.InputView;
 import com.eucalyptus.webui.client.view.ItemView;
 import com.eucalyptus.webui.client.view.KeyView;
@@ -23,7 +32,8 @@ import com.eucalyptus.webui.client.view.PolicyView;
 import com.eucalyptus.webui.client.view.ReportView;
 import com.eucalyptus.webui.client.view.ShellView;
 import com.eucalyptus.webui.client.view.StartView;
-import com.eucalyptus.webui.client.view.TestView;
+import com.eucalyptus.webui.client.view.UserAddView;
+import com.eucalyptus.webui.client.view.UserListView;
 import com.eucalyptus.webui.client.view.UserView;
 import com.eucalyptus.webui.client.view.VmTypeView;
 import com.google.gwt.activity.shared.ActivityManager;
@@ -35,104 +45,130 @@ import com.google.gwt.place.shared.PlaceHistoryHandler.Historian;
 
 public interface ClientFactory {
 
-  /**
-   * @return the default place.
-   */
-  Place getDefaultPlace( );
-  /**
-   * @return the place for the error page.
-   */
-  Place getErrorPlace( );
-  
-  /**
-   * @return the event bus for the main activities.
-   */
-	EventBus getMainEventBus( );
+	/**
+	 * @return the default place.
+	 */
+	Place getDefaultPlace();
+
+	/**
+	 * @return the place for the error page.
+	 */
+	Place getErrorPlace();
+
+	/**
+	 * @return the event bus for the main activities.
+	 */
+	EventBus getMainEventBus();
+
 	/**
 	 * @return the place controller for the main activities.
 	 */
-	PlaceController getMainPlaceController( );
+	PlaceController getMainPlaceController();
+
 	/**
 	 * @return the activity manager for the main activities.
 	 */
-	ActivityManager getMainActivityManager( );
+	ActivityManager getMainActivityManager();
+
 	/**
 	 * @return the place history handler for the main activities.
 	 */
-	PlaceHistoryHandler getMainPlaceHistoryHandler( );
+	PlaceHistoryHandler getMainPlaceHistoryHandler();
+
 	/**
 	 * @return the Historian for the main activities.
 	 */
-	Historian getMainHistorian( );
-	
+	Historian getMainHistorian();
+
 	/**
 	 * @return the event bus for the lifecycle activities.
 	 */
-	EventBus getLifecycleEventBus( );
+	EventBus getLifecycleEventBus();
+
 	/**
 	 * @return the place controller for the lifecycle activities.
 	 */
-	PlaceController getLifecyclePlaceController( );
-	
+	PlaceController getLifecyclePlaceController();
+
 	/**
 	 * @return the impl. of local session record, essentially the session ID.
 	 */
-	LocalSession getLocalSession( );
-	
+	LocalSession getLocalSession();
+
 	/**
 	 * @return the local session data.
 	 */
-	SessionData getSessionData( );
-	
+	SessionData getSessionData();
+
 	/**
 	 * @return the impl. of Euare service.
 	 */
-	EucalyptusServiceAsync getBackendService( );
+	EucalyptusServiceAsync getBackendService();
 
-	LoginView getLoginView( );
-	
-	LoadingProgressView getLoadingProgressView( );
-	
-  ShellView getShellView( );
-  
-  StartView getStartView( );
-  
-  ConfigView getConfigView( );
-	
-  LoadingAnimationView getLoadingAnimationView( );
-  
-  ErrorSinkView getErrorSinkView( );
-  
-  AccountView getAccountView( );
-  
-  VmTypeView getVmTypeView( );
-  
-  ReportView getReportView( );
-  
-  GroupView getGroupView( );
+	LoginView getLoginView();
 
-  UserView getUserView( );
-  
-  PolicyView getPolicyView( );
-  
-  KeyView getKeyView( );
-  
-  CertView getCertView( );
-  
-  ImageView getImageView( );
-      
-  ConfirmationView getConfirmationView( );
-  
-  InputView getInputView( );
-  
-  ActionResultView getActionResultView( );
-  
-  DownloadView getDownloadView( );
-  
-  ItemView createItemView( );
-  
-  CloudRegistrationView getCloudRegistrationView( );
-  
-  TestView getTestView( );
-  
+	LoadingProgressView getLoadingProgressView();
+
+	ShellView getShellView();
+
+	StartView getStartView();
+
+	ConfigView getConfigView();
+
+	LoadingAnimationView getLoadingAnimationView();
+
+	ErrorSinkView getErrorSinkView();
+
+	AccountView getAccountView();
+
+	VmTypeView getVmTypeView();
+
+	ReportView getReportView();
+
+	GroupView getGroupView();
+
+	UserView getUserView();
+
+	PolicyView getPolicyView();
+
+	KeyView getKeyView();
+
+	CertView getCertView();
+
+	ImageView getImageView();
+
+	ConfirmationView getConfirmationView();
+
+	InputView getInputView();
+
+	ActionResultView getActionResultView();
+
+	ItemView createItemView();
+
+	CloudRegistrationView getCloudRegistrationView();
+
+	UserAddView getUserAddView();
+
+	GroupAddView getGroupAddView();
+
+	GroupListView getGroupListView();
+
+	GroupDetailView getGroupDetailView();
+
+	UserListView getUserListView();
+
+	IndividualView getIndividualView();
+
+	DeviceServerView getDeviceServerView();
+
+	DeviceCPUView getDeviceCPUView();
+
+	DeviceMemoryView getDeviceMemoryView();
+
+	DeviceDiskView getDeviceDiskView();
+
+	DeviceVMView getDeviceVMView();
+	
+	DeviceBWView getDeviceBWView();
+	
 }

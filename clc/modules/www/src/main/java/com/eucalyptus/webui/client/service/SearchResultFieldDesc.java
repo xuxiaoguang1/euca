@@ -36,6 +36,7 @@ public class SearchResultFieldDesc implements Serializable {
   private Boolean editable;           // if this field is editable
   private Boolean hidden;             // if this field should be hidden in properties panel
   private List<String> enumValues;    // the list of enum values for an ENUM
+  private Boolean selected;				//selected (for check box control)
 
   public SearchResultFieldDesc( ) {
   }
@@ -49,8 +50,21 @@ public class SearchResultFieldDesc implements Serializable {
     this.type = Type.TEXT;
     this.setEditable( true );
     this.setHidden( false );
+    this.setSelected( false );
   }
 
+  public SearchResultFieldDesc( String title, String width, Boolean selected ) {
+    this.name = title;
+    this.title = title;
+    this.sortable = false;
+    this.width = width;
+    this.tableDisplay = TableDisplay.MANDATORY;
+    this.type = Type.BOOLEAN;
+    this.setEditable( true );
+    this.setHidden( false );
+    this.setSelected( selected );
+  }
+  
   public SearchResultFieldDesc( String title, Boolean sortable, String width, TableDisplay tableDisplay, Type type, Boolean editable, Boolean hidden ) {
     this.name = title;
     this.title = title;
@@ -60,6 +74,7 @@ public class SearchResultFieldDesc implements Serializable {
     this.type = type;
     this.editable = editable;
     this.hidden = hidden;
+    this.selected = false;
   }
   
   public SearchResultFieldDesc( String name, String title, Boolean sortable, String width, TableDisplay tableDisplay, Type type, Boolean editable, Boolean hidden ) {
@@ -71,6 +86,7 @@ public class SearchResultFieldDesc implements Serializable {
     this.type = type;
     this.editable = editable;
     this.hidden = hidden;
+    this.selected = false;
   }
   
   @Override
@@ -85,6 +101,7 @@ public class SearchResultFieldDesc implements Serializable {
     sb.append( "type=" ).append( type ).append( "," );
     sb.append( "editable=" ).append( editable ).append( "," );
     sb.append( "hidden=" ).append( hidden );
+    sb.append( "selected=" ).append( selected );
     sb.append( ")" );
     return sb.toString( );
   }
@@ -156,4 +173,11 @@ public class SearchResultFieldDesc implements Serializable {
     return enumValues;
   }
   
+  public void setSelected( Boolean selected ) {
+	    this.selected = selected;
+	  }
+
+  public Boolean getSelected( ) {
+    return selected;
+  }
 }

@@ -1,9 +1,9 @@
 package com.eucalyptus.webui.client.view;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import com.eucalyptus.webui.client.service.QuickLink;
 import com.eucalyptus.webui.client.service.QuickLinkTag;
 import com.google.gwt.core.client.GWT;
@@ -42,8 +42,10 @@ public class DirectoryViewImpl extends Composite implements DirectoryView {
   
   private final SingleSelectionModel<QuickLink> selectionModel = new SingleSelectionModel<QuickLink>( QuickLink.KEY_PROVIDER );
   
-  public DirectoryViewImpl( ) {
+  public DirectoryViewImpl() {
     initWidget( uiBinder.createAndBindUi( this ) );
+    //WebSession webSession = WebSessionManager.getInstance().getSession(LocalSessionImpl.Get().getSession().getId());
+    //setTitle(webSession);
   }
 
   @Override
@@ -97,4 +99,14 @@ public class DirectoryViewImpl extends Composite implements DirectoryView {
       selectionModel.setSelected( selectionModel.getSelectedObject( ), false );
     }
   }
+
+/*  private void setTitle(WebSession webSession) {
+		// TODO Auto-generated method stub
+		if (webSession.getUserType() == EnumUserType.ADMIN)
+			( ( InputElement ) Document.get( ).getElementById( TITLE_LABEL_ID ) ).setValue( "" );
+		else if (webSession.getUserType() == EnumUserType.USER)
+			( ( InputElement ) Document.get( ).getElementById( TITLE_LABEL_ID ) ).setValue( "" );
+		else
+			( ( InputElement ) Document.get( ).getElementById( TITLE_LABEL_ID ) ).setValue( "" );
+	}*/
 }

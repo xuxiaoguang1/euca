@@ -3,23 +3,28 @@ package com.eucalyptus.webui.client;
 import com.eucalyptus.webui.client.place.AccountPlace;
 import com.eucalyptus.webui.client.place.ApprovePlace;
 import com.eucalyptus.webui.client.place.CertPlace;
+import com.eucalyptus.webui.client.place.DeviceBWPlace;
+import com.eucalyptus.webui.client.place.DeviceCPUPlace;
+import com.eucalyptus.webui.client.place.DeviceDiskPlace;
+import com.eucalyptus.webui.client.place.DeviceMemoryPlace;
+import com.eucalyptus.webui.client.place.DeviceServerPlace;
+import com.eucalyptus.webui.client.place.DeviceVMPlace;
 import com.eucalyptus.webui.client.place.ErrorSinkPlace;
 import com.eucalyptus.webui.client.place.ConfigPlace;
 import com.eucalyptus.webui.client.place.GroupPlace;
 import com.eucalyptus.webui.client.place.ImagePlace;
+import com.eucalyptus.webui.client.place.IndividualPlace;
 import com.eucalyptus.webui.client.place.KeyPlace;
 import com.eucalyptus.webui.client.place.PolicyPlace;
 import com.eucalyptus.webui.client.place.RejectPlace;
 import com.eucalyptus.webui.client.place.ReportPlace;
 import com.eucalyptus.webui.client.place.StartPlace;
-import com.eucalyptus.webui.client.place.TestPlace;
 import com.eucalyptus.webui.client.place.UserPlace;
 import com.eucalyptus.webui.client.place.VmTypePlace;
 import com.google.gwt.place.shared.PlaceHistoryMapper;
 import com.google.gwt.place.shared.WithTokenizers;
 
 @WithTokenizers( {
-  TestPlace.Tokenizer.class,
   StartPlace.Tokenizer.class,
   ErrorSinkPlace.Tokenizer.class,
   ConfigPlace.Tokenizer.class,
@@ -28,13 +33,19 @@ import com.google.gwt.place.shared.WithTokenizers;
   ReportPlace.Tokenizer.class,
   GroupPlace.Tokenizer.class,
   UserPlace.Tokenizer.class,
+  IndividualPlace.Tokenizer.class,
   PolicyPlace.Tokenizer.class,
   KeyPlace.Tokenizer.class,
   CertPlace.Tokenizer.class,
   ImagePlace.Tokenizer.class,
   ApprovePlace.Tokenizer.class,
-  RejectPlace.Tokenizer.class
-  
+  RejectPlace.Tokenizer.class,
+  DeviceServerPlace.Tokenizer.class,
+  DeviceCPUPlace.Tokenizer.class,
+  DeviceMemoryPlace.Tokenizer.class,
+  DeviceDiskPlace.Tokenizer.class,
+  DeviceVMPlace.Tokenizer.class,
+  DeviceBWPlace.Tokenizer.class,
 } )
 public interface MainPlaceHistoryMapper extends PlaceHistoryMapper {
 

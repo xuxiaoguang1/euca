@@ -25,6 +25,10 @@ public class SearchResultRow implements Serializable {
   // Row specific extra field descriptions
   private ArrayList<SearchResultFieldDesc> extraFields = new ArrayList<SearchResultFieldDesc>( );
   
+  public SearchResultRow copy() {
+	  return new SearchResultRow(row, extraFields);
+  }
+  
   public SearchResultRow( ) {
   }
   
@@ -115,5 +119,4 @@ public class SearchResultRow implements Serializable {
     }
     return true;
   }
-
 }

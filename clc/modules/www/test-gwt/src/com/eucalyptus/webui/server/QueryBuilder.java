@@ -1,7 +1,7 @@
 package com.eucalyptus.webui.server;
 
 import java.io.UnsupportedEncodingException;
-import com.eucalyptus.webui.shared.query.QueryConstants;
+
 import com.eucalyptus.webui.shared.query.QueryType;
 import com.eucalyptus.webui.shared.query.SearchQuery;
 import com.eucalyptus.webui.shared.query.StringValue;
