@@ -92,10 +92,10 @@
                 <tr>
                     <td>
                         <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.positive} {style.button}" ui:field="ok">
-                            <span class="{global.buttonCss.check} {global.buttonCss.icon}"/>OK
+                            <span class="{global.buttonCss.check} {global.buttonCss.icon}"/>确定
                         </g:Anchor>
                         <g:Anchor styleName="{global.buttonCss.button} {style.button}" ui:field="cancel">
-                            <span class="{global.buttonCss.x} {global.buttonCss.icon}"/>Cancel
+                            <span class="{global.buttonCss.x} {global.buttonCss.icon}"/>取消
                         </g:Anchor>                    
                     </td>
                 </tr>

@@ -3,13 +3,28 @@ package com.eucalyptus.webui.client.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.eucalyptus.webui.client.session.Session;
+import com.eucalyptus.webui.shared.user.AccountInfo;
+import com.eucalyptus.webui.shared.user.EnumState;
+import com.eucalyptus.webui.shared.user.GroupInfo;
+import com.eucalyptus.webui.shared.user.LoginUserProfile;
+import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("backend")
 public interface EucalyptusService extends RemoteService {
-  
+	
   Session login( String accountName, String userName, String password ) throws EucalyptusServiceException;
+  
+  /**
+   * User existed ? 
+   * 
+   * @throws EucalyptusServiceException
+   */
+  void checkUserExisted( String accountName, String userName ) throws EucalyptusServiceException;
   
   /**
    * Logout current user.
@@ -119,6 +134,60 @@ public interface EucalyptusService extends RemoteService {
   SearchResult lookupUser( Session session, String search, SearchRange range ) throws EucalyptusServiceException;
   
   /**
+   * Search users.
+   * 
+   * @param session
+   * @param groud id
+   * @param range
+   * @return
+   * @throws EucalyptusServiceException
+   */
+  SearchResult lookupUserByGroupId( Session session, int groupId, SearchRange range ) throws EucalyptusServiceException;
+  
+  /**
+   * Search users.
+   * 
+   * @param session
+   * @param account id
+   * @param range
+   * @return
+   * @throws EucalyptusServiceException
+   */
+  SearchResult lookupUserByAccountId( Session session, int accountId, SearchRange range ) throws EucalyptusServiceException;
+  
+  
+  /**
+   * Search users.
+   * 
+   * @param session
+   * @param account id
+   * @param range
+   * @return
+   * @throws EucalyptusServiceException
+   */
+  SearchResult lookupUserExcludeGroupId( Session session, int accountId, int groupId, SearchRange range ) throws EucalyptusServiceException;
+
+		  
+  /**
+   * Delete a list of users.
+   * 
+   * @param session
+   * @param ids
+   * @throws EucalyptusServiceException
+   */
+  void deleteUsers( Session session, ArrayList<String> ids ) throws EucalyptusServiceException;
+  
+  /**
+   * Update users' state.
+   * 
+   * @param session
+   * @param ids
+   * @param user state
+   * @throws EucalyptusServiceException
+   */
+  void updateUserState( Session session, ArrayList<String> ids, EnumState userState ) throws EucalyptusServiceException;
+  
+  /**
    * Search policies.
    * 
    * @param session
@@ -170,7 +239,7 @@ public interface EucalyptusService extends RemoteService {
    * @param adminPassword
    * @throws EucalyptusServiceException
    */
-  String createAccount( Session session, String accountName, String adminPassword ) throws EucalyptusServiceException;
+  String createAccount( Session session, ArrayList<String> values) throws EucalyptusServiceException;
   
   /**
    * Delete accounts.
@@ -189,10 +258,27 @@ public interface EucalyptusService extends RemoteService {
    * @param values
    * @throws EucalyptusServiceException
    */
-  void modifyAccount( Session session, ArrayList<String> values ) throws EucalyptusServiceException;
+  void modifyAccount( Session session, int accountId, String name, String email ) throws EucalyptusServiceException;
   
   /**
-   * Create multiple users in the same account, with same path.
+   * List all the accounts
+   * 
+   * @param session
+   * @throws EucalyptusServiceException
+   */
+  ArrayList<AccountInfo> listAccounts( Session session) throws EucalyptusServiceException;
+  
+  /**
+   * Create a user in the same account, with same path.
+   * 
+   * @param session
+   * @param user info
+   * @throws EucalyptusServiceException
+   */
+  void createUser( Session session, UserInfo user ) throws EucalyptusServiceException;
+  
+  /**
+   * Create one user in the account.
    * 
    * @param session
    * @param accountId
@@ -202,6 +288,15 @@ public interface EucalyptusService extends RemoteService {
    * @throws EucalyptusServiceException
    */
   ArrayList<String> createUsers( Session session, String accountId, String names, String path ) throws EucalyptusServiceException;
+  
+  /**
+   * Create a group in the same account.
+   * 
+   * @param session
+   * @param group info
+   * @throws EucalyptusServiceException
+   */
+  void createGroup( Session session, GroupInfo group ) throws EucalyptusServiceException;
   
   /**
    * Create multiple groups in the same account, with same path.
@@ -216,15 +311,6 @@ public interface EucalyptusService extends RemoteService {
   ArrayList<String> createGroups( Session session, String accountId, String names, String path ) throws EucalyptusServiceException;
   
   /**
-   * Delete a list of users.
-   * 
-   * @param session
-   * @param ids
-   * @throws EucalyptusServiceException
-   */
-  void deleteUsers( Session session, ArrayList<String> ids ) throws EucalyptusServiceException;
-  
-  /**
    * Delete a list of groups.
    * 
    * @param session
@@ -232,6 +318,33 @@ public interface EucalyptusService extends RemoteService {
    * @throws EucalyptusServiceException
    */
   void deleteGroups( Session session, ArrayList<String> ids ) throws EucalyptusServiceException;
+  
+  /**
+   * List current groups.
+   * 
+   * @param session
+   * @throws EucalyptusServiceException
+   */
+  ArrayList<GroupInfo> listGroups( Session session ) throws EucalyptusServiceException;
+  
+  /**
+   * Update group state.
+   * 
+   * @param session
+   * @param group ids
+   * @throws EucalyptusServiceException
+   */
+  void updateGroupState( Session session, ArrayList<String> ids, EnumState userState ) throws EucalyptusServiceException;
+  
+  /**
+   * Update user state by accounts.
+   * 
+   * @param session
+   * @param account ids
+   * @throws EucalyptusServiceException
+   */
+  void updateAccountState( Session session, ArrayList<String> ids, EnumState userState ) throws EucalyptusServiceException;
+  
   
   /**
    * Add policy to account.
@@ -304,24 +417,23 @@ public interface EucalyptusService extends RemoteService {
   void addUsersToGroupsByName( Session session, String userNames, ArrayList<String> groupIds ) throws EucalyptusServiceException;
   
   /**
-   * Add users to groups using group names input.
+   * Add users to groups using group id.
    * 
    * @param session
    * @param userIds
-   * @param groupNames
+   * @param groupId
    * @throws EucalyptusServiceException
    */
-  void addUsersToGroupsById( Session session, ArrayList<String> userIds, String groupNames ) throws EucalyptusServiceException;
+  void addUsersToGroupsById( Session session, ArrayList<String> userIds, int groupId ) throws EucalyptusServiceException;
   
   /**
    * Remove users from groups using user names input.
    * 
    * @param session
-   * @param userNames
-   * @param groupIds
+   * @param user ids
    * @throws EucalyptusServiceException
    */
-  void removeUsersFromGroupsByName( Session session, String userNames, ArrayList<String> groupIds ) throws EucalyptusServiceException;
+  void removeUsersFromGroup( Session session, ArrayList<String> userIds ) throws EucalyptusServiceException;
   
   /**
    * Remove users from groups using group names input.
@@ -341,7 +453,17 @@ public interface EucalyptusService extends RemoteService {
    * @param values
    * @throws EucalyptusServiceException
    */
-  void modifyUser( Session session, ArrayList<String> keys, ArrayList<String> values ) throws EucalyptusServiceException;
+  void modifyUser( Session session, ArrayList<String> keys, ArrayList<String> values )  throws EucalyptusServiceException;
+  
+  /**
+   * Modify individual info.
+   * 
+   * @param session
+   * @param profile
+   * @throws EucalyptusServiceException
+   */
+  
+  LoginUserProfile modifyIndividual( Session session, String title, String mobile, String email) throws EucalyptusServiceException;
   
   /**
    * Modify group info.
@@ -392,12 +514,11 @@ public interface EucalyptusService extends RemoteService {
    * Change user password and/or email.
    * 
    * @param session
-   * @param userId
    * @param oldPass
    * @param newPass
    * @param email
    */
-  void changePassword( Session session, String userId, String oldPass, String newPass, String email ) throws EucalyptusServiceException;
+  void changePassword( Session session, String oldPass, String newPass, String eamil) throws EucalyptusServiceException;
   
   /**
    * Sign up a new account by user.
@@ -498,24 +619,6 @@ public interface EucalyptusService extends RemoteService {
   public CloudInfo getCloudInfo( Session session, boolean setExternalHostPort ) throws EucalyptusServiceException;
   
   /**
-   * Get the list of image downloads.
-   * 
-   * @param session
-   * @return
-   * @throws EucalyptusServiceException
-   */
-  public ArrayList<DownloadInfo> getImageDownloads( Session session ) throws EucalyptusServiceException;
-  
-  /**
-   * Get the list of tool downloads.
-   * 
-   * @param session
-   * @return
-   * @throws EucalyptusServiceException
-   */
-  public ArrayList<DownloadInfo> getToolDownloads( Session session ) throws EucalyptusServiceException;
-  
-  /**
    * Get Start Guide snippet.
    * 
    * @param session
@@ -534,4 +637,15 @@ public interface EucalyptusService extends RemoteService {
    */
   public String getUserToken( Session session ) throws EucalyptusServiceException;
   
+  
+  SearchResult lookupDeviceServer(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException;
+  SearchResult lookupDeviceMemory(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException;
+  SearchResult lookupDeviceDisk(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException;
+  SearchResult lookupDeviceVM(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException;
+  SearchResult lookupDeviceBW(Session session, String query, SearchRange range) throws EucalyptusServiceException;
+  SearchResult lookupDeviceCPU(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException;
+  
+  Map<Integer, Integer> queryDeviceCPUCounts(Session session) throws EucalyptusServiceException;
+  SearchResultRow modifyDeviceCPUService(Session session, SearchResultRow row, String endtime, int state);
+  boolean deleteDeviceCPUService(Session session, List<Integer> list);
 }

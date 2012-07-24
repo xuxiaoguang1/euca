@@ -1,317 +1,488 @@
 package com.eucalyptus.webui.server;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import com.eucalyptus.webui.client.service.QuickLink;
-import com.eucalyptus.webui.client.service.QuickLinkTag;
+import java.util.Map;
+import java.util.Random;
+import org.apache.log4j.Logger;
+
 import com.eucalyptus.webui.client.service.CloudInfo;
-import com.eucalyptus.webui.client.service.DownloadInfo;
 import com.eucalyptus.webui.client.service.GuideItem;
 import com.eucalyptus.webui.client.service.SearchRange;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.EucalyptusService;
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
-import com.eucalyptus.webui.client.service.LoginUserProfile;
 import com.eucalyptus.webui.client.service.SearchResult;
-import com.eucalyptus.webui.client.service.Session;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
-import com.eucalyptus.webui.shared.query.QueryType;
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.eucalyptus.webui.client.session.Session;
+import com.eucalyptus.webui.server.user.AuthenticateUserLogin;
+import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
+import com.eucalyptus.webui.server.user.PwdResetProc;
+import com.eucalyptus.webui.shared.user.AccountInfo;
+import com.eucalyptus.webui.shared.user.EnumState;
+import com.eucalyptus.webui.shared.user.GroupInfo;
+import com.eucalyptus.webui.shared.user.LoginUserProfile;
+import com.eucalyptus.webui.shared.user.UserInfo;
+import com.google.common.base.Strings;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class EucalyptusServiceImpl extends RemoteServiceServlet implements EucalyptusService {
 
-  private static final long serialVersionUID = 1L;
+	private static final Logger LOG = Logger.getLogger( EucalyptusServiceImpl.class );
+	private static final long serialVersionUID = 1L;
+	private static final Random RANDOM = new Random( );
+	private static AuthenticateUserLogin authenticateUserLogin = new AuthenticateUserLogin();
+	
+	private AccountServiceProcImpl accountServiceProc = new AccountServiceProcImpl();
+	private UserServiceProcImpl userServiceProc = new UserServiceProcImpl();
+	private GroupServiceProcImpl groupServiceProc = new GroupServiceProcImpl();
+	private DeviceServerServiceProcImpl deviceServerServiceProc = new DeviceServerServiceProcImpl();
+	private DeviceCPUServiceProcImpl deviceCPUServiceProc = new DeviceCPUServiceProcImpl();
+	private DeviceMemoryServiceProcImpl deviceMemoryServiceProc = new DeviceMemoryServiceProcImpl();
+	private DeviceDiskServiceProcImpl deviceDiskServiceProc = new DeviceDiskServiceProcImpl();
+	private DeviceVMServiceProcImpl deviceVMServiceProc = new DeviceVMServiceProcImpl();
+	private DeviceBWServiceProcImpl deviceBWServiceProc = new DeviceBWServiceProcImpl();
 
+  private static void randomDelay( ) {
+    try {
+      Thread.sleep( 200 + RANDOM.nextInt( 800 ) );
+    } catch ( Exception e ) { }
+  }
+  
+  public void verifySession( Session session ) throws EucalyptusServiceException {
+    WebSession ws = WebSessionManager.getInstance( ).getSession( session.getId( ) );
+    if ( ws == null ) {
+      throw new EucalyptusServiceException( EucalyptusServiceException.INVALID_SESSION );
+    }
+  }
+  
   @Override
   public Session login( String accountName, String userName, String password ) throws EucalyptusServiceException {
-    return new Session( "FAKESESSIONID" );
+    // Simple thwart to automatic login attack.
+    randomDelay( );
+    if ( Strings.isNullOrEmpty( accountName) || 
+    		Strings.isNullOrEmpty( userName ) || 
+    		Strings.isNullOrEmpty( password ) ) {
+      throw new EucalyptusServiceException( "Empty login or password" );
+    }
+    
+    return authenticateUserLogin.checkPwdAndUserState(accountName, userName, password);
   }
+  
+  @Override
+  public void checkUserExisted(String accountName, String userName)
+  		throws EucalyptusServiceException {
+  	// TODO Auto-generated method stub
+	  if ( Strings.isNullOrEmpty( accountName) || 
+	    		Strings.isNullOrEmpty( userName ) ) {
+	      throw new EucalyptusServiceException( "Empty user name" );
+	    }
+	    authenticateUserLogin.checkUserExisted( accountName, userName );
+  }
+
 
   @Override
   public LoginUserProfile getLoginUserProfile( Session session ) throws EucalyptusServiceException {
-    return new LoginUserProfile( "1234", "admin", "eucalyptus", "123456", "user:id=1234", /*"key:userid=1234",*/ null );
+	  verifySession(session);
+	  return LoginUserProfileStorer.instance().get(session.getId());
   }
 
   @Override
   public HashMap<String, String> getSystemProperties( Session session ) throws EucalyptusServiceException {
-    HashMap<String, String> props = Maps.newHashMap( );
-    props.put( "version", "Eucalyptus EEE 3.0" );
-    props.put( "search-result-page-size", "5" );
-    return props;
+	  verifySession(session);
+	  
+	  HashMap<String, String> props = Maps.newHashMap( );
+	  props.put( "version", "Eucalyptus EEE 3.0" );
+	  props.put( "search-result-page-size", "5" );
+	  return props;
   }
-
-
-  private static final List<SearchResultRow> DATA = Arrays.asList( new SearchResultRow( Arrays.asList( "test0", "0", "modify", "#start:", "test", "test1", "test2", "" ) ),
-                                                                   new SearchResultRow( Arrays.asList( "test1", "1", "modify", "#start:", "test", "test1", "test2", "" ) ),
-                                                                   new SearchResultRow( Arrays.asList( "test2", "2", "modify", "#start:", "test", "test1", "test2", "" ) ),
-                                                                   new SearchResultRow( Arrays.asList( "test3", "3", "modify", "#start:", "test", "test1", "test2", "" ) ),
-                                                                   new SearchResultRow( Arrays.asList( "test4", "4", "modify", "#start:", "test", "test1", "test2", "" ) ),
-                                                                   new SearchResultRow( Arrays.asList( "test5", "5", "modify", "#start:", "test", "test1", "test2", "" ) ),
-                                                                   new SearchResultRow( Arrays.asList( "test6", "6", "modify", "#start:", "test", "test1", "test2", "" ) ),
-                                                                   new SearchResultRow( Arrays.asList( "test7", "7", "modify", "#start:", "test", "test1", "test2", "" ) ),
-                                                                   new SearchResultRow( Arrays.asList( "test8", "8", "modify", "#start:", "test", "test1", "test2", "" ) ),
-                                                                   new SearchResultRow( Arrays.asList( "test9", "9", "modify", "#start:", "test", "test1", "test2", "" ) ),
-                                                                   new SearchResultRow( Arrays.asList( "testA", "A", "modify", "#start:", "test", "test1", "test2", "" ) )
-                                                                 );
-  private static final List<SearchResultFieldDesc> FIELDS = Arrays.asList( new SearchResultFieldDesc( "Name", true, "40%" ),
-                                                                           new SearchResultFieldDesc( "Id", true, "60%", TableDisplay.MANDATORY, Type.TEXT, false, true ),
-                                                                           new SearchResultFieldDesc( "Action", false, "0px", TableDisplay.NONE, Type.ACTION, false, false ),
-                                                                           new SearchResultFieldDesc( "Link", false, "0px", TableDisplay.NONE, Type.LINK, false, false ),
-                                                                           new SearchResultFieldDesc( "Access key", false, "0px", TableDisplay.NONE, Type.TEXT, false, false ),
-                                                                           new SearchResultFieldDesc( "Certificate", false, "0px", TableDisplay.NONE, Type.KEYVAL, true, false ),
-                                                                           new SearchResultFieldDesc( "Another fancy key", false, "0px", TableDisplay.NONE, Type.KEYVAL, true, false ),
-                                                                           new SearchResultFieldDesc( "", false, "0px", TableDisplay.NONE, Type.NEWKEYVAL, true, false )
-                                                                         );
-  @Override
-  public SearchResult lookupAccount( Session session, String search, SearchRange range ) throws EucalyptusServiceException {
-    System.out.println( "New search: " + range );
-    
-    final int sortField = range.getSortField( );
-    if ( sortField >= 0 ) {
-      final boolean ascending = range.isAscending( );
-      Collections.sort( DATA, new Comparator<SearchResultRow>( ) {
-        @Override
-        public int compare( SearchResultRow r1, SearchResultRow r2 ) {
-          if ( r1 == r2 ) {
-            return 0;
-          }
-          // Compare the name columns.
-          int diff = -1;
-          if ( r1 != null ) {
-            diff = ( r2 != null ) ? r1.getField( sortField ).compareTo( r2.getField( sortField ) ) : 1;
-          }
-          return ascending ? diff : -diff;
-        }
-      } );
-    }
-    int resultLength = Math.min( range.getLength( ), DATA.size( ) - range.getStart( ) );
-    SearchResult result = new SearchResult( DATA.size( ), range );
-    result.setDescs( FIELDS );
-    result.setRows( DATA.subList( range.getStart( ), range.getStart( ) + resultLength ) );
-    
-    for ( SearchResultRow row : result.getRows( ) ) {
-      System.out.println( "Row: " + row );
-    }
-    
-    return result;
-  }
-
+  
   @Override
   public void logout( Session session ) throws EucalyptusServiceException {
-    // TODO Auto-generated method stub
-    
+	  // TODO Auto-generated method stub
+	  verifySession(session);
   }
 
   @Override
   public SearchResult lookupConfiguration( Session session, String search, SearchRange range ) throws EucalyptusServiceException {
-    // TODO Auto-generated method stub
-    return null;
+	  //TODO Auto-generated method stub
+	  verifySession(session);
+	  return null;
   }
 
   @Override
   public void setConfiguration( Session session, SearchResultRow config ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
+	verifySession(session);
   }
 
   @Override
   public SearchResult lookupVmType( Session session, String query, SearchRange range ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    return null;
+	verifySession(session);
+	return null;
   }
 
   @Override
   public void setVmType( Session session, SearchResultRow result ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
+	verifySession(session);
   }
 
   @Override
   public SearchResult lookupGroup( Session session, String search, SearchRange range ) throws EucalyptusServiceException {
-    // TODO Auto-generated method stub
-    return null;
+	  // TODO Auto-generated method stub
+	  verifySession(session);
+	  return groupServiceProc.lookupGroup(session, search, range);
   }
-
-  @Override
-  public SearchResult lookupUser( Session session, String search, SearchRange range ) throws EucalyptusServiceException {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  
 
   @Override
   public SearchResult lookupPolicy( Session session, String search, SearchRange range ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    return null;
+	  verifySession(session);
+	  return null;
   }
 
   @Override
   public SearchResult lookupKey( Session session, String search, SearchRange range ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    return null;
+	  verifySession(session);
+	  return null;
   }
 
   @Override
   public SearchResult lookupCertificate( Session session, String search, SearchRange range ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    return null;
+	  verifySession(session);
+	  return null;
   }
 
   @Override
   public SearchResult lookupImage( Session session, String search, SearchRange range ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    return null;
+	  verifySession(session);
+	  return null;
   }
 
 
+  /**
+   * account service 
+   * 
+   * 
+   */
+
+	public String createAccount(Session session, ArrayList<String> values) throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+		boolean isRootAdmin = curUser.isSystemAdmin();
+  
+		if (!isRootAdmin) {
+			throw new EucalyptusServiceException("No permission");
+		}
+		
+		String name = values.get(0);
+		String email = values.get(1);
+		String description = values.get(2);
+		
+		this.accountServiceProc.createAccount(name, email, description);
+		
+		return name;
+	}
+	@Override
+	public SearchResult lookupAccount( Session session, String search, SearchRange range ) throws EucalyptusServiceException {
+		verifySession(session);
+	  
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+		boolean isRootAdmin = curUser.isSystemAdmin();
+
+		if (!isRootAdmin) {
+			throw new EucalyptusServiceException("No permission");
+		}
+		
+		System.out.println( "New search: " + range );
+    
+		return this.accountServiceProc.lookupAccount(search, range);
+  }
   @Override
   public void deleteAccounts( Session session, ArrayList<String> ids ) throws EucalyptusServiceException {
-    // TODO Auto-generated method stub
-    
+	  // TODO Auto-generated method stub
+	  verifySession(session);
+	  LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+	  boolean isRootAdmin = curUser.isSystemAdmin();
+	  if (!isRootAdmin) {
+		  throw new EucalyptusServiceException("No permission");
+	  }
+		
+	  this.accountServiceProc.deleteAccounts(ids);
   }
-
   @Override
-  public void modifyAccount( Session session, ArrayList<String> values ) throws EucalyptusServiceException {
-    // TODO Auto-generated method stub
-    
+  public void modifyAccount( Session session, int accountId, String name, String email ) throws EucalyptusServiceException {
+	  // TODO Auto-generated method stub
+	  verifySession(session);
+	  
+	  LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+	  boolean isRootAdmin = curUser.isSystemAdmin();
+	  if (!isRootAdmin) {
+		  throw new EucalyptusServiceException("No permission");
+	  }
+	  
+	  this.accountServiceProc.modifyAccount(accountId, name, email);
   }
-
   @Override
-  public ArrayList<String> createUsers( Session session, String accountId, String names, String path ) throws EucalyptusServiceException {
-    // TODO Auto-generated method stub
-    return null;
+  public void updateAccountState( Session session, ArrayList<String> ids, EnumState state ) throws EucalyptusServiceException {
+	  // TODO Auto-generated method stub
+	  verifySession(session);
+	  
+	  LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+	  boolean isRootAdmin = curUser.isSystemAdmin();
+	  if (!isRootAdmin) {
+		  throw new EucalyptusServiceException("No permission");
+	  }
+	  
+	  accountServiceProc.updateAccountState(ids, state);
+  }
+  @Override
+  public ArrayList<AccountInfo> listAccounts(Session session) throws EucalyptusServiceException {
+	  // TODO Auto-generated method stub
+	  verifySession(session);
+	  
+	  LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+	  boolean isRootAdmin = curUser.isSystemAdmin();
+	  if (!isRootAdmin) {
+		  throw new EucalyptusServiceException("No permission");
+	  }
+	  
+	  return accountServiceProc.listAccounts();
   }
 
+  /**
+   * user service
+   * 
+   * 
+   */
+	@Override
+	public ArrayList<String> createUsers( Session session, String accountId, String names, String path ) throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		return null;
+	}
+  
+	@Override
+	public void createUser(Session session, UserInfo user) throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+		
+		if (!curUser.isSystemAdmin() && !curUser.isAccountAdmin()) {
+			throw new EucalyptusServiceException("No permission");
+		}
+		  
+		int accountId = curUser.getAccountId();
+		userServiceProc.createUser(accountId, user);  
+	}
+  
+	@Override
+	public SearchResult lookupUser( Session session, String search, SearchRange range ) throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+		return userServiceProc.lookupUser(curUser, search, range);
+	}
+	
+  @Override
+  public SearchResult lookupUserByGroupId( Session session, int groupId, SearchRange range ) throws EucalyptusServiceException {
+	  verifySession(session);
+	  LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+	  return userServiceProc.lookupUserByGroupId(curUser, groupId, range);
+  }
+  @Override
+  public SearchResult lookupUserByAccountId( Session session, int accountId, SearchRange range ) throws EucalyptusServiceException {
+	  verifySession(session);
+	  return userServiceProc.lookupUserByAccountId(accountId, range);
+  }
+  @Override
+  public SearchResult lookupUserExcludeGroupId( Session session, int accountId, int groupId, SearchRange range ) throws EucalyptusServiceException {
+	  verifySession(session);
+	  return userServiceProc.lookupUserExcludeGroupId(accountId, groupId, range);
+  }
+  @Override
+  public void deleteUsers( Session session, ArrayList<String> ids ) throws EucalyptusServiceException {
+    // TODO Auto-generated method stub
+	  verifySession(session);
+	  userServiceProc.deleteUsers(ids); 
+  }
+  @Override
+  public void updateUserState(Session session, ArrayList<String> ids,
+  		EnumState userState) throws EucalyptusServiceException {
+  	// TODO Auto-generated method stub
+	  verifySession(session);
+	  userServiceProc.updateUserState(ids, userState);
+  }
+  @Override
+  public void addUsersToGroupsById( Session session, ArrayList<String> userIds, int groupId ) throws EucalyptusServiceException {
+    // TODO Auto-generated method stub
+	  verifySession(session);
+	  userServiceProc.addUsersToGroupsById(userIds, groupId);
+  }
+  @Override
+  public void removeUsersFromGroup( Session session, ArrayList<String> userIds ) throws EucalyptusServiceException {
+    // TODO Auto-generated method stub
+	  verifySession(session);
+	  userServiceProc.addUsersToGroupsById(userIds, 0);
+  }
+  
+  @Override
+  public void modifyUser( Session session, ArrayList<String> keys, ArrayList<String> values ) throws EucalyptusServiceException {
+    // TODO Auto-generated method stub
+	  verifySession(session);
+  }
+  
+  @Override
+  public LoginUserProfile modifyIndividual( Session session, String title, String mobile, String email ) throws EucalyptusServiceException {
+	  // TODO Auto-generated method stub
+	  verifySession(session);
+	  LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+	  userServiceProc.modifyIndividual(curUser, title, mobile, email);
+	  
+	  curUser.setUserTitle(title);
+	  curUser.setUserMobile(mobile);
+	  curUser.setUserEmail(email);
+	  
+	  return curUser;
+  }
+  
+  @Override
+  public void changePassword( Session session, String oldPass, String newPass, String email ) throws EucalyptusServiceException {
+    // TODO Auto-generated method stub
+	  verifySession(session);
+	  LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+	  userServiceProc.changePassword(curUser, oldPass, newPass, email);
+  }
+
+  /**
+   * Group service
+   * 
+   * 
+   */
+  @Override
+  public void createGroup(Session session, GroupInfo group)
+  		throws EucalyptusServiceException {
+	  // TODO Auto-generated method stub
+	  verifySession(session);
+	  groupServiceProc.createGroup(session, group);
+  }
+  
   @Override
   public ArrayList<String> createGroups( Session session, String accountId, String names, String path ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
     return null;
   }
 
-  @Override
-  public void deleteUsers( Session session, ArrayList<String> ids ) throws EucalyptusServiceException {
-    // TODO Auto-generated method stub
-    
-  }
+	@Override
+	public void deleteGroups( Session session, ArrayList<String> ids ) throws EucalyptusServiceException {
+	  // TODO Auto-generated method stub
+		verifySession(session);
+	  groupServiceProc.deleteGroups(session, ids);
+	}
 
-  @Override
-  public void deleteGroups( Session session, ArrayList<String> ids ) throws EucalyptusServiceException {
-    // TODO Auto-generated method stub
-    
-  }
+	@Override
+	public void modifyGroup( Session session, ArrayList<String> values ) throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+	}
+
+	@Override
+	public ArrayList<GroupInfo> listGroups(Session session)	throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		return groupServiceProc.listGroups(session);
+	}
+	@Override
+	public void updateGroupState( Session session, ArrayList<String> ids, EnumState state ) throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		groupServiceProc.updateGroupState(session, ids, state);
+	}
 
   @Override
   public void addAccountPolicy( Session session, String accountId, String name, String document ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
+	  verifySession(session);
   }
 
   @Override
   public void addUserPolicy( Session session, String usertId, String name, String document ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
+	  verifySession(session);
   }
 
   @Override
   public void addGroupPolicy( Session session, String groupId, String name, String document ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
+	  verifySession(session);
   }
 
   @Override
   public void deletePolicy( Session session, SearchResultRow policySerialized ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
+	  verifySession(session);
   }
 
   @Override
   public void deleteAccessKey( Session session, SearchResultRow keySerialized ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
+	  verifySession(session);
   }
 
   @Override
   public void deleteCertificate( Session session, SearchResultRow certSerialized ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
+	  verifySession(session);
   }
 
   @Override
   public void addUsersToGroupsByName( Session session, String userNames, ArrayList<String> groupIds ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public void addUsersToGroupsById( Session session, ArrayList<String> userIds, String groupNames ) throws EucalyptusServiceException {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public void removeUsersFromGroupsByName( Session session, String userNames, ArrayList<String> groupIds ) throws EucalyptusServiceException {
-    // TODO Auto-generated method stub
-    
+	  verifySession(session);
   }
 
   @Override
   public void removeUsersFromGroupsById( Session session, ArrayList<String> userIds, String groupNames ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
+	  verifySession(session);
   }
-
-  @Override
-  public void modifyUser( Session session, ArrayList<String> keys, ArrayList<String> values ) throws EucalyptusServiceException {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public void modifyGroup( Session session, ArrayList<String> values ) throws EucalyptusServiceException {
-    // TODO Auto-generated method stub
-    
-  }
-
+  
   @Override
   public void modifyAccessKey( Session session, ArrayList<String> values ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
+	  verifySession(session);
   }
 
   @Override
   public void modifyCertificate( Session session, ArrayList<String> values ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
+	  verifySession(session);
   }
 
   @Override
   public void addAccessKey( Session session, String userId ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
+	  verifySession(session);
   }
 
   @Override
   public void addCertificate( Session session, String userId, String pem ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public void changePassword( Session session, String userId, String oldPass, String newPass, String email ) throws EucalyptusServiceException {
-    // TODO Auto-generated method stub
-    
+	  verifySession(session);
   }
 
   @Override
   public void signupAccount( String accountName, String password, String email ) throws EucalyptusServiceException {
-    try {
+	  try {
       Thread.sleep( 2000 );
     } catch ( InterruptedException e ) {
       // TODO Auto-generated catch block
@@ -322,30 +493,33 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
   @Override
   public void signupUser( String userName, String accountName, String password, String email ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
   }
 
   @Override
   public ArrayList<String> approveAccounts( Session session, ArrayList<String> accountNames ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
+	  verifySession(session);
     return null;
   }
 
   @Override
   public ArrayList<String> rejectAccounts( Session session, ArrayList<String> accountNames ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
+	  verifySession(session);
     return null;
   }
 
   @Override
   public ArrayList<String> approveUsers( Session session, ArrayList<String> userIds ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
+	  verifySession(session);
     return null;
   }
 
   @Override
   public ArrayList<String> rejectUsers( Session session, ArrayList<String> userIds ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
+	  verifySession(session);
     return null;
   }
 
@@ -358,18 +532,21 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
   @Override
   public void requestPasswordRecovery( String userName, String accountName, String email ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
+	  PwdResetProc pwdResetProc = new PwdResetProc();
+	  pwdResetProc.requestPasswordRecovery(userName, accountName, email);
   }
 
   @Override
   public void resetPassword( String confirmationCode, String password ) throws EucalyptusServiceException {
     // TODO Auto-generated method stub
-    
+	  PwdResetProc pwdResetProc = new PwdResetProc();
+	  pwdResetProc.resetPassword(confirmationCode, password);
   }
 
   @Override
   public CloudInfo getCloudInfo( Session session, boolean setExternalHostPort ) throws EucalyptusServiceException {
-    CloudInfo cloudInfo = new CloudInfo( );
+	  verifySession(session);
+	  CloudInfo cloudInfo = new CloudInfo( );
     cloudInfo.setCloudId( "CLOUDID1234567890" );
     cloudInfo.setExternalHostPort( "127.0.0.1:8443" );
     cloudInfo.setInternalHostPort( "127.0.0.1:8443" );
@@ -377,60 +554,80 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     return cloudInfo;
   }
 
-  @Override
-  public ArrayList<DownloadInfo> getImageDownloads( Session session ) throws EucalyptusServiceException {
-    return new ArrayList<DownloadInfo>( Arrays.asList( new DownloadInfo( "http://localhost", "kernel", "Kernel image" ),
-                                                          new DownloadInfo( "http://localhost", "ramdisk", "Ramdisk image" ),
-                                                          new DownloadInfo( "http://localhost", "root", "Root disk image" ) ) );
-  }
-
-  @Override
-  public ArrayList<DownloadInfo> getToolDownloads( Session session ) throws EucalyptusServiceException {
-    return new ArrayList<DownloadInfo>( Arrays.asList( new DownloadInfo( "http://localhost", "euca-tools", "EUCA tools" ),
-                                                          new DownloadInfo( "http://localhost", "boto", "BOTO" ),
-                                                          new DownloadInfo( "http://localhost", "other", "Other stuff" ) ) );
-  }
-
-  @Override
-  public ArrayList<GuideItem> getGuide( Session session, String snippet ) throws EucalyptusServiceException {
-    return new ArrayList<GuideItem>( Arrays.asList( new GuideItem( "View and configure cloud service components",
-                                                                   QueryBuilder.get( ).start( QueryType.config ).url( ),
-                                                                   "cog" ),
-                                                    new GuideItem( "View all the images you can access",
-                                                                   QueryBuilder.get( ).start( QueryType.image ).url( ),
-                                                                   "account" ),
-                                                    new GuideItem( "View and configure virtual machine types",
-                                                                   QueryBuilder.get( ).start( QueryType.vmtype ).url( ),
-                                                                   "group" ),
-                                                    new GuideItem( "View and configure virtual machine types",
-                                                                   QueryBuilder.get( ).start( QueryType.vmtype ).url( ),
-                                                                   "group" ),
-                                                    new GuideItem( "View and configure virtual machine types",
-                                                                   QueryBuilder.get( ).start( QueryType.vmtype ).url( ),
-                                                                   "group" ),
-                                                    new GuideItem( "View and configure virtual machine types",
-                                                                   QueryBuilder.get( ).start( QueryType.vmtype ).url( ),
-                                                                   "group" ),
-                                                    new GuideItem( "Generate cloud resource usage report",
-                                                                   QueryBuilder.get( ).start( QueryType.report ).url( ),
-                                                                   "user" ) ) );
-  }
-
 public ArrayList getQuickLinks(Session session)
 		throws EucalyptusServiceException {
 	// TODO Auto-generated method stub
-	return QuickLinks.getTags();
+	verifySession(session);
+	LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+	return QuickLinks.getTags(curUser.isSystemAdmin(), curUser.getUserType());
 }
 
-public String createAccount(Session session, String accountName,
-		String adminPassword) throws EucalyptusServiceException {
-	// TODO Auto-generated method stub
-	return null;
-}
 
 public String getUserToken(Session session) throws EucalyptusServiceException {
 	// TODO Auto-generated method stub
+	verifySession(session);
 	return null;
 }
 
+@Override
+public ArrayList<GuideItem> getGuide(Session session, String snippet)
+		throws EucalyptusServiceException {
+	// TODO Auto-generated method stub
+	verifySession(session);
+	return null;
+}
+
+	@Override
+	public SearchResult lookupDeviceServer(Session session, String search, SearchRange range, int queryState)
+	        throws EucalyptusServiceException {
+		return deviceServerServiceProc.lookupServer(session, search, range, queryState);
+	}
+	
+	@Override
+	public SearchResult lookupDeviceMemory(Session session, String search, SearchRange range, int queryState)
+	        throws EucalyptusServiceException {
+		return deviceMemoryServiceProc.lookupMemory(session, search, range, queryState);
+	}
+	
+	@Override
+	public SearchResult lookupDeviceDisk(Session session, String search, SearchRange range, int queryState)
+	        throws EucalyptusServiceException {
+		return deviceDiskServiceProc.lookupDisk(session, search, range, queryState);
+	}
+	
+	@Override
+	public SearchResult lookupDeviceVM(Session session, String search, SearchRange range, int queryState)
+	        throws EucalyptusServiceException {
+		return deviceVMServiceProc.lookupVM(session, search, range, queryState);
+	}
+	
+	@Override
+	public SearchResult lookupDeviceBW(Session session, String search, SearchRange range)
+	        throws EucalyptusServiceException {
+		return deviceBWServiceProc.lookupBW(session, search, range);
+	}
+	
+	@Override
+	public SearchResult lookupDeviceCPU(Session session, String search, SearchRange range, int queryState)
+	        throws EucalyptusServiceException {
+		return deviceCPUServiceProc.lookup(session, search, range, queryState);
+	}
+	
+	@Override
+	public Map<Integer, Integer> queryDeviceCPUCounts(Session session) throws EucalyptusServiceException {
+		return deviceCPUServiceProc.queryCounts(session);
+	}
+
+	@Override
+	public SearchResultRow modifyDeviceCPUService(Session session,
+			SearchResultRow row, String endtime, int state) {
+		// TODO Auto-generated method stub
+		return deviceCPUServiceProc.modifyService(session, row, endtime, state);
+	}
+
+	@Override
+	public boolean deleteDeviceCPUService(Session session, List<Integer> list) {
+		// TODO Auto-generated method stub
+		return deviceCPUServiceProc.deleteService(session, list);
+	}
 }

@@ -1,6 +1,5 @@
 package com.eucalyptus.webui.client.session;
 
-import com.eucalyptus.webui.client.service.Session;
 
 public interface LocalSession {
   

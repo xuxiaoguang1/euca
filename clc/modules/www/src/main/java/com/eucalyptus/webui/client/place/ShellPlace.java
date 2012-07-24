@@ -1,6 +1,6 @@
 package com.eucalyptus.webui.client.place;
 
-import com.eucalyptus.webui.client.service.Session;
+import com.eucalyptus.webui.client.session.Session;
 import com.google.gwt.place.shared.Place;
 
 public class ShellPlace extends Place {

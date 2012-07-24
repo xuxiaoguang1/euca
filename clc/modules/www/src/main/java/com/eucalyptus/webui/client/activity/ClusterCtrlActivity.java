@@ -31,7 +31,6 @@ public class ClusterCtrlActivity extends AbstractSearchActivity implements Clust
   protected void doSearch( String query, SearchRange range ) {
     this.clientFactory.getBackendCmdService().lookupClusterCtrl( this.clientFactory.getLocalSession( ).getSession( ), search, range,
                                                            new AsyncCallback<SearchResult>( ) {
-      
       @Override
       public void onFailure( Throwable caught ) {
         ActivityUtil.logoutForInvalidSession( clientFactory, caught );

@@ -54,32 +54,22 @@ public class AccountViewImpl extends Composite implements AccountView {
   
   @UiHandler( "delButton" )
   void handleDelButtonClick( ClickEvent e ) {
-    this.presenter.onDeleteAccounts( );
+	  this.presenter.onDeleteAccounts( );
+  }
+
+  @UiHandler( "resumeButton" )
+  void handleResumeButtonClick( ClickEvent e ) {
+	  this.presenter.onResume();
   }
   
-  @UiHandler( "addUsersButton" )
-  void handleAddUsersButtonClick( ClickEvent e ) {
-    this.presenter.onCreateUsers( );
+  @UiHandler( "pauseButton" )
+  void handlePauseButtonClick( ClickEvent e ) {
+	  this.presenter.onPause();
   }
 
-  @UiHandler( "addGroupsButton" )
-  void handleAddGroupsButtonClick( ClickEvent e ) {
-    this.presenter.onCreateGroups( );
-  }
-
-  @UiHandler( "addPolicyButton" )
-  void handleAddPolicyButtonClick( ClickEvent e ) {
-    this.presenter.onAddPolicy( );
-  }
-
-  @UiHandler( "approveButton" )
-  void handleApproveButtonClick( ClickEvent e ) {
-    this.presenter.onApprove( );
-  }
-
-  @UiHandler( "rejectButton" )
-  void handleRejectButtonClick( ClickEvent e ) {
-    this.presenter.onReject( );
+  @UiHandler( "banButton" )
+  void handleBanButtonClick( ClickEvent e ) {
+	  this.presenter.onBan();
   }
 
   public void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {

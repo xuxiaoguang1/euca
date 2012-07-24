@@ -6,7 +6,11 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.SearchResult;
+import com.google.gwt.cell.client.CheckboxCell;
+import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.CellTable;
@@ -20,17 +24,13 @@ import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.Range;
 import com.google.gwt.view.client.SelectionModel;
 
 public class SearchResultTable extends Composite {
-  
-  private static final String MULTI_SELECTION_TIP = "Use 'Ctrl' or 'Shift' for multiple selections.";
 
   private static SearchResultTableUiBinder uiBinder = GWT.create( SearchResultTableUiBinder.class );
   
@@ -39,10 +39,7 @@ public class SearchResultTable extends Composite {
   public static interface TableResources extends Resources {
     @Source( "SearchResultTable.css" )
     Style cellTableStyle( );
-  }  
-  
-  @UiField
-  Label tip;
+  }
   
   @UiField( provided = true )
   CellTable<SearchResultRow> cellTable;
@@ -51,6 +48,11 @@ public class SearchResultTable extends Composite {
   SimplePager pager;
 
   private ArrayList<SearchResultFieldDesc> fieldDescs;
+  
+  public ArrayList<SearchResultFieldDesc> getFieldDescs() {
+	  return fieldDescs;
+  }
+  
   private final SearchRangeChangeHandler changeHandler;
   private SelectionModel<SearchResultRow> selectionModel;
   // Not all column are displayed in the table. This maps table column to data field index.
@@ -65,10 +67,6 @@ public class SearchResultTable extends Composite {
     buildPager( );
     
     initWidget( uiBinder.createAndBindUi( this ) );
-    
-    if ( selectionModel instanceof MultiSelectionModel ) {
-      this.tip.setText( MULTI_SELECTION_TIP );
-    }
   }
   
   public void setData( SearchResult data ) {    
@@ -90,24 +88,59 @@ public class SearchResultTable extends Composite {
       if ( desc.getTableDisplay( ) != TableDisplay.MANDATORY ) {
         continue;
       }
+      SearchResultFieldDesc.Type colType = desc.getType();
+      
       final int index = i;
-      TextColumn<SearchResultRow> col = new TextColumn<SearchResultRow>( ) {
-        @Override
-        public String getValue( SearchResultRow data ) {
-          if ( data == null ) {
-            return "";
-          } else {
-            return data.getField( index );
-          }
-        }
-      };
-      col.setSortable( desc.getSortable( ) );
-      cellTable.addColumn( col, desc.getTitle( ) );
-      cellTable.setColumnWidth( col, desc.getWidth( ) );
+      
+      if (colType != SearchResultFieldDesc.Type.BOOLEAN) {
+	      TextColumn<SearchResultRow> col = new TextColumn<SearchResultRow>( ) {
+		      @Override
+		      public String getValue( SearchResultRow data ) {
+		    	  if ( data == null ) {
+		    		  return "";
+		          }
+		    	  else {
+		        	  return data.getField( index );
+		          }
+		      }
+	      };
+	      col.setSortable( desc.getSortable( ) );
+	      cellTable.addColumn( col, desc.getTitle( ) );
+      
+	      cellTable.setColumnWidth( col, desc.getWidth( ) );
+      }
+      else {
+    	  Column<SearchResultRow, Boolean> checkBoxColumn = new Column<SearchResultRow, Boolean>(new CheckboxCell(false, true)) {
+    		  @Override
+    		  public Boolean getValue(SearchResultRow object) {
+    			  if (object == null)
+    				  return null;
+    			  
+    			  return selectionModel.isSelected(object);
+    		  }
+    	  };
+    	  
+    	  checkBoxColumn.setFieldUpdater(new FieldUpdater<SearchResultRow, Boolean> () {
+
+				@Override
+				public void update(int index, SearchResultRow object, Boolean value) {
+					// TODO Auto-generated method stub
+					selectionModel.setSelected(object, value);
+				}
+			}
+    	  );
+    	  
+    	  checkBoxColumn.setSortable(false);
+	      cellTable.addColumn( checkBoxColumn, desc.getTitle( ) );
+      
+	      cellTable.setColumnWidth( checkBoxColumn, desc.getWidth( ) );
+      }
+      
+      
       tableColIdx.add( i );
     }
     
-    cellTable.setSelectionModel( selectionModel );
+    cellTable.setSelectionModel( selectionModel);
   }
   
   private void buildPager( ) {
@@ -140,7 +173,11 @@ public class SearchResultTable extends Composite {
     dataProvider.addDataDisplay( cellTable );
     
     AsyncHandler sortHandler = new AsyncHandler( cellTable );
-    cellTable.addColumnSortHandler( sortHandler );    
+    cellTable.addColumnSortHandler( sortHandler );
   }
   
+  public void addDoublClickHandler(DoubleClickHandler handler) {
+	  cellTable.addDomHandler(handler, DoubleClickEvent.getType());
+  }
+
 }

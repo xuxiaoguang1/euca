@@ -63,10 +63,10 @@
                 </tr>
                 <tr>
                     <td>
-                        <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.positive} {style.button}" ui:field="ok">
+                        <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.positive} {style.button}" ui:field="ok" height="17px" text="确定">
                             <span class="{global.buttonCss.check} {global.buttonCss.icon}"/>OK
                         </g:Anchor>
-                        <g:Anchor styleName="{global.buttonCss.button} {style.button}" ui:field="cancel">
+                        <g:Anchor styleName="{global.buttonCss.button} {style.button}" ui:field="cancel" text="取消">
                             <span class="{global.buttonCss.x} {global.buttonCss.icon}"/>Cancel
                         </g:Anchor>                    
                     </td>

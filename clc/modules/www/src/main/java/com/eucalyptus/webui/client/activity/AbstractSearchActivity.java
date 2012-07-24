@@ -34,7 +34,7 @@ public abstract class AbstractSearchActivity extends AbstractActivity implements
   private static final Logger LOG = Logger.getLogger( AbstractSearchActivity.class.getName( ) );
   
   protected static final int DEFAULT_PAGE_SIZE = 25;
-  protected static final int DETAIL_PANE_SIZE = 400;//px
+  protected static final int DETAIL_PANE_SIZE = 200;//px
   
   protected ClientFactory clientFactory;
   protected int pageSize;
@@ -51,7 +51,7 @@ public abstract class AbstractSearchActivity extends AbstractActivity implements
     this.place = place;
     this.search = URL.decode( place.getSearch( ) );
     this.clientFactory = clientFactory;
-    this.pageSize = this.clientFactory.getSessionData( ).getIntProperty( SessionData.SEARCH_RESULT_PAGE_SIZE, DEFAULT_PAGE_SIZE ); 
+    this.pageSize = this.clientFactory.getSessionData( ).getIntProperty( SessionData.SEARCH_RESULT_PAGE_SIZE, DEFAULT_PAGE_SIZE );
   }
   
   @Override
@@ -59,7 +59,7 @@ public abstract class AbstractSearchActivity extends AbstractActivity implements
     this.container = container;
     // Hide detail view at the beginning
     this.clientFactory.getShellView( ).hideDetail( );
-    this.clientFactory.getShellView( ).getDetailView( ).setPresenter( this );
+    //this.clientFactory.getShellView( ).getDetailView( ).setPresenter( this );
     
     this.clientFactory.getShellView( ).getContentView( ).setContentTitle( getTitle( ) );
     
@@ -77,13 +77,13 @@ public abstract class AbstractSearchActivity extends AbstractActivity implements
   
   @Override
   public void onStop( ) {
-    this.clientFactory.getShellView( ).getDetailView( ).clear( );
+    //this.clientFactory.getShellView( ).getDetailView( ).clear( );
     this.clientFactory.getShellView( ).hideDetail( );
   }
 
   @Override
   public void onCancel( ) {
-    this.clientFactory.getShellView( ).getDetailView( ).clear( );
+    //this.clientFactory.getShellView( ).getDetailView( ).clear( );
     this.clientFactory.getShellView( ).hideDetail( );
   }
 
@@ -131,7 +131,7 @@ public abstract class AbstractSearchActivity extends AbstractActivity implements
     ArrayList<SearchResultFieldDesc> descs = new ArrayList<SearchResultFieldDesc>( );
     descs.addAll( cache.getDescs( ) );
     descs.addAll( selected.getExtraFieldDescs( ) );
-    this.clientFactory.getShellView( ).getDetailView( ).showData( descs, selected.getRow( ) );          
+    //this.clientFactory.getShellView( ).getDetailView( ).showData( descs, selected.getRow( ) );          
   }
  
   @Override

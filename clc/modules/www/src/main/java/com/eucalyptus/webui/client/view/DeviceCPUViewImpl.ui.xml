@@ -1,0 +1,211 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:euca="urn:import:com.eucalyptus.webui.client.view">
+
+	<ui:style>
+		.toolbar {
+			width: 99%;
+		}
+		
+		.top {
+			font-size: 120%;
+		}
+		
+		.topContent {
+			color: gray;
+			font-size: 95%;
+			border-top: 1px solid #AAAAAA;
+			border-bottom: 1px solid #AAAAAA;
+			border-left: 1px solid #AAAAAA;
+			border-right: 1px solid #AAAAAA;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		.topLinks {
+			cursor: pointer;
+			cursor: hand;
+		}
+		
+		.bottom {
+			font-size: 80%;
+			border-top: 1px solid #AAAAAA;
+		}
+		
+		.bottomContent {
+			font-size: 90%;
+		}
+	</ui:style>
+
+	<ui:with field="global"
+		type="com.eucalyptus.webui.client.view.GlobalResources" />
+
+	<g:VerticalPanel width="1000" height="300"
+		horizontalAlignment="ALIGN_LEFT">
+		<g:AbsolutePanel width="1000px" height="40px">
+			<g:at left="30" top="10">
+				<g:HTMLPanel>
+					<table>
+						<tr class="{style.top}">
+							<td>CPU总资源</td>
+						</tr>
+					</table>
+				</g:HTMLPanel>
+			</g:at>
+		</g:AbsolutePanel>
+		<g:Cell>
+			<g:HorizontalPanel>
+				<g:Cell width="40px">
+					<g:AbsolutePanel />
+				</g:Cell>
+				<g:HTMLPanel>
+					<table width="800px">
+						<colgroup width="3%" />
+						<colgroup width="27%" />
+						<colgroup width="20%" />
+						<colgroup width="3%" />
+						<colgroup width="27%" />
+						<colgroup width="20%" />
+						<tbody class="{style.topContent}">
+							<tr>
+								<td>&nbsp;</td>
+								<td>
+									<div height="10px">&nbsp;</div>
+									<div>
+										<g:Anchor styleName="{style.topLinks}" ui:field="labelAll">全部CPU数量：0
+											台</g:Anchor>
+									</div>
+									<div height="10px">&nbsp;</div>
+									<div>
+										<g:Anchor styleName="{style.topLinks}" ui:field="labelReserved">预留CPU数量：0
+											台</g:Anchor>
+									</div>
+									<div height="10px">&nbsp;</div>
+								</td>
+								<td>&nbsp;</td>
+								<td>&nbsp;</td>
+								<td>
+									<div height="10px">&nbsp;</div>
+									<div>
+										<g:Anchor styleName="{style.topLinks}" ui:field="labelInuse">使用中CPU数量：0
+											台</g:Anchor>
+									</div>
+									<div height="10px">&nbsp;</div>
+									<div>
+										<g:Anchor styleName="{style.topLinks}" ui:field="labelStop">未使用CPU数量：0
+											台</g:Anchor>
+									</div>
+									<div height="10px">&nbsp;</div>
+								</td>
+								<td>&nbsp;</td>
+							</tr>
+						</tbody>
+					</table>
+				</g:HTMLPanel>
+			</g:HorizontalPanel>
+		</g:Cell>
+		<g:Cell verticalAlignment="ALIGN_MIDDLE">
+			<g:AbsolutePanel width="1000px" height="56px">
+				<g:at left="30" top="10">
+					<g:DeckPanel height="36px" width="940px" ui:field="deckPanel">
+						<g:HTMLPanel height="36px" width="600px"
+							styleName="border-top:1px solid #AAAAAA;">
+							<table class="{style.bottom}">
+								<tbody>
+									<tr height="4px">
+										<td width="10px" />
+										<td width="80px" />
+										<td width="80px" />
+										<td width="80px" />
+										<td width="100px" />
+										<td width="80px" />
+										<td width="80px" />
+										<td width="80px" />
+										<td width="100px" />
+										<td width="110px" />
+										<td width="100px" />
+									</tr>
+									<tr>
+										<td />
+										<td>
+											<g:Anchor styleName="{global.buttonCss.button}"
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonAddDevice">
+												添加设备
+											</g:Anchor>
+										</td>
+										<td>
+											<g:Anchor styleName="{global.buttonCss.button}"
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonModifyDevice">
+												变更设备
+											</g:Anchor>
+										</td>
+										<td>
+											<g:Anchor styleName="{global.buttonCss.button}"
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonDelDevice">
+												删除设备
+											</g:Anchor>
+										</td>
+										<td />
+										<td>
+											<g:Anchor styleName="{global.buttonCss.button}"
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonAddService">
+												添加服务
+											</g:Anchor>
+										</td>
+										<td>
+											<g:Anchor styleName="{global.buttonCss.button}"
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonDelService">
+												删除服务
+											</g:Anchor>
+										</td>
+										<td>
+											<g:Anchor styleName="{global.buttonCss.button}"
+												horizontalAlignment="ALIGN_CENTER" width="64px"
+												ui:field="buttonExtendService">
+												变更服务
+											</g:Anchor>
+										</td>
+										<td/>
+										<td>
+											<g:Anchor styleName="{global.buttonCss.button}"
+												horizontalAlignment="ALIGN_CENTER" width="64px"
+												ui:field="clearSelection">
+												清空选择
+											</g:Anchor>
+										</td>
+										<td/>
+									</tr>
+								</tbody>
+							</table>
+						</g:HTMLPanel>
+						<g:HTMLPanel height="36px" width="600px"
+							styleName="border-top:1px solid #AAAAAA;">
+							<table class="{style.bottom}">
+								<tbody>
+									<tr height="4px">
+										<td width="10px" />
+										<td width="100px" />
+										<td width="80px" />
+										<td width="610px" />
+									</tr>
+									<tr>
+										<td />
+										<td>
+											<g:Anchor styleName="{global.buttonCss.button}"
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="mirrorBack">
+												返&nbsp;&nbsp;回
+											</g:Anchor>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</g:HTMLPanel>
+					</g:DeckPanel>
+				</g:at>
+			</g:AbsolutePanel>
+		</g:Cell>
+		<g:LayoutPanel width="1000px" height="420px" ui:field="resultPanel"
+			styleName="{style.bottomContent}" />
+	</g:VerticalPanel>
+
+</ui:UiBinder> 

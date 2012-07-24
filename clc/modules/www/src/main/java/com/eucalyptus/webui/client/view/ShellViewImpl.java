@@ -2,20 +2,16 @@ package com.eucalyptus.webui.client.view;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ShellViewImpl extends Composite implements ShellView {
@@ -32,7 +28,7 @@ public class ShellViewImpl extends Composite implements ShellView {
   
   private static final int ANIMATE_DURATION = 200;//ms
   
-  public static final int DIRECTORY_WIDTH = 240;//px
+  public static final int DIRECTORY_WIDTH = 180;//px
   public static final int LOG_HEIGHT = 160;//px
   
   @UiField
@@ -42,7 +38,7 @@ public class ShellViewImpl extends Composite implements ShellView {
   DirectoryViewImpl directory;
   
   @UiField
-  DetailViewImpl detail;
+  DetailsViewImpl detail;
   
   @UiField
   FooterViewImpl footer;
@@ -59,10 +55,11 @@ public class ShellViewImpl extends Composite implements ShellView {
   @UiField
   ShellStyle shellStyle;
   
+  
   private boolean directoryHidden = false;
   
-  public ShellViewImpl( ) {
-    initWidget( uiBinder.createAndBindUi( this ) );
+  public ShellViewImpl() {
+	  initWidget( uiBinder.createAndBindUi( this ) );
   }
   
   @UiHandler( "splitter" )
@@ -129,7 +126,7 @@ public class ShellViewImpl extends Composite implements ShellView {
   }
 
   @Override
-  public DetailView getDetailView( ) {
+  public DetailsView getDetailView( ) {
     return this.detail;
   }
 

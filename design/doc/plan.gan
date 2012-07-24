@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Untitled Gantt Project" company="" webLink="http://" view-date="2012-06-12" view-index="0" gantt-divider-location="420" resource-divider-location="300" version="2.0">
+    <description/>
+    <view zooming-state="default:2" id="gantt-chart"/>
+    <view id="resource-table">
+        <field id="0" name="Name" width="50" order="0"/>
+        <field id="1" name="Default role" width="50" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <calendar id="1" name="default">
+                <default-week sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+                <only-show-weekends value="false"/>
+                <overriden-day-types/>
+                <days/>
+            </calendar>
+        </day-types>
+    </calendars>
+    <tasks color="#8cb6ce">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="20" name="项目启动" color="#ccffff" meeting="false" start="2012-05-09" duration="23" complete="0" expand="false">
+            <depend id="19" type="2" difference="0" hardness="Strong"/>
+            <task id="17" name="环境搭建" meeting="false" start="2012-05-09" duration="1" complete="0" expand="true"/>
+            <task id="0" name="需求分析" color="#ccccff" meeting="false" start="2012-05-09" duration="23" complete="0" priority="2" expand="true"/>
+            <task id="15" name="项目设计" meeting="false" start="2012-05-21" duration="15" complete="0" expand="true">
+                <depend id="185" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="16" name="框架搭建" meeting="false" start="2012-05-21" duration="15" complete="0" expand="true"/>
+            <task id="8" name="开发计划拟定" color="#ccffcc" meeting="false" start="2012-05-21" duration="15" complete="0" expand="true"/>
+            <task id="35" name="合同签署" color="#8cb6ce" meeting="false" start="2012-06-08" duration="1" complete="0" expand="true"/>
+        </task>
+        <task id="19" name="项目开发" color="#ffccff" meeting="false" start="2012-06-11" duration="37" complete="0" expand="true">
+            <depend id="27" type="2" difference="0" hardness="Strong"/>
+            <task id="18" name="用户管理" color="#ccccff" meeting="false" start="2012-06-11" duration="14" complete="0" expand="true">
+                <depend id="52" type="2" difference="0" hardness="Strong"/>
+                <task id="67" name="管理员人员管理" color="#ccccff" meeting="false" start="2012-06-11" duration="11" complete="0" expand="true">
+                    <depend id="70" type="2" difference="0" hardness="Strong"/>
+                    <task id="71" name="个人信息管理" color="#8cb6ce" meeting="false" start="2012-06-11" duration="4" complete="0" expand="true">
+                        <notes><![CDATA[1.1 密码管理
+功能描述：对系统管理员自身的密码进行修改。修改时需要进行身份二次确认。
+
+1.2 信息管理
+功能描述：对系统管理员自己的信息进行管理或者修改。
+
+需明确信息涵盖的内容]]></notes>
+                        <depend id="72" type="2" difference="0" hardness="Strong"/>
+                        <task id="187" name="密码管理" color="#8cb6ce" meeting="false" start="2012-06-11" duration="2" complete="0" expand="true">
+                            <notes><![CDATA[功能描述：对系统管理员自身的密码进行修改。修改时需要进行身份二次]]></notes>
+                            <depend id="188" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="188" name="信息管理" color="#8cb6ce" meeting="false" start="2012-06-13" duration="2" complete="0" expand="true">
+                            <notes><![CDATA[功能描述：对系统管理员自己的信息进行管理或者修改。]]></notes>
+                        </task>
+                    </task>
+                    <task id="72" name="用户管理" color="#8cb6ce" meeting="false" start="2012-06-15" duration="7" complete="0" expand="true">
+                        <task id="78" name="添加用户" color="#ccccff" meeting="false" start="2012-06-15" duration="2" complete="0" expand="true">
+                            <notes><![CDATA[功能描述：添加一个普通用户，添加用户成功之后发送通知邮件给用户。
+]]></notes>
+                            <depend id="76" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="76" name="查看用户" color="#ccccff" meeting="false" start="2012-06-19" duration="2" complete="0" expand="true">
+                            <notes><![CDATA[功能描述：查看所有用户列表，可按照一定条件查询用户列表，并可对单个用户进行查询操作了解单个用户详细信息。可以手动设置账户是否激活。]]></notes>
+                            <depend id="77" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="77" name="删除用户" color="#ccccff" meeting="false" start="2012-06-21" duration="1" complete="0" expand="true">
+                            <notes><![CDATA[功能描述：支持删除单个用户和批量删除用户。支持按照一定条件查询用户之后再做批量删除。
+]]></notes>
+                            <depend id="75" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="75" name="审核用户" color="#ccccff" meeting="false" start="2012-06-22" duration="2" complete="0" expand="true">
+                            <notes><![CDATA[功能描述：处理用户注册申请，对用户进行审核。可设置用户状态，比如，暂停，禁止，恢复等等。支持按照一定条件查询用户之后再做审核。]]></notes>
+                        </task>
+                    </task>
+                </task>
+                <task id="70" name="个人信息管理" color="#8cb6ce" meeting="false" start="2012-06-26" duration="3" complete="0" expand="true">
+                    <task id="113" name="密码管理" color="#9999ff" meeting="false" start="2012-06-26" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：对用户自身的密码进行修改。修改时需要进行身份二次确认。]]></notes>
+                        <depend id="114" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="114" name="信息管理" color="#9999ff" meeting="false" start="2012-06-28" duration="1" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：对用户自己的信息进行管理或者修改。]]></notes>
+                    </task>
+                </task>
+            </task>
+            <task id="52" name="安全组" color="#8cb6ce" meeting="false" start="2012-06-29" duration="10" complete="0" expand="true">
+                <notes><![CDATA[安全组组名，级别，组成员，安全组权限 创建规则
+功能描述：提供对虚拟机安全组的管理]]></notes>
+                <depend id="36" type="2" difference="0" hardness="Strong"/>
+                <task id="142" name="管理员功能" color="#8cb6ce" meeting="false" start="2012-06-29" duration="8" complete="0" expand="true">
+                    <depend id="144" type="2" difference="0" hardness="Strong"/>
+                    <task id="108" name="增加安全组" color="#3333ff" meeting="false" start="2012-06-29" duration="2" complete="0" expand="true">
+                        <depend id="109" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="109" name="创建规则" color="#3333ff" meeting="false" start="2012-07-03" duration="2" complete="0" expand="true">
+                        <depend id="110" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="110" name="添加删除安全组成员" color="#3333ff" meeting="false" start="2012-07-05" duration="2" complete="0" expand="true">
+                        <depend id="111" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="111" name="关联规则设置" color="#3333ff" meeting="false" start="2012-07-09" duration="2" complete="0" expand="true"/>
+                </task>
+                <task id="144" name="个人安全组" color="#3333ff" meeting="false" start="2012-07-11" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[功能描述：按照自己的虚拟机所做功能，将自己的虚拟机加入相应安全组，或者更改所属安全组。]]></notes>
+                </task>
+            </task>
+            <task id="36" name="组管理" meeting="false" start="2012-07-13" duration="7" complete="0" expand="true">
+                <depend id="38" type="2" difference="0" hardness="Strong"/>
+                <task id="82" name="添加用户组" color="#000099" meeting="false" start="2012-07-13" duration="2" complete="0" expand="true">
+                    <depend id="80" type="2" difference="0" hardness="Strong"/>
+                    <depend id="81" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="81" name="查看用户组" color="#000099" meeting="false" start="2012-07-17" duration="2" complete="0" expand="true">
+                    <depend id="80" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="80" name="删除用户组" color="#000099" meeting="false" start="2012-07-19" duration="2" complete="0" expand="true">
+                    <depend id="83" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="83" name="添加删除用户组成员" color="#000099" meeting="false" start="2012-07-23" duration="1" complete="0" expand="true"/>
+            </task>
+            <task id="38" name="权限管理" color="#8cb6ce" meeting="false" start="2012-07-24" duration="2" complete="0" expand="true">
+                <notes><![CDATA[功能描述：为用户组设置权限，动态配置用户组的权限。]]></notes>
+                <task id="191" name="给组设置权限" color="#000066" meeting="false" start="2012-07-24" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[功能描述：为用户组设置权限，动态配置用户组的权限。]]></notes>
+                </task>
+            </task>
+            <task id="182" name="设备管理" color="#ffccff" meeting="false" start="2012-06-11" duration="8" complete="0" expand="true">
+                <depend id="194" type="2" difference="0" hardness="Strong"/>
+                <task id="183" name="区域管理" color="#ffccff" meeting="false" start="2012-06-11" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[区域的具体定义？]]></notes>
+                    <depend id="186" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="186" name="机房管理" color="#ffccff" meeting="false" start="2012-06-13" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[提供在任意区域中添加删除机房功能，并可对机房信息进行修改，支持对机房的监控功能，监控信息包括机房内服务器总数，正常服务器数，故障服务器数，交换机总数，正常交换机数，故障交换机数，盘阵总数，正常盘阵，故障盘阵，虚拟机总数，正常虚拟机数，故障虚拟机数。点击可查看任意实体的详细信息。]]></notes>
+                    <depend id="185" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="185" name="机柜管理" color="#ffccff" meeting="false" start="2012-06-15" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[提供在任意机房中添加删除机柜功能，并可对机柜信息进行修改，支持对机柜的监控功能，监控内容包括：机柜内服务器总数，正常服务器数，故障服务器数，交换机总数，正常交换机数，故障交换机数，盘阵总数，正常盘阵，故障盘阵，虚拟机总数，正常虚拟机数，故障虚拟机数。点击可查看任意实体的详细信息。]]></notes>
+                    <depend id="184" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="184" name="实体机管理" color="#ffccff" meeting="false" start="2012-06-19" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[提供在任意机柜中添加删除实体机功能，并可对实体机信息进行修改，点击可查看实体机的当前详细信息。]]></notes>
+                </task>
+            </task>
+            <task id="194" name="定价管理" color="#8cb6ce" meeting="false" start="2012-06-21" duration="8" complete="0" expand="true">
+                <depend id="50" type="2" difference="0" hardness="Strong"/>
+                <task id="198" name="配置价格" color="#ff99ff" meeting="false" start="2012-06-21" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[所有配置的定价功能，包括：CPU定价，内存定价，硬盘定价等等]]></notes>
+                    <depend id="197" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="197" name="带宽价格" color="#ff99ff" meeting="false" start="2012-06-25" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[带宽的定价功能
+
+具体的价格描述？]]></notes>
+                    <depend id="196" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="196" name="镜像价格" color="#ff99ff" meeting="false" start="2012-06-27" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[镜像的定价功能
+
+具体定义？]]></notes>
+                    <depend id="200" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="200" name="模板价格" color="#ff99ff" meeting="false" start="2012-06-29" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[模板的定价功能]]></notes>
+                </task>
+            </task>
+            <task id="50" name="审核管理" color="#8cb6ce" meeting="false" start="2012-07-03" duration="4" complete="0" expand="true">
+                <depend id="51" type="2" difference="0" hardness="Strong"/>
+                <task id="136" name="个人申请管理" color="#ff66cc" meeting="false" start="2012-07-03" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[功能描述：提出对系统资源的使用申请，包括cpu，内存，硬盘，带宽，ip等资源。显示正被处理申请数量，已通过申请数量，未通过申请数量，本地未提交申请数量列表，若点击列表的某一项，则在页面下方展示此项里面所有申请的列表，并可选择列表中的任意一项进行查看该申请的详细内容，并进行操作，包括创建申请，删除申请，更改申请等等，其中创建申请操作为：可以直接按照已有模板进行申请， 也可以自己选择CPU，内存，硬盘，带宽，镜像等全部信息进行申请。若申请被拒绝，可以按照管理员的相关提示进行修改申请然后重新申请。]]></notes>
+                    <depend id="99" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="99" name="待解决申请数量" color="#ff66cc" meeting="false" start="2012-07-05" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[功能描述：对普通用户提出的虚拟机或者资源的使用申请进行审核。显示待解决申请数量，已处理申请数量，正在处理申请数量，总申请数量列表，若点击列表的某一项，则在页面下方展示此项里面所有申请的列表，并可选择列表中的任意一项进行查看该申请的详细内容，并进行操作，包括审核，删除，更改等等，其中审核操作为：若能够提供用户的申请，则直接通过审核。若不能提供用户的需求，则不通过审核，并通知用户不通过的原因。]]></notes>
+                </task>
+            </task>
+            <task id="51" name="组件管理" color="#8cb6ce" meeting="false" start="2012-07-09" duration="4" complete="0" expand="true">
+                <depend id="53" type="2" difference="0" hardness="Strong"/>
+                <task id="103" name="节点控制器管理" color="#ff6699" meeting="false" start="2012-07-09" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[功能描述：对系统主要节点的列表，并可选择任意一个节点进行查看详细信息并进行一系列操作。详细内容包括：ip，端口号，状态。操作包括：注册，注销]]></notes>
+                    <depend id="105" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="105" name="集群控制器" color="#ff6699" meeting="false" start="2012-07-11" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[功能描述：对系统主要控制器的列表，并可选择任意一个控制器进行查看详细信息并进行一系列操作。详细内容包括：ip，端口号，状态，类型。操作包括：注册，注销]]></notes>
+                </task>
+            </task>
+            <task id="53" name="key-pairs" color="#cc0066" meeting="false" start="2012-07-13" duration="3" complete="0" expand="true">
+                <depend id="64" type="2" difference="0" hardness="Strong"/>
+                <task id="147" name="管理员" color="#cc0066" meeting="false" start="2012-07-13" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[功能描述：提供对所有key的管理，主要功能有：增加key，删除key，编辑key,以及延长有效期。]]></notes>
+                    <depend id="148" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="148" name="个人" color="#cc0066" meeting="false" start="2012-07-17" duration="1" complete="0" expand="true">
+                    <notes><![CDATA[功能描述：提供对自己key的管理。]]></notes>
+                </task>
+            </task>
+            <task id="64" name="日志管理" color="#8cb6ce" meeting="false" start="2012-07-18" duration="4" complete="0" expand="true">
+                <notes><![CDATA[功能描述：提供管理员和普通用户的操作日志管理，用户对系统所做的操作以一定方式自动记录下来，以便在某种特定的情况下供操作人员查询。日志文件存放在产品器上，具备一定权限的管理员可以进行检索和查看。]]></notes>
+                <depend id="153" type="2" difference="0" hardness="Strong"/>
+                <task id="157" name="管理员" color="#ff6600" meeting="false" start="2012-07-18" duration="2" complete="0" expand="true">
+                    <depend id="158" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="158" name="个人" color="#ff6600" meeting="false" start="2012-07-20" duration="2" complete="0" expand="true">
+                    <notes><![CDATA[提供当前用户的操作日志管理，用户对系统所做的操作以一定方式自动记录下来，以便在某种特定的情况下供操作人员查询。日志文件存放在产品器上，具备一定权限的管理员可以进行检索和查看。
+]]></notes>
+                </task>
+            </task>
+            <task id="54" name="统计管理" color="#8cb6ce" meeting="false" start="2012-07-24" duration="4" complete="0" expand="true">
+                <task id="55" name="内存、硬盘使用率" color="#8cb6ce" meeting="false" start="2012-07-24" duration="4" complete="0" expand="true">
+                    <task id="153" name="个人" color="#ff9933" meeting="false" start="2012-07-24" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：统计最近三个月内存使用率，以及硬盘容量使用率。]]></notes>
+                        <depend id="152" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="152" name="管理员" color="#ff9933" meeting="false" start="2012-07-26" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：统计最近三个月内存使用率，以及硬盘容量使用率。]]></notes>
+                    </task>
+                </task>
+            </task>
+            <task id="39" name="资源管理" color="#8cb6ce" meeting="false" start="2012-06-11" duration="34" complete="0" priority="4" expand="true">
+                <notes><![CDATA[功能描述：对系统所有硬件以及网络资源进行管理和监控，并可对任意资源进行多种操作。]]></notes>
+                <depend id="62" type="2" difference="0" hardness="Strong"/>
+                <task id="117" name="管理员功能" color="#8cb6ce" meeting="false" start="2012-06-11" duration="20" complete="0" expand="true">
+                    <depend id="118" type="2" difference="0" hardness="Strong"/>
+                    <depend id="119" type="2" difference="0" hardness="Strong"/>
+                    <task id="40" name="服务器管理" color="#99ff99" meeting="false" start="2012-06-11" duration="3" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：显示总服务器数量，使用中服务器数量，停止中服务器数量，故障中服务器数量的列表，一旦点击列表的某一项，则在页面下方显示此项里面服务器的所有列表，并可选择其中任意一个服务器，了解服务器的详细信息以及各种操作。详细信息包括：服务器id，服务器标识，镜像，数据中心和带宽类型，配置标识，ip地址，带宽，开始时间，服务期限，剩余时间，运行状态等等。操作包括：产品体检，管理密钥，开机/关机，连接服务器，删除，延续服务，变更等等。]]></notes>
+                        <depend id="42" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="42" name="内存管理" color="#99ff99" meeting="false" start="2012-06-14" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：显示总内存大小，使用中内存大小，未使用内存大小，预留内存大小的列表，一旦点击列表的某一项，则在页面下方显示此项里面内存使用的所有列表，并可选择其中任意一项，了解此项内存使用情况的详细信息以及各种操作。详细信息包括：内存id，所属服务器，总大小，此项占用大小，使用用户，开始时间，服务期限，剩余时间，运行状态等等。操作包括：产品体检，删除，延续服务，变更等等。]]></notes>
+                        <depend id="43" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="43" name="硬盘管理" color="#99ff99" meeting="false" start="2012-06-18" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：显示总硬盘容量，使用中硬盘容量，未使用硬盘容量，预留硬盘容量的列表，一旦点击列表的某一项，则在页面下方显示此项里面硬盘使用的所有列表，并可选择其中任意一项，了解此项硬盘使用情况的详细信息以及各种操作。详细信息包括：硬盘id，所属服务器，总容量，此项占用容量，使用用户，开始时间，服务期限，剩余时间，运行状态等等。操作包括：产品体检，删除，延续服务，变更等等。]]></notes>
+                        <depend id="92" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="92" name="CPU管理" color="#99ff99" meeting="false" start="2012-06-20" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：显示总CPU数量，使用中CPU数量，未使用CPU数量，预留CPU数量的列表，一旦点击列表的某一项，则在页面下方显示此项里面CPU的所有列表，并可选择其中任意一列，了解此列CPU的详细信息以及各种操作。详细信息包括：CPU id，所属服务器，厂家，型号，主频，缓存大小，使用用户，开始时间，服务期限，剩余时间，运行状态等等。操作包括：产品体检，删除，延续服务，变更等等。]]></notes>
+                        <depend id="45" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="45" name="虚拟机管理" color="#99ff99" meeting="false" start="2012-06-22" duration="3" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：显示总虚拟机数量，使用中虚拟机数量，未使用虚拟机数量的列表，一旦点击列表的某一项，则在页面下方显示此项里面虚拟机的所有列表，并可选择其中任意一列，了解此列虚拟机的详细信息以及各种操作。详细信息包括：虚拟机id，虚拟机标识，镜像，数据中心和带宽类型，配置标识，ip地址，带宽，所属安全组，使用用户，开始时间，服务期限，剩余时间，运行状态等等。操作包括：产品体检，管理密钥，开机/关机，连接服务器，删除，延续服务，变更等等。]]></notes>
+                        <depend id="46" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="46" name="带宽管理" color="#99ff99" meeting="false" start="2012-06-27" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：显示所有用户使用带宽情况列表。]]></notes>
+                        <depend id="47" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="47" name="IP管理(公有，私有)" color="#99ff99" meeting="false" start="2012-06-29" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：显示总IP数量，使用中IP数量，未使用IP数量的列表，以及预留的IP地址段，一旦点击列表的某一项，则在页面下方显示此项里面IP的所有列表，并可选择其中任意一列，了解此列IP的详细使用情况以及各种操作。详细信息包括：ip，使用用户，绑定虚拟机id，开始时间，服务期限，剩余时间，使用状态等等。操作包括：删除，延续服务，变更等等。而且，IP分公有IP与私有IP，两种IP显示可以方便的进行切换。]]></notes>
+                        <depend id="48" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="48" name="镜像管理" color="#99ff99" meeting="false" start="2012-07-03" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：提供对所有镜像的管理。包含上传镜像，注册镜像，绑定镜像，删除镜像等功能。]]></notes>
+                        <depend id="49" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="49" name="模板管理" color="#99ff99" meeting="false" start="2012-07-05" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：提供对模板的管理。包含添加模板，删除模板，编辑模板，查询模板等功能。模板包含模板id，CPU，内存，硬盘，带宽，镜像等元素。
+]]></notes>
+                    </task>
+                </task>
+                <task id="118" name="个人用户功能" color="#8cb6ce" meeting="false" start="2012-07-09" duration="14" complete="0" expand="true">
+                    <task id="119" name="内存管理" color="#99cc00" meeting="false" start="2012-07-09" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：显示我的内存大小，使用中内存大小，未使用内存大小，一旦点击列表的某一项，则在页面下方显示此项里面内存使用的所有列表，并可选择其中任意一项，了解此项内存使用情况的详细信息以及各种操作。详细信息包括：内存id，所属服务器，总大小，此项占用大小，开始时间，服务期限，剩余时间，运行状态等等。操作包括：延续服务。]]></notes>
+                        <depend id="122" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="122" name="硬盘管理" color="#99cc00" meeting="false" start="2012-07-11" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：显示我的硬盘容量，使用中硬盘容量，未使用硬盘容量的列表，一旦点击列表的某一项，则在页面下方显示此项里面硬盘使用的所有列表，并可选择其中任意一项，了解此项硬盘使用情况的详细信息以及各种操作。详细信息包括：硬盘id，所属服务器，总容量，此项占用容量，开始时间，服务期限，剩余时间，运行状态等等。操作包括：延续服务。]]></notes>
+                        <depend id="123" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="123" name="CPU管理" color="#99cc00" meeting="false" start="2012-07-13" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：显示我的CPU数量，使用中CPU数量，未使用CPU数量，一旦点击列表的某一项，则在页面下方显示此项里面CPU的所有列表，并可选择其中任意一列，了解此列CPU的详细信息以及各种操作。详细信息包括：CPU id，所属服务器，厂家，型号，主频，缓存大小，开始时间，服务期限，剩余时间，运行状态等等。操作包括：延续服务等等。]]></notes>
+                        <depend id="124" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="124" name="虚拟机管理" color="#99cc00" meeting="false" start="2012-07-17" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：显示我的虚拟机数量，使用中虚拟机数量，未使用虚拟机数量的列表，一旦点击列表的某一项，则在页面下方显示此项里面虚拟机的所有列表，并可选择其中任意一列，了解此列虚拟机的详细信息以及各种操作。详细信息包括：虚拟机id，虚拟机标识，镜像，数据中心和带宽类型，配置标识，ip地址，带宽，所属安全组，开始时间，服务期限，剩余时间，运行状态等等。操作包括：管理密钥，开机/关机，连接服务器，延续服务等等。]]></notes>
+                        <depend id="125" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="125" name="带宽管理" color="#99cc00" meeting="false" start="2012-07-19" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：显示当前用户使用带宽情况列表。]]></notes>
+                        <depend id="126" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="126" name="IP管理" color="#99cc00" meeting="false" start="2012-07-23" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：显示我的IP数量，使用中IP数量，未使用IP数量的列表，一旦点击列表的某一项，则在页面下方显示此项里面IP的所有列表，并可选择其中任意一列，了解此列IP的详细使用情况以及各种操作。详细信息包括：ip，使用用户，绑定虚拟机id，开始时间，服务期限，剩余时间，使用状态等等。操作包括：延续服务。而且，IP分公有IP与私有IP，两种IP显示可以方便的进行切换。]]></notes>
+                        <depend id="127" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="127" name="镜像管理" color="#99cc00" meeting="false" start="2012-07-25" duration="2" complete="0" expand="true">
+                        <notes><![CDATA[功能描述：提供对我的镜像的管理。包含上传镜像，注册镜像，绑定镜像，删除镜像等功能。]]></notes>
+                    </task>
+                </task>
+            </task>
+            <task id="62" name="虚拟机监控管理" color="#009900" meeting="false" start="2012-07-27" duration="3" complete="0" expand="true">
+                <notes><![CDATA[功能描述：支持对虚拟机的运行状态进行监控，虚拟机出故障时可以重启虚拟机。支持对主机的运行状态进行监控，主机出故障时可以重启主机上的虚拟机。支持对集群的运行状态进行监控，以提高集群的可用性。告警按照故障的严重程度分级，可选的分级包括：紧急、主要、次要等等。对配置更改、资源不足、设备故障等情况触发告警时，上报告警告。]]></notes>
+            </task>
+        </task>
+        <task id="27" name="项目测试" meeting="false" start="2012-08-01" duration="10" complete="0" expand="true">
+            <depend id="171" type="2" difference="0" hardness="Strong"/>
+            <task id="163" name="功能完备性测试" color="#cc00cc" meeting="false" start="2012-08-01" duration="5" complete="0" expand="true">
+                <depend id="161" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="164" name="功能正确性测试" color="#660066" meeting="false" start="2012-08-01" duration="5" complete="0" expand="true">
+                <depend id="161" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="161" name="项目自完善" color="#66ff66" meeting="false" start="2012-08-08" duration="5" complete="0" expand="true"/>
+        </task>
+        <task id="171" name="项目Demo提交" color="#8cb6ce" meeting="false" start="2012-08-15" duration="5" complete="0" expand="true">
+            <depend id="173" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="173" name="项目完善" color="#8cb6ce" meeting="false" start="2012-08-22" duration="5" complete="0" expand="true">
+            <depend id="29" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="29" name="项目验收" meeting="false" start="2012-08-29" duration="1" complete="0" expand="true"/>
+    </tasks>
+    <resources>
+        <resource id="0" name="Lei Zhang" function="Default:1" contacts="sosilent.lzh@gmail.com" phone="15010947518"/>
+        <resource id="1" name="Naizheng Wang" function="SoftwareDevelopment:2" contacts="wnzheng@gmail.com" phone="13466602420"/>
+        <resource id="2" name="Chao Liu" function="SoftwareDevelopment:2" contacts="cbmixx@gmail.com" phone="15811310529"/>
+    </resources>
+    <allocations>
+        <allocation task-id="0" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="8" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="35" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="161" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="163" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="164" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="19" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="39" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="71" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="18" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="70" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="113" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="114" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="81" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="118" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="67" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="52" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="53" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="36" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="38" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="27" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="171" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="173" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="29" resource-id="0" function="Default:1" responsible="true" load="100.0"/>
+        <allocation task-id="0" resource-id="1" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="161" resource-id="1" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="164" resource-id="1" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="163" resource-id="1" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="19" resource-id="1" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="182" resource-id="1" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="39" resource-id="1" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="194" resource-id="1" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="50" resource-id="1" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="64" resource-id="1" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="51" resource-id="1" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="103" resource-id="1" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="54" resource-id="1" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="27" resource-id="1" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="173" resource-id="1" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="29" resource-id="1" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="0" resource-id="2" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="17" resource-id="2" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="161" resource-id="2" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="163" resource-id="2" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="164" resource-id="2" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="16" resource-id="2" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="19" resource-id="2" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="39" resource-id="2" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="117" resource-id="2" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="118" resource-id="2" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="62" resource-id="2" function="SoftwareDevelopment:2" responsible="true" load="100.0"/>
+        <allocation task-id="27" resource-id="2" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="173" resource-id="2" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+        <allocation task-id="29" resource-id="2" function="SoftwareDevelopment:2" responsible="false" load="100.0"/>
+    </allocations>
+    <vacations/>
+    <taskdisplaycolumns>
+        <displaycolumn property-id="tpd2" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd7" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd8" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd6" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd10" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd9" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd1" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd0" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd3" order="0" width="247" visible="true"/>
+        <displaycolumn property-id="tpd4" order="1" width="80" visible="true"/>
+        <displaycolumn property-id="tpd5" order="2" width="74" visible="true"/>
+    </taskdisplaycolumns>
+    <previous/>
+    <roles roleset-name="Default"/>
+    <roles roleset-name="SoftwareDevelopment"/>
+</project>

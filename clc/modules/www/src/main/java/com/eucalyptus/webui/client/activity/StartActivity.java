@@ -18,10 +18,10 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
  */
 public class StartActivity extends AbstractActivity {
   
-  public static final String TITLE = "START GUIDE";
+  public static final String TITLE[] = {"START GUIDE", ""};
   
-  public static final String SERVICE_SNIPPET = "service";
-  public static final String IAM_SNIPPET = "iam";
+  public static final String SERVICE_SNIPPET[] = {"service", ""};
+  public static final String IAM_SNIPPET[] = {"iam", ""};
   
   private static final Logger LOG = Logger.getLogger( StartActivity.class.getName( ) );
   
@@ -36,7 +36,7 @@ public class StartActivity extends AbstractActivity {
   @Override
   public void start( AcceptsOneWidget container, EventBus eventBus ) {
     LOG.log( Level.INFO, "Start StartActivity" );
-    this.clientFactory.getShellView( ).getContentView( ).setContentTitle( TITLE );
+    this.clientFactory.getShellView( ).getContentView( ).setContentTitle( TITLE[1] );
     StartView startView = this.clientFactory.getStartView( );
     container.setWidget( startView );
     loadSnippets( startView, eventBus );
@@ -47,10 +47,9 @@ public class StartActivity extends AbstractActivity {
 	boolean isSystemAdmin = this.clientFactory.getSessionData( ).getLoginUser( ).isSystemAdmin( );
     if ( isSystemAdmin ) {
       new CloudRegistrationActivity( clientFactory ).start( view.getCloudRegSnippetDisplay( ), eventBus );
-      new GenericGuideActivity( clientFactory, SERVICE_SNIPPET ).start( view.getServiceSnippetDisplay( ), eventBus );
+      new GenericGuideActivity( clientFactory, SERVICE_SNIPPET[1] ).start( view.getServiceSnippetDisplay( ), eventBus );
     }
-    new DownloadActivity( clientFactory ).start( view.getDownloadSnippetDisplay( ), eventBus );
-    new GenericGuideActivity( clientFactory, IAM_SNIPPET ).start( view.getIamSnippetDisplay( ), eventBus );
+    new GenericGuideActivity( clientFactory, IAM_SNIPPET[1] ).start( view.getIamSnippetDisplay( ), eventBus );
   }
   
 }

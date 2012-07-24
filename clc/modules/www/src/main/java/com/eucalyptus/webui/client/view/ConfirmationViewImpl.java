@@ -84,23 +84,38 @@ public class ConfirmationViewImpl extends DialogBox implements ConfirmationView 
     show( );
   }
 
-  @Override
-  public void display( String caption, String subject, SafeHtml html ) {
-    this.setText( caption );
-    contentPanel.clear( );
-    this.subject.setText( subject );
+	@Override
+	public void display( String caption, String subject, SafeHtml html ) {
+	  this.setText( caption );
+	  contentPanel.clear( );
+	  this.subject.setText( subject );
     
-    HTML widget = new HTML( html );
-    widget.setStyleName( gridStyle.html( ) );
-    contentPanel.setWidget( widget );
+	  if (html != null) {
+		  HTML widget = new HTML( html );
+		  widget.setStyleName( gridStyle.html( ) );
+		  contentPanel.setWidget( widget );
+	  }
+	  else
+		  this.contentPanel.setVisible(false);
     
-    center( );
-    show( );
-  }
-
-  @Override
-  public void setPresenter( Presenter presenter ) {
-    this.presenter = presenter;
-  }
+	  center( );
+	  show( );
+	}
   
+	@Override
+	public void display(String caption, String subject) {
+		// TODO Auto-generated method stub
+		this.setText( caption );
+		contentPanel.clear( );
+		this.subject.setText( subject );
+		this.contentPanel.setVisible(false);
+		
+		center( );
+		show( );
+	}
+
+	@Override
+	public void setPresenter( Presenter presenter ) {
+		this.presenter = presenter;
+	}
 }

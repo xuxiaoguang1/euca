@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -18,6 +20,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
+import com.google.gwt.user.client.ui.Button;
 
 public class UserViewImpl extends Composite implements UserView {
   
@@ -29,6 +32,14 @@ public class UserViewImpl extends Composite implements UserView {
   
   @UiField
   LayoutPanel tablePanel;
+  @UiField Button buttonAddUser;
+  @UiField Button buttonOnDelUser;
+  @UiField Button buttonPauseUser;
+  @UiField Button buttonResumeUser;
+  @UiField Button buttonBanUser;
+  @UiField LayoutPanel buttonPanel;
+  @UiField Button buttonAddToGroup;
+  @UiField Button buttonDelFromGroup;
   
   private MultiSelectionModel<SearchResultRow> selectionModel;
   
@@ -38,86 +49,92 @@ public class UserViewImpl extends Composite implements UserView {
   
   public UserViewImpl( ) {
     initWidget( uiBinder.createAndBindUi( this ) );
+    buttonPanel.setVisible(true);
   }
   
-  @UiHandler( "delButton" )
-  void handleDelButtonClick( ClickEvent e ) {
-    this.presenter.onDeleteUsers( );
-  }
+  	@UiHandler("buttonAddUser")
+	void onButtonAddUserClick(ClickEvent event) {
+  		this.presenter.onAddUser();
+	}
+	@UiHandler("buttonOnDelUser")
+	void onButtonOnDelUserClick(ClickEvent event) {
+		this.presenter.onDeleteUsers();
+	}
+	@UiHandler("buttonAddToGroup")
+	void onButtonAddToGroupClick(ClickEvent event) {
+		this.presenter.onAddToGroups();
+	}
+	@UiHandler("buttonDelFromGroup")
+	void onButtonDelFromGroupClick(ClickEvent event) {
+		this.presenter.onRemoveFromGroups();
+	}
+	@UiHandler("buttonPauseUser")
+	void onButtonPauseUserClick(ClickEvent event) {
+		this.presenter.onPauseUsers();
+	}
+	@UiHandler("buttonResumeUser")
+	void onButtonResumeUserClick(ClickEvent event) {
+		this.presenter.onResumeUses();
+	}
+	@UiHandler("buttonBanUser")
+	void onButtonBanUserClick(ClickEvent event) {
+		this.presenter.onBanUsers();
+	}
+
+	private void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
+		tablePanel.clear( );
+		selectionModel = new MultiSelectionModel<SearchResultRow>( SearchResultRow.KEY_PROVIDER );
+		selectionModel.addSelectionChangeHandler( new Handler( ) {
+			@Override
+			public void onSelectionChange( SelectionChangeEvent event ) {
+		        Set<SearchResultRow> rows = selectionModel.getSelectedSet( );
+		        LOG.log( Level.INFO, "Selection changed: " + rows );
+		        presenter.onSelectionChange( rows );
+		        System.out.println(rows.size());
+			}
+		} );
+    
+		table = new SearchResultTable( pageSize, fieldDescs, this.presenter, selectionModel );
+		tablePanel.add( table );
+		table.load( );
+	}
   
-  @UiHandler( "addToGroupsButton" )
-  void handleAddToGroupButtonClick( ClickEvent e ) {
-    this.presenter.onAddGroups( );
-  }
-  
-  @UiHandler( "removeFromGroupsButton" )
-  void handleRemoveFromGroupButtonClick( ClickEvent e ) {
-    this.presenter.onRemoveGroups( );
-  }
-  
-  @UiHandler( "addPolicyButton" )
-  void handleAddPolicyButtonClick( ClickEvent e ) {
-    this.presenter.onAddPolicy( );
-  }
+	@Override
+	public void showSearchResult( SearchResult result ) {
+		if ( this.table == null ) {
+			initializeTable( this.presenter.getPageSize( ), result.getDescs( ) );
+		}
+    
+		table.setData( result );
+	}
 
-  @UiHandler( "addKeyButton" )
-  void handleAddKeyButtonClick( ClickEvent e ) {
-    this.presenter.onAddKey( );
-  }
+	@Override
+	public void clear( ) {
+		this.tablePanel.clear( );
+		this.table = null;
+	}
 
-  @UiHandler( "addCertButton" )
-  void handleAddCertButtonClick( ClickEvent e ) {
-    this.presenter.onAddCert( );
-  }
+	@Override
+	public void setPresenter( Presenter presenter ) {
+		this.presenter = presenter;
+	}
 
-  @UiHandler( "approveButton" )
-  void handleApproveButtonClick( ClickEvent e ) {
-    this.presenter.onApprove( );
-  }
+	@Override
+	public void clearSelection( ) {
+		this.selectionModel.clear( );
+	}
 
-  @UiHandler( "rejectButton" )
-  void handleRejectButtonClick( ClickEvent e ) {
-    this.presenter.onReject( );
-  }
+	@Override
+	public void setPresenter(LoginUserProfile curUser) {
+		// TODO Auto-generated method stub
+		if (curUser.isSystemAdmin()) {
+			this.buttonAddToGroup.setVisible(false);
+			this.buttonDelFromGroup.setVisible(false);
+		}
+		else {
+			this.buttonAddToGroup.setVisible(true);
+			this.buttonDelFromGroup.setVisible(true);
+		}
+	}
 
-  public void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
-    tablePanel.clear( );
-    selectionModel = new MultiSelectionModel<SearchResultRow>( SearchResultRow.KEY_PROVIDER );
-    selectionModel.addSelectionChangeHandler( new Handler( ) {
-      @Override
-      public void onSelectionChange( SelectionChangeEvent event ) {
-        Set<SearchResultRow> rows = selectionModel.getSelectedSet( );
-        LOG.log( Level.INFO, "Selection changed: " + rows );
-        presenter.onSelectionChange( rows );
-      }
-    } );
-    table = new SearchResultTable( pageSize, fieldDescs, this.presenter, selectionModel );
-    tablePanel.add( table );
-    table.load( );
-  }
-  
-  @Override
-  public void showSearchResult( SearchResult result ) {
-    if ( this.table == null ) {
-      initializeTable( this.presenter.getPageSize( ), result.getDescs( ) );
-    }
-    table.setData( result );
-  }
-
-  @Override
-  public void clear( ) {
-    this.tablePanel.clear( );
-    this.table = null;
-  }
-
-  @Override
-  public void setPresenter( Presenter presenter ) {
-    this.presenter = presenter;
-  }
-
-  @Override
-  public void clearSelection( ) {
-    this.selectionModel.clear( );
-  }
-  
 }

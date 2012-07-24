@@ -7,12 +7,14 @@ public enum QueryType {
   start,
   config,
   
-  account,
+  individual,
   group,
   user,
+  account,
   policy,
   key,
   cert,
+  
   
   image,
   vmtype,
@@ -30,6 +32,15 @@ public enum QueryType {
   nodeCtrl,
   clusterCtrl,
   storageCtrl,
-  walrusCtrl
+  walrusCtrl,
   
+  device_server,
+  device_cpu,
+  device_bw,
+  device_disk,
+  device_image,
+  device_ip,
+  device_memory,
+  device_template,
+  device_vm,
 }

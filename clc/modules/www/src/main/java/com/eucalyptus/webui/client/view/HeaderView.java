@@ -12,5 +12,7 @@ public interface HeaderView extends IsWidget {
   
   public interface Presenter {
     void runManualSearch( String search );
+    void modifyIndividualInfo();
+    void logout();
   }
 }

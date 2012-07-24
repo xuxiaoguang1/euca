@@ -29,40 +29,28 @@
                         <tr>
                             <td>
                                 <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="newButton">
-                                    <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>New account
+                                    <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>新的账户
                                 </g:Anchor>                            
                             </td>
                             <td>
                                 <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="delButton">
-                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>Delete accounts
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>删除账户
                                 </g:Anchor>
                             </td>
                             <td>&nbsp;</td>
-                            <td>
-                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="addUsersButton">
-                                    <span class="{global.buttonCss.user} {global.buttonCss.icon}"/>New users
-                                </g:Anchor>
-                            </td>
-                            <td>
-                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="addGroupsButton">
-                                    <span class="{global.buttonCss.group} {global.buttonCss.icon}"/>New groups
-                                </g:Anchor>                            
-                            </td>
-                            <td>&nbsp;</td>
-                            <td>
-                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small}" ui:field="addPolicyButton">
-                                    <span class="{global.buttonCss.lock} {global.buttonCss.icon}"/>Add policy
-                                </g:Anchor>                            
-                            </td>
-                            <td>&nbsp;</td>
                             <td>                             
-                                <g:Anchor styleName="{global.buttonCss.positive} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="approveButton">
-                                    <span class="{global.buttonCss.check} {global.buttonCss.icon}"/>Approve
+                                <g:Anchor styleName="{global.buttonCss.positive} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="resumeButton">
+                                    <span class="{global.buttonCss.check} {global.buttonCss.icon}"/>恢复
                                 </g:Anchor>                            
                             </td>
                             <td>                             
-                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="rejectButton">
-                                    <span class="{global.buttonCss.x} {global.buttonCss.icon}"/>Reject
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="pauseButton">
+                                    <span class="{global.buttonCss.x} {global.buttonCss.icon}"/>暂停
+                                </g:Anchor>                            
+                            </td>
+                            <td>                             
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="banButton">
+                                    <span class="{global.buttonCss.x} {global.buttonCss.icon}"/>禁止
                                 </g:Anchor>                            
                             </td>                            
                         </tr>

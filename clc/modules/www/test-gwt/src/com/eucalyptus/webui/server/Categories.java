@@ -2,7 +2,6 @@ package com.eucalyptus.webui.server;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import com.eucalyptus.webui.client.service.QuickLink;
 import com.eucalyptus.webui.client.service.QuickLinkTag;
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
@@ -19,8 +18,7 @@ public class Categories {
                                                           new QuickLink( "Service Components", "Configuration of service components", "config",
                                                           		              QueryBuilder.get( ).start( QueryType.config ).query( ) ) ) ) ),
                           new QuickLinkTag( "Identity",
-                                           new ArrayList<QuickLink>( Arrays.asList( new QuickLink( "Account", "Accounts", "dollar", 
-                                                                            QueryBuilder.get( ).start( QueryType.account ).query( ) ),
+                                           new ArrayList<QuickLink>( Arrays.asList(
                                                           new QuickLink( "Group", "User groups", "group",
                                                                             QueryBuilder.get( ).start( QueryType.group ).add( "accountid", accountId ).query( ) ),
                                                           new QuickLink( "User", "Users", "user",

@@ -23,14 +23,32 @@ import com.eucalyptus.webui.client.view.ClusterCtrlView;
 import com.eucalyptus.webui.client.view.ClusterCtrlViewImpl;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.ConfirmationViewImpl;
-import com.eucalyptus.webui.client.view.DownloadView;
-import com.eucalyptus.webui.client.view.DownloadViewImpl;
+import com.eucalyptus.webui.client.view.DeviceBWView;
+import com.eucalyptus.webui.client.view.DeviceBWViewImpl;
+import com.eucalyptus.webui.client.view.DeviceCPUView;
+import com.eucalyptus.webui.client.view.DeviceCPUViewImpl;
+import com.eucalyptus.webui.client.view.DeviceDiskView;
+import com.eucalyptus.webui.client.view.DeviceDiskViewImpl;
+import com.eucalyptus.webui.client.view.DeviceMemoryView;
+import com.eucalyptus.webui.client.view.DeviceMemoryViewImpl;
+import com.eucalyptus.webui.client.view.DeviceServerView;
+import com.eucalyptus.webui.client.view.DeviceServerViewImpl;
+import com.eucalyptus.webui.client.view.DeviceVMView;
+import com.eucalyptus.webui.client.view.DeviceVMViewImpl;
 import com.eucalyptus.webui.client.view.ErrorSinkView;
 import com.eucalyptus.webui.client.view.ErrorSinkViewImpl;
+import com.eucalyptus.webui.client.view.GroupAddView;
+import com.eucalyptus.webui.client.view.GroupAddViewImpl;
+import com.eucalyptus.webui.client.view.GroupDetailView;
+import com.eucalyptus.webui.client.view.GroupDetailViewImpl;
+import com.eucalyptus.webui.client.view.GroupListView;
+import com.eucalyptus.webui.client.view.GroupListViewImpl;
 import com.eucalyptus.webui.client.view.GroupView;
 import com.eucalyptus.webui.client.view.GroupViewImpl;
 import com.eucalyptus.webui.client.view.ImageView;
 import com.eucalyptus.webui.client.view.ImageViewImpl;
+import com.eucalyptus.webui.client.view.IndividualView;
+import com.eucalyptus.webui.client.view.IndividualViewImpl;
 import com.eucalyptus.webui.client.view.InputView;
 import com.eucalyptus.webui.client.view.InputViewImpl;
 import com.eucalyptus.webui.client.view.InstanceView;
@@ -59,8 +77,10 @@ import com.eucalyptus.webui.client.view.StartView;
 import com.eucalyptus.webui.client.view.StartViewImpl;
 import com.eucalyptus.webui.client.view.StorageCtrlView;
 import com.eucalyptus.webui.client.view.StorageCtrlViewImpl;
-import com.eucalyptus.webui.client.view.TestView;
-import com.eucalyptus.webui.client.view.TestViewImpl;
+import com.eucalyptus.webui.client.view.UserAddView;
+import com.eucalyptus.webui.client.view.UserAddViewImpl;
+import com.eucalyptus.webui.client.view.UserListView;
+import com.eucalyptus.webui.client.view.UserListViewImpl;
 import com.eucalyptus.webui.client.view.UserView;
 import com.eucalyptus.webui.client.view.UserViewImpl;
 import com.eucalyptus.webui.client.view.VmTypeView;
@@ -79,23 +99,21 @@ import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.place.shared.PlaceHistoryHandler.Historian;
 
 public class ClientFactoryImpl implements ClientFactory {
-  
-  private static final Place DEFAULT_PLACE = new StartPlace( );
-  private static final Place ERROR_PLACE = new ErrorSinkPlace( );
-  
-	private EventBus mainEventBus = new ResettableEventBus( new SimpleEventBus( ) );
-	private PlaceController mainPlaceController = new PlaceController( mainEventBus );
-  private ActivityManager mainActivityManager;
-  private PlaceHistoryHandler mainPlaceHistoryHandler;
-  private Historian mainHistorian = new PlaceHistoryHandler.DefaultHistorian( );
-	
-	private EventBus lifecycleEventBus = new SimpleEventBus( );
-	private PlaceController lifecyclePlaceController = new PlaceController( lifecycleEventBus );
-	
-	private LocalSession localSession = new LocalSessionImpl( );
-	private SessionData sessionData = new SessionData( );
-	
-	private EucalyptusServiceAsync backendService = GWT.create( EucalyptusService.class );
+	private static final Place DEFAULT_PLACE = new StartPlace();
+	private static final Place ERROR_PLACE = new ErrorSinkPlace();
+
+	private EventBus mainEventBus = new ResettableEventBus(new SimpleEventBus());
+	private PlaceController mainPlaceController = new PlaceController(mainEventBus);
+	private ActivityManager mainActivityManager;
+	private PlaceHistoryHandler mainPlaceHistoryHandler;
+	private Historian mainHistorian = new PlaceHistoryHandler.DefaultHistorian();
+
+	private EventBus lifecycleEventBus = new SimpleEventBus();
+	private PlaceController lifecyclePlaceController = new PlaceController(lifecycleEventBus);
+
+	private SessionData sessionData = new SessionData();
+
+	private EucalyptusServiceAsync backendService = GWT.create(EucalyptusService.class);
 	private AwsServiceAsync backendAwsService = GWT.create( AwsService.class );
 	private CmdServiceAsync backendCmdService = GWT.create( CmdService.class );
 
@@ -116,31 +134,361 @@ public class ClientFactoryImpl implements ClientFactory {
 	private CertView certView;
 	private ImageView imageView;
 	private ActionResultView actionResultView;
-	private TestView testView;
 	private InstanceView instanceView;
 	private NodeCtrlView nodeCtrlView;
 	private ClusterCtrlView clusterCtrlView;
 	private WalrusCtrlView walrusCtrlView;
 	private StorageCtrlView storageCtrlView;
-	
+	private IndividualView individualView;
+	private DeviceServerView deviceServerView;
+	private DeviceCPUView deviceCPUView;
+	private DeviceMemoryView deviceMemoryView;
+	private DeviceDiskView deviceDiskView;
+	private DeviceVMView deviceVMView;
+	private DeviceBWView deviceBWView;
+
 	// Dialogs
 	private ConfirmationView confirmationView;
 	private InputView inputView;
-	
+	private UserAddView userAddView;
+	private GroupAddView groupAddView;
+	private GroupListView groupListView;
+	private GroupDetailView groupDetailView;
+	private UserListView userListView;
+
 	// Snippets
 	private CloudRegistrationView cloudRegView;
-	private DownloadView downloadView;
-	
-  @Override
-  public LocalSession getLocalSession( ) {
-    return localSession;
-  }
 
-  @Override
-  public EucalyptusServiceAsync getBackendService( ) {
-    return backendService;
-  }
-  
+	@Override
+	public LocalSession getLocalSession() {
+		return LocalSessionImpl.Get();
+	}
+
+	@Override
+	public EucalyptusServiceAsync getBackendService() {
+		return backendService;
+	}
+
+	@Override
+	public EventBus getMainEventBus() {
+		return mainEventBus;
+	}
+
+	@Override
+	public PlaceController getMainPlaceController() {
+		return mainPlaceController;
+	}
+
+	@Override
+	public EventBus getLifecycleEventBus() {
+		return lifecycleEventBus;
+	}
+
+	@Override
+	public PlaceController getLifecyclePlaceController() {
+		return lifecyclePlaceController;
+	}
+
+	@Override
+	public LoginView getLoginView() {
+		if (loginView == null) {
+			loginView = new LoginViewImpl();
+		}
+		return loginView;
+	}
+
+	@Override
+	public ShellView getShellView() {
+		if (shellView == null) {
+			shellView = new ShellViewImpl();
+		}
+		return shellView;
+	}
+
+	@Override
+	public StartView getStartView() {
+		if (startView == null) {
+			startView = new StartViewImpl();
+		}
+		return startView;
+	}
+
+	@Override
+	public LoadingProgressView getLoadingProgressView() {
+		if (loadingProgressView == null) {
+			loadingProgressView = new LoadingProgressViewImpl();
+		}
+		return loadingProgressView;
+	}
+
+	@Override
+	public ConfigView getConfigView() {
+		if (configView == null) {
+			configView = new ConfigViewImpl();
+		}
+		return configView;
+	}
+
+	@Override
+	public LoadingAnimationView getLoadingAnimationView() {
+		if (loadingAnimationView == null) {
+			loadingAnimationView = new LoadingAnimationViewImpl();
+		}
+		return loadingAnimationView;
+	}
+
+	@Override
+	public ErrorSinkView getErrorSinkView() {
+		if (errorSinkView == null) {
+			errorSinkView = new ErrorSinkViewImpl();
+		}
+		return errorSinkView;
+	}
+
+	@Override
+	public AccountView getAccountView() {
+		if (accountView == null) {
+			accountView = new AccountViewImpl();
+		}
+		return accountView;
+	}
+
+	@Override
+	public VmTypeView getVmTypeView() {
+		if (vmTypeView == null) {
+			vmTypeView = new VmTypeViewImpl();
+		}
+		return vmTypeView;
+	}
+
+	@Override
+	public ReportView getReportView() {
+		if (reportView == null) {
+			reportView = new ReportViewImpl();
+		}
+		return reportView;
+	}
+
+	@Override
+	public ActivityManager getMainActivityManager() {
+		if (mainActivityManager == null) {
+			ActivityMapper activityMapper = new MainActivityMapper(this);
+			mainActivityManager = new ActivityManager(activityMapper, mainEventBus);
+		}
+		return mainActivityManager;
+	}
+
+	@Override
+	public PlaceHistoryHandler getMainPlaceHistoryHandler() {
+		if (mainPlaceHistoryHandler == null) {
+			MainPlaceHistoryMapper historyMapper = GWT.create(MainPlaceHistoryMapper.class);
+			mainPlaceHistoryHandler = new ExPlaceHistoryHandler(historyMapper);
+			((ExPlaceHistoryHandler)mainPlaceHistoryHandler).register(mainPlaceController, mainEventBus, DEFAULT_PLACE,
+			        ERROR_PLACE);
+		}
+		return mainPlaceHistoryHandler;
+	}
+
+	@Override
+	public Historian getMainHistorian() {
+		return mainHistorian;
+	}
+
+	@Override
+	public Place getDefaultPlace() {
+		return DEFAULT_PLACE;
+	}
+
+	@Override
+	public Place getErrorPlace() {
+		return ERROR_PLACE;
+	}
+
+	@Override
+	public SessionData getSessionData() {
+		return sessionData;
+	}
+
+	@Override
+	public GroupView getGroupView() {
+		if (groupView == null) {
+			groupView = new GroupViewImpl();
+		}
+		return groupView;
+	}
+
+	@Override
+	public UserView getUserView() {
+		if (userView == null) {
+			userView = new UserViewImpl();
+		}
+		return userView;
+	}
+
+	@Override
+	public PolicyView getPolicyView() {
+		if (policyView == null) {
+			policyView = new PolicyViewImpl();
+		}
+		return policyView;
+	}
+
+	@Override
+	public KeyView getKeyView() {
+		if (keyView == null) {
+			keyView = new KeyViewImpl();
+		}
+		return keyView;
+	}
+
+	@Override
+	public CertView getCertView() {
+		if (certView == null) {
+			certView = new CertViewImpl();
+		}
+		return certView;
+	}
+
+	@Override
+	public ImageView getImageView() {
+		if (imageView == null) {
+			imageView = new ImageViewImpl();
+		}
+		return imageView;
+	}
+
+	@Override
+	public ConfirmationView getConfirmationView() {
+		if (confirmationView == null) {
+			confirmationView = new ConfirmationViewImpl();
+		}
+		return confirmationView;
+	}
+
+	@Override
+	public InputView getInputView() {
+		if (inputView == null) {
+			inputView = new InputViewImpl();
+		}
+		return inputView;
+	}
+
+	@Override
+	public ActionResultView getActionResultView() {
+		if (actionResultView == null) {
+			actionResultView = new ActionResultViewImpl();
+		}
+		return actionResultView;
+	}
+
+	@Override
+	public ItemView createItemView() {
+		return new ItemViewImpl();
+	}
+
+	@Override
+	public CloudRegistrationView getCloudRegistrationView() {
+		if (cloudRegView == null) {
+			cloudRegView = new CloudRegistrationViewImpl();
+		}
+		return cloudRegView;
+	}
+
+	@Override
+	public UserAddView getUserAddView() {
+		// TODO Auto-generated method stub
+		if (userAddView == null) {
+			userAddView = new UserAddViewImpl();
+		}
+		return userAddView;
+	}
+
+	@Override
+	public GroupAddView getGroupAddView() {
+		// TODO Auto-generated method stub
+		if (groupAddView == null) {
+			groupAddView = new GroupAddViewImpl();
+		}
+		return groupAddView;
+	}
+
+	@Override
+	public GroupListView getGroupListView() {
+		// TODO Auto-generated method stub
+		if (groupListView == null) {
+			groupListView = new GroupListViewImpl();
+		}
+		return groupListView;
+	}
+
+	@Override
+	public GroupDetailView getGroupDetailView() {
+		// TODO Auto-generated method stub
+		if (groupDetailView == null) {
+			groupDetailView = new GroupDetailViewImpl();
+		}
+		return groupDetailView;
+	}
+
+	@Override
+	public UserListView getUserListView() {
+		// TODO Auto-generated method stub
+		if (userListView == null) {
+			userListView = new UserListViewImpl();
+		}
+		return userListView;
+	}
+
+	@Override
+	public IndividualView getIndividualView() {
+		// TODO Auto-generated method stub
+		if (individualView == null) {
+			individualView = new IndividualViewImpl();
+		}
+		return individualView;
+	}
+
+	@Override
+	public DeviceServerView getDeviceServerView() {
+		if (deviceServerView == null) {
+			deviceServerView = new DeviceServerViewImpl();
+		}
+		return deviceServerView;
+	}
+
+	@Override
+	public DeviceCPUView getDeviceCPUView() {
+		if (deviceCPUView == null) {
+			deviceCPUView = new DeviceCPUViewImpl();
+		}
+		return deviceCPUView;
+	}
+
+	@Override
+	public DeviceMemoryView getDeviceMemoryView() {
+		if (deviceMemoryView == null) {
+			deviceMemoryView = new DeviceMemoryViewImpl();
+		}
+		return deviceMemoryView;
+	}
+
+	@Override
+	public DeviceDiskView getDeviceDiskView() {
+		if (deviceDiskView == null) {
+			deviceDiskView = new DeviceDiskViewImpl();
+		}
+		return deviceDiskView;
+	}
+
+	@Override
+	public DeviceVMView getDeviceVMView() {
+		if (deviceVMView == null) {
+			deviceVMView = new DeviceVMViewImpl();
+		}
+		return deviceVMView;
+	}
+	
+ 
   @Override
   public AwsServiceAsync getBackendAwsService( ) {
     return backendAwsService;
@@ -149,248 +497,6 @@ public class ClientFactoryImpl implements ClientFactory {
   @Override
   public CmdServiceAsync getBackendCmdService() {
   	return backendCmdService;
-  }
-
-  
-
-  @Override
-  public EventBus getMainEventBus( ) {
-    return mainEventBus;
-  }
-
-  @Override
-  public PlaceController getMainPlaceController( ) {
-    return mainPlaceController;
-  }
-
-  @Override
-  public EventBus getLifecycleEventBus( ) {
-    return lifecycleEventBus;
-  }
-
-  @Override
-  public PlaceController getLifecyclePlaceController( ) {
-    return lifecyclePlaceController;
-  }
-  
-  @Override
-  public LoginView getLoginView( ) {
-    if ( loginView == null ) {
-      loginView = new LoginViewImpl( );
-    }
-    return loginView;
-  }
-  
-  @Override
-  public ShellView getShellView( ) {
-    if ( shellView == null ) {
-      shellView = new ShellViewImpl( );
-    }
-    return shellView;
-  }
-
-  @Override
-  public StartView getStartView( ) {
-    if ( startView == null ) {
-      startView = new StartViewImpl( );
-    }
-    return startView;
-  }
-  
-  @Override
-  public LoadingProgressView getLoadingProgressView( ) {
-    if ( loadingProgressView == null ) {
-      loadingProgressView = new LoadingProgressViewImpl( );
-    }
-    return loadingProgressView;
-  }
-
-  @Override
-  public ConfigView getConfigView( ) {
-    if ( configView == null ) {
-      configView = new ConfigViewImpl( );
-    }
-    return configView;
-  }  
-  
-  @Override
-  public LoadingAnimationView getLoadingAnimationView( ) {
-    if ( loadingAnimationView == null ) {
-      loadingAnimationView = new LoadingAnimationViewImpl( );
-    }
-    return loadingAnimationView;
-  }
-
-  @Override
-  public ErrorSinkView getErrorSinkView( ) {
-    if ( errorSinkView == null ) {
-      errorSinkView = new ErrorSinkViewImpl( );
-    }
-    return errorSinkView;
-  }
-
-  @Override
-  public AccountView getAccountView( ) {
-    if ( accountView == null ) {
-      accountView = new AccountViewImpl( );
-    }
-    return accountView;
-  }
-  
-  @Override
-  public VmTypeView getVmTypeView( ) {
-    if ( vmTypeView == null ) {
-      vmTypeView = new VmTypeViewImpl( );
-    }
-    return vmTypeView;
-  }
-  
-  @Override
-  public ReportView getReportView( ) {
-    if ( reportView == null ) {
-      reportView = new ReportViewImpl( );
-    }
-    return reportView;
-  }
-  
-  @Override
-  public ActivityManager getMainActivityManager( ) {
-    if ( mainActivityManager == null ) {
-      ActivityMapper activityMapper = new MainActivityMapper( this );
-      mainActivityManager = new ActivityManager( activityMapper, mainEventBus );      
-    }
-    return mainActivityManager;
-  }
-
-  @Override
-  public PlaceHistoryHandler getMainPlaceHistoryHandler( ) {
-    if ( mainPlaceHistoryHandler == null ) {
-      MainPlaceHistoryMapper historyMapper= GWT.create( MainPlaceHistoryMapper.class );
-      mainPlaceHistoryHandler = new ExPlaceHistoryHandler( historyMapper );    
-      ( ( ExPlaceHistoryHandler ) mainPlaceHistoryHandler).register( mainPlaceController, mainEventBus, DEFAULT_PLACE, ERROR_PLACE );      
-    }
-    return mainPlaceHistoryHandler;
-  }
-
-  @Override
-  public Historian getMainHistorian( ) {
-    return mainHistorian;
-  }
-
-  @Override
-  public Place getDefaultPlace( ) {
-    return DEFAULT_PLACE;
-  }
-  
-  @Override
-  public Place getErrorPlace( ) {
-    return ERROR_PLACE;
-  }
-
-  @Override
-  public SessionData getSessionData( ) {
-    return sessionData;
-  }
-
-  @Override
-  public GroupView getGroupView( ) {
-    if ( groupView == null ) {
-      groupView = new GroupViewImpl( );
-    }
-    return groupView;
-  }
-
-  @Override
-  public UserView getUserView( ) {
-    if ( userView == null ) {
-      userView = new UserViewImpl( );
-    }
-    return userView;
-  }
-
-  @Override
-  public PolicyView getPolicyView( ) {
-    if ( policyView == null ) {
-      policyView = new PolicyViewImpl( );
-    }
-    return policyView;
-  }
-
-  @Override
-  public KeyView getKeyView( ) {
-    if ( keyView == null ) {
-      keyView = new KeyViewImpl( );
-    }
-    return keyView;
-  }
-
-  @Override
-  public CertView getCertView( ) {
-    if ( certView == null ) {
-      certView = new CertViewImpl( );
-    }
-    return certView;
-  }
-
-  @Override
-  public ImageView getImageView( ) {
-    if ( imageView == null ) {
-      imageView = new ImageViewImpl( );
-    }
-    return imageView;
-  }
-
-  @Override
-  public ConfirmationView getConfirmationView( ) {
-    if ( confirmationView == null ) {
-      confirmationView = new ConfirmationViewImpl( );
-    }
-    return confirmationView;
-  }
-
-  @Override
-  public InputView getInputView( ) {
-    if ( inputView == null ) {
-      inputView = new InputViewImpl( );
-    }
-    return inputView;
-  }
-
-  @Override
-  public ActionResultView getActionResultView( ) {
-    if ( actionResultView == null ) {
-      actionResultView = new ActionResultViewImpl( );
-    }
-    return actionResultView;
-  }
-
-  @Override
-  public DownloadView getDownloadView( ) {
-    if ( downloadView == null ) {
-      downloadView = new DownloadViewImpl( );
-    }
-    return downloadView;
-  }
-
-  @Override
-  public ItemView createItemView( ) {
-    return new ItemViewImpl( );
-  }
-
-  @Override
-  public CloudRegistrationView getCloudRegistrationView() {
-    if ( cloudRegView == null ) {
-      cloudRegView = new CloudRegistrationViewImpl( );
-    }
-    return cloudRegView;
-  }
-
-  @Override
-  public TestView getTestView() {
-	if (testView == null) {
-		testView = new TestViewImpl( );
-	}
-	return testView;
   }
   
   @Override
@@ -431,5 +537,11 @@ public class ClientFactoryImpl implements ClientFactory {
 	}
 	return storageCtrlView;
   }
-
+  @Override
+	public DeviceBWView getDeviceBWView() {
+		if (deviceBWView == null) {
+			deviceBWView = new DeviceBWViewImpl();
+		}
+		return deviceBWView;
+	}
 }

@@ -1,0 +1,56 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		
+	</ui:style>
+	<g:HTMLPanel>
+		
+		<g:LayoutPanel width="370px" height="150px">
+			<g:layer left="25px" width="77px" top="16px" height="19px">
+				<g:Label text="姓名"/>
+			</g:layer>
+			<g:layer left="108px" width="234px" height="25px" top="10px">
+				<g:TextBox ui:field="inputName"/>
+			</g:layer>
+			<g:layer left="25px" width="77px" top="47px" height="19px">
+				<g:Label text="手机"/>
+			</g:layer>
+			<g:layer left="108px" width="234px" top="41px" height="25px">
+				<g:TextBox ui:field="inputMobile"/>
+			</g:layer>
+			<g:layer left="25px" width="77px" top="78px" height="19px">
+				<g:Label text="邮箱"/>
+			</g:layer>
+			<g:layer left="108px" width="234px" top="72px" height="25px">
+				<g:TextBox ui:field="inputEmail"/>
+			</g:layer>
+			<g:layer width="54px" top="114px" height="36px" right="28px">
+				<g:Button text="确定" ui:field="buttonInfo"/>
+			</g:layer>
+		</g:LayoutPanel>
+		<g:LayoutPanel width="373px" height="150px">
+			<g:layer left="25px" width="77px" top="16px" height="19px">
+				<g:Label text="原先密码"/>
+			</g:layer>
+			<g:layer left="108px" width="234px" height="25px" top="10px">
+				<g:TextBox ui:field="inputOldPwd"/>
+			</g:layer>
+			<g:layer left="25px" width="77px" top="47px" height="19px">
+				<g:Label text="新密码"/>
+			</g:layer>
+			<g:layer left="108px" width="234px" top="41px" height="25px">
+				<g:TextBox ui:field="inputNewPwd"/>
+			</g:layer>
+			<g:layer left="25px" width="77px" top="78px" height="19px">
+				<g:Label text="重复新密码"/>
+			</g:layer>
+			<g:layer left="108px" width="234px" top="72px" height="25px">
+				<g:TextBox ui:field="inputNewPwdAgain"/>
+			</g:layer>
+			<g:layer width="54px" top="114px" height="36px" right="31px">
+				<g:Button text="确定" ui:field="buttonPwd"/>
+			</g:layer>
+		</g:LayoutPanel>
+	</g:HTMLPanel>
+</ui:UiBinder> 

@@ -11,6 +11,7 @@ public interface ConfirmationView extends IsWidget {
   void display( String caption, String subject, Set<SearchResultRow> list, ArrayList<Integer> fields );
   
   void display( String caption, String subject, SafeHtml html );
+  void display( String caption, String subject);
   
   void setPresenter( Presenter presenter );
   

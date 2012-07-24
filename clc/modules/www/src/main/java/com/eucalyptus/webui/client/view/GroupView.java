@@ -6,11 +6,13 @@ public interface GroupView extends IsWidget, CanDisplaySearchResult, Clearable, 
     
   void setPresenter( Presenter presenter );
   
-  public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize {
+  public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, SearchTableDoubleClickHandler {
+	void onAddGroup();
     void onDeleteGroup( );
-    void onAddUsers( );
-    void onRemoveUsers( );
-    void onAddPolicy( );
+    
+    void onPauseGroup();
+    void onResumeGroup();
+    void onBanGroup();
   }
   
 }

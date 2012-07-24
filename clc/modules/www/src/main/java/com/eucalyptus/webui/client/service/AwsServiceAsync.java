@@ -3,6 +3,7 @@ package com.eucalyptus.webui.client.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.eucalyptus.webui.client.session.Session;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.model.Instance;
 import com.google.gwt.user.client.rpc.AsyncCallback;

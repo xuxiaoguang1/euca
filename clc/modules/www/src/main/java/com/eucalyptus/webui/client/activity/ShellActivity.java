@@ -3,19 +3,18 @@ package com.eucalyptus.webui.client.activity;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.eucalyptus.webui.client.AppWidget;
 import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.ExPlaceHistoryHandler;
+import com.eucalyptus.webui.client.place.IndividualPlace;
 import com.eucalyptus.webui.client.place.LoginPlace;
 import com.eucalyptus.webui.client.place.LogoutPlace;
 import com.eucalyptus.webui.client.place.ShellPlace;
 import com.eucalyptus.webui.client.service.QuickLinkTag;
-import com.eucalyptus.webui.client.service.LoginUserProfile;
 import com.eucalyptus.webui.client.session.SessionData;
-import com.eucalyptus.webui.client.view.DetailView;
+import com.eucalyptus.webui.client.view.DetailsView;
 import com.eucalyptus.webui.client.view.DirectoryView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.HeaderView;
@@ -28,6 +27,7 @@ import com.eucalyptus.webui.client.view.ShellView;
 import com.eucalyptus.webui.client.view.UserSettingView;
 import com.eucalyptus.webui.shared.checker.ValueChecker;
 import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
+import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.google.common.base.Strings;
 import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.core.client.GWT;
@@ -44,23 +44,23 @@ import com.google.gwt.user.client.ui.AcceptsOneWidget;
  *
  */
 public class ShellActivity extends AbstractActivity
-    implements FooterView.Presenter, UserSettingView.Presenter, DetailView.Controller, InputView.Presenter, DirectoryView.Presenter, HeaderView.Presenter {
+    implements FooterView.Presenter, UserSettingView.Presenter, DetailsView.Controller, InputView.Presenter, DirectoryView.Presenter, HeaderView.Presenter {
   
   private static final Logger LOG = Logger.getLogger( ShellActivity.class.getName( ) );
   
-  private static final String DEFAULT_VERSION = "Eucalyptus unknown version";
-  private static final String DEFAULT_LOGO_TITLE = "EUCALYPTUS";
-  private static final String DEFAULT_LOGO_SUBTITLE = "YOUR FRIENDLY CLOUD";
+  private static final String DEFAULT_VERSION[] = {"Eucalyptus unknown version", "云管理系统 版本："};
+  private static final String DEFAULT_LOGO_TITLE[] = {"Eucalyptus", "云管理系统"};
+  private static final String DEFAULT_LOGO_SUBTITLE[] = {"YOUR FRIENDLY CLOUD", "私有云"};
   
-  public static final String CHANGE_PASSWORD_CAPTION = "Change password";
-  public static final String FIRST_TIME_CAPTION = "Enter first time information";
-  public static final String MANUAL_CHANGE_PASSWORD_SUBJECT = "Please enter new password:";
-  public static final String FIRST_TIME_SUBJECT = "First time login. Please fill in the following information:";
-  public static final String PASSWORD_EXPIRED_SUBJECT = "Password expired. Please change your password:";
-  public static final String OLD_PASSWORD_INPUT_TITLE = "Old password";
-  public static final String NEW_PASSWORD_INPUT_TITLE = "New password";
-  public static final String NEW_PASSWORD2_INPUT_TITLE = "Type again";
-  public static final String EMAIL_INPUT_TITLE = "Email";
+  public static final String CHANGE_PASSWORD_CAPTION[] = {"Change password", "修改密码"};
+  public static final String FIRST_TIME_CAPTION[] = {"Enter first time information", "输入首次信息"};
+  public static final String MANUAL_CHANGE_PASSWORD_SUBJECT[] = {"Please enter new password:", "请输入新的密码"};
+  public static final String FIRST_TIME_SUBJECT[] = {"First time login. Please fill in the following information:", "这是您第一次登录，请填写以下信息"};
+  public static final String PASSWORD_EXPIRED_SUBJECT[] = {"Password expired. Please change your password:", "密码过期，请重新设置您的密码"};
+  public static final String OLD_PASSWORD_INPUT_TITLE[] = {"Old password", "原密码"};
+  public static final String NEW_PASSWORD_INPUT_TITLE[] = {"New password", "新密码"};
+  public static final String NEW_PASSWORD2_INPUT_TITLE[] = {"Type again", "重新尝试"};
+  public static final String EMAIL_INPUT_TITLE[] = {"Email", "电子邮件"};
   
   private ClientFactory clientFactory;
   private ShellPlace place;
@@ -105,7 +105,7 @@ public class ShellActivity extends AbstractActivity
     shellView.getDirectoryView( ).setPresenter( this );
     
     shellView.getFooterView( ).setPresenter( this );
-    shellView.getFooterView( ).setVersion( clientFactory.getSessionData( ).getStringProperty( SessionData.VERSION, DEFAULT_VERSION ) );
+    shellView.getFooterView( ).setVersion( clientFactory.getSessionData( ).getStringProperty( SessionData.VERSION, DEFAULT_VERSION[1] ) );
     
     String user = clientFactory.getSessionData( ).getLoginUser( ).toString( );
     shellView.getHeaderView( ).setUser( user );
@@ -113,7 +113,7 @@ public class ShellActivity extends AbstractActivity
     shellView.getHeaderView( ).getUserSetting( ).setPresenter( this );
     shellView.getHeaderView( ).setPresenter( this );
     
-    shellView.getDetailView( ).setController( this );
+    //shellView.getDetailView( ).setController( this );
     
     container.setWidget( shellView );
     
@@ -128,14 +128,14 @@ public class ShellActivity extends AbstractActivity
       public void onFailure( Throwable caught ) {
         LOG.log( Level.WARNING, "Cannot get login user profile. Maybe session is invalid: " + caught );
         clientFactory.getLocalSession( ).clearSession( );
-        clientFactory.getLifecyclePlaceController( ).goTo( new LoginPlace( LoginPlace.LOADING_FAILURE_PROMPT ) );
+        clientFactory.getLifecyclePlaceController( ).goTo( new LoginPlace( LoginPlace.LOADING_FAILURE_PROMPT[1] ) );
       }
       
       @Override
       public void onSuccess( LoginUserProfile result ) {
         if ( result == null ) {
           LOG.log( Level.WARNING, "Got empty user profile" );
-          clientFactory.getLifecyclePlaceController( ).goTo( new LoginPlace( LoginPlace.LOADING_FAILURE_PROMPT ) );
+          clientFactory.getLifecyclePlaceController( ).goTo( new LoginPlace( LoginPlace.LOADING_FAILURE_PROMPT[1] ) );
         } else {
           clientFactory.getSessionData( ).setLoginUser( result );
           clientFactory.getLoadingProgressView( ).setProgress( 33 );
@@ -145,7 +145,7 @@ public class ShellActivity extends AbstractActivity
                 showFirstTimeDialog( );
                 break;
               case EXPIRATION:
-                showChangePasswordDialog( PASSWORD_EXPIRED_SUBJECT );
+                showChangePasswordDialog( PASSWORD_EXPIRED_SUBJECT[1] );
                 break;
             }
           } else {
@@ -165,14 +165,14 @@ public class ShellActivity extends AbstractActivity
       public void onFailure( Throwable caught ) {
         LOG.log( Level.WARNING, "Cannot get system properties: " + caught );
         clientFactory.getLocalSession( ).clearSession( );
-        clientFactory.getLifecyclePlaceController( ).goTo( new LoginPlace( LoginPlace.LOADING_FAILURE_PROMPT ) );
+        clientFactory.getLifecyclePlaceController( ).goTo( new LoginPlace( LoginPlace.LOADING_FAILURE_PROMPT[1] ) );
       }
       
       @Override
       public void onSuccess( HashMap<String, String> result ) {
         if ( result == null ) {
           LOG.log( Level.WARNING, "Got empty system properties" );
-          clientFactory.getLifecyclePlaceController( ).goTo( new LoginPlace( LoginPlace.LOADING_FAILURE_PROMPT ) );          
+          clientFactory.getLifecyclePlaceController( ).goTo( new LoginPlace( LoginPlace.LOADING_FAILURE_PROMPT[1] ) );          
         } else {
           clientFactory.getSessionData( ).setProperties( result );
           clientFactory.getLoadingProgressView( ).setProgress( 67 );
@@ -190,14 +190,14 @@ public class ShellActivity extends AbstractActivity
       public void onFailure( Throwable caught ) {
         LOG.log( Level.WARNING, "Cannot get category: " + caught );
         clientFactory.getLocalSession( ).clearSession( );
-        clientFactory.getLifecyclePlaceController( ).goTo( new LoginPlace( LoginPlace.LOADING_FAILURE_PROMPT ) );
+        clientFactory.getLifecyclePlaceController( ).goTo( new LoginPlace( LoginPlace.LOADING_FAILURE_PROMPT[1] ) );
       }
       
       @Override
       public void onSuccess( ArrayList<QuickLinkTag> result ) {
         if ( result == null ) {
           LOG.log( Level.WARNING, "Got empty category" );
-          clientFactory.getLifecyclePlaceController( ).goTo( new LoginPlace( LoginPlace.LOADING_FAILURE_PROMPT ) );          
+          clientFactory.getLifecyclePlaceController( ).goTo( new LoginPlace( LoginPlace.LOADING_FAILURE_PROMPT[1] ) );          
         } else {
           quicklinks = result;
           clientFactory.getSessionData( ).setQuickLinks( result );
@@ -218,22 +218,7 @@ public class ShellActivity extends AbstractActivity
     this.clientFactory.getShellView( ).hideLogConsole( );
   }
 
-  @Override
-  public void logout( ) {
-    this.clientFactory.getBackendService( ).logout( this.clientFactory.getLocalSession( ).getSession( ), new AsyncCallback<Void>( ) {
-      @Override
-      public void onFailure( Throwable arg0 ) {
-        // Don't care about failure.
-      }
-      @Override
-      public void onSuccess( Void arg0 ) {
-        LOG.log( Level.INFO, "User signed out." );
-      }
-    } );
-    this.clientFactory.getLocalSession( ).clearSession( );
-    this.clientFactory.getShellView( ).getLogView( ).clear( );
-    this.clientFactory.getMainPlaceController( ).goTo( new LogoutPlace( ) );
-  }
+
 
   public void search( String search ) {
     if ( search != null ) {
@@ -258,11 +243,11 @@ public class ShellActivity extends AbstractActivity
   private void showChangePasswordDialog( String subject ) {
     InputView dialog = this.clientFactory.getInputView( );
     dialog.setPresenter( this );
-    dialog.display( CHANGE_PASSWORD_CAPTION, subject, new ArrayList<InputField>( Arrays.asList( new InputField( ) {
+    dialog.display( CHANGE_PASSWORD_CAPTION[1], subject, new ArrayList<InputField>( Arrays.asList( new InputField( ) {
 
       @Override
       public String getTitle( ) {
-        return OLD_PASSWORD_INPUT_TITLE;
+        return OLD_PASSWORD_INPUT_TITLE[1];
       }
 
       @Override
@@ -279,7 +264,7 @@ public class ShellActivity extends AbstractActivity
 
       @Override
       public String getTitle( ) {
-        return NEW_PASSWORD_INPUT_TITLE;
+        return NEW_PASSWORD_INPUT_TITLE[1];
       }
 
       @Override
@@ -296,7 +281,7 @@ public class ShellActivity extends AbstractActivity
 
       @Override
       public String getTitle( ) {
-        return NEW_PASSWORD2_INPUT_TITLE;
+        return NEW_PASSWORD2_INPUT_TITLE[1];
       }
 
       @Override
@@ -316,11 +301,11 @@ public class ShellActivity extends AbstractActivity
   private void showFirstTimeDialog( ) {
     InputView dialog = this.clientFactory.getInputView( );
     dialog.setPresenter( this );
-    dialog.display( FIRST_TIME_CAPTION, FIRST_TIME_SUBJECT, new ArrayList<InputField>( Arrays.asList( new InputField( ) {
+    dialog.display( FIRST_TIME_CAPTION[1], FIRST_TIME_SUBJECT[1], new ArrayList<InputField>( Arrays.asList( new InputField( ) {
 
       @Override
       public String getTitle( ) {
-        return EMAIL_INPUT_TITLE;
+        return EMAIL_INPUT_TITLE[1];
       }
 
       @Override
@@ -337,7 +322,7 @@ public class ShellActivity extends AbstractActivity
 
       @Override
       public String getTitle( ) {
-        return OLD_PASSWORD_INPUT_TITLE;
+        return OLD_PASSWORD_INPUT_TITLE[1];
       }
 
       @Override
@@ -354,7 +339,7 @@ public class ShellActivity extends AbstractActivity
 
       @Override
       public String getTitle( ) {
-        return NEW_PASSWORD_INPUT_TITLE;
+        return NEW_PASSWORD_INPUT_TITLE[1];
       }
 
       @Override
@@ -371,7 +356,7 @@ public class ShellActivity extends AbstractActivity
 
       @Override
       public String getTitle( ) {
-        return NEW_PASSWORD2_INPUT_TITLE;
+        return NEW_PASSWORD2_INPUT_TITLE[1];
       }
 
       @Override
@@ -391,13 +376,13 @@ public class ShellActivity extends AbstractActivity
   // This is when user clicks the user setting manual to change password.
   @Override
   public void onChangePassword( ) {
-    showChangePasswordDialog( MANUAL_CHANGE_PASSWORD_SUBJECT );
+    showChangePasswordDialog( MANUAL_CHANGE_PASSWORD_SUBJECT[1] );
   }
 
   // Returned from dialog
   @Override
   public void process( String subject, ArrayList<String> values ) {
-    if ( MANUAL_CHANGE_PASSWORD_SUBJECT.equals( subject ) || PASSWORD_EXPIRED_SUBJECT.equals( subject ) ) {
+    if ( MANUAL_CHANGE_PASSWORD_SUBJECT[1].equals( subject ) || PASSWORD_EXPIRED_SUBJECT[1].equals( subject ) ) {
       doChangePassword( subject, values.get( 0 ), values.get( 1 ), null );
     } else if ( FIRST_TIME_SUBJECT.equals( subject ) ) {
       doChangePassword( subject, values.get( 1 ), values.get( 2 ), values.get( 0 ) );
@@ -405,33 +390,33 @@ public class ShellActivity extends AbstractActivity
   }
 
   private void doChangePassword( final String subject, String oldPass, String newPass, String email ) {
-    final String userId = this.clientFactory.getSessionData( ).getLoginUser( ).getUserId( );
-    
-    this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "Changing password ...", 0 );
-    
-    this.clientFactory.getBackendService( ).changePassword( this.clientFactory.getLocalSession( ).getSession( ), userId, oldPass, newPass, email, new AsyncCallback<Void>( ) {
-
-      @Override
-      public void onFailure( Throwable caught ) {
-        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Failed to change password", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-        clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to change password for user " + userId + ": " + caught.getMessage( ) );
-        // Password change failure is the same as cancelling the dialog
-        cancel( subject );
-      }
-
-      @Override
-      public void onSuccess( Void arg ) {
-        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Password changed", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-        clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Password changed for user " + userId );
-        clientFactory.getSessionData( ).getLoginUser( ).setLoginAction( null );
-        if ( FIRST_TIME_SUBJECT.equals( subject ) || PASSWORD_EXPIRED_SUBJECT.equals( subject ) ) {
-          // If it is a forced password change, continue the loading.
-          getSystemProperties( );
-        }
-      }
-      
-    } );
+//    final String userName = this.clientFactory.getSessionData( ).getLoginUser( ).getUserName();
+//    
+//    this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "Changing password ...", 0 );
+//    
+//    this.clientFactory.getBackendService( ).changePassword( this.clientFactory.getLocalSession( ).getSession( ), userName, oldPass, newPass, email, new AsyncCallback<Void>( ) {
+//
+//      @Override
+//      public void onFailure( Throwable caught ) {
+//        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
+//        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Failed to change password", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+//        clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to change password for user " + userName + ": " + caught.getMessage( ) );
+//        // Password change failure is the same as cancelling the dialog
+//        cancel( subject );
+//      }
+//
+//      @Override
+//      public void onSuccess( Void arg ) {
+//        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Password changed", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+//        clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Password changed for user " + userName );
+//        clientFactory.getSessionData( ).getLoginUser( ).setLoginAction( null );
+//        if ( FIRST_TIME_SUBJECT.equals( subject ) || PASSWORD_EXPIRED_SUBJECT.equals( subject ) ) {
+//          // If it is a forced password change, continue the loading.
+//          getSystemProperties( );
+//        }
+//      }
+//      
+//    } );
   }
 
   // This is when the password change dialog (forced or manual) being cancelled
@@ -485,7 +470,30 @@ public class ShellActivity extends AbstractActivity
   public void runManualSearch( String search ) {
     this.search( search );
   }
+  
+  @Override
+  public void modifyIndividualInfo() {
+	// TODO Auto-generated method stub
+	clientFactory.getMainPlaceController( ).goTo( new IndividualPlace() );
+  }
 
+  @Override
+  public void logout( ) {
+    this.clientFactory.getBackendService( ).logout( this.clientFactory.getLocalSession( ).getSession( ), new AsyncCallback<Void>( ) {
+      @Override
+      public void onFailure( Throwable arg0 ) {
+        // Don't care about failure.
+      }
+      @Override
+      public void onSuccess( Void arg0 ) {
+        LOG.log( Level.INFO, "User signed out." );
+      }
+    } );
+    this.clientFactory.getLocalSession( ).clearSession( );
+    this.clientFactory.getShellView( ).getLogView( ).clear( );
+    this.clientFactory.getMainPlaceController( ).goTo( new LogoutPlace( ) );
+  }
+  
   @Override
   public void switchQuickLink( String search ) {
     // If we are already doing this search, do nothing.
@@ -501,6 +509,4 @@ public class ShellActivity extends AbstractActivity
     }
     this.search( search );
   }
-
-  
 }

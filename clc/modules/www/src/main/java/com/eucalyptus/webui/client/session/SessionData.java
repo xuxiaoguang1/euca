@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import com.eucalyptus.webui.client.service.QuickLink;
 import com.eucalyptus.webui.client.service.QuickLinkTag;
-import com.eucalyptus.webui.client.service.LoginUserProfile;
+import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
 public class SessionData {
   

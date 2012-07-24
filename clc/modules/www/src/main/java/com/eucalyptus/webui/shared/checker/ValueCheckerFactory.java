@@ -2,6 +2,7 @@ package com.eucalyptus.webui.shared.checker;
 
 import java.util.Arrays;
 import java.util.HashSet;
+
 import com.google.common.base.Strings;
 
 /**
@@ -26,7 +27,7 @@ public class ValueCheckerFactory {
       @Override
       public String check( String value ) throws InvalidValueException {
         if ( Strings.isNullOrEmpty( value ) ) {
-          throw new InvalidValueException( "Content can not be empty" );
+          throw new InvalidValueException( InvalidValueExceptionMsg.ACCOUNT_NAME_IS_EMPTY[1] );
         }
         return value;
       }
@@ -40,18 +41,18 @@ public class ValueCheckerFactory {
       @Override
       public String check( String value ) throws InvalidValueException {
         if ( Strings.isNullOrEmpty( value ) ) {
-          throw new InvalidValueException( "Account name can not be empty" );
+          throw new InvalidValueException( InvalidValueExceptionMsg.ACCOUNT_NAME_IS_EMPTY[1] );
         }
         if ( value.startsWith( "-" ) ) {
-          throw new InvalidValueException( "Account name can not start with hyphen" );
+          throw new InvalidValueException( InvalidValueExceptionMsg.ACCOUNT_NAME_START_WITH_HYPHEN[1] );
         }
         if ( value.contains( "--" ) ) {
-          throw new InvalidValueException( "Account name can not have two consecutive hyphens" );
+          throw new InvalidValueException( InvalidValueExceptionMsg.ACCOUNT_NAME_HAVE_TWO_HYPHENS[1] );
         }
         for ( int i = 0; i < value.length( ); i++ ) {
           char c = value.charAt( i );
           if ( !( Character.isLetterOrDigit( c ) || c == '-' ) || Character.isUpperCase( c ) ) {
-            throw new InvalidValueException( "Containing invalid character for account name: " + c );
+            throw new InvalidValueException( InvalidValueExceptionMsg.ACCOUNT_WITH_INVALID_CHARACTER[1] + ": " + c );
           }
         }
         return value;
@@ -66,12 +67,12 @@ public class ValueCheckerFactory {
       @Override
       public String check( String value ) throws InvalidValueException {
         if ( Strings.isNullOrEmpty( value ) ) {
-          throw new InvalidValueException( "User or group names can not be empty" );
+          throw new InvalidValueException( InvalidValueExceptionMsg.USER_OR_GROUP_NAME_IS_EMPTY[1] );
         }
         for ( int i = 0; i < value.length( ); i++ ) {
           char c = value.charAt( i );
           if ( !Character.isLetterOrDigit( c ) && !USERGROUPNAME_EXTRA.contains( c ) && !WHITESPACES.contains( c ) ) {
-            throw new InvalidValueException( "Containing invalid character for user or group names: " + c );
+            throw new InvalidValueException( InvalidValueExceptionMsg.USER_OR_GROUP_NAME_WITH_INVALID_CHARACTER[1] + ": " + c );
           }
         }
         return value;
@@ -86,12 +87,12 @@ public class ValueCheckerFactory {
       @Override
       public String check( String value ) throws InvalidValueException {
         if ( Strings.isNullOrEmpty( value ) ) {
-          throw new InvalidValueException( "User or group name can not be empty" );
+          throw new InvalidValueException( InvalidValueExceptionMsg.USER_OR_GROUP_NAME_IS_EMPTY[1] );
         }
         for ( int i = 0; i < value.length( ); i++ ) {
           char c = value.charAt( i );
           if ( !Character.isLetterOrDigit( c ) && !USERGROUPNAME_EXTRA.contains( c ) ) {
-            throw new InvalidValueException( "Containing invalid character for user or group name: " + c );
+            throw new InvalidValueException( InvalidValueExceptionMsg.USER_OR_GROUP_NAME_WITH_INVALID_CHARACTER[1] + ": " + c );
           }
         }
         return value;
@@ -106,12 +107,12 @@ public class ValueCheckerFactory {
       @Override
       public String check( String value ) throws InvalidValueException {
         if ( value == null || ( value != null && !value.startsWith( "/" ) ) ) {
-          throw new InvalidValueException( "Path must start with /" );
+          throw new InvalidValueException( InvalidValueExceptionMsg.PATH[1] );
         }
         for ( int i = 0; i < value.length( ); i++ ) {
           char c = value.charAt( i );
           if ( c < 0x21 || c > 0x7E ) {
-            throw new InvalidValueException( "Invalid path character: " + c );
+            throw new InvalidValueException( InvalidValueExceptionMsg.PATH_IS_INVALID[1] + ": " + c );
           }
         }
         return value;
@@ -126,12 +127,12 @@ public class ValueCheckerFactory {
       @Override
       public String check( String value ) throws InvalidValueException {
         if ( Strings.isNullOrEmpty( value ) ) {
-          throw new InvalidValueException( "User or group names can not be empty" );
+          throw new InvalidValueException( InvalidValueExceptionMsg.USER_OR_GROUP_NAME_IS_EMPTY[1] );
         }
         for ( int i = 0; i < value.length( ); i++ ) {
           char c = value.charAt( i );
           if ( POLICYNAME_EXCLUDE.contains( c ) ) {
-            throw new InvalidValueException( "Containing invalid character for user or group names: " + c );
+            throw new InvalidValueException( InvalidValueExceptionMsg.USER_OR_GROUP_NAME_WITH_INVALID_CHARACTER + ": " + c );
           }
         }
         return value;
@@ -148,7 +149,7 @@ public class ValueCheckerFactory {
       @Override
       public String check( String value ) throws InvalidValueException {
         if ( Strings.isNullOrEmpty( value ) ) {
-          throw new InvalidValueException( "Password can not be empty" );
+          throw new InvalidValueException( InvalidValueExceptionMsg.PWD_IS_EMPTY[1] );
         }
         int digit = 0;
         int lowerCase = 0;
@@ -168,7 +169,7 @@ public class ValueCheckerFactory {
         }
         int length = value.length( );
         if ( length < PASSWORD_MINIMAL_LENGTH ) {
-          throw new InvalidValueException( "Password length must be at least 6 characters" );
+          throw new InvalidValueException( InvalidValueExceptionMsg.PWD_AT_LEAST_SIX_CHARACTERS[1] );
         }
         int score = 1;
         if ( length >= 12 ) {
@@ -208,14 +209,14 @@ public class ValueCheckerFactory {
       @Override
       public String check( String value ) throws InvalidValueException {
         if ( Strings.isNullOrEmpty( value ) ) {
-          throw new InvalidValueException( "Email address can not be empty" );
+          throw new InvalidValueException( InvalidValueExceptionMsg.EMAIL_IS_EMPTY[1] );
         }        
         String[] parts = value.split( "@" );
         if ( parts.length < 2 || Strings.isNullOrEmpty( parts[0] ) || Strings.isNullOrEmpty( parts[1] ) ) {
-          throw new InvalidValueException( "Does not look like a valid email address: missing user or host" );
+          throw new InvalidValueException( InvalidValueExceptionMsg.EMAIL_IS_INVALID[1] );
         }
         if ( value.split( "\\s+" ).length > 1 ) {
-          throw new InvalidValueException( "Email address can not have spaces" );
+          throw new InvalidValueException( InvalidValueExceptionMsg.EMAIL_WITH_SPACE[1] );
         }
         return value;
       }
