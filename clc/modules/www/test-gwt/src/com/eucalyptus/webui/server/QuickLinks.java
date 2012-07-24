@@ -25,7 +25,7 @@ public class QuickLinks {
 	private static ArrayList<QuickLinkTag> getSystemAdminTags( ) throws EucalyptusServiceException {
 		try {
 			return new ArrayList<QuickLinkTag>( Arrays.asList(getQuickLinkTag("用户管理", "用户管理", "组管理", "账户管理"),
-									getQuickLinkTag("资源管理", "服务器管理",  "内存管理", "硬盘管理", "CPU管理", "虚拟机管理", "带宽管理", "IP管理", "镜像管理", "模板管理"),
+									getQuickLinkTag("资源管理", "服务器管理",  "内存管理", "硬盘管理", "CPU管理", "虚拟机管理", "带宽管理", "IP管理", "镜像管理", "模板管理", "虚拟机管理_", "镜像管理_"),
 									getQuickLinkTag("组件管理", "节点控制器管理", "集群控制器管理", "存储控制器管理", "Walrus控制器管理")));
 		} catch ( Exception e ) { 
 			throw new EucalyptusServiceException( "Failed to load user information for ");
@@ -62,6 +62,7 @@ public class QuickLinks {
 			getQuickLink("镜像管理", "device", QueryType.device_image),
 			getQuickLink("模板管理", "device", QueryType.device_template),
 			getQuickLink("虚拟机管理_", "device", QueryType.instance),
+			getQuickLink("镜像管理_", "device", QueryType.image),
 			
 			// 组件管理
 			getQuickLink("节点控制器管理", "component", QueryType.nodeCtrl),
