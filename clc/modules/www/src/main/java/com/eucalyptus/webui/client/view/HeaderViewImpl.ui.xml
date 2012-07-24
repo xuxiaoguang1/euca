@@ -78,7 +78,7 @@
 	        	<g:Label text="欢迎：  " horizontalAlignment="ALIGN_CENTER" width="48" height="24" ui:field="welcomeLable"/>
 	        </div>
 	        <div class="{style.vcenter}">
-	       	 <g:Label text="Admin" horizontalAlignment="ALIGN_CENTER" width="48" height="24" ui:field="userNameLable"/>
+	       	 <g:Label text="" horizontalAlignment="ALIGN_CENTER" width="48" height="24" ui:field="userNameLable"/>
 	        </div>
 	        <div class="{style.vcenter}">
 	        	<g:Label text="   |   " horizontalAlignment="ALIGN_CENTER" width="15" height="24" />

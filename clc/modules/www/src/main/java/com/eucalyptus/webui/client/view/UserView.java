@@ -16,11 +16,9 @@ public interface UserView extends IsWidget, CanDisplaySearchResult, Clearable, S
     void onBanUsers();
     void onAddToGroups( );
     void onRemoveFromGroups( );
-    //void onAddPolicy( );
-    //void onAddKey( );
+    void onAddPolicy( );
+    void onAddKey( );
     //void onAddCert( );
-    //void onReject( );
-    //void onApprove( );
   }
 
 }

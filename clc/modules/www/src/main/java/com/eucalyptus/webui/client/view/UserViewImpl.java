@@ -14,13 +14,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
-import com.google.gwt.user.client.ui.Button;
 
 public class UserViewImpl extends Composite implements UserView {
   
@@ -32,15 +32,10 @@ public class UserViewImpl extends Composite implements UserView {
   
   @UiField
   LayoutPanel tablePanel;
-  @UiField Button buttonAddUser;
-  @UiField Button buttonOnDelUser;
-  @UiField Button buttonPauseUser;
-  @UiField Button buttonResumeUser;
-  @UiField Button buttonBanUser;
-  @UiField LayoutPanel buttonPanel;
-  @UiField Button buttonAddToGroup;
-  @UiField Button buttonDelFromGroup;
   
+  @UiField Anchor buttonAddToGroup;
+  @UiField Anchor buttonDelFromGroup;
+
   private MultiSelectionModel<SearchResultRow> selectionModel;
   
   private SearchResultTable table;
@@ -49,17 +44,17 @@ public class UserViewImpl extends Composite implements UserView {
   
   public UserViewImpl( ) {
     initWidget( uiBinder.createAndBindUi( this ) );
-    buttonPanel.setVisible(true);
   }
   
-  	@UiHandler("buttonAddUser")
-	void onButtonAddUserClick(ClickEvent event) {
-  		this.presenter.onAddUser();
+	@UiHandler("buttonOnAddUser")
+	void onButtonOnAddUserClick(ClickEvent event) {
+		this.presenter.onAddUser();
 	}
 	@UiHandler("buttonOnDelUser")
 	void onButtonOnDelUserClick(ClickEvent event) {
 		this.presenter.onDeleteUsers();
 	}
+	
 	@UiHandler("buttonAddToGroup")
 	void onButtonAddToGroupClick(ClickEvent event) {
 		this.presenter.onAddToGroups();
@@ -68,13 +63,23 @@ public class UserViewImpl extends Composite implements UserView {
 	void onButtonDelFromGroupClick(ClickEvent event) {
 		this.presenter.onRemoveFromGroups();
 	}
-	@UiHandler("buttonPauseUser")
-	void onButtonPauseUserClick(ClickEvent event) {
-		this.presenter.onPauseUsers();
+	
+	@UiHandler("addPolicyButton")
+	void onAddPolicyButtonClick(ClickEvent event) {
+		this.presenter.onAddPolicy();
 	}
+	@UiHandler("addKeyButton")
+	void onAddKeyButtonClick(ClickEvent event) {
+		this.presenter.onAddKey();
+	}
+	
 	@UiHandler("buttonResumeUser")
 	void onButtonResumeUserClick(ClickEvent event) {
 		this.presenter.onResumeUses();
+	}
+	@UiHandler("buttonPauseUser")
+	void onButtonPauseUserClick(ClickEvent event) {
+		this.presenter.onPauseUsers();
 	}
 	@UiHandler("buttonBanUser")
 	void onButtonBanUserClick(ClickEvent event) {
@@ -136,5 +141,4 @@ public class UserViewImpl extends Composite implements UserView {
 			this.buttonDelFromGroup.setVisible(true);
 		}
 	}
-
 }

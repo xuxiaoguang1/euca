@@ -117,7 +117,7 @@ public class LoginUserProfile implements Serializable {
   }
   
   public String toString( ) {
-    return userTitle + "@" + accountName;
+    return this.userName + "@" + this.accountName;
   }
 
   public void setUserProfileSearch( String userProfileSearch ) {

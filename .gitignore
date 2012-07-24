@@ -54,3 +54,4 @@ clc/.deprecated/*/build
 .settings/grze_office.launch
 
 .*.swp
+/clc/modules/www/test-gwt/.gwt/.gwt-log

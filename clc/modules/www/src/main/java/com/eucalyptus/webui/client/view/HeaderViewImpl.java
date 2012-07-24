@@ -22,6 +22,7 @@ public class HeaderViewImpl extends Composite implements HeaderView {
   @UiField
   SearchBox searchBox;
   @UiField Label userLable;
+  @UiField Label userNameLable;
   
   private UserSettingViewImpl settingPopup;
   
@@ -50,7 +51,7 @@ public class HeaderViewImpl extends Composite implements HeaderView {
   
 	@Override
 	public void setUser( String user ) {
-		//this.userLink.setUser( user );
+		this.userNameLable.setText(user);
 	}
 
 	@Override

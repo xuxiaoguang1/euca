@@ -248,6 +248,18 @@ public class UserActivity extends AbstractSearchActivity
 	}
 	
 	@Override
+	public void onAddPolicy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAddKey() {
+		// TODO Auto-generated method stub
+		
+	}
+		
+	@Override
 	public void onResumeUses() {
 		// TODO Auto-generated method stub
 		if (!selectionIsValid())

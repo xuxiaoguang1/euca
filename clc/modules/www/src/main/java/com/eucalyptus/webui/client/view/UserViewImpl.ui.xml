@@ -13,29 +13,73 @@
     
     <g:DockLayoutPanel unit="PX">
     	<g:north size="41.0">
-    		<g:LayoutPanel ui:field="buttonPanel" width="530px" height="">
-    			<g:layer left="0px" width="84px" top="0px" height="35px">
-    				<g:Button ui:field="buttonAddUser">增加用户</g:Button>
-    			</g:layer>
-    			<g:layer left="90px" width="84px" top="0px" height="35px">
-    				<g:Button ui:field="buttonOnDelUser">删除用户</g:Button>
-    			</g:layer>
-    			<g:layer left="180px" width="84px" top="0px" height="35px">
-    				<g:Button ui:field="buttonAddToGroup">添加到组</g:Button>
-    			</g:layer>
-    			<g:layer left="266px" width="84px" top="0px" height="35px">
-    				<g:Button ui:field="buttonDelFromGroup">从组删除</g:Button>
-    			</g:layer>
-    			<g:layer left="356px" width="54px" top="0px" height="35px">
-    				<g:Button ui:field="buttonResumeUser">恢复</g:Button>
-    			</g:layer>
-    			<g:layer left="476px" width="54px" top="0px" height="35px">
-    				<g:Button ui:field="buttonBanUser">禁止</g:Button>
-    			</g:layer>
-    			<g:layer left="416px" width="54px" top="0px" height="35px">
-    				<g:Button ui:field="buttonPauseUser">暂停</g:Button>
-    			</g:layer>
-    		</g:LayoutPanel>
+    		<g:HTMLPanel addStyleNames="{style.toolbar}">
+                <table>
+                    <colgroup width="1px"/>
+                    <colgroup width="20px"/>
+                    <colgroup width="1px"/>
+                    <colgroup width="1px"/>
+                    <colgroup width="20px"/>                    
+                    <colgroup width="1px"/>
+                    <colgroup width="1px"/>
+                    <colgroup width="1px"/>
+                    <colgroup width="20px"/>                    
+                    <colgroup width="1px"/>
+                    <colgroup width="1px"/>                    
+                    <tbody>
+                        <tr>
+                        	<td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small}" ui:field="buttonOnAddUser">
+                                    <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>增加用户
+                                </g:Anchor>
+                            </td>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small}" ui:field="buttonOnDelUser">
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>删除用户
+                                </g:Anchor>
+                            </td>
+                            <td>&nbsp;</td>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="buttonAddToGroup">
+                                    <span class="{global.buttonCss.group} {global.buttonCss.icon}"/>添加到组
+                                </g:Anchor>                            
+                            </td>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="buttonDelFromGroup">
+                                    <span class="{global.buttonCss.group} {global.buttonCss.icon}"/>从组删除
+                                </g:Anchor>                            
+                            </td>                            
+                            <td>&nbsp;</td>                            
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="addPolicyButton">
+                                    <span class="{global.buttonCss.lock} {global.buttonCss.icon}"/>增加策略
+                                </g:Anchor>
+                            </td>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.middle}" ui:field="addKeyButton">
+                                    <span class="{global.buttonCss.key} {global.buttonCss.icon}"/>增加密钥
+                                </g:Anchor>
+                            </td>
+                            <td>&nbsp;</td>
+                            <td>                             
+                                <g:Anchor styleName="{global.buttonCss.positive} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="buttonResumeUser">
+                                    <span class="{global.buttonCss.check} {global.buttonCss.icon}"/>恢复
+                                </g:Anchor>                            
+                            </td>
+                            <td>                             
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="buttonPauseUser">
+                                    <span class="{global.buttonCss.x} {global.buttonCss.icon}"/>暂停
+                                </g:Anchor>                            
+                            </td>  
+                            <td>                             
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="buttonBanUser">
+                                    <span class="{global.buttonCss.x} {global.buttonCss.icon}"/>禁止
+                                </g:Anchor>                            
+                            </td>                            
+                        </tr>
+                    </tbody>
+                </table>
+            </g:HTMLPanel>
     	</g:north>
         <g:center>
             <g:LayoutPanel ui:field="tablePanel" height="">
