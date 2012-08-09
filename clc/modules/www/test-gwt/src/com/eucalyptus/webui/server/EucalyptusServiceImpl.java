@@ -48,6 +48,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	private DeviceIPServiceProcImpl deviceIPServiceProc = new DeviceIPServiceProcImpl();
 	private DeviceBWServiceProcImpl deviceBWServiceProc = new DeviceBWServiceProcImpl();
 	private DeviceTemplateServiceProcImpl deviceTemplateServiceProc = new DeviceTemplateServiceProcImpl();
+	private DeviceVMServiceProcImpl deviceVMServiceProc = new DeviceVMServiceProcImpl();
 
 	private static void randomDelay() {
 		try {
@@ -903,5 +904,11 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	        String disk, String bw, String image) {
 		return deviceTemplateServiceProc.modifyTemplate(session, row, cpu, mem, disk, bw, image);
 	}
+	
+	@Override
+	public SearchResult lookupDeviceVM(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException {
+		return deviceVMServiceProc.lookupVM(session, search, range, queryState);
+	}
+
 
 }

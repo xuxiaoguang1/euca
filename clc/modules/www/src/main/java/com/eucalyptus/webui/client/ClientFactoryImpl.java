@@ -37,6 +37,8 @@ import com.eucalyptus.webui.client.view.DeviceIPView;
 import com.eucalyptus.webui.client.view.DeviceIPViewImpl;
 import com.eucalyptus.webui.client.view.DeviceTemplateView;
 import com.eucalyptus.webui.client.view.DeviceTemplateViewImpl;
+import com.eucalyptus.webui.client.view.DeviceVMView;
+import com.eucalyptus.webui.client.view.DeviceVMViewImpl;
 import com.eucalyptus.webui.client.view.ErrorSinkView;
 import com.eucalyptus.webui.client.view.ErrorSinkViewImpl;
 import com.eucalyptus.webui.client.view.GroupAddView;
@@ -147,6 +149,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private DeviceMemoryView deviceMemoryView;
 	private DeviceDiskView deviceDiskView;
 	private DeviceIPView deviceIPView;
+	private DeviceVMView deviceVMView;
 	private DeviceBWView deviceBWView;
 	private DeviceTemplateView deviceTemplateView;
 
@@ -489,6 +492,14 @@ public class ClientFactoryImpl implements ClientFactory {
 			deviceIPView = new DeviceIPViewImpl();
 		}
 		return deviceIPView;
+	}
+	
+	@Override
+	public DeviceVMView getDeviceVMView() {
+		if (deviceVMView == null) {
+			deviceVMView = new DeviceVMViewImpl();
+		}
+		return deviceVMView;
 	}
 
   @Override

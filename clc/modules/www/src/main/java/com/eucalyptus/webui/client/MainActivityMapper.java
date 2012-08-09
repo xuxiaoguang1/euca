@@ -4,6 +4,7 @@ import com.eucalyptus.webui.client.activity.AccountActivity;
 import com.eucalyptus.webui.client.activity.ApproveActivity;
 import com.eucalyptus.webui.client.activity.CertActivity;
 import com.eucalyptus.webui.client.activity.ClusterCtrlActivity;
+import com.eucalyptus.webui.client.activity.DeviceVMActivity;
 import com.eucalyptus.webui.client.activity.ErrorSinkActivity;
 import com.eucalyptus.webui.client.activity.GroupActivity;
 import com.eucalyptus.webui.client.activity.ImageActivity;
@@ -35,6 +36,7 @@ import com.eucalyptus.webui.client.place.AccountPlace;
 import com.eucalyptus.webui.client.place.ApprovePlace;
 import com.eucalyptus.webui.client.place.CertPlace;
 import com.eucalyptus.webui.client.place.ClusterCtrlPlace;
+import com.eucalyptus.webui.client.place.DeviceVMPlace;
 import com.eucalyptus.webui.client.place.ErrorSinkPlace;
 import com.eucalyptus.webui.client.place.GroupPlace;
 import com.eucalyptus.webui.client.place.ImagePlace;
@@ -138,6 +140,9 @@ public class MainActivityMapper implements ActivityMapper {
 		}
 		else if (place instanceof DeviceIPPlace) {
 			return new DeviceIPActivity((DeviceIPPlace)place, this.clientFactory);
+		}
+		else if (place instanceof DeviceVMPlace) {
+			return new DeviceVMActivity((DeviceVMPlace)place, this.clientFactory);
 		}
 		else if (place instanceof DeviceBWPlace) {
 			return new DeviceBWActivity((DeviceBWPlace)place, this.clientFactory);

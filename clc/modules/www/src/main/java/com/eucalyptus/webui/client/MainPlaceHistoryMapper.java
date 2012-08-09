@@ -11,6 +11,7 @@ import com.eucalyptus.webui.client.place.DeviceMemoryPlace;
 import com.eucalyptus.webui.client.place.DeviceServerPlace;
 import com.eucalyptus.webui.client.place.DeviceIPPlace;
 import com.eucalyptus.webui.client.place.DeviceTemplatePlace;
+import com.eucalyptus.webui.client.place.DeviceVMPlace;
 import com.eucalyptus.webui.client.place.ErrorSinkPlace;
 import com.eucalyptus.webui.client.place.ConfigPlace;
 import com.eucalyptus.webui.client.place.GroupPlace;
@@ -57,7 +58,9 @@ import com.google.gwt.place.shared.WithTokenizers;
   DeviceDiskPlace.Tokenizer.class,
   DeviceIPPlace.Tokenizer.class,
   DeviceBWPlace.Tokenizer.class,
-  DeviceTemplatePlace.Tokenizer.class
+  DeviceTemplatePlace.Tokenizer.class,
+  DeviceVMPlace.Tokenizer.class
+
 } )
 public interface MainPlaceHistoryMapper extends PlaceHistoryMapper {
 

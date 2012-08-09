@@ -711,4 +711,6 @@ public interface EucalyptusService extends RemoteService {
   SearchResultRow modifyDeviceTempate(Session session, SearchResultRow row, String cpu, String mem, String disk,
         String bw, String image);
 
+  SearchResult lookupDeviceVM(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException;
+
 }

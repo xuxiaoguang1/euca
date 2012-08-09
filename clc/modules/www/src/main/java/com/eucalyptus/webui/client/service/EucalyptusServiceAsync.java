@@ -248,5 +248,7 @@ public interface EucalyptusServiceAsync {
             AsyncCallback<Boolean> callback);
 	void modifyDeviceTempate(Session session, SearchResultRow row, String cpu, String mem, String disk, String bw,
             String image, AsyncCallback<SearchResultRow> callback);
+	
+	void lookupDeviceVM(Session session, String search, SearchRange range, int queryState, AsyncCallback<SearchResult> callback);
 
 }

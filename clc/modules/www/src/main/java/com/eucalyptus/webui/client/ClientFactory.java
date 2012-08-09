@@ -18,6 +18,7 @@ import com.eucalyptus.webui.client.view.DeviceMemoryView;
 import com.eucalyptus.webui.client.view.DeviceServerView;
 import com.eucalyptus.webui.client.view.DeviceIPView;
 import com.eucalyptus.webui.client.view.DeviceTemplateView;
+import com.eucalyptus.webui.client.view.DeviceVMView;
 import com.eucalyptus.webui.client.view.ErrorSinkView;
 import com.eucalyptus.webui.client.view.GroupAddView;
 import com.eucalyptus.webui.client.view.GroupDetailView;
@@ -178,6 +179,8 @@ public interface ClientFactory {
 	DeviceDiskView getDeviceDiskView();
 
 	DeviceIPView getDeviceIPView();
+	
+	DeviceVMView getDeviceVMView();
 	
 	DeviceBWView getDeviceBWView();
 	
