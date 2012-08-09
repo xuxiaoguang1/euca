@@ -28,26 +28,29 @@ public interface DeviceCPUView extends IsWidget, CanDisplaySearchResult, Clearab
 	Set<SearchResultRow> getSelectedSet();
 	
 	enum MirrorModeType {
-		MODIFY_SERVICE, MODIFY_DEVICE;
+		MODIFY_SERVICE,
+		DELETE_SERVICE,
+		DELETE_DEVICE,
+		ADD_SERVICE,
 	}
 	
 	public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceMirrorSearchResultTable.Presenter {
 		
 		void onAddService();
 		
-		void onDelService();
+		void onModifyService();
 		
-		void onExtendService();
+		void onDeleteService();
 		
-		void onAddCPU();
+		void onDeleteDevice();
 		
-		void onDelCPU();
+		void onAddDevice();
 		
 		void onClearSelection();
 		
-		void onModifyCPU();
+		void onMirrorBack();
 		
-		void onMirrorCancel();
+		void onMirrorDeleteAll();
 		
 		int getCounts(CPUState state);
 		

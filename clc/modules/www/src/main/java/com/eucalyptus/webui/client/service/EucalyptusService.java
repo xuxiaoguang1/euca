@@ -1,11 +1,16 @@
 package com.eucalyptus.webui.client.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.eucalyptus.webui.client.session.Session;
+import com.eucalyptus.webui.client.view.DeviceCPUDeviceAddView;
+import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
+import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
+import com.eucalyptus.webui.client.view.DeviceServerDeviceAddView;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
@@ -637,15 +642,73 @@ public interface EucalyptusService extends RemoteService {
    */
   public String getUserToken( Session session ) throws EucalyptusServiceException;
   
+  SearchResult lookupDeviceServer(Session session, String search, SearchRange range, int queryState);
+  Map<Integer, Integer> getDeviceServerCounts(Session session);
+  SearchResultRow modifyDeviceServerState(Session session, SearchResultRow row, int state);
+  boolean addDeviceServer(Session session, String mark, String name, String conf, String ip, int bw, int state, String room);
+  List<SearchResultRow> deleteDeviceServer(Session session, List<SearchResultRow> list);
   
-  SearchResult lookupDeviceServer(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException;
-  SearchResult lookupDeviceMemory(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException;
-  SearchResult lookupDeviceDisk(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException;
-  SearchResult lookupDeviceVM(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException;
-  SearchResult lookupDeviceBW(Session session, String query, SearchRange range) throws EucalyptusServiceException;
-  SearchResult lookupDeviceCPU(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException;
-  
-  Map<Integer, Integer> queryDeviceCPUCounts(Session session) throws EucalyptusServiceException;
+  SearchResult lookupDeviceCPU(Session session, String search, SearchRange range, int queryState);
+  Map<Integer, Integer> getDeviceCPUCounts(Session session);
   SearchResultRow modifyDeviceCPUService(Session session, SearchResultRow row, String endtime, int state);
-  boolean deleteDeviceCPUService(Session session, List<Integer> list);
+  List<SearchResultRow> deleteDeviceCPUService(Session session, List<SearchResultRow> list);
+  List<SearchResultRow> deleteDeviceCPUDevice(Session session, List<SearchResultRow> list);
+  SearchResultRow addDeviceCPUService(Session session, SearchResultRow row, String account, String user,
+	        String starttime, int life, int state);
+  boolean addDeviceCPUDevice(Session session, String serverMark, String name, String vendor, String model, double ghz,
+	        double cache, int num);
+  DeviceCPUDeviceAddView.DataCache lookupDeviceCPUInfo(Session session);
+  List<String> listDeviceCPUAccounts(Session session);
+  List<String> listDeviceCPUUsersByAccount(Session session, String account);
+  
+  SearchResult lookupDeviceMemory(Session session, String search, SearchRange range, int queryState);
+  Map<Integer, Long> getDeviceMemoryCounts(Session session);
+  SearchResultRow modifyDeviceMemoryService(Session session, SearchResultRow row, String endtime, int state);
+  List<SearchResultRow> deleteDeviceMemoryService(Session session, List<SearchResultRow> list);
+  List<SearchResultRow> deleteDeviceMemoryDevice(Session session, List<SearchResultRow> list);
+  SearchResultRow addDeviceMemoryService(Session session, SearchResultRow row, String account, String user,
+	        long used, String starttime, int life, int state);
+  boolean addDeviceMemoryDevice(Session session, String serverMark, String name, long total, int num);
+  DeviceMemoryDeviceAddView.DataCache lookupDeviceMemoryInfo(Session session);
+  List<String> listDeviceMemoryAccounts(Session session);
+  List<String> listDeviceMemoryUsersByAccount(Session session, String account);
+  
+  SearchResult lookupDeviceDisk(Session session, String search, SearchRange range, int queryState);
+  Map<Integer, Long> getDeviceDiskCounts(Session session);
+  SearchResultRow modifyDeviceDiskService(Session session, SearchResultRow row, String endtime, int state);
+  List<SearchResultRow> deleteDeviceDiskService(Session session, List<SearchResultRow> list);
+  List<SearchResultRow> deleteDeviceDiskDevice(Session session, List<SearchResultRow> list);
+  SearchResultRow addDeviceDiskService(Session session, SearchResultRow row, String account, String user,
+	        long used, String starttime, int life, int state);
+  boolean addDeviceDiskDevice(Session session, String serverMark, String name, long total, int num);
+  DeviceDiskDeviceAddView.DataCache lookupDeviceDiskInfo(Session session);
+  List<String> listDeviceDiskAccounts(Session session);
+  List<String> listDeviceDiskUsersByAccount(Session session, String account);
+  
+  SearchResult lookupDeviceIP(Session session, String search, SearchRange range, int queryState, int queryType);
+  Map<Integer, Integer> getDeviceIPCounts(Session session, int queryType);
+  SearchResultRow modifyDeviceIPService(Session session, SearchResultRow row, String endtime, int state);
+  List<SearchResultRow> deleteDeviceIPService(Session session, List<SearchResultRow> list);
+  List<SearchResultRow> deleteDeviceIPDevice(Session session, List<SearchResultRow> list);
+  SearchResultRow addDeviceIPService(Session session, SearchResultRow row, String account, String user, String vmMark,
+        String starttime, int life, int state);
+  boolean addDeviceIPDevice(Session session, List<String> publicList, List<String> privateList);
+  List<String> listDeviceVMsByUser(Session session, String account, String user);
+  List<String> listDeviceIPAccounts(Session session);
+  List<String> listDeviceIPUsersByAccount(Session session, String account);
+  
+  SearchResult lookupDeviceBW(Session session, String search, SearchRange range);
+  SearchResultRow modifyDeviceBWService(Session session, SearchResultRow row, String endtime);
+  List<SearchResultRow> deleteDeviceBWService(Session session, List<SearchResultRow> list);
+  boolean addDeviceBWService(Session session, String account, String user, String starttime, int life, String ip, int bandwidth);
+  List<String> listDeviceBWAccounts(Session session);
+  List<String> listDeviceBWUsersByAccount(Session session, String account);
+  List<String> listDeviceIPsByUser(Session session, String account, String user);
+  
+  SearchResult lookupDeviceTemplate(Session session, String search, SearchRange range, Date starttime, Date endtime);
+  List<SearchResultRow> deleteDeviceTemplate(Session session, List<SearchResultRow> list);
+  boolean addDeviceTemplate(Session session, String mark, String cpu, String mem, String disk, String bw, String image);
+  SearchResultRow modifyDeviceTempate(Session session, SearchResultRow row, String cpu, String mem, String disk,
+        String bw, String image);
+
 }

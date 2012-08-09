@@ -33,8 +33,10 @@ import com.eucalyptus.webui.client.view.DeviceMemoryView;
 import com.eucalyptus.webui.client.view.DeviceMemoryViewImpl;
 import com.eucalyptus.webui.client.view.DeviceServerView;
 import com.eucalyptus.webui.client.view.DeviceServerViewImpl;
-import com.eucalyptus.webui.client.view.DeviceVMView;
-import com.eucalyptus.webui.client.view.DeviceVMViewImpl;
+import com.eucalyptus.webui.client.view.DeviceIPView;
+import com.eucalyptus.webui.client.view.DeviceIPViewImpl;
+import com.eucalyptus.webui.client.view.DeviceTemplateView;
+import com.eucalyptus.webui.client.view.DeviceTemplateViewImpl;
 import com.eucalyptus.webui.client.view.ErrorSinkView;
 import com.eucalyptus.webui.client.view.ErrorSinkViewImpl;
 import com.eucalyptus.webui.client.view.GroupAddView;
@@ -144,8 +146,9 @@ public class ClientFactoryImpl implements ClientFactory {
 	private DeviceCPUView deviceCPUView;
 	private DeviceMemoryView deviceMemoryView;
 	private DeviceDiskView deviceDiskView;
-	private DeviceVMView deviceVMView;
+	private DeviceIPView deviceIPView;
 	private DeviceBWView deviceBWView;
+	private DeviceTemplateView deviceTemplateView;
 
 	// Dialogs
 	private ConfirmationView confirmationView;
@@ -481,14 +484,13 @@ public class ClientFactoryImpl implements ClientFactory {
 	}
 
 	@Override
-	public DeviceVMView getDeviceVMView() {
-		if (deviceVMView == null) {
-			deviceVMView = new DeviceVMViewImpl();
+	public DeviceIPView getDeviceIPView() {
+		if (deviceIPView == null) {
+			deviceIPView = new DeviceIPViewImpl();
 		}
-		return deviceVMView;
+		return deviceIPView;
 	}
-	
- 
+
   @Override
   public AwsServiceAsync getBackendAwsService( ) {
     return backendAwsService;
@@ -543,5 +545,13 @@ public class ClientFactoryImpl implements ClientFactory {
 			deviceBWView = new DeviceBWViewImpl();
 		}
 		return deviceBWView;
+	}
+       
+	@Override
+	public DeviceTemplateView getDeviceTemplateView() {
+		if (deviceTemplateView == null) {
+			deviceTemplateView = new DeviceTemplateViewImpl();
+		}
+		return deviceTemplateView;
 	}
 }

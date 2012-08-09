@@ -1,13 +1,10 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.activity.DeviceCPUActivity.CPUState;
-import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -16,7 +13,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
@@ -29,48 +25,42 @@ public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
 	interface CPUViewImplUiBinder extends UiBinder<Widget, DeviceCPUViewImpl> {
 	}
 
-	@UiField LayoutPanel resultPanel;
-	@UiField Anchor labelAll;
-	@UiField Anchor labelReserved;
-	@UiField Anchor labelInuse;
-	@UiField Anchor labelStop;
-	
-	private String getLabel(boolean highlight, String prefix, int value, String suffix) {
+	@UiField
+	LayoutPanel resultPanel;
+	@UiField
+	Anchor labelAll;
+	@UiField
+	Anchor labelReserved;
+	@UiField
+	Anchor labelInuse;
+	@UiField
+	Anchor labelStop;
+
+	private String getLabel(boolean highlight, String msg) {
 		StringBuilder sb = new StringBuilder();
 		String color = isMirrorMode() ? "#AAAAAA" : highlight ? "red" : "darkblue";
-		sb.append("<font color='").append(color).append("'>").append(prefix);
-		sb.append(" ").append(value).append(" ");
-		sb.append(suffix).append("</font>");
+		sb.append("<font color='").append(color).append("'>").append(msg).append("</font>");
 		return sb.toString();
 	}
-	
-	private String[] prefixes = new String[]{"全部CPU数量：", "预留CPU数量：", "使用中CPU数量：", "未使用CPU数量："};
-	private String[] suffixes = new String[]{"台", "台", "台", "台"};
-	private CPUState[] states = new CPUState[]{null, CPUState.RESERVED, CPUState.INUSE, CPUState.STOP};
-	
+
 	@Override
 	public void updateLabels() {
+		final String[] prefix = {"全部CPU数量： ", "预留CPU数量： ", "使用中CPU数量： ", "未使用CPU数量： "};
+		final String suffix = " 台";
+		final CPUState[] states = {null, CPUState.RESERVED, CPUState.INUSE, CPUState.STOP};
 		CPUState state = presenter.getQueryState();
 		Anchor[] labels = new Anchor[]{labelAll, labelReserved, labelInuse, labelStop};
 		for (int i = 0; i < labels.length; i ++) {
 			if (labels[i] != null) {
-				labels[i].setHTML(getLabel(state == states[i], prefixes[i], presenter.getCounts(states[i]), suffixes[i]));
+				int value = presenter.getCounts(states[i]);
+				labels[i].setHTML(getLabel(state == states[i], prefix[i] + value + suffix));
 			}
 		}
 	}
-	
+
 	private void updatePanel() {
 		updateLabels();
-		if (isMirrorMode()) {
-			if (table != null) {
-				resultPanel.remove(table);
-			}
-			if (mirrorTable != null) {
-				resultPanel.add(mirrorTable);
-			}
-			deckPanel.showWidget(1);
-		}
-		else {
+		if (!isMirrorMode()) {
 			if (mirrorTable != null) {
 				resultPanel.remove(mirrorTable);
 			}
@@ -79,13 +69,35 @@ public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
 			}
 			deckPanel.showWidget(0);
 		}
+		else {
+			if (table != null) {
+				resultPanel.remove(table);
+			}
+			if (mirrorTable != null) {
+				resultPanel.add(mirrorTable);
+			}
+			switch (getMirrorModeType()) {
+			case ADD_SERVICE:
+				deckPanel.showWidget(1);
+				break;
+			case MODIFY_SERVICE:
+				deckPanel.showWidget(2);
+				break;
+			case DELETE_SERVICE:
+				deckPanel.showWidget(3);
+				break;
+			case DELETE_DEVICE:
+				deckPanel.showWidget(4);
+				break;
+			}
+		}
 	}
-	
+
 	@UiHandler("labelAll")
 	void handleLabelAll(ClickEvent event) {
 		presenter.setQueryState(null);
 	}
-	
+
 	@UiHandler("labelReserved")
 	void handleLabelReserved(ClickEvent event) {
 		presenter.setQueryState(CPUState.RESERVED);
@@ -103,25 +115,24 @@ public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
 
 	public DeviceCPUViewImpl() {
 		initWidget(uiBinder.createAndBindUi(this));
+		selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
 	}
 
 	private Presenter presenter;
 
-	private MultiSelectionModel<SearchResultRow> selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
+	private MultiSelectionModel<SearchResultRow> selection;
 
 	private SearchResultTable table;
 	private DeviceMirrorSearchResultTable mirrorTable;
-	
+
 	@Override
 	public Set<SearchResultRow> getSelectedSet() {
 		return selection.getSelectedSet();
 	}
-	
+
 	@Override
 	public void showSearchResult(SearchResult result) {
 		if (table == null) {
-			updatePanel();
-			resultPanel.clear();
 			// int pageSize = presenter.getPageSize();
 			table = new SearchResultTable(DEFAULT_PAGESIZE, result.getDescs(), presenter, selection);
 			table.load();
@@ -145,81 +156,108 @@ public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
 	@Override
 	public void clearSelection() {
 		selection.clear();
-		table.cellTable.redraw();
 	}
 
 	@Override
 	public void setPresenter(Presenter presenter) {
 		this.presenter = presenter;
 	}
+
+	@UiField
+	DeckPanel deckPanel;
 	
-	@UiField Anchor buttonExtendService;
-	@UiField DeckPanel deckPanel;
-	
-	@UiHandler("buttonDelService")
-	void handleButtonDelService(ClickEvent event) {
-		presenter.onDelService();
+	@UiHandler("buttonAddDevice")
+	void onButtonAddDevice(ClickEvent event) {
+		presenter.onAddDevice();
 	}
 	
-	@UiHandler("buttonExtendService")
-	void handleButtonExtendService(ClickEvent event) {
-		presenter.onExtendService();
+	@UiHandler("buttonDeleteDevice")
+	void onButtonDeleteDevice(ClickEvent event) {
+		presenter.onDeleteDevice();
 	}
 	
+	@UiHandler("buttonAddService")
+	void handleButtonAddService(ClickEvent event) {
+		presenter.onAddService();
+	}
+
+	@UiHandler("buttonModifyService")
+	void handleButtonModifyService(ClickEvent event) {
+		presenter.onModifyService();
+	}
+
+	@UiHandler("buttonDeleteService")
+	void handleButtonDeleteService(ClickEvent event) {
+		presenter.onDeleteService();
+	}
+
 	@UiHandler("clearSelection")
 	void handleButtonClearSelection(ClickEvent event) {
 		presenter.onClearSelection();
 	}
 	
-	@UiHandler("mirrorBack")
-	void handleMirrorCancel(ClickEvent event) {
-		presenter.onMirrorCancel();
+	@UiHandler("mirrorAddServiceBack")
+	void handleMirrorAddServiceBack(ClickEvent event) {
+		presenter.onMirrorBack();
+	}
+
+	@UiHandler("mirrorModifyServiceBack")
+	void handleMirrorModifyServiceBack(ClickEvent event) {
+		presenter.onMirrorBack();
 	}
 	
-	private boolean mirrorMode = false;
-	private MirrorModeType mirrorModeType;
+	@UiHandler("mirrorDeleteServiceBack")
+	void handleMirrorDeleteServiceBack(ClickEvent event) {
+		presenter.onMirrorBack();
+	}
 	
+	@UiHandler("mirrorDeleteServiceDeleteAll")
+	void handleMirrorDeleteServiceDeleteAll(ClickEvent event) {
+		presenter.onMirrorDeleteAll();
+	}
+	
+	@UiHandler("mirrorDeleteDeviceBack")
+	void handleMirrorDeleteDeviceBack(ClickEvent event) {
+		presenter.onMirrorBack();
+	}
+	
+	@UiHandler("mirrorDeleteDeviceDeleteAll")
+	void handleMirrorDeleteDeviceDeleteAll(ClickEvent event) {
+		presenter.onMirrorDeleteAll();
+	}
+	
+	private MirrorModeType mirrorModeType = null;
+
 	@Override
 	public boolean isMirrorMode() {
-		return mirrorMode;
+		return mirrorModeType != null;
 	}
-	
+
 	@Override
 	public void openMirrorMode(MirrorModeType type, List<SearchResultRow> data) {
-		assert(!isMirrorMode() && type != null);
-		mirrorMode = true;
+		assert (!isMirrorMode() && type != null);
+		clearSelection();
 		mirrorModeType = type;
-		updatePanel();
 		mirrorTable.setData(data);
+		updatePanel();
 	}
-	
+
 	@Override
 	public void closeMirrorMode() {
-		assert(isMirrorMode());
-		mirrorMode = false;
+		assert (isMirrorMode());
+		mirrorModeType = null;
+		mirrorTable.clearSelection();
 		updatePanel();
 	}
-	
+
 	@Override
 	public DeviceMirrorSearchResultTable getMirrorTable() {
 		return mirrorTable;
 	}
-	
+
 	@Override
 	public MirrorModeType getMirrorModeType() {
 		return mirrorModeType;
 	}
 
-	@UiHandler("buttonAddDevice")
-	void onButtonAddDeviceClick(ClickEvent event) {
-	}
-	@UiHandler("buttonModifyDevice")
-	void onButtonModifyDeviceClick(ClickEvent event) {
-	}
-	@UiHandler("buttonDelDevice")
-	void onButtonDelDeviceClick(ClickEvent event) {
-	}
-	@UiHandler("buttonAddService")
-	void onButtonAddServiceClick(ClickEvent event) {
-	}
 }

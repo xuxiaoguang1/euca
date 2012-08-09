@@ -1,7 +1,12 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.List;
+import java.util.Set;
+
+import com.eucalyptus.webui.client.activity.DeviceDiskActivity.DiskState;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.server.DeviceDiskServiceProcImpl;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -12,8 +17,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.view.client.SelectionChangeEvent;
-import com.google.gwt.view.client.SelectionChangeEvent.Handler;
+import com.google.gwt.user.client.ui.DeckPanel;
 
 public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
 
@@ -33,35 +37,98 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
 	@UiField
 	Anchor labelStop;
 
-	Anchor[] labelList = {labelAll, labelReserved, labelInuse, labelStop};
+	private String getLabel(boolean highlight, String msg) {
+		StringBuilder sb = new StringBuilder();
+		String color = isMirrorMode() ? "#AAAAAA" : highlight ? "red" : "darkblue";
+		sb.append("<font color='").append(color).append("'>").append(msg).append("</font>");
+		return sb.toString();
+	}
 
-	int numAll = 0;
-	int numReserved = 0;
-	int numInuse = 0;
-	int numStop = 0;
+	@Override
+	public void updateLabels() {
+		final String[] prefix = {"全部磁盘数量： ", "预留磁盘数量： ", "使用中磁盘数量： ", "未使用磁盘数量： "};
+		final String suffix = " GB";
+		final DiskState[] states = {null, DiskState.RESERVED, DiskState.INUSE, DiskState.STOP};
+		DiskState state = presenter.getQueryState();
+		Anchor[] labels = new Anchor[]{labelAll, labelReserved, labelInuse, labelStop};
+		for (int i = 0; i < labels.length; i ++) {
+			if (labels[i] != null) {
+				double value = (double)presenter.getCounts(states[i]) / DeviceDiskServiceProcImpl.DIV_UNIT;
+				labels[i].setHTML(getLabel(state == states[i], prefix[i] + stringValue(value) + suffix));
+			}
+		}
+	}
+	
+	private String stringValue(double v) {
+		StringBuilder sb = new StringBuilder();
+		long i = (long)v;
+		int j = (int)((long)(v * 100) - i * 100) % 100;
+		sb.append(i).append(".");
+		if (j < 10) {
+			sb.append("0");
+		}
+		sb.append(j);
+		return sb.toString();
+	}
+
+	private void updatePanel() {
+		updateLabels();
+		if (!isMirrorMode()) {
+			if (mirrorTable != null) {
+				resultPanel.remove(mirrorTable);
+			}
+			if (table != null) {
+				resultPanel.add(table);
+			}
+			deckPanel.showWidget(0);
+		}
+		else {
+			if (table != null) {
+				resultPanel.remove(table);
+			}
+			if (mirrorTable != null) {
+				resultPanel.add(mirrorTable);
+			}
+			switch (getMirrorModeType()) {
+			case ADD_SERVICE:
+				deckPanel.showWidget(1);
+				break;
+			case MODIFY_SERVICE:
+				deckPanel.showWidget(2);
+				break;
+			case DELETE_SERVICE:
+				deckPanel.showWidget(3);
+				break;
+			case DELETE_DEVICE:
+				deckPanel.showWidget(4);
+				break;
+			}
+		}
+	}
 
 	@UiHandler("labelAll")
 	void handleLabelAll(ClickEvent event) {
-		labelAll.setHTML("全部硬盘数量：<font color='red'>" + numAll + "</font> 台");
+		presenter.setQueryState(null);
 	}
 
 	@UiHandler("labelReserved")
 	void handleLabelReserved(ClickEvent event) {
-		labelReserved.setHTML("预留硬盘数量：<font color='red'>" + numAll + "</font> 台");
+		presenter.setQueryState(DiskState.RESERVED);
 	}
 
 	@UiHandler("labelInuse")
 	void handleLabelInuse(ClickEvent event) {
-		labelInuse.setHTML("使用中硬盘数量：<font color='red'>" + numAll + "</font> 台");
+		presenter.setQueryState(DiskState.INUSE);
 	}
 
 	@UiHandler("labelStop")
 	void handleLabelStop(ClickEvent event) {
-		labelStop.setHTML("未使用硬盘数量：<font color='red'>" + numAll + "</font> 台");
+		presenter.setQueryState(DiskState.STOP);
 	}
 
 	public DeviceDiskViewImpl() {
 		initWidget(uiBinder.createAndBindUi(this));
+		selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
 	}
 
 	private Presenter presenter;
@@ -69,55 +136,34 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
 	private MultiSelectionModel<SearchResultRow> selection;
 
 	private SearchResultTable table;
+	private DeviceMirrorSearchResultTable mirrorTable;
 
-	@UiHandler("buttonAdd")
-	void handleButtonAdd(ClickEvent event) {
-		presenter.onAdd();
-	}
-
-	@UiHandler("buttonExtend")
-	void handleButtonExtend(ClickEvent event) {
-		presenter.onExtend();
-	}
-
-	@UiHandler("buttonModify")
-	void handleButtonModify(ClickEvent event) {
-		presenter.onModify();
-	}
-
-	@UiHandler("buttonDelete")
-	void handleButtonDelete(ClickEvent event) {
-		presenter.onDelete();
+	@Override
+	public Set<SearchResultRow> getSelectedSet() {
+		return selection.getSelectedSet();
 	}
 
 	@Override
 	public void showSearchResult(SearchResult result) {
 		if (table == null) {
-			resultPanel.clear();
-			selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
-			selection.addSelectionChangeHandler(new Handler() {
-
-				@Override
-				public void onSelectionChange(SelectionChangeEvent event) {
-					System.err.println("OnSelectionChange");
-				}
-
-			});
-
 			// int pageSize = presenter.getPageSize();
 			table = new SearchResultTable(DEFAULT_PAGESIZE, result.getDescs(), presenter, selection);
 			table.load();
-			resultPanel.add(table);
+			updatePanel();
+		}
+		if (mirrorTable == null) {
+			mirrorTable = new DeviceMirrorSearchResultTable(DEFAULT_PAGESIZE, result.getDescs(), presenter);
+			mirrorTable.load();
+			updatePanel();
 		}
 		table.setData(result);
 	}
-
-	private static final int DEFAULT_PAGESIZE = 12;
 
 	@Override
 	public void clear() {
 		resultPanel.clear();
 		table = null;
+		mirrorTable = null;
 	}
 
 	@Override
@@ -128,6 +174,103 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
 	@Override
 	public void setPresenter(Presenter presenter) {
 		this.presenter = presenter;
+	}
+
+	@UiField
+	DeckPanel deckPanel;
+	
+	@UiHandler("buttonAddDevice")
+	void onButtonAddDevice(ClickEvent event) {
+		presenter.onAddDevice();
+	}
+	
+	@UiHandler("buttonDeleteDevice")
+	void onButtonDeleteDevice(ClickEvent event) {
+		presenter.onDeleteDevice();
+	}
+	
+	@UiHandler("buttonAddService")
+	void handleButtonAddService(ClickEvent event) {
+		presenter.onAddService();
+	}
+
+	@UiHandler("buttonModifyService")
+	void handleButtonModifyService(ClickEvent event) {
+		presenter.onModifyService();
+	}
+
+	@UiHandler("buttonDeleteService")
+	void handleButtonDeleteService(ClickEvent event) {
+		presenter.onDeleteService();
+	}
+
+	@UiHandler("clearSelection")
+	void handleButtonClearSelection(ClickEvent event) {
+		presenter.onClearSelection();
+	}
+	
+	@UiHandler("mirrorAddServiceBack")
+	void handleMirrorAddServiceBack(ClickEvent event) {
+		presenter.onMirrorBack();
+	}
+
+	@UiHandler("mirrorModifyServiceBack")
+	void handleMirrorModifyServiceBack(ClickEvent event) {
+		presenter.onMirrorBack();
+	}
+	
+	@UiHandler("mirrorDeleteServiceBack")
+	void handleMirrorDeleteServiceBack(ClickEvent event) {
+		presenter.onMirrorBack();
+	}
+	
+	@UiHandler("mirrorDeleteServiceDeleteAll")
+	void handleMirrorDeleteServiceDeleteAll(ClickEvent event) {
+		presenter.onMirrorDeleteAll();
+	}
+	
+	@UiHandler("mirrorDeleteDeviceBack")
+	void handleMirrorDeleteDeviceBack(ClickEvent event) {
+		presenter.onMirrorBack();
+	}
+	
+	@UiHandler("mirrorDeleteDeviceDeleteAll")
+	void handleMirrorDeleteDeviceDeleteAll(ClickEvent event) {
+		presenter.onMirrorDeleteAll();
+	}
+	
+	private MirrorModeType mirrorModeType = null;
+
+	@Override
+	public boolean isMirrorMode() {
+		return mirrorModeType != null;
+	}
+
+	@Override
+	public void openMirrorMode(MirrorModeType type, List<SearchResultRow> data) {
+		assert (!isMirrorMode() && type != null);
+		clearSelection();
+		mirrorModeType = type;
+		mirrorTable.setData(data);
+		updatePanel();
+	}
+
+	@Override
+	public void closeMirrorMode() {
+		assert (isMirrorMode());
+		mirrorModeType = null;
+		mirrorTable.clearSelection();
+		updatePanel();
+	}
+
+	@Override
+	public DeviceMirrorSearchResultTable getMirrorTable() {
+		return mirrorTable;
+	}
+
+	@Override
+	public MirrorModeType getMirrorModeType() {
+		return mirrorModeType;
 	}
 
 }

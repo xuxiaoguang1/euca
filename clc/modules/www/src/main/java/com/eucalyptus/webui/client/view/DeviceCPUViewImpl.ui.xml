@@ -108,7 +108,7 @@
 			<g:AbsolutePanel width="1000px" height="56px">
 				<g:at left="30" top="10">
 					<g:DeckPanel height="36px" width="940px" ui:field="deckPanel">
-						<g:HTMLPanel height="36px" width="600px"
+						<g:HTMLPanel height="36px" width="900px"
 							styleName="border-top:1px solid #AAAAAA;">
 							<table class="{style.bottom}">
 								<tbody>
@@ -116,14 +116,13 @@
 										<td width="10px" />
 										<td width="80px" />
 										<td width="80px" />
-										<td width="80px" />
-										<td width="100px" />
-										<td width="80px" />
+										<td width="40px" />
 										<td width="80px" />
 										<td width="80px" />
-										<td width="100px" />
+										<td width="80px" />
+										<td width="40px" />
 										<td width="110px" />
-										<td width="100px" />
+										<td width="220px" />
 									</tr>
 									<tr>
 										<td />
@@ -135,13 +134,7 @@
 										</td>
 										<td>
 											<g:Anchor styleName="{global.buttonCss.button}"
-												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonModifyDevice">
-												变更设备
-											</g:Anchor>
-										</td>
-										<td>
-											<g:Anchor styleName="{global.buttonCss.button}"
-												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonDelDevice">
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonDeleteDevice">
 												删除设备
 											</g:Anchor>
 										</td>
@@ -154,22 +147,20 @@
 										</td>
 										<td>
 											<g:Anchor styleName="{global.buttonCss.button}"
-												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonDelService">
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonDeleteService">
 												删除服务
 											</g:Anchor>
 										</td>
 										<td>
 											<g:Anchor styleName="{global.buttonCss.button}"
-												horizontalAlignment="ALIGN_CENTER" width="64px"
-												ui:field="buttonExtendService">
+											 	horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonModifyService">
 												变更服务
 											</g:Anchor>
 										</td>
 										<td/>
 										<td>
 											<g:Anchor styleName="{global.buttonCss.button}"
-												horizontalAlignment="ALIGN_CENTER" width="64px"
-												ui:field="clearSelection">
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="clearSelection">
 												清空选择
 											</g:Anchor>
 										</td>
@@ -178,13 +169,56 @@
 								</tbody>
 							</table>
 						</g:HTMLPanel>
-						<g:HTMLPanel height="36px" width="600px"
+						<g:HTMLPanel height="36px" width="900px"
 							styleName="border-top:1px solid #AAAAAA;">
 							<table class="{style.bottom}">
 								<tbody>
 									<tr height="4px">
 										<td width="10px" />
-										<td width="100px" />
+										<td width="80px" />
+										<td width="730px" />
+									</tr>
+									<tr>
+										<td />
+										<td>
+											<g:Anchor styleName="{global.buttonCss.button}"
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="mirrorAddServiceBack">
+												返&nbsp;&nbsp;回
+											</g:Anchor>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</g:HTMLPanel>
+						<g:HTMLPanel height="36px" width="900px"
+							styleName="border-top:1px solid #AAAAAA;">
+							<table class="{style.bottom}">
+								<tbody>
+									<tr height="4px">
+										<td width="10px" />
+										<td width="80px" />
+										<td width="730px" />
+									</tr>
+									<tr>
+										<td />
+										<td>
+											<g:Anchor styleName="{global.buttonCss.button}"
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="mirrorModifyServiceBack">
+												返&nbsp;&nbsp;回
+											</g:Anchor>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</g:HTMLPanel>
+						<g:HTMLPanel height="36px" width="900px"
+							styleName="border-top:1px solid #AAAAAA;">
+							<table class="{style.bottom}">
+								<tbody>
+									<tr height="4px">
+										<td width="10px" />
+										<td width="80px" />
+										<td width="40px" />
 										<td width="80px" />
 										<td width="610px" />
 									</tr>
@@ -192,7 +226,44 @@
 										<td />
 										<td>
 											<g:Anchor styleName="{global.buttonCss.button}"
-												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="mirrorBack">
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="mirrorDeleteServiceDeleteAll">
+												删除全部
+											</g:Anchor>
+										</td>
+										<td />
+										<td>
+											<g:Anchor styleName="{global.buttonCss.button}"
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="mirrorDeleteServiceBack">
+												返&nbsp;&nbsp;回
+											</g:Anchor>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</g:HTMLPanel>
+						<g:HTMLPanel height="36px" width="900px"
+							styleName="border-top:1px solid #AAAAAA;">
+							<table class="{style.bottom}">
+								<tbody>
+									<tr height="4px">
+										<td width="10px" />
+										<td width="80px" />
+										<td width="40px" />
+										<td width="80px" />
+										<td width="610px" />
+									</tr>
+									<tr>
+										<td />
+										<td>
+											<g:Anchor styleName="{global.buttonCss.button}"
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="mirrorDeleteDeviceDeleteAll">
+												删除全部
+											</g:Anchor>
+										</td>
+										<td />
+										<td>
+											<g:Anchor styleName="{global.buttonCss.button}"
+												horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="mirrorDeleteDeviceBack">
 												返&nbsp;&nbsp;回
 											</g:Anchor>
 										</td>

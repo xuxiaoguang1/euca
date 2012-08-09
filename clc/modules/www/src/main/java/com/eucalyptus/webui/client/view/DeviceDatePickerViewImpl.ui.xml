@@ -1,0 +1,91 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p1="urn:import:com.google.gwt.user.datepicker.client">
+
+    <ui:style>
+    .title {
+		font-size:110%;
+		font-weight:bold;
+		color:darkblue;
+		border-bottom:1px solid #AAAAAA;
+	}
+	.border {
+		border-bottom:1px solid #AAAAAA;
+		border-top:1px solid #AAAAAA;
+		border-left:1px solid #AAAAAA;
+		border-right:1px solid #AAAAAA;
+	}
+	.background {
+		backgroupd-color:#DDDDDD;
+		border-bottom:2px solid #AAAAAA;
+		border-top:2px solid #AAAAAA;
+		border-left:2px solid #AAAAAA;
+		border-right:2px solid #AAAAAA;
+	}
+    </ui:style>
+    
+    <ui:with field="global"
+		type="com.eucalyptus.webui.client.view.GlobalResources" />
+    
+	<g:VerticalPanel horizontalAlignment="ALIGN_CENTER" width="320px" height="270px" styleName="{style.background}">
+		<g:HTMLPanel width="320px">
+			<table>
+				<colgroup width="30px"/>
+				<colgroup width="260px"/>
+				<colgroup width="30px"/>
+				<tbody>
+					<tr height="10px"/>
+					<tr>
+						<td/>
+						<td>
+							<g:HTMLPanel>
+								<table>
+									<colgroup width="20px"/>
+									<colgroup width="220px"/>
+									<colgroup width="20px"/>
+									<tbody class="{style.title}">
+										<tr>
+											<td/>
+											<td>日期选择：</td>
+											<td/>
+										</tr>
+										<tr height="5px"><td/><td/><td/></tr>
+									</tbody>
+								</table>
+							</g:HTMLPanel>
+						</td>
+						<td/>
+					</tr>
+					<tr height="10px"/>
+				</tbody>
+			</table>
+		</g:HTMLPanel>
+		<g:AbsolutePanel height="220px" width="320px">
+			<g:at left="40" top="0">
+				<p1:DatePicker width="240px" height="160px" ui:field="datePicker"/>
+			</g:at>
+			<g:at left="130" top="190">
+				<g:Anchor styleName="{global.buttonCss.button}"
+					horizontalAlignment="ALIGN_CENTER" width="60px"
+					ui:field="buttonOK">确&nbsp;定
+				</g:Anchor>
+			</g:at>
+			<g:at left="210" top="190">
+				<g:Anchor styleName="{global.buttonCss.button}"
+					horizontalAlignment="ALIGN_CENTER" width="60px"
+					ui:field="buttonCancel">取&nbsp;消
+				</g:Anchor>
+			</g:at>
+			<g:at left="40" top="165">
+				<g:ListBox visibleItemCount="1" width="60px" height="20px" selectedIndex="0" ui:field="yearList"/>
+			</g:at>
+			<g:at left="110" top="165">
+				<g:ListBox visibleItemCount="1" width="50px" height="20px" selectedIndex="0" ui:field="monthList"/>
+			</g:at>
+			<g:at left="170" top="165">
+				<g:ListBox visibleItemCount="1" width="50px" height="20px" selectedIndex="0" ui:field="dayList"/>
+			</g:at>
+		</g:AbsolutePanel>
+	</g:VerticalPanel>
+    
+</ui:UiBinder> 
