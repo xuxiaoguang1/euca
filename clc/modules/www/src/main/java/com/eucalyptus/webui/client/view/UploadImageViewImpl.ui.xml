@@ -1,0 +1,73 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.important {
+			font-weight: bold;
+		}
+	</ui:style>
+	<ui:with field="global" type="com.eucalyptus.webui.client.view.GlobalResources"/>
+	<g:HTMLPanel ui:field="panel">
+		<table>
+		<tbody>
+		<tr>
+			<td>
+			<g:Label text="镜像类型"/>
+			</td>
+			<td>
+			<g:ListBox ui:field="typeBox" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<g:Label ui:field="kernelLabel" text="内核"/>
+			</td>
+			<td>
+			<g:ListBox ui:field="kernelBox" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<g:Label ui:field="ramDiskLabel" text="RamDisk"/>
+			</td>
+			<td>
+			<g:ListBox ui:field="ramDiskBox" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<g:Label text="镜像名称" />
+			</td>
+			<td>
+			<g:TextBox ui:field="nameBox" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<g:Label text="Bucket" />
+			</td>
+			<td>
+			<g:TextBox ui:field="bucketBox"/>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+			<g:FlowPanel ui:field="uploadPanel"/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+		    <g:Anchor styleName="{global.buttonCss.button}" ui:field="okButton">
+            <span class=""/>上传
+            </g:Anchor>
+			</td>
+			<td>
+		    <g:Anchor styleName="{global.buttonCss.button}" ui:field="cancelButton">
+            <span class=""/>取消
+            </g:Anchor>			
+			</td>
+		</tr>
+		</tbody>
+		</table>
+	</g:HTMLPanel>
+</ui:UiBinder> 

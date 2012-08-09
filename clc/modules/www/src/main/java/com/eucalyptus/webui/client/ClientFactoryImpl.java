@@ -77,6 +77,8 @@ import com.eucalyptus.webui.client.view.StartView;
 import com.eucalyptus.webui.client.view.StartViewImpl;
 import com.eucalyptus.webui.client.view.StorageCtrlView;
 import com.eucalyptus.webui.client.view.StorageCtrlViewImpl;
+import com.eucalyptus.webui.client.view.UploadImageView;
+import com.eucalyptus.webui.client.view.UploadImageViewImpl;
 import com.eucalyptus.webui.client.view.UserAddView;
 import com.eucalyptus.webui.client.view.UserAddViewImpl;
 import com.eucalyptus.webui.client.view.UserListView;
@@ -155,6 +157,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private GroupListView groupListView;
 	private GroupDetailView groupDetailView;
 	private UserListView userListView;
+	private UploadImageView uploadImageView;
 
 	// Snippets
 	private CloudRegistrationView cloudRegView;
@@ -544,4 +547,12 @@ public class ClientFactoryImpl implements ClientFactory {
 		}
 		return deviceBWView;
 	}
+
+  @Override
+  public UploadImageView createUploadImageView() {
+    if (uploadImageView == null) {
+      uploadImageView = new UploadImageViewImpl();
+    }
+    return uploadImageView;
+  }
 }

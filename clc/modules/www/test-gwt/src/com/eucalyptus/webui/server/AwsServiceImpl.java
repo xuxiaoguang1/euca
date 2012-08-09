@@ -36,7 +36,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 	static final String ACCESS_KEY="YA8IBOXPEL3X3J7F2ZWYT";
 	static final String SECRET_KEY="GZO4qV10hsKJ5abci3pRYGNnX7J8KG71MNcrz7Q2";
-	static final String ENDPOINT="http://166.111.134.121:8773/services/Eucalyptus";
+	static final String ENDPOINT="http://166.111.134.80:8773/services/Eucalyptus";
 	
 	public static final ArrayList<SearchResultFieldDesc> INSTANCE_COMMON_FIELD_DESCS = Lists.newArrayList();
 	static {

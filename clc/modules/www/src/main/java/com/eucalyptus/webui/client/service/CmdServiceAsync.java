@@ -3,6 +3,7 @@ package com.eucalyptus.webui.client.service;
 import java.util.ArrayList;
 import java.util.List;
 import com.eucalyptus.webui.client.session.Session;
+import com.eucalyptus.webui.shared.aws.ImageType;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface CmdServiceAsync {
@@ -22,5 +23,8 @@ public interface CmdServiceAsync {
 
 	void lookupClusterCtrl(Session session, String search, SearchRange range,
 			AsyncCallback<SearchResult> callback);
+
+  void uploadImage(Session session, String file, ImageType type, String bucket,
+      String name, String kernel, String ramdisk, AsyncCallback<String> callback);
 
 }

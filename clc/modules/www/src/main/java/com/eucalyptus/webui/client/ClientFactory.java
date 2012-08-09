@@ -38,6 +38,7 @@ import com.eucalyptus.webui.client.view.ReportView;
 import com.eucalyptus.webui.client.view.ShellView;
 import com.eucalyptus.webui.client.view.StartView;
 import com.eucalyptus.webui.client.view.StorageCtrlView;
+import com.eucalyptus.webui.client.view.UploadImageView;
 import com.eucalyptus.webui.client.view.UserAddView;
 import com.eucalyptus.webui.client.view.UserListView;
 import com.eucalyptus.webui.client.view.UserView;
@@ -153,6 +154,8 @@ public interface ClientFactory {
 	ActionResultView getActionResultView();
 
 	ItemView createItemView();
+	
+	UploadImageView createUploadImageView();
 
 	CloudRegistrationView getCloudRegistrationView();
 
@@ -180,7 +183,7 @@ public interface ClientFactory {
 	
 	DeviceBWView getDeviceBWView();
 	
-    InstanceView getInstanceView( );
+  InstanceView getInstanceView( );
 	  
 	NodeCtrlView getNodeCtrlView( );
 	ClusterCtrlView getClusterCtrlView( );
