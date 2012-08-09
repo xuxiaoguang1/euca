@@ -1,26 +1,56 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.List;
+import java.util.Set;
+
+import com.eucalyptus.webui.client.activity.DeviceServerActivity.ServerState;
+import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceServerView extends IsWidget, CanDisplaySearchResult, Clearable, SelectionController {
-
+	
+	public static final int DEFAULT_PAGESIZE = 13;
+	
 	void setPresenter(Presenter presenter);
-
-	public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize {
+	
+	void updateLabels();
+	
+	void openMirrorMode(MirrorModeType type, List<SearchResultRow> data);
+	
+	void closeMirrorMode();
+	
+	DeviceMirrorSearchResultTable getMirrorTable();
+	
+	boolean isMirrorMode();
+	
+	MirrorModeType getMirrorModeType();
+	
+	Set<SearchResultRow> getSelectedSet();
+	
+	enum MirrorModeType {
+		MODIFY_STATE,
+		DELETE_DEVICE,
+	}
+	
+	public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceMirrorSearchResultTable.Presenter {
 		
-		void onAdd();
+		void onModifyState();
 		
-		void onSecretKey();
+		void onDeleteDevice();
 		
-		void onPower();
+		void onAddDevice();
 		
-		void onConnect();
+		void onClearSelection();
 		
-		void onExtend();
+		void onMirrorBack();
 		
-		void onModify();
+		void onMirrorDeleteAll();
 		
-		void onDelete();
+		int getCounts(ServerState state);
+		
+		void setQueryState(ServerState state);
+		
+		ServerState getQueryState();
 		
 	}
 

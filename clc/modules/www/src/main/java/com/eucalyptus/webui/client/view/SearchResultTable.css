@@ -9,7 +9,7 @@
 
 .cellTableFooter {
   border-top: 2px solid #6f7277;
-  padding: 3px 15px;
+  padding: 2px 2px;
   text-align: left;
   color: #4b4a4a;
   text-shadow: #ddf 1px 1px 0;
@@ -20,7 +20,7 @@
   font-size:90%;
   font-weight:bold;
   border-bottom: 1px solid #CCCCCC;
-  padding: 3px 15px;
+  padding: 2px 2px;
   text-align: left;
   color: #4b4a4a;
   text-shadow: #ddf 1px 1px 0;
@@ -28,7 +28,7 @@
 }
 
 .cellTableCell {
-  padding: 4px 15px;
+  padding: 2px 2px;
   overflow: hidden;
 }
 

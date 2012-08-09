@@ -13,7 +13,8 @@ import com.eucalyptus.webui.client.activity.DeviceCPUActivity;
 import com.eucalyptus.webui.client.activity.DeviceDiskActivity;
 import com.eucalyptus.webui.client.activity.DeviceMemoryActivity;
 import com.eucalyptus.webui.client.activity.DeviceServerActivity;
-import com.eucalyptus.webui.client.activity.DeviceVMActivity;
+import com.eucalyptus.webui.client.activity.DeviceIPActivity;
+import com.eucalyptus.webui.client.activity.DeviceTemplateActivity;
 import com.eucalyptus.webui.client.activity.ErrorSinkActivity;
 import com.eucalyptus.webui.client.activity.GroupActivity;
 import com.eucalyptus.webui.client.activity.ImageActivity;
@@ -43,7 +44,8 @@ import com.eucalyptus.webui.client.place.DeviceCPUPlace;
 import com.eucalyptus.webui.client.place.DeviceDiskPlace;
 import com.eucalyptus.webui.client.place.DeviceMemoryPlace;
 import com.eucalyptus.webui.client.place.DeviceServerPlace;
-import com.eucalyptus.webui.client.place.DeviceVMPlace;
+import com.eucalyptus.webui.client.place.DeviceIPPlace;
+import com.eucalyptus.webui.client.place.DeviceTemplatePlace;
 import com.eucalyptus.webui.client.place.ErrorSinkPlace;
 import com.eucalyptus.webui.client.place.GroupPlace;
 import com.eucalyptus.webui.client.place.ImagePlace;
@@ -134,11 +136,14 @@ public class MainActivityMapper implements ActivityMapper {
 		else if (place instanceof DeviceDiskPlace) {
 			return new DeviceDiskActivity((DeviceDiskPlace)place, this.clientFactory);
 		}
-		else if (place instanceof DeviceVMPlace) {
-			return new DeviceVMActivity((DeviceVMPlace)place, this.clientFactory);
+		else if (place instanceof DeviceIPPlace) {
+			return new DeviceIPActivity((DeviceIPPlace)place, this.clientFactory);
 		}
 		else if (place instanceof DeviceBWPlace) {
 			return new DeviceBWActivity((DeviceBWPlace)place, this.clientFactory);
+		}
+		else if (place instanceof DeviceTemplatePlace) {
+			return new DeviceTemplateActivity((DeviceTemplatePlace)place, this.clientFactory);
 		}
 		else if ( place instanceof InstancePlace ) {
 			return new InstanceActivity( ( InstancePlace )place, this.clientFactory );
