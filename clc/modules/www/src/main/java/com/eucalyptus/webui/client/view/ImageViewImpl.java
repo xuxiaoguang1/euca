@@ -30,6 +30,13 @@ public class ImageViewImpl extends Composite implements ImageView {
   @UiField
   LayoutPanel tablePanel;
   
+ 
+  @UiHandler( "uploadButton" )
+  void handleUploadButtonClick( ClickEvent e ) {
+    this.presenter.onUploadImage();
+  }
+
+  
   private MultiSelectionModel<SearchResultRow> selectionModel;
   
   private SearchResultTable table;
