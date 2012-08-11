@@ -18,4 +18,6 @@ public class DBTableName {
 	public static final String VM_SERVICE = "vm_service";
 	public static final String BW_SERVICE = "bw_service";
 	public static final String TEMPLATE = "template";
+	public static final String KEY = "key";
+	public static final String CERTIFICATE = "cert";
 }

@@ -712,5 +712,39 @@ public interface EucalyptusService extends RemoteService {
         String bw, String image);
 
   SearchResult lookupDeviceVM(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException;
+  
+  /**
+   * Acquire access keys by user id
+   * @param session
+   * @param userId
+   * @return
+   * @throws EucalyptusServiceException
+   */
+  SearchResult listAccessKeysByUser(Session session, String userId) throws EucalyptusServiceException;
+  
+  /**
+   * Acquire all access keys
+   * @param session
+   * @return
+   * @throws EucalyptusServiceException
+   */
+  SearchResult listAccessKeys(Session session) throws EucalyptusServiceException;
+  
+  /**
+   * Acquire certificates by user id
+   * @param session
+   * @param userId
+   * @return
+   * @throws EucalyptusServiceException
+   */
+  SearchResult listCertificatesByUser(Session session, String userId) throws EucalyptusServiceException;
+  
+  /**
+   * Acquire all certificates
+   * @param session
+   * @return
+   * @throws EucalyptusServiceException
+   */
+  SearchResult listCertificates(Session session) throws EucalyptusServiceException;
 
 }

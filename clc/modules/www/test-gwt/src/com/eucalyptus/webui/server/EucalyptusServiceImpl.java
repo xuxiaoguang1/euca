@@ -38,6 +38,8 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	private static final Random RANDOM = new Random();
 	private static AuthenticateUserLogin authenticateUserLogin = new AuthenticateUserLogin();
 
+	private AuthServiceProcImpl authServiceProc = new AuthServiceProcImpl();
+	
 	private AccountServiceProcImpl accountServiceProc = new AccountServiceProcImpl();
 	private UserServiceProcImpl userServiceProc = new UserServiceProcImpl();
 	private GroupServiceProcImpl groupServiceProc = new GroupServiceProcImpl();
@@ -470,12 +472,14 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	public void deleteAccessKey(Session session, SearchResultRow keySerialized) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
+		authServiceProc.deleteAccessKey(session, keySerialized);
 	}
 
 	@Override
 	public void deleteCertificate(Session session, SearchResultRow certSerialized) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
+		authServiceProc.deleteCertification(session, certSerialized);
 	}
 
 	@Override
@@ -508,12 +512,14 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	public void addAccessKey(Session session, String userId) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
+		authServiceProc.addAccessKey(session, userId);
 	}
 
 	@Override
 	public void addCertificate(Session session, String userId, String pem) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
+		authServiceProc.addCertificate(session, userId, pem);
 	}
 
 	@Override
@@ -908,6 +914,30 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	@Override
 	public SearchResult lookupDeviceVM(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException {
 		return deviceVMServiceProc.lookupVM(session, search, range, queryState);
+	}
+
+	@Override
+	public SearchResult listAccessKeysByUser(Session session, String userId)
+			throws EucalyptusServiceException {
+		return authServiceProc.listAccesssKeyByUser(session, userId);
+	}
+
+	@Override
+	public SearchResult listAccessKeys(Session session)
+			throws EucalyptusServiceException {
+		return authServiceProc.listAccessKeys(session);
+	}
+
+	@Override
+	public SearchResult listCertificatesByUser(Session session, String userId)
+			throws EucalyptusServiceException {
+		return authServiceProc.listCertificatesByUser(session, userId);
+	}
+
+	@Override
+	public SearchResult listCertificates(Session session)
+			throws EucalyptusServiceException {
+		return authServiceProc.listCertificates(session);
 	}
 
 

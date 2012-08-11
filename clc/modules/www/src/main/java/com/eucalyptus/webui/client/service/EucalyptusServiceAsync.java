@@ -251,4 +251,9 @@ public interface EucalyptusServiceAsync {
 	
 	void lookupDeviceVM(Session session, String search, SearchRange range, int queryState, AsyncCallback<SearchResult> callback);
 
+	
+	void listAccessKeysByUser(Session session, String userId, AsyncCallback<SearchResult> callback);
+	void listAccessKeys(Session session, AsyncCallback<SearchResult> callback);
+	void listCertificatesByUser(Session session, String userId, AsyncCallback<SearchResult> callback);
+	void listCertificates(Session session, AsyncCallback<SearchResult> callback);
 }
