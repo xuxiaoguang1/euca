@@ -15,10 +15,10 @@ import com.eucalyptus.webui.shared.auth.Certificate;
 
 public class CertificateDBProcWrapper {
 
-	public void addCertificate(Certificate cert)
+	public void addCertificate(Certificate certificate)
 			throws CertificateSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
-		String sql = addCertificateSQL(cert);
+		String sql = addCertificateSQL(certificate);
 
 		try {
 			dbProc.update(sql);
@@ -27,10 +27,10 @@ public class CertificateDBProcWrapper {
 		}
 	}
 
-	public void deleteCertificate(String certificateId)
+	public void deleteCertificate(String certificate_id)
 			throws CertificateSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
-		String sql = deleteCertificateSQL(certificateId);
+		String sql = deleteCertificateSQL(certificate_id);
 
 		try {
 			dbProc.update(sql);
@@ -139,7 +139,7 @@ public class CertificateDBProcWrapper {
 		return list;
 	}
 
-	private String addCertificateSQL(Certificate cert) {
+	private String addCertificateSQL(Certificate certificate) {
 		StringBuilder str = new StringBuilder();
 		str.append("INSERT INTO ").append(DBTableName.CERTIFICATE)
 				.append(" ( ").append(DBTableColName.CERTIFICATE.ID)
@@ -152,35 +152,35 @@ public class CertificateDBProcWrapper {
 				.append(") VALUES (null, ");
 
 		str.append("'");
-		str.append(cert.getCertificateId());
+		str.append(certificate.getCertificateId());
 		str.append("', '");
 
-		str.append(cert.getPem());
+		str.append(certificate.getPem());
 		str.append("', '");
 
-		str.append(cert.isActive());
+		str.append(certificate.isActive());
 		str.append("', '");
 
-		str.append(cert.isRevoked());
+		str.append(certificate.isRevoked());
 		str.append("', '");
 
 		DateFormat df = new SimpleDateFormat(Certificate.DATE_PATTERN);
-		str.append(df.format(cert.getCreatedDate()));
+		str.append(df.format(certificate.getCreatedDate()));
 		str.append("', '");
 
-		str.append(cert.getUserId());
+		str.append(certificate.getUserId());
 		str.append("')");
 
 		return str.toString();
 	}
 
-	private String deleteCertificateSQL(String certificateId) {
+	private String deleteCertificateSQL(String certificate_id) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE ");
 		sb.append(" FROM ").append(DBTableName.CERTIFICATE);
 		sb.append(" WHERE ");
-		sb.append(DBTableColName.CERTIFICATE.CERT_ID).append(" = ")
-				.append(certificateId);
+		sb.append(DBTableColName.CERTIFICATE.ID).append(" = ")
+				.append(certificate_id);
 		return sb.toString();
 	}
 

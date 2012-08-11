@@ -14,11 +14,14 @@ import com.eucalyptus.webui.server.auth.AccessKeyDBProcWrapper;
 import com.eucalyptus.webui.server.auth.AccessKeySyncException;
 import com.eucalyptus.webui.server.auth.CertificateDBProcWrapper;
 import com.eucalyptus.webui.server.auth.CertificateSyncException;
+import com.eucalyptus.webui.server.auth.PolicyDBProcWrapper;
+import com.eucalyptus.webui.server.auth.PolicySyncException;
 import com.eucalyptus.webui.server.auth.util.B64;
 import com.eucalyptus.webui.server.auth.util.X509CertHelper;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.shared.auth.AccessKey;
 import com.eucalyptus.webui.shared.auth.Certificate;
+import com.eucalyptus.webui.shared.auth.Policy;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.google.common.base.Strings;
 
@@ -28,15 +31,11 @@ public class AuthServiceProcImpl {
 
 	private CertificateDBProcWrapper certDBProc;
 
+	private PolicyDBProcWrapper policyDBProc;
+
 	public void addAccessKey(Session session, String userId)
 			throws EucalyptusServiceException {
-
-		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(
-				session.getId());
-
-		if (!curUser.isSystemAdmin() && !curUser.isAccountAdmin()) {
-			throw new EucalyptusServiceException("No permission");
-		}
+		checkPermission(session);
 
 		if (userId == null) {
 			throw new EucalyptusServiceException("UserId cannot be NULL");
@@ -55,12 +54,7 @@ public class AuthServiceProcImpl {
 
 	public void deleteAccessKey(Session session, SearchResultRow row)
 			throws EucalyptusServiceException {
-		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(
-				session.getId());
-
-		if (!curUser.isSystemAdmin() && !curUser.isAccountAdmin()) {
-			throw new EucalyptusServiceException("No permission");
-		}
+		checkPermission(session);
 
 		if (row == null) {
 			throw new EucalyptusServiceException(
@@ -129,12 +123,7 @@ public class AuthServiceProcImpl {
 
 	public void addCertificate(Session session, String userId, String pem)
 			throws EucalyptusServiceException {
-		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(
-				session.getId());
-
-		if (!curUser.isSystemAdmin() && !curUser.isAccountAdmin()) {
-			throw new EucalyptusServiceException("No permission");
-		}
+		checkPermission(session);
 
 		if (userId == null || pem == null) {
 			throw new EucalyptusServiceException(
@@ -152,7 +141,8 @@ public class AuthServiceProcImpl {
 					if (!c.isRevoked()) {
 						throw new EucalyptusServiceException("Auth conflict");
 					} else {
-						certDBProc.deleteCertificate(c.getCertificateId());
+						certDBProc
+								.deleteCertificate(Integer.toString(c.getId()));
 					}
 				}
 			}
@@ -175,22 +165,17 @@ public class AuthServiceProcImpl {
 
 	public void deleteCertification(Session session, SearchResultRow row)
 			throws EucalyptusServiceException {
-		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(
-				session.getId());
-
-		if (!curUser.isSystemAdmin() && !curUser.isAccountAdmin()) {
-			throw new EucalyptusServiceException("No permission");
-		}
+		checkPermission(session);
 
 		if (row == null) {
 			throw new EucalyptusServiceException(
 					"SearchResultRow cannot be NULL");
 		}
 
-		String cert_id = row.getField(CertColumnIndex.Certificate_CERT_ID);
+		String id = row.getField(CertColumnIndex.Certificate_ID);
 
 		try {
-			certDBProc.deleteCertificate(cert_id);
+			certDBProc.deleteCertificate(id);
 		} catch (CertificateSyncException e) {
 			e.printStackTrace();
 			throw new EucalyptusServiceException("Failed to create access key");
@@ -248,6 +233,123 @@ public class AuthServiceProcImpl {
 		}
 	}
 
+	public void addAccountPolicy(Session session, String accountId,
+			String name, String text) throws EucalyptusServiceException {
+		checkPermission(session);
+
+		if (accountId == null) {
+			throw new EucalyptusServiceException("Account id cannot be NULL");
+		}
+
+		Policy pol = new Policy();
+		pol.setAccountId(accountId);
+
+		addPolicy(pol, name, text);
+	}
+
+	public void addGroupPolicy(Session session, String groupId, String name,
+			String text) throws EucalyptusServiceException {
+		checkPermission(session);
+
+		if (groupId == null) {
+			throw new EucalyptusServiceException("Group id cannot be NULL");
+		}
+
+		Policy pol = new Policy();
+		pol.setGroupId(groupId);
+
+		addPolicy(pol, name, text);
+	}
+
+	public void addUserPolicy(Session session, String userId, String name,
+			String text) throws EucalyptusServiceException {
+		checkPermission(session);
+
+		if (userId == null) {
+			throw new EucalyptusServiceException("User id cannot be NULL");
+		}
+
+		Policy pol = new Policy();
+		pol.setUserId(userId);
+
+		addPolicy(pol, name, text);
+	}
+
+	private void checkPermission(Session session)
+			throws EucalyptusServiceException {
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(
+				session.getId());
+
+		if (!curUser.isSystemAdmin() && !curUser.isAccountAdmin()) {
+			throw new EucalyptusServiceException("No permission");
+		}
+	}
+
+	private void addPolicy(Policy pol, String name, String text)
+			throws EucalyptusServiceException {
+		if (name == null) {
+			throw new EucalyptusServiceException("Policy name cannot be NULL");
+		}
+
+		if (text == null) {
+			throw new EucalyptusServiceException("Policy text cannot be NULL");
+		}
+
+		pol.setName(name);
+		pol.setText(text);
+
+		try {
+			policyDBProc.addPolicy(pol);
+		} catch (PolicySyncException e) {
+			e.printStackTrace();
+			throw new EucalyptusServiceException("Failed to create policy");
+		}
+	}
+
+	public void deletePolicy(Session session, SearchResultRow row)
+			throws EucalyptusServiceException {
+		checkPermission(session);
+
+		if (row == null) {
+			throw new EucalyptusServiceException(
+					"SearchResultRow cannot be NULL");
+		}
+
+		int policy_id = Integer.parseInt(row
+				.getField(PolicyColumnIndex.Policy_ID));
+
+		try {
+			policyDBProc.deletePolicy(policy_id);
+		} catch (PolicySyncException e) {
+			e.printStackTrace();
+			throw new EucalyptusServiceException("Failed to delete policy");
+		}
+	}
+	
+	public SearchResult listPolicies(Session session)
+			throws EucalyptusServiceException {
+		try {
+			List<Policy> list = policyDBProc.listPolicies();
+			SearchResult res = new SearchResult();
+			for (Policy pol : list) {
+				List<String> row = new ArrayList<String>();
+				row.add(Integer.toString(pol.getId()));
+				row.add(pol.getName());
+				row.add(pol.getVersion());
+				row.add(pol.getText());
+				row.add(pol.getAccountId());
+				row.add(pol.getGroupId());
+				row.add(pol.getUserId());
+				res.addRow(new SearchResultRow(row));
+			}
+			return res;
+		} catch (PolicySyncException e) {
+			e.printStackTrace();
+			throw new EucalyptusServiceException("Failed to list policy");
+		}
+	}
+	
+
 	public static class KeyColumnIndex {
 		public static final int AccessKey_ID = 0;
 		public static final int AccessKey_AKEY = 1;
@@ -265,6 +367,16 @@ public class AuthServiceProcImpl {
 		public static final int Certificate_REVOKED = 4;
 		public static final int Certificate_DATE = 5;
 		public static final int Certificate_USER_ID = 6;
+	}
+
+	public static class PolicyColumnIndex {
+		public static final int Policy_ID = 0;
+		public static final int Policy_NAME = 1;
+		public static final int Policy_VERSION = 2;
+		public static final int Policye_TEXT = 3;
+		public static final int Policy_ACCOUNT_ID = 4;
+		public static final int Policy_GROUP_ID = 5;
+		public static final int Policy_USER_ID = 6;
 	}
 
 }

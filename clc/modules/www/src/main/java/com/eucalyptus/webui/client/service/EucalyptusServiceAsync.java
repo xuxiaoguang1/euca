@@ -256,4 +256,5 @@ public interface EucalyptusServiceAsync {
 	void listAccessKeys(Session session, AsyncCallback<SearchResult> callback);
 	void listCertificatesByUser(Session session, String userId, AsyncCallback<SearchResult> callback);
 	void listCertificates(Session session, AsyncCallback<SearchResult> callback);
+	void listPolicies(Session session, AsyncCallback<SearchResult> callback);
 }

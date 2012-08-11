@@ -39,7 +39,6 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	private static AuthenticateUserLogin authenticateUserLogin = new AuthenticateUserLogin();
 
 	private AuthServiceProcImpl authServiceProc = new AuthServiceProcImpl();
-	
 	private AccountServiceProcImpl accountServiceProc = new AccountServiceProcImpl();
 	private UserServiceProcImpl userServiceProc = new UserServiceProcImpl();
 	private GroupServiceProcImpl groupServiceProc = new GroupServiceProcImpl();
@@ -444,40 +443,38 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	@Override
 	public void addAccountPolicy(Session session, String accountId, String name, String document)
 	        throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
 		verifySession(session);
+		authServiceProc.addAccountPolicy(session, accountId, name, document);
 	}
 
 	@Override
-	public void addUserPolicy(Session session, String usertId, String name, String document)
+	public void addUserPolicy(Session session, String userId, String name, String document)
 	        throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
 		verifySession(session);
+		authServiceProc.addUserPolicy(session, userId, name, document);
 	}
 
 	@Override
 	public void addGroupPolicy(Session session, String groupId, String name, String document)
 	        throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
 		verifySession(session);
+		authServiceProc.addGroupPolicy(session, groupId, name, document);
 	}
 
 	@Override
 	public void deletePolicy(Session session, SearchResultRow policySerialized) throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
 		verifySession(session);
+		authServiceProc.deletePolicy(session, policySerialized);
 	}
 
 	@Override
 	public void deleteAccessKey(Session session, SearchResultRow keySerialized) throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
 		verifySession(session);
 		authServiceProc.deleteAccessKey(session, keySerialized);
 	}
 
 	@Override
 	public void deleteCertificate(Session session, SearchResultRow certSerialized) throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
 		verifySession(session);
 		authServiceProc.deleteCertification(session, certSerialized);
 	}
@@ -510,14 +507,12 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 
 	@Override
 	public void addAccessKey(Session session, String userId) throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
 		verifySession(session);
 		authServiceProc.addAccessKey(session, userId);
 	}
 
 	@Override
 	public void addCertificate(Session session, String userId, String pem) throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
 		verifySession(session);
 		authServiceProc.addCertificate(session, userId, pem);
 	}
@@ -938,6 +933,12 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	public SearchResult listCertificates(Session session)
 			throws EucalyptusServiceException {
 		return authServiceProc.listCertificates(session);
+	}
+
+	@Override
+	public SearchResult listPolicies(Session session)
+			throws EucalyptusServiceException {
+		return authServiceProc.listPolicies(session);
 	}
 
 

@@ -12,6 +12,9 @@ import org.apache.log4j.Logger;
  */
 @SuppressWarnings("rawtypes")
 public class Crypto {
+	
+	public static final String DEFAULT_CRYPTO_PROVIDER = "com.eucalyptus.webui.server.auth.crypto.DefaultCryptoProvider";
+	
 	private static Logger LOG = Logger.getLogger(Crypto.class);
 	private static BaseSecurityProvider DUMMY = new BaseSecurityProvider() {
 	};
@@ -19,15 +22,14 @@ public class Crypto {
 	static {
 		BaseSecurityProvider provider;
 		try {
-			Class provClass = ClassLoader.getSystemClassLoader().loadClass(
-					"com.eucalyptus.auth.crypto.DefaultCryptoProvider");
+			Class provClass = ClassLoader.getSystemClassLoader().loadClass(DEFAULT_CRYPTO_PROVIDER);
 			provider = (BaseSecurityProvider) provClass.newInstance();
 		} catch (Exception t) {
 			LOG.debug(t, t);
 			provider = DUMMY;
 		}
 		providers.put(CertificateProvider.class, provider);
-		providers.put(HmacProvider.class, provider);
+		//providers.put(HmacProvider.class, provider);
 		providers.put(CryptoProvider.class, provider);
 	}
 
@@ -70,7 +72,8 @@ public class Crypto {
 	}
 
 	/**
-	 * @see com.eucalyptus.webui.server.auth.crypto.CryptoProvider#generateId(String, String)
+	 * @see com.eucalyptus.webui.server.auth.crypto.CryptoProvider#generateId(String,
+	 *      String)
 	 */
 	public static String generateId(final String seed, final String prefix) {
 		return Crypto.getCryptoProvider().generateId(seed, prefix);
@@ -80,9 +83,9 @@ public class Crypto {
 		return (CertificateProvider) providers.get(CertificateProvider.class);
 	}
 
-	public static HmacProvider getHmacProvider() {
-		return (HmacProvider) providers.get(HmacProvider.class);
-	}
+//	public static HmacProvider getHmacProvider() {
+//		return (HmacProvider) providers.get(HmacProvider.class);
+//	}
 
 	public static CryptoProvider getCryptoProvider() {
 		return (CryptoProvider) providers.get(CryptoProvider.class);

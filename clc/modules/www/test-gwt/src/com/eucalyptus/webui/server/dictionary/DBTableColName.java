@@ -167,4 +167,14 @@ public class DBTableColName {
 		public final String USER_ID = "cert_user_id";
 	}
 	
+	public interface POLICY {
+		public final String ID = "policy_id";
+		public final String NAME = "policy_name";
+		public final String VERSION = "policy_version";
+		public final String TEXT = "policy_text";
+		public final String ACCOUNT_ID = "policy_account_id";
+		public final String GROUP_ID = "policy_group_id";
+		public final String USER_ID = "policy_user_id";
+	}
+	
 }

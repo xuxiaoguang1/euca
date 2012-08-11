@@ -746,5 +746,13 @@ public interface EucalyptusService extends RemoteService {
    * @throws EucalyptusServiceException
    */
   SearchResult listCertificates(Session session) throws EucalyptusServiceException;
+  
+  /**
+   * 
+   * @param session
+   * @return
+   * @throws EucalyptusServiceException
+   */
+  SearchResult listPolicies(Session session) throws EucalyptusServiceException;
 
 }

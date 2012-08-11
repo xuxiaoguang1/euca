@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
-
 public class X509CertHelper {
 
 	public static String fromCertificate(X509Certificate x509) {

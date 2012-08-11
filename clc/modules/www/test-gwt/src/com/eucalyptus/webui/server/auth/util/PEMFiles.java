@@ -2,19 +2,15 @@ package com.eucalyptus.webui.server.auth.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-//import java.io.FileWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-//import java.io.UnsupportedEncodingException;
 import java.security.KeyPair;
-//import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import org.apache.log4j.Logger;
 import org.bouncycastle.openssl.PEMReader;
 import org.bouncycastle.openssl.PEMWriter;
-//import com.eucalyptus.records.EventType;
-//import com.eucalyptus.records.EventRecord;
 
 public class PEMFiles {
 	private static Logger LOG = Logger.getLogger(PEMFiles.class);
@@ -35,19 +31,17 @@ public class PEMFiles {
 		return PEMFiles.getKeyPair(B64.url.dec(keyPairB64PemString));
 	}
 
-	// public static void write( final String fileName, final Object
-	// securityToken ) {
-	// PEMWriter privOut = null;
-	// try {
-	// privOut = new PEMWriter( new FileWriter( fileName ) );
-	// EventRecord.caller( PEMFiles.class, EventType.CERTIFICATE_WRITE, fileName
-	// ).info( );
-	// privOut.writeObject( securityToken );
-	// privOut.close( );
-	// } catch ( final IOException e ) {
-	// LOG.error( e, e );
-	// }
-	// }
+	public static void write(final String fileName, final Object securityToken) {
+		PEMWriter privOut = null;
+		try {
+			privOut = new PEMWriter(new FileWriter(fileName));
+//			EventRecord.caller(PEMFiles.class, EventType.CERTIFICATE_WRITE, fileName).info();
+			privOut.writeObject(securityToken);
+			privOut.close();
+		} catch (final IOException e) {
+			LOG.error(e, e);
+		}
+	}
 
 	public static byte[] getBytes(final Object o) {
 		PEMWriter pemOut;

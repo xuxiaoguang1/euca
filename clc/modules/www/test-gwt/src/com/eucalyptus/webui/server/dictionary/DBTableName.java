@@ -20,4 +20,5 @@ public class DBTableName {
 	public static final String TEMPLATE = "template";
 	public static final String KEY = "key";
 	public static final String CERTIFICATE = "cert";
+	public static final String POLICY = "policy";
 }

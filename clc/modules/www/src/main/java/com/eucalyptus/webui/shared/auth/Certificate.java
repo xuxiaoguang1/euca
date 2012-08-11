@@ -16,6 +16,10 @@ public class Certificate implements Serializable {
 	private int id;
 
 	private String certificateId;
+	
+	/**
+	 * encoded..
+	 */
 	private String pem;
 
 	private boolean isActive;
