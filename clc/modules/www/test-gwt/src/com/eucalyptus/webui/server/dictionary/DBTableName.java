@@ -3,6 +3,8 @@ package com.eucalyptus.webui.server.dictionary;
 public class DBTableName {
 	public static final String USER = "user";
 	public static final String USER_RESET_PWD = "user_reset_pwd";
+	public static final String USER_KEY = "user_key";
+	public static final String USER_CERT = "user_cert";
 	public static final String ACCOUNT = "account";
 	public static final String GROUP = "groups";
 	public static final String SERVER = "server";

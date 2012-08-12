@@ -40,6 +40,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 
 	private AccountServiceProcImpl accountServiceProc = new AccountServiceProcImpl();
 	private UserServiceProcImpl userServiceProc = new UserServiceProcImpl();
+	private UserKeyServiceProcImpl userKeyServiceProc = new UserKeyServiceProcImpl();
 	private GroupServiceProcImpl groupServiceProc = new GroupServiceProcImpl();
 	private DeviceServerServiceProcImpl deviceServerServiceProc = new DeviceServerServiceProcImpl();
 	private DeviceCPUServiceProcImpl deviceCPUServiceProc = new DeviceCPUServiceProcImpl();
@@ -155,7 +156,8 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	public SearchResult lookupKey(Session session, String search, SearchRange range) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
-		return null;
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+		return userKeyServiceProc.lookupUserKey(curUser, search, range);
 	}
 
 	@Override
@@ -467,9 +469,11 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 
 	@Override
-	public void deleteAccessKey(Session session, SearchResultRow keySerialized) throws EucalyptusServiceException {
+	public void deleteAccessKey(Session session, ArrayList<String> ids) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
+		
+		userKeyServiceProc.deleteUserKeys(ids);
 	}
 
 	@Override
@@ -493,9 +497,10 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 
 	@Override
-	public void modifyAccessKey(Session session, ArrayList<String> values) throws EucalyptusServiceException {
+	public void modifyAccessKey(Session session, ArrayList<String> ids, boolean active) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
+		userKeyServiceProc.modifyUserKey(ids, active);
 	}
 
 	@Override
@@ -508,6 +513,8 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	public void addAccessKey(Session session, String userId) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
+		
+		userKeyServiceProc.addAccessKey(Integer.parseInt(userId));
 	}
 
 	@Override

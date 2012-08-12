@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
+import com.google.gwt.user.client.ui.Anchor;
 
 public class KeyViewImpl extends Composite implements KeyView {
   
@@ -29,6 +30,7 @@ public class KeyViewImpl extends Composite implements KeyView {
   
   @UiField
   LayoutPanel tablePanel;
+  @UiField Anchor buttonActivateKey;
   
   private MultiSelectionModel<SearchResultRow> selectionModel;
   
@@ -45,6 +47,16 @@ public class KeyViewImpl extends Composite implements KeyView {
     this.presenter.onDeleteKey( );
   }
   
+  @UiHandler("buttonActivateKey")
+  void onButtonActivateKeyClick(ClickEvent event) {
+	this.presenter.onActivateKey();
+  }
+  
+  @UiHandler("buttonPauseKey")
+  void onButtonPauseKeyClick(ClickEvent event) {
+	this.presenter.onPauseKey();
+  }
+	
   public void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
     tablePanel.clear( );
     selectionModel = new MultiSelectionModel<SearchResultRow>( SearchResultRow.KEY_PROVIDER );
@@ -84,5 +96,4 @@ public class KeyViewImpl extends Composite implements KeyView {
   public void clearSelection( ) {
     this.selectionModel.clear( );
   }
-  
 }

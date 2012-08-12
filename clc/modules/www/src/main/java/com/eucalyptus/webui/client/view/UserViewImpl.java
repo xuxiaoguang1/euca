@@ -72,7 +72,10 @@ public class UserViewImpl extends Composite implements UserView {
 	void onAddKeyButtonClick(ClickEvent event) {
 		this.presenter.onAddKey();
 	}
-	
+	@UiHandler("addCertButton")
+	void onAddCertButtonClick(ClickEvent event) {
+		this.presenter.onAddCert();
+	}
 	@UiHandler("buttonResumeUser")
 	void onButtonResumeUserClick(ClickEvent event) {
 		this.presenter.onResumeUses();
