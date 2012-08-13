@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
@@ -62,20 +64,18 @@ public class UserServiceProcImpl {
 		  boolean isRootAdmin = curUser.isSystemAdmin();
 		  
 		  ResultSetWrapper rs;
-		  
-		  if (isRootAdmin) {
-			  try {
-				rs = userDBProc.queryTotalUsers();
-			} catch (UserSyncException e) {
+		   try {
+			  if (isRootAdmin) {
+					rs = userDBProc.queryTotalUsers();
+			  }
+			  else {		  
+				  rs = userDBProc.queryUsersBy(curUser.getAccountId(), curUser.getUserId(), curUser.getUserType());
+			  }
+		  } catch (UserSyncException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				throw new EucalyptusServiceException("query users fails");
-			}
 		  }
-		  else {		  
-			  rs = userDBProc.queryUsersBy(curUser.getAccountId(), curUser.getUserId(), curUser.getUserType());
-		  }
-		  
 		  if (rs == null)
 			  return null;
 		  
@@ -145,10 +145,10 @@ public class UserServiceProcImpl {
 		  
 		  if (isRootAdmin) {
 			 
-			  FIELDS = UserServiceProcImpl.FIELDS_ROOT;
+			  FIELDS = FIELDS_ROOT;
 		  }
 		  else {
-			  FIELDS = UserServiceProcImpl.FIELDS_NONROOT;
+			  FIELDS = FIELDS_NONROOT;
 		  }
 		  
 		  final int sortField = range.getSortField( );

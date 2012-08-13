@@ -9,6 +9,8 @@ public interface KeyView extends IsWidget, CanDisplaySearchResult, Clearable, Se
   public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize {
 
     void onDeleteKey( );
+    void onActivateKey();
+    void onPauseKey();
   }
 
 }

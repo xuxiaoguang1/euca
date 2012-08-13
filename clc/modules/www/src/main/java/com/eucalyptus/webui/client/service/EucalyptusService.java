@@ -400,7 +400,7 @@ public interface EucalyptusService extends RemoteService {
    * @param keySerialized
    * @throws EucalyptusServiceException
    */
-  void deleteAccessKey( Session session, SearchResultRow keySerialized ) throws EucalyptusServiceException;
+  void deleteAccessKey( Session session, ArrayList<String> ids ) throws EucalyptusServiceException;
   
   /**
    * Delete certificate.
@@ -486,7 +486,7 @@ public interface EucalyptusService extends RemoteService {
    * @param values
    * @throws EucalyptusServiceException
    */
-  void modifyAccessKey( Session session, ArrayList<String> values ) throws EucalyptusServiceException;
+  void modifyAccessKey( Session session, ArrayList<String> values, boolean active) throws EucalyptusServiceException;
   
   /**
    * Modify certificate info.

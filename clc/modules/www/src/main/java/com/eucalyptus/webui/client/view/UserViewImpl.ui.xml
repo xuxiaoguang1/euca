@@ -60,6 +60,11 @@
                                     <span class="{global.buttonCss.key} {global.buttonCss.icon}"/>增加密钥
                                 </g:Anchor>
                             </td>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.middle}" ui:field="addCertButton">
+                                    <span class="{global.buttonCss.key} {global.buttonCss.icon}"/>增加证书
+                                </g:Anchor>
+                            </td>
                             <td>&nbsp;</td>
                             <td>                             
                                 <g:Anchor styleName="{global.buttonCss.positive} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="buttonResumeUser">

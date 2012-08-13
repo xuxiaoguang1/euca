@@ -95,7 +95,7 @@ public interface EucalyptusServiceAsync {
 
 	void deletePolicy(Session session, SearchResultRow policySerialized, AsyncCallback<Void> callback);
 
-	void deleteAccessKey(Session session, SearchResultRow keySerialized, AsyncCallback<Void> callback);
+	void deleteAccessKey(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
 
 	void deleteCertificate(Session session, SearchResultRow certSerialized, AsyncCallback<Void> callback);
 
@@ -120,7 +120,7 @@ public interface EucalyptusServiceAsync {
 
 	void modifyGroup(Session session, ArrayList<String> values, AsyncCallback<Void> callback);
 
-	void modifyAccessKey(Session session, ArrayList<String> values, AsyncCallback<Void> callback);
+	void modifyAccessKey(Session session, ArrayList<String> values, boolean active, AsyncCallback<Void> callback);
 
 	void modifyCertificate(Session session, ArrayList<String> values, AsyncCallback<Void> callback);
 

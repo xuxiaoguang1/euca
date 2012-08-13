@@ -20,9 +20,20 @@
                         <tr>
                             <td>
                                 <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.small} {global.buttonCss.button}" ui:field="delButton">
-                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>Delete key
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>删除密钥
                                 </g:Anchor>
                             </td>
+                            <td>&nbsp;</td>
+                            <td>                             
+                                <g:Anchor styleName="{global.buttonCss.positive} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="buttonActivateKey">
+                                    <span class="{global.buttonCss.check} {global.buttonCss.icon}"/>激活密钥
+                                </g:Anchor>                            
+                            </td>
+                            <td>                             
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="buttonPauseKey">
+                                    <span class="{global.buttonCss.x} {global.buttonCss.icon}"/>暂停密钥
+                                </g:Anchor>                            
+                            </td>  
                         </tr>
                     </tbody>
                 </table>

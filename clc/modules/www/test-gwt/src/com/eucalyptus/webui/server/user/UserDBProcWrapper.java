@@ -3,6 +3,7 @@ package com.eucalyptus.webui.server.user;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
@@ -131,7 +132,7 @@ public class UserDBProcWrapper {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new UserSyncException("Database fails");
+			throw new UserSyncException("Fail to query users");
 		}
 	}
 	
@@ -153,7 +154,7 @@ public class UserDBProcWrapper {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new UserSyncException("Database fails");
+			throw new UserSyncException("Fail to query users");
 		}
 	}
 	
@@ -175,7 +176,7 @@ public class UserDBProcWrapper {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new UserSyncException("Database fails");
+			throw new UserSyncException("Fail to query users");
 		}
 	}
 	
@@ -204,11 +205,11 @@ public class UserDBProcWrapper {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new UserSyncException("Database fails");
+			throw new UserSyncException("Fail to query users");
 		}
 	}
 	
-	public ResultSetWrapper queryUsersBy(int accountId, int userId, EnumUserType userType) {
+	public ResultSetWrapper queryUsersBy(int accountId, int userId, EnumUserType userType) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
 		StringBuilder sql = userAccountGroupViewSql();
@@ -235,16 +236,14 @@ public class UserDBProcWrapper {
 		System.out.println(sql.toString());
 		
 		try {
-			System.out.println(sql.toString());
 			ResultSetWrapper result = dbProc.query(sql.toString());
 			
 			return result;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new UserSyncException("Fail to query users");
 		}
-		
-		return null;
 	}
 			
 	private StringBuilder userAccountGroupViewSql() {
@@ -313,7 +312,7 @@ public class UserDBProcWrapper {
 		if (ids == null || ids.size() == 0)
 			return;
 		
-		String sql = updateUserGroupSql(ids, groupId);
+		String sql = updateUserGroupSql(ids, groupId).toString();
 		
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
@@ -330,7 +329,7 @@ public class UserDBProcWrapper {
 		if (ids == null || ids.size() == 0)
 			return;
 		
-		String sql = updateUserStateGroupSql(ids, userState);
+		String sql = updateUserStateGroupSql(ids, userState).toString();
 		
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
@@ -347,7 +346,7 @@ public class UserDBProcWrapper {
 		if (ids == null || ids.size() == 0)
 			return;
 		
-		String sql = updateUserStateAccountSql(ids, userState);
+		String sql = updateUserStateAccountSql(ids, userState).toString();
 		
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
@@ -364,7 +363,7 @@ public class UserDBProcWrapper {
 		if (id == 0)
 			return;
 		
-		String sql = modifyUserSql(id, title, mobile, email);
+		String sql = modifyUserSql(id, title, mobile, email).toString();
 		
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
@@ -395,7 +394,7 @@ public class UserDBProcWrapper {
 				if (rs.getRow() == 1) {
 					rsWrapper.close();
 					
-					sql = changePwdSql(id, newPwd);
+					sql = changePwdSql(id, newPwd).toString();
 					dbProc.update(sql);
 				}
 				else {
@@ -417,13 +416,120 @@ public class UserDBProcWrapper {
 		
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
-		String sql = changePwdSql(id, newPwd);
+		String sql = changePwdSql(id, newPwd).toString();
 		try {
 			dbProc.update(sql);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new UserSyncException("Change Pwd Error");
+		}
+	}
+	
+	public void addAccessKey(int userId, String akey, String skey, boolean active, Date created_date) throws UserSyncException {
+		if (userId == 0 || Strings.isNullOrEmpty(akey) || Strings.isNullOrEmpty(skey))
+			return;
+		
+		DBProcWrapper dbProc = DBProcWrapper.Instance();
+		
+		String sql = addAccessKeySql(userId, akey, skey, active, created_date).toString();
+		
+		try {
+			dbProc.update(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new UserSyncException("Add user access key error");
+		}
+	}
+	
+	public ResultSetWrapper queryTotalUserKeys() throws UserSyncException {
+		DBProcWrapper dbProc = DBProcWrapper.Instance();
+		
+		StringBuilder sql = userKeyAccountGroupViewSql();
+		
+		System.out.println(sql.toString());
+		
+		try {
+			ResultSetWrapper result = dbProc.query(sql.toString());
+			
+			return result;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new UserSyncException("Fail to Query user access key");
+		}
+	}
+	
+	public ResultSetWrapper queryUserKeysBy(int accountId, int userId, EnumUserType userType)  throws UserSyncException {
+		DBProcWrapper dbProc = DBProcWrapper.Instance();
+		
+		StringBuilder sql = userAccountGroupViewSql();
+		sql.append(" AND ").
+		append(DBTableName.ACCOUNT).append(".").append(DBTableColName.USER.ACCOUNT_ID).
+		append(" = '").append(accountId).append("' ");
+		
+		switch (userType) {
+		  case ADMIN:
+			  break;
+			  
+		  case USER:
+			  sql.append(" AND ").
+			  append(DBTableColName.USER.ID).
+			  append(" = '").
+			  append(userId).
+			  append("'");
+			  break;
+			  
+		  default:
+			  return null;
+		  }
+		
+		System.out.println(sql.toString());
+		
+		try {
+			System.out.println(sql.toString());
+			ResultSetWrapper result = dbProc.query(sql.toString());
+			
+			return result;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new UserSyncException("Fail to Query user access key");
+		}
+	}
+	
+	public void delUserKeys(ArrayList<String> ids) throws UserSyncException {
+		if (ids == null || ids.size() == 0)
+			return;
+		
+		String sql = delUserKeySql(ids);
+		
+		DBProcWrapper dbProc = DBProcWrapper.Instance();
+		
+		try {
+			dbProc.update(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new UserSyncException("Failed to delete user key");
+		}
+	}
+	
+	public void modifyUserKeyState(ArrayList<String> ids, boolean active) throws UserSyncException {
+		if (ids == null || ids.size() == 0)
+			return;
+		
+		String sql = modifyUserKeyStateSql(ids, active);
+		
+		DBProcWrapper dbProc = DBProcWrapper.Instance();
+		
+		try {
+			dbProc.update(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new UserSyncException("Failed to udpate user keys");
 		}
 	}
 	
@@ -609,7 +715,7 @@ public class UserDBProcWrapper {
 		return sql.toString();
 	}
 	
-	private String updateUserGroupSql(ArrayList<String> ids, int groupId) {
+	private StringBuilder updateUserGroupSql(ArrayList<String> ids, int groupId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE ").
 		append(DBTableName.USER).
@@ -635,10 +741,10 @@ public class UserDBProcWrapper {
 		
 		System.out.println(sql);
 		
-		return sql.toString();
+		return sql;
 	}
 	
-	private String updateUserStateGroupSql(ArrayList<String> ids, EnumState userState) {
+	private StringBuilder updateUserStateGroupSql(ArrayList<String> ids, EnumState userState) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE ").
 		append(DBTableName.USER).
@@ -660,10 +766,10 @@ public class UserDBProcWrapper {
 		
 		System.out.println(sql);
 		
-		return sql.toString();
+		return sql;
 	}
 	
-	private String updateUserStateAccountSql(ArrayList<String> ids, EnumState userState) {
+	private StringBuilder updateUserStateAccountSql(ArrayList<String> ids, EnumState userState) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE ").
 		append(DBTableName.USER).
@@ -685,10 +791,10 @@ public class UserDBProcWrapper {
 		
 		System.out.println(sql);
 		
-		return sql.toString();
+		return sql;
 	}
 	
-	private String modifyUserSql(int id, String title, String mobile, String email) {
+	private StringBuilder modifyUserSql(int id, String title, String mobile, String email) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE ").
 		append(DBTableName.USER).
@@ -724,7 +830,7 @@ public class UserDBProcWrapper {
 		
 		System.out.println(sql);
 		
-		return sql.toString();
+		return sql;
 	}
 	
 	private String OldPwdIsValidSql(int id, String oldPwd) {
@@ -747,7 +853,7 @@ public class UserDBProcWrapper {
 		return sql.toString();
 	}
 	
-	private String changePwdSql(int id, String newPwd) {
+	private StringBuilder changePwdSql(int id, String newPwd) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE ").
 		append(DBTableName.USER).
@@ -761,6 +867,110 @@ public class UserDBProcWrapper {
 		append(DBTableColName.USER.ID).
 		append(" = ").
 		append(id);
+		
+		System.out.println(sql);
+		
+		return sql;
+	}
+	
+	private StringBuilder addAccessKeySql(int userId, String akey, String skey, boolean active, Date created_date) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("INSERT INTO ").
+		append(DBTableName.USER_KEY).append(" ( ").
+		append(DBTableColName.USER_KEY.ID).append(", ").
+		append(DBTableColName.USER_KEY.AKEY).append(", ").
+		append(DBTableColName.USER_KEY.SKEY).append(", ").
+		append(DBTableColName.USER_KEY.ACTIVE).append(", ").
+		append(DBTableColName.USER_KEY.CREATED_DATE).append(", ").
+		append(DBTableColName.USER_KEY.USER_ID).append(") VALUES (null, ");
+		
+		sql.append("'");
+		sql.append(akey);
+		sql.append("', '");
+		
+		sql.append(skey);
+		sql.append("', ");
+		
+		sql.append(active);
+		sql.append(", ");
+		
+		sql.append("CURDATE()");
+		sql.append(", '");
+		
+		sql.append(userId);
+		sql.append("')");
+		
+		return sql;
+	}
+	
+	private StringBuilder userKeyAccountGroupViewSql() {
+		StringBuilder sql = new StringBuilder("SELECT * ").
+				append(" FROM ").
+				append("( (").
+				append(DBTableName.USER_KEY).
+				append(" LEFT JOIN ").
+				append(DBTableName.USER).
+				append(" ON ").
+				append(DBTableName.USER_KEY).append(".").append(DBTableColName.USER_KEY.USER_ID).
+				append(" = ").
+				append(DBTableName.USER).append(".").append(DBTableColName.USER.ID).
+				append(") ").
+				append(" LEFT JOIN ").
+				append(DBTableName.GROUP).
+				append(" ON ").
+				append(DBTableName.USER).append(".").append(DBTableColName.USER.GROUP_ID).
+				append(" = ").
+				append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.ID).
+				append(" ) ").
+				append(" LEFT JOIN ").
+				append(DBTableName.ACCOUNT).
+				append(" ON ").
+				append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
+				append(" = ").
+				append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).
+				append(" WHERE 1=1 ");
+		
+		return sql;
+	}
+	
+	private String delUserKeySql(ArrayList<String> ids) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("DELETE FROM ").
+		append(DBTableName.USER_KEY).
+		append(" WHERE ");
+		
+		for (String str : ids) {
+			sql.append(" ").append(DBTableColName.USER_KEY.ID).
+			append(" = '").
+			append(str).
+			append("' OR ");
+		}
+		
+		sql.delete(sql.length() -3 , sql.length());
+		
+		System.out.println(sql);
+		
+		return sql.toString();
+	}
+	
+	private String modifyUserKeyStateSql(ArrayList<String> ids, boolean active) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("UPDATE ").
+		append(DBTableName.USER_KEY).
+		append(" SET ").
+		append(DBTableColName.USER_KEY.ACTIVE).
+		append(" = ").
+		append(active).
+		append(" WHERE ");
+		
+		for (String str : ids) {
+			sql.append(DBTableColName.USER.ID).
+			append(" = '").
+			append(str).
+			append("' or ");
+		}
+		
+		sql.delete(sql.length() -3 , sql.length());
 		
 		System.out.println(sql);
 		

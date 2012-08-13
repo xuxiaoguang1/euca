@@ -2,7 +2,6 @@ package com.eucalyptus.webui.client.view;
 
 import java.util.ArrayList;
 import com.eucalyptus.webui.client.service.DownloadInfo;
-import com.eucalyptus.webui.client.view.InputViewImpl.Resources;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
