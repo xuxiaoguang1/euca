@@ -15,6 +15,7 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
+import com.eucalyptus.webui.server.auth.crypto.Crypto;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.Enum2String;
@@ -25,9 +26,8 @@ import com.eucalyptus.webui.shared.user.LoginUserProfile;
 public class UserKeyServiceProcImpl {
 	  
 	  public void addAccessKey(int userId) throws EucalyptusServiceException {
-		  //FIXME !! get keys 
-		  String akey = "akey";
-		  String skey = "skey";
+		  String akey = Crypto.generateQueryId();
+		  String skey = Crypto.generateSecretKey();
 		  boolean active = true;
 		  
 		  Calendar cal = Calendar.getInstance();
@@ -138,7 +138,7 @@ public class UserKeyServiceProcImpl {
 						  result.add( new SearchResultRow(
 									  			Arrays.asList(rs.getString(DBTableColName.USER_KEY.ID),
 									  							Integer.toString(index++),
-									  							Enum2String.getInstance().getUserKeyActiveStae(userKeyActive),
+									  							Enum2String.getInstance().getActiveState(userKeyActive),
 									  							rs.getString(DBTableColName.USER_KEY.CREATED_DATE),
 									  							rs.getString(DBTableColName.ACCOUNT.NAME),
 									  							rs.getString(DBTableColName.GROUP.NAME),
@@ -149,7 +149,7 @@ public class UserKeyServiceProcImpl {
 						  result.add( new SearchResultRow(
 										  		Arrays.asList(rs.getString(DBTableColName.USER_KEY.ID),
 									  							Integer.toString(index++),
-									  							Enum2String.getInstance().getUserKeyActiveStae(userKeyActive),
+									  							Enum2String.getInstance().getActiveState(userKeyActive),
 									  							rs.getString(DBTableColName.USER_KEY.CREATED_DATE),
 									  							rs.getString(DBTableColName.GROUP.NAME),
 									  							rs.getString(DBTableColName.USER.NAME))

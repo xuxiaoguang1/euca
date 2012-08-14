@@ -7,6 +7,7 @@ import com.eucalyptus.webui.client.session.LocalSession;
 import com.eucalyptus.webui.client.session.SessionData;
 import com.eucalyptus.webui.client.view.AccountView;
 import com.eucalyptus.webui.client.view.ActionResultView;
+import com.eucalyptus.webui.client.view.CertAddView;
 import com.eucalyptus.webui.client.view.CertView;
 import com.eucalyptus.webui.client.view.CloudRegistrationView;
 import com.eucalyptus.webui.client.view.ClusterCtrlView;
@@ -196,5 +197,7 @@ public interface ClientFactory {
 	ClusterCtrlView getClusterCtrlView( );
 	WalrusCtrlView getWalrusCtrlView( );
 	StorageCtrlView getStorageCtrlView( );
+	
+	CertAddView getCertAddView();
   
 }

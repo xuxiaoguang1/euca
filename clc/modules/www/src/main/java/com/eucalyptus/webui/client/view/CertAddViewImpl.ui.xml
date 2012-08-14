@@ -1,0 +1,25 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.important {
+			font-weight: bold;
+		}
+	</ui:style>
+	<g:HTMLPanel ui:field="panel">
+		<g:AbsolutePanel height="188px" width="479px">
+			<g:at left="26" top="24">
+				<g:Label text="Pem" horizontalAlignment="ALIGN_LEFT" width="16px" height="16px"/>
+			</g:at>
+			<g:at left="74" top="20">
+				<g:TextBox ui:field="pemInput" alignment="LEFT" width="334px" height="17px"/>
+			</g:at>
+			<g:at left="300" top="138">
+				<g:Button ui:field="okButton" text="确定" width="61px" height="28px"/>
+			</g:at>
+			<g:at left="393" top="138">
+				<g:Button ui:field="cancelButton" text="取消" width="61px" height="28px"/>
+			</g:at>
+		</g:AbsolutePanel>		
+	</g:HTMLPanel>
+</ui:UiBinder> 

@@ -20,7 +20,29 @@
                         <tr>
                             <td>
                                 <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.small} {global.buttonCss.button}" ui:field="delButton">
-                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>Delete certificate
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>删除证书
+                                </g:Anchor>
+                            </td>
+                            <td>&nbsp;</td>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.small} {global.buttonCss.button}" ui:field="activateButton">
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>激活证书
+                                </g:Anchor>
+                            </td>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.small} {global.buttonCss.button}" ui:field="deactivateButton">
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>暂停证书
+                                </g:Anchor>
+                            </td>
+                            <td>&nbsp;</td>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.small} {global.buttonCss.button}" ui:field="revokeButton">
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>撤销证书
+                                </g:Anchor>
+                            </td>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.small} {global.buttonCss.button}" ui:field="authorizeButton">
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>授权证书
                                 </g:Anchor>
                             </td>
                         </tr>

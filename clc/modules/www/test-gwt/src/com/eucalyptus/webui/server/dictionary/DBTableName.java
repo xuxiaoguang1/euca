@@ -5,6 +5,7 @@ public class DBTableName {
 	public static final String USER_RESET_PWD = "user_reset_pwd";
 	public static final String USER_KEY = "user_key";
 	public static final String USER_CERT = "user_cert";
+	public static final String USER_POLICY = "user_policy";
 	public static final String ACCOUNT = "account";
 	public static final String GROUP = "groups";
 	public static final String SERVER = "server";
@@ -20,7 +21,5 @@ public class DBTableName {
 	public static final String VM_SERVICE = "vm_service";
 	public static final String BW_SERVICE = "bw_service";
 	public static final String TEMPLATE = "template";
-	public static final String KEY = "key";
-	public static final String CERTIFICATE = "cert";
-	public static final String POLICY = "policy";
+	
 }

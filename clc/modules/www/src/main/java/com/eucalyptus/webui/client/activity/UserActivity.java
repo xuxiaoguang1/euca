@@ -9,6 +9,7 @@ import com.eucalyptus.webui.client.place.SearchPlace;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.view.CertAddView;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.GroupListView;
@@ -26,7 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class UserActivity extends AbstractSearchActivity
-    implements UserView.Presenter, ConfirmationView.Presenter, UserAddView.Presenter, GroupListView.Presenter {
+    implements UserView.Presenter, ConfirmationView.Presenter, UserAddView.Presenter, GroupListView.Presenter, CertAddView.Presenter {
   
   public static final String[] TITLE = {"USERS", "用户"};
 
@@ -292,10 +293,13 @@ public class UserActivity extends AbstractSearchActivity
 		if (!oneSelectionIsValid())
 			return;
 		
-		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
-		confirmView.setPresenter(this);
-	  
-		confirmView.display(ADD_CERT_CAPTION[1], ADD_CERT_SUBJECT[1]);
+//		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
+//		confirmView.setPresenter(this);
+//		confirmView.display(ADD_CERT_CAPTION[1], ADD_CERT_SUBJECT[1]);
+		
+		CertAddView certAddView = this.clientFactory.getCertAddView();
+		certAddView.setPresenter(this);
+		certAddView.display(ADD_CERT_CAPTION[1]);
 	}
 	
 	@Override
@@ -430,31 +434,43 @@ public class UserActivity extends AbstractSearchActivity
   }
 
 	  
-  private void doAddCert( final String pem ) {
-	  if ( currentSelected == null || currentSelected.size( ) != 1 ) {
-		  return;
-	  }
-	  final String userId = this.currentSelected.toArray( new SearchResultRow[0] )[0].getField( 0 );
-	  this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "Adding certificate ...", 0 );
-	      
-	  this.clientFactory.getBackendService( ).addCertificate( this.clientFactory.getLocalSession( ).getSession( ), userId, pem, new AsyncCallback<Void>( ) {
-	  
-		  @Override
-		  public void onFailure( Throwable caught ) {
-	          ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-	          clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Failed to add certificate", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-	          clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to add certificate for user " + userId + ": " + caught.getMessage( ) );
-		  }
-	  
-		  @Override
-		  public void onSuccess( Void arg ) {
-	          clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Certificate added", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-	          clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "New certificate is added to user " + userId );
-	          reloadCurrentRange( );
-		  }
-	        
-	  	} );
-  }
+	private void doAddCert(final String pem) {
+		if (currentSelected == null || currentSelected.size() != 1 || pem == null) {
+			return;
+		}
+
+		final String userId = this.currentSelected.toArray(new SearchResultRow[0])[0].getField(0);
+		this.clientFactory.getShellView().getFooterView().showStatus(StatusType.LOADING, "Adding certificate...", 0);
+		clientFactory.getBackendService().addCertificate(
+				clientFactory.getLocalSession().getSession(), userId, pem,
+				new AsyncCallback<Void>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						ActivityUtil.logoutForInvalidSession(clientFactory,
+								caught);
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.ERROR, "创建证书失败", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory
+								.getShellView()
+								.getLogView()
+								.log(LogType.ERROR, "创建证书失败" + ": " + caught.getMessage());
+					}
+
+					@Override
+					public void onSuccess(Void arg0) {
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.NONE, "创建证书成功", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory.getShellView().getLogView()
+								.log(LogType.INFO, "Create certificate");
+						reloadCurrentRange();
+					}
+				});
+	}
 
   private void doAddPolicy( final String name, final String document ) {
 	  if ( currentSelected == null || currentSelected.size( ) != 1 ) {
@@ -580,5 +596,10 @@ public class UserActivity extends AbstractSearchActivity
 																	}
 																}
 															);
+	}
+
+	@Override
+	public void processAddCert(String pem) {
+		doAddCert(pem);
 	}
 }

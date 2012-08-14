@@ -58,12 +58,12 @@ public class AccessKeyDBProcWrapper {
 					AccessKey key = null;
 					try {
 						key = new AccessKey(
-								Integer.valueOf(res.getString(DBTableColName.KEY.ID)),
-								res.getString(DBTableColName.KEY.AKEY), 
-								res.getString(DBTableColName.KEY.SKEY),
-								Boolean.parseBoolean(res.getString(DBTableColName.KEY.ACTIVE)),
-								df.parse(res.getString(DBTableColName.KEY.CREATED_DATE)),
-								res.getString(DBTableColName.KEY.USER_ID)
+								Integer.valueOf(res.getString(DBTableColName.USER_KEY.ID)),
+								res.getString(DBTableColName.USER_KEY.AKEY), 
+								res.getString(DBTableColName.USER_KEY.SKEY),
+								Boolean.parseBoolean(res.getString(DBTableColName.USER_KEY.ACTIVE)),
+								df.parse(res.getString(DBTableColName.USER_KEY.CREATED_DATE)),
+								res.getString(DBTableColName.USER_KEY.USER_ID)
 								);
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
@@ -102,12 +102,12 @@ public class AccessKeyDBProcWrapper {
 					AccessKey key = null;
 					try {
 						key = new AccessKey(
-								Integer.valueOf(res.getString(DBTableColName.KEY.ID)),
-								res.getString(DBTableColName.KEY.AKEY), 
-								res.getString(DBTableColName.KEY.SKEY),
-								Boolean.parseBoolean(res.getString(DBTableColName.KEY.ACTIVE)),
-								df.parse(res.getString(DBTableColName.KEY.CREATED_DATE)),
-								res.getString(DBTableColName.KEY.USER_ID)
+								Integer.valueOf(res.getString(DBTableColName.USER_KEY.ID)),
+								res.getString(DBTableColName.USER_KEY.AKEY), 
+								res.getString(DBTableColName.USER_KEY.SKEY),
+								Boolean.parseBoolean(res.getString(DBTableColName.USER_KEY.ACTIVE)),
+								df.parse(res.getString(DBTableColName.USER_KEY.CREATED_DATE)),
+								res.getString(DBTableColName.USER_KEY.USER_ID)
 								);
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
@@ -127,13 +127,13 @@ public class AccessKeyDBProcWrapper {
 
 	private String addAccessKeySQL(AccessKey key) {
 		StringBuilder str = new StringBuilder();
-		str.append("INSERT INTO ").append(DBTableName.KEY).append(" ( ")
-				.append(DBTableColName.KEY.ID).append(", ")
-				.append(DBTableColName.KEY.AKEY).append(", ")
-				.append(DBTableColName.KEY.SKEY).append(", ")
-				.append(DBTableColName.KEY.ACTIVE).append(", ")
-				.append(DBTableColName.KEY.CREATED_DATE).append(", ")
-				.append(DBTableColName.KEY.USER_ID).append(") VALUES (null, ");
+		str.append("INSERT INTO ").append(DBTableName.USER_KEY).append(" ( ")
+				.append(DBTableColName.USER_KEY.ID).append(", ")
+				.append(DBTableColName.USER_KEY.AKEY).append(", ")
+				.append(DBTableColName.USER_KEY.SKEY).append(", ")
+				.append(DBTableColName.USER_KEY.ACTIVE).append(", ")
+				.append(DBTableColName.USER_KEY.CREATED_DATE).append(", ")
+				.append(DBTableColName.USER_KEY.USER_ID).append(") VALUES (null, ");
 
 		str.append("'");
 		str.append(key.getAccessKey());
@@ -159,23 +159,23 @@ public class AccessKeyDBProcWrapper {
 	private String deleteAccessKeySQL(int key_id) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE ");
-		sb.append(" FROM ").append(DBTableName.KEY);
+		sb.append(" FROM ").append(DBTableName.USER_KEY);
 		sb.append(" WHERE ");
-		sb.append(DBTableColName.KEY.ID).append(" = ").append(key_id);
+		sb.append(DBTableColName.USER_KEY.ID).append(" = ").append(key_id);
 		return sb.toString();
 	}
 	
 	private String getAccessKeysSQL(String userId) {
 		StringBuilder sql = new StringBuilder().
-				append("SELECT * FROM ").append(DBTableName.KEY)
-				.append(" WHERE ").append(DBTableColName.KEY.USER_ID).append(" = ")
+				append("SELECT * FROM ").append(DBTableName.USER_KEY)
+				.append(" WHERE ").append(DBTableColName.USER_KEY.USER_ID).append(" = ")
 				.append(userId);
 		return sql.toString();
 	}
 
 	private String listAccessKeysSQL() {
 		StringBuilder sql = new StringBuilder("SELECT * FROM ").append(
-				DBTableName.KEY).append(" WHERE 1=1 ");
+				DBTableName.USER_KEY).append(" WHERE 1=1 ");
 		return sql.toString();
 	}
 

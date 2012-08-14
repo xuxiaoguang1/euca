@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 @SuppressWarnings("rawtypes")
 public class Crypto {
 	
-	public static final String DEFAULT_CRYPTO_PROVIDER = "com.eucalyptus.webui.server.auth.crypto.DefaultCryptoProvider";
+	//public static final String DEFAULT_CRYPTO_PROVIDER = "com.eucalyptus.webui.server.auth.crypto.DefaultCryptoProvider";
 	
 	private static Logger LOG = Logger.getLogger(Crypto.class);
 	private static BaseSecurityProvider DUMMY = new BaseSecurityProvider() {
@@ -22,8 +22,9 @@ public class Crypto {
 	static {
 		BaseSecurityProvider provider;
 		try {
-			Class provClass = ClassLoader.getSystemClassLoader().loadClass(DEFAULT_CRYPTO_PROVIDER);
-			provider = (BaseSecurityProvider) provClass.newInstance();
+			//Class provClass = ClassLoader.getSystemClassLoader().loadClass(DEFAULT_CRYPTO_PROVIDER);
+			//provider = (BaseSecurityProvider) provClass.newInstance();
+			provider = new com.eucalyptus.webui.server.auth.crypto.DefaultCryptoProvider();
 		} catch (Exception t) {
 			LOG.debug(t, t);
 			provider = DUMMY;

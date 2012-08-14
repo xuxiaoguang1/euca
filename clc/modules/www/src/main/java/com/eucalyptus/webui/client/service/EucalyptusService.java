@@ -409,7 +409,7 @@ public interface EucalyptusService extends RemoteService {
    * @param certSerialized
    * @throws EucalyptusServiceException
    */
-  void deleteCertificate( Session session, SearchResultRow certSerialized ) throws EucalyptusServiceException;
+  void deleteCertificate( Session session, ArrayList<String> ids ) throws EucalyptusServiceException;
  
   /**
    * Add users to groups using user names input
@@ -495,7 +495,7 @@ public interface EucalyptusService extends RemoteService {
    * @param values
    * @throws EucalyptusServiceException
    */
-  void modifyCertificate( Session session, ArrayList<String> values ) throws EucalyptusServiceException;
+  void modifyCertificate( Session session, ArrayList<String> ids, Boolean active, Boolean revoked ) throws EucalyptusServiceException;
 
   /**
    * Add an access key to a user.
@@ -720,7 +720,7 @@ public interface EucalyptusService extends RemoteService {
    * @return
    * @throws EucalyptusServiceException
    */
-  SearchResult listAccessKeysByUser(Session session, String userId) throws EucalyptusServiceException;
+//  SearchResult listAccessKeysByUser(Session session, String userId) throws EucalyptusServiceException;
   
   /**
    * Acquire all access keys
@@ -728,7 +728,7 @@ public interface EucalyptusService extends RemoteService {
    * @return
    * @throws EucalyptusServiceException
    */
-  SearchResult listAccessKeys(Session session) throws EucalyptusServiceException;
+//  SearchResult listAccessKeys(Session session) throws EucalyptusServiceException;
   
   /**
    * Acquire certificates by user id
@@ -737,7 +737,7 @@ public interface EucalyptusService extends RemoteService {
    * @return
    * @throws EucalyptusServiceException
    */
-  SearchResult listCertificatesByUser(Session session, String userId) throws EucalyptusServiceException;
+//  SearchResult listCertificatesByUser(Session session, String userId) throws EucalyptusServiceException;
   
   /**
    * Acquire all certificates
@@ -745,7 +745,7 @@ public interface EucalyptusService extends RemoteService {
    * @return
    * @throws EucalyptusServiceException
    */
-  SearchResult listCertificates(Session session) throws EucalyptusServiceException;
+//  SearchResult listCertificates(Session session) throws EucalyptusServiceException;
   
   /**
    * 
@@ -753,6 +753,6 @@ public interface EucalyptusService extends RemoteService {
    * @return
    * @throws EucalyptusServiceException
    */
-  SearchResult listPolicies(Session session) throws EucalyptusServiceException;
+//  SearchResult listPolicies(Session session) throws EucalyptusServiceException;
 
 }

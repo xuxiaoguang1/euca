@@ -56,13 +56,13 @@ public class PolicyDBProcWrapper {
 					try {
 						pol = new Policy(
 								Integer.valueOf(res
-										.getString(DBTableColName.POLICY.ID)),
-								res.getString(DBTableColName.POLICY.NAME),
-								res.getString(DBTableColName.POLICY.VERSION),
-								res.getString(DBTableColName.POLICY.TEXT),
-								res.getString(DBTableColName.POLICY.ACCOUNT_ID),
-								res.getString(DBTableColName.POLICY.GROUP_ID),
-								res.getString(DBTableColName.POLICY.USER_ID));
+										.getString(DBTableColName.USER_POLICY.ID)),
+								res.getString(DBTableColName.USER_POLICY.NAME),
+								res.getString(DBTableColName.USER_POLICY.VERSION),
+								res.getString(DBTableColName.USER_POLICY.TEXT),
+								res.getString(DBTableColName.USER_POLICY.ACCOUNT_ID),
+								res.getString(DBTableColName.USER_POLICY.GROUP_ID),
+								res.getString(DBTableColName.USER_POLICY.USER_ID));
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
 					}
@@ -99,13 +99,13 @@ public class PolicyDBProcWrapper {
 					try {
 						pol = new Policy(
 								Integer.valueOf(res
-										.getString(DBTableColName.POLICY.ID)),
-								res.getString(DBTableColName.POLICY.NAME),
-								res.getString(DBTableColName.POLICY.VERSION),
-								res.getString(DBTableColName.POLICY.TEXT),
-								res.getString(DBTableColName.POLICY.ACCOUNT_ID),
-								res.getString(DBTableColName.POLICY.GROUP_ID),
-								res.getString(DBTableColName.POLICY.USER_ID));
+										.getString(DBTableColName.USER_POLICY.ID)),
+								res.getString(DBTableColName.USER_POLICY.NAME),
+								res.getString(DBTableColName.USER_POLICY.VERSION),
+								res.getString(DBTableColName.USER_POLICY.TEXT),
+								res.getString(DBTableColName.USER_POLICY.ACCOUNT_ID),
+								res.getString(DBTableColName.USER_POLICY.GROUP_ID),
+								res.getString(DBTableColName.USER_POLICY.USER_ID));
 					} catch (NumberFormatException e) {
 						e.printStackTrace();
 					}
@@ -122,14 +122,14 @@ public class PolicyDBProcWrapper {
 
 	private String addPolicySQL(Policy pol) {
 		StringBuilder str = new StringBuilder();
-		str.append("INSERT INTO ").append(DBTableName.POLICY).append(" ( ")
-				.append(DBTableColName.POLICY.ID).append(", ")
-				.append(DBTableColName.POLICY.NAME).append(", ")
-				.append(DBTableColName.POLICY.VERSION).append(", ")
-				.append(DBTableColName.POLICY.TEXT).append(", ")
-				.append(DBTableColName.POLICY.ACCOUNT_ID).append(", ")
-				.append(DBTableColName.POLICY.GROUP_ID).append(", ")
-				.append(DBTableColName.POLICY.USER_ID)
+		str.append("INSERT INTO ").append(DBTableName.USER_POLICY).append(" ( ")
+				.append(DBTableColName.USER_POLICY.ID).append(", ")
+				.append(DBTableColName.USER_POLICY.NAME).append(", ")
+				.append(DBTableColName.USER_POLICY.VERSION).append(", ")
+				.append(DBTableColName.USER_POLICY.TEXT).append(", ")
+				.append(DBTableColName.USER_POLICY.ACCOUNT_ID).append(", ")
+				.append(DBTableColName.USER_POLICY.GROUP_ID).append(", ")
+				.append(DBTableColName.USER_POLICY.USER_ID)
 				.append(") VALUES (null, ");
 
 		str.append("'");
@@ -157,23 +157,23 @@ public class PolicyDBProcWrapper {
 	private String deletePolicySQL(int policy_id) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE ");
-		sb.append(" FROM ").append(DBTableName.POLICY);
+		sb.append(" FROM ").append(DBTableName.USER_POLICY);
 		sb.append(" WHERE ");
-		sb.append(DBTableColName.POLICY.ID).append(" = ").append(policy_id);
+		sb.append(DBTableColName.USER_POLICY.ID).append(" = ").append(policy_id);
 		return sb.toString();
 	}
 
 	private String getPoliciesSQL(String userId) {
 		StringBuilder sql = new StringBuilder().append("SELECT * FROM ")
-				.append(DBTableName.POLICY).append(" WHERE ")
-				.append(DBTableColName.POLICY.USER_ID).append(" = ")
+				.append(DBTableName.USER_POLICY).append(" WHERE ")
+				.append(DBTableColName.USER_POLICY.USER_ID).append(" = ")
 				.append(userId);
 		return sql.toString();
 	}
 
 	private String listPoliciesSQL() {
 		StringBuilder sql = new StringBuilder().append("SELECT * FROM ")
-				.append(DBTableName.POLICY).append(" WHERE 1 = 1 ");
+				.append(DBTableName.USER_POLICY).append(" WHERE 1 = 1 ");
 		return sql.toString();
 	}
 

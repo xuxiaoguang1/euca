@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.client.activity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,146 +19,377 @@ import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class CertActivity extends AbstractSearchActivity implements CertView.Presenter, ConfirmationView.Presenter {
-  
-  public static final String TITLE = "X509 CERTIFICATES";
-  
-  public static final String DELETE_CERT_CAPTION = "Delete selected certificate";
-  public static final String DELETE_CERT_SUBJECT = "Are you sure you want to delete the following selected certificate?";
-  
-  private static final Logger LOG = Logger.getLogger( CertActivity.class.getName( ) );
-  
-  private Set<SearchResultRow> currentSelected;
-  
-  public CertActivity( SearchPlace place, ClientFactory clientFactory ) {
-    super( place, clientFactory );
-  }
 
-  @Override
-  protected void doSearch( String query, SearchRange range ) {
-    this.clientFactory.getBackendService( ).lookupCertificate( this.clientFactory.getLocalSession( ).getSession( ), search, range,
-                                                           new AsyncCallback<SearchResult>( ) {
-      
-      @Override
-      public void onFailure( Throwable caught ) {
-        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-        LOG.log( Level.WARNING, "Search failed: " + caught );
-        displayData( null );
-      }
-      
-      @Override
-      public void onSuccess( SearchResult result ) {
-        LOG.log( Level.INFO, "Search success:" + result );
-        displayData( result );
-      }
-      
-    } );
-  }
-  
-  @Override
-  public void onSelectionChange( Set<SearchResultRow> selection ) {
-    this.currentSelected = selection;
-    if ( selection == null || selection.size( ) != 1 ) {
-      LOG.log( Level.INFO, "Not a single selection" );      
-      this.clientFactory.getShellView( ).hideDetail( );
-    } else {
-      LOG.log( Level.INFO, "Selection changed to " + selection );
-      this.clientFactory.getShellView( ).showDetail( DETAIL_PANE_SIZE );
-      showSingleSelectedDetails( selection.toArray( new SearchResultRow[0] )[0] );
-    }
-  }
+	public static final String TITLE = "X509 证书";
 
-  @Override
-  public void saveValue( ArrayList<String> keys, ArrayList<HasValueWidget> values ) {
-    final ArrayList<String> newVals = Lists.newArrayList( );
-    for ( HasValueWidget w : values ) {
-      newVals.add( w.getValue( ) );
-    }
-    
-    final String certId = emptyForNull( getField( newVals, 0 ) );
-    
-    this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "Modifying certificate " + certId + " ...", 0 );
-    
-    clientFactory.getBackendService( ).modifyCertificate( clientFactory.getLocalSession( ).getSession( ), newVals, new AsyncCallback<Void>( ) {
+	public static final String[] DELETE_CERT_CAPTION = {"Delete selected certificate", "删除选中的证书"};
+	public static final String[] DELETE_CERT_SUBJECT = {"Are you sure you want to delete the following selected certificate?", "你确定要删除选中的证书么？"};
+	
+	public static final String[] ACTIVATE_CERT_CAPTION = {"", "激活选中的证书"};
+	public static final String[] ACTIVATE_CERT_SUBJECT = {"", "你确定要激活选中的证书么？"};
+	
+	public static final String[] DEACTIVATE_CERT_CAPTION = {"", "停止选中的证书"};
+	public static final String[] DEACTIVATE_CERT_SUBJECT = {"", "你确定要停止选中的证书么？"};
+	
+	public static final String[] REVOKE_CERT_CAPTION = {"", "撤销选中的证书"};
+	public static final String[] REVOKE_CERT_SUBJECT = {"", "你确定要撤销选中的证书么？"};
+	
+	public static final String[] AUTHORIZE_CERT_CAPTION = {"", "授权选中的证书"};
+	public static final String[] AUTHORIZE_CERT_SUBJECT = {"", "你确定要授权选中的证书么？"};
 
-      @Override
-      public void onFailure( Throwable caught ) {
-        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Failed to modify certificate", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-        clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to modify certificate " + certId  + ": " + caught.getMessage( ) );
-      }
+	private static final Logger LOG = Logger.getLogger(CertActivity.class.getName());
 
-      @Override
-      public void onSuccess( Void arg0 ) {
-        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Successfully modified certificate", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-        clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Modified certificate " + certId );
-        //clientFactory.getShellView( ).getDetailView( ).disableSave( );
-        reloadCurrentRange( );
-      }
-      
-    } );
-  }
+	private Set<SearchResultRow> currentSelected;
 
-  @Override
-  protected String getTitle( ) {
-    return TITLE;
-  }
+	public CertActivity(SearchPlace place, ClientFactory clientFactory) {
+		super(place, clientFactory);
+	}
 
-  @Override
-  protected void showView( SearchResult result ) {
-    if ( this.view == null ) {
-      this.view = this.clientFactory.getCertView( );
-      ( ( CertView ) this.view ).setPresenter( this );
-      container.setWidget( this.view );
-      ( ( CertView ) this.view ).clear( );
-    }
-    ( ( CertView ) this.view ).showSearchResult( result );    
-  }
+	@Override
+	protected void doSearch(String query, SearchRange range) {
+		this.clientFactory.getBackendService().lookupCertificate(
+			this.clientFactory.getLocalSession().getSession(), search,range, 
+				new AsyncCallback<SearchResult>() {
 
-  @Override
-  public void confirm( String subject ) {
-    if ( DELETE_CERT_SUBJECT.equals( subject ) ) {
-      doDeleteCert( );
-    }
-  }
+					@Override
+					public void onFailure(Throwable caught) {
+						ActivityUtil.logoutForInvalidSession(clientFactory, caught);
+						LOG.log(Level.WARNING, "Search failed: " + caught);
+						displayData(null);
+					}
 
-  private void doDeleteCert( ) {
-    if ( currentSelected == null || currentSelected.size( ) != 1 ) {
-      return;
-    }
-    
-    final SearchResultRow cert = currentSelected.toArray( new SearchResultRow[0] )[0];
-    final String certId = emptyForNull( getField( cert.getRow( ), 0 ) );
-    clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "Deleting certificate ...", 0 );
-    
-    clientFactory.getBackendService( ).deleteCertificate( clientFactory.getLocalSession( ).getSession( ), cert, new AsyncCallback<Void>( ) {
+					@Override
+					public void onSuccess(SearchResult result) {
+						LOG.log(Level.INFO, "Search success:" + result);
+						displayData(result);
+					}
 
-      @Override
-      public void onFailure( Throwable caught ) {
-        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Failed to delete certificate", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-        clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to delete certificate " + certId + ": " + caught.getMessage( ) );
-      }
+				});
+	}
 
-      @Override
-      public void onSuccess( Void arg0 ) {
-        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Certificate deleted", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-        clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Certificate " + certId + " deleted" );
-        reloadCurrentRange( );
-      }
-      
-    } );
-  }
+	@Override
+	public void onSelectionChange(Set<SearchResultRow> selection) {
+		this.currentSelected = selection;
+		if (selection == null || selection.size() != 1) {
+			LOG.log(Level.INFO, "Not a single selection");
+			this.clientFactory.getShellView().hideDetail();
+		} else {
+			LOG.log(Level.INFO, "Selection changed to " + selection);
+			this.clientFactory.getShellView().showDetail(DETAIL_PANE_SIZE);
+			showSingleSelectedDetails(selection.toArray(new SearchResultRow[0])[0]);
+		}
+	}
 
+	@Override
+	public void saveValue(ArrayList<String> keys,ArrayList<HasValueWidget> values) {
+	}
 
-  @Override
-  public void onDeleteCert( ) {
-    if ( currentSelected == null || currentSelected.size( ) != 1 ) {
-      clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Select one certificate to delete", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-      return;
-    }
-    ConfirmationView dialog = this.clientFactory.getConfirmationView( );
-    dialog.setPresenter( this );
-    dialog.display( DELETE_CERT_CAPTION, DELETE_CERT_SUBJECT, currentSelected, new ArrayList<Integer>( Arrays.asList( 0, 1 ) ) );
-  }
-  
+	@Override
+	protected String getTitle() {
+		return TITLE;
+	}
+
+	@Override
+	protected void showView(SearchResult result) {
+		if (this.view == null) {
+			this.view = this.clientFactory.getCertView();
+			((CertView) this.view).setPresenter(this);
+			container.setWidget(this.view);
+			((CertView) this.view).clear();
+		}
+		((CertView) this.view).showSearchResult(result);
+	}
+
+	@Override
+	public void confirm(String subject) {
+		if(DELETE_CERT_SUBJECT[1].equals(subject)){
+			doDeleteCert();
+		}else if(ACTIVATE_CERT_SUBJECT[1].equals(subject)){
+			doActivateCert();
+		}else if(DEACTIVATE_CERT_SUBJECT[1].equals(subject)){
+			doDeactivateCert();
+		}else if(REVOKE_CERT_SUBJECT[1].equals(subject)){
+			doRevokeCert();
+		}else if(AUTHORIZE_CERT_SUBJECT[1].equals(subject)){
+			doAuthorizeCert();
+		}
+	}
+	
+
+	private void doDeleteCert() {
+		if (currentSelected == null || currentSelected.size() == 0) {
+			return;
+		}
+
+		final ArrayList<String> ids = Lists.newArrayList();
+		for (SearchResultRow row : currentSelected) {
+			ids.add(row.getField(0));
+		}
+
+		clientFactory.getShellView().getFooterView().showStatus(StatusType.LOADING, "正在删除证书...", 0);
+
+		clientFactory.getBackendService().deleteCertificate(clientFactory.getLocalSession().getSession(), ids,
+				new AsyncCallback<Void>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						ActivityUtil.logoutForInvalidSession(clientFactory,caught);
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.ERROR, "删除失败", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory
+								.getShellView()
+								.getLogView()
+								.log(LogType.ERROR, "删除失败" + ": " + caught.getMessage());
+					}
+
+					@Override
+					public void onSuccess(Void arg0) {
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.NONE, "证书已删除", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory.getShellView().getLogView()
+								.log(LogType.INFO, "证书已删除");
+						reloadCurrentRange();
+					}
+		 } );
+	}
+	
+	private void doActivateCert(){
+		if (currentSelected == null || currentSelected.size() == 0) {
+			return;
+		}
+
+		final ArrayList<String> ids = Lists.newArrayList();
+		for (SearchResultRow row : currentSelected) {
+			ids.add(row.getField(0));
+		}
+
+		clientFactory.getShellView().getFooterView().showStatus(StatusType.LOADING, "正在激活证书...", 0);
+
+		clientFactory.getBackendService().modifyCertificate(clientFactory.getLocalSession().getSession(), ids, true, null, 
+				new AsyncCallback<Void>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						ActivityUtil.logoutForInvalidSession(clientFactory,caught);
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.ERROR, "激活失败", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory
+								.getShellView()
+								.getLogView()
+								.log(LogType.ERROR, "激活失败" + ": " + caught.getMessage());
+					}
+
+					@Override
+					public void onSuccess(Void arg0) {
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.NONE, "证书已激活", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory.getShellView().getLogView()
+								.log(LogType.INFO, "证书已激活");
+						reloadCurrentRange();
+					}
+		 } );
+	}
+
+	private void doDeactivateCert() {
+		if (currentSelected == null || currentSelected.size() == 0) {
+			return;
+		}
+
+		final ArrayList<String> ids = Lists.newArrayList();
+		for (SearchResultRow row : currentSelected) {
+			ids.add(row.getField(0));
+		}
+
+		clientFactory.getShellView().getFooterView().showStatus(StatusType.LOADING, "正在停止证书...", 0);
+
+		clientFactory.getBackendService().modifyCertificate(clientFactory.getLocalSession().getSession(), ids, false, null, 
+				new AsyncCallback<Void>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						ActivityUtil.logoutForInvalidSession(clientFactory,caught);
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.ERROR, "停止失败", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory
+								.getShellView()
+								.getLogView()
+								.log(LogType.ERROR, "停止失败" + ": " + caught.getMessage());
+					}
+
+					@Override
+					public void onSuccess(Void arg0) {
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.NONE, "证书已停止", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory.getShellView().getLogView()
+								.log(LogType.INFO, "证书已停止");
+						reloadCurrentRange();
+					}
+		 } );
+	}
+
+	private void doRevokeCert() {
+		if (currentSelected == null || currentSelected.size() == 0) {
+			return;
+		}
+
+		final ArrayList<String> ids = Lists.newArrayList();
+		for (SearchResultRow row : currentSelected) {
+			ids.add(row.getField(0));
+		}
+
+		clientFactory.getShellView().getFooterView().showStatus(StatusType.LOADING, "正在撤销证书...", 0);
+
+		clientFactory.getBackendService().modifyCertificate(clientFactory.getLocalSession().getSession(), ids, null, true, 
+				new AsyncCallback<Void>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						ActivityUtil.logoutForInvalidSession(clientFactory,caught);
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.ERROR, "撤销失败", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory
+								.getShellView()
+								.getLogView()
+								.log(LogType.ERROR, "撤销失败" + ": " + caught.getMessage());
+					}
+
+					@Override
+					public void onSuccess(Void arg0) {
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.NONE, "证书已撤销", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory.getShellView().getLogView()
+								.log(LogType.INFO, "证书已撤销");
+						reloadCurrentRange();
+					}
+		 } );
+	}
+
+	private void doAuthorizeCert() {
+		if (currentSelected == null || currentSelected.size() == 0) {
+			return;
+		}
+
+		final ArrayList<String> ids = Lists.newArrayList();
+		for (SearchResultRow row : currentSelected) {
+			ids.add(row.getField(0));
+		}
+
+		clientFactory.getShellView().getFooterView().showStatus(StatusType.LOADING, "正在授权证书...", 0);
+
+		clientFactory.getBackendService().modifyCertificate(clientFactory.getLocalSession().getSession(), ids, null, false, 
+				new AsyncCallback<Void>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						ActivityUtil.logoutForInvalidSession(clientFactory,caught);
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.ERROR, "授权失败", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory
+								.getShellView()
+								.getLogView()
+								.log(LogType.ERROR, "授权失败" + ": " + caught.getMessage());
+					}
+
+					@Override
+					public void onSuccess(Void arg0) {
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.NONE, "证书已授权", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory.getShellView().getLogView()
+								.log(LogType.INFO, "证书已授权");
+						reloadCurrentRange();
+					}
+		 } );
+	}
+	
+
+	@Override
+	public void onDeleteCert() {
+		if (currentSelected == null || currentSelected.size() == 0) {
+			clientFactory
+					.getShellView()
+					.getFooterView()
+					.showStatus(StatusType.ERROR, "至少选中一个要删除的证书", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+			return;
+		}
+		ConfirmationView dialog = this.clientFactory.getConfirmationView();
+		dialog.setPresenter(this);
+		dialog.display(DELETE_CERT_CAPTION[1], DELETE_CERT_SUBJECT[1]);
+	}
+
+	@Override
+	public void onActivateCert() {
+		if (currentSelected == null || currentSelected.size() == 0) {
+			clientFactory
+					.getShellView()
+					.getFooterView()
+					.showStatus(StatusType.ERROR, "至少选中一个要激活的证书", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+			return;
+		}
+		ConfirmationView dialog = this.clientFactory.getConfirmationView();
+		dialog.setPresenter(this);
+		dialog.display(ACTIVATE_CERT_CAPTION[1], ACTIVATE_CERT_SUBJECT[1]);
+	}
+
+	@Override
+	public void onDeactivateCert() {
+		if (currentSelected == null || currentSelected.size() == 0) {
+			clientFactory
+					.getShellView()
+					.getFooterView()
+					.showStatus(StatusType.ERROR, "至少选中一个要停止的证书", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+			return;
+		}
+		ConfirmationView dialog = this.clientFactory.getConfirmationView();
+		dialog.setPresenter(this);
+		dialog.display(DEACTIVATE_CERT_CAPTION[1], DEACTIVATE_CERT_SUBJECT[1]);
+	}
+
+	@Override
+	public void onRevokeCert() {
+		if (currentSelected == null || currentSelected.size() == 0) {
+			clientFactory
+					.getShellView()
+					.getFooterView()
+					.showStatus(StatusType.ERROR, "至少选中一个要撤销的证书", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+			return;
+		}
+		ConfirmationView dialog = this.clientFactory.getConfirmationView();
+		dialog.setPresenter(this);
+		dialog.display(REVOKE_CERT_CAPTION[1], REVOKE_CERT_SUBJECT[1]);
+	}
+
+	@Override
+	public void onAuthorizeCert() {
+		if (currentSelected == null || currentSelected.size() == 0) {
+			clientFactory
+					.getShellView()
+					.getFooterView()
+					.showStatus(StatusType.ERROR, "至少选中一个要授权的证书", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+			return;
+		}
+		ConfirmationView dialog = this.clientFactory.getConfirmationView();
+		dialog.setPresenter(this);
+		dialog.display(AUTHORIZE_CERT_CAPTION[1], AUTHORIZE_CERT_SUBJECT[1]);
+	}
+
 }
