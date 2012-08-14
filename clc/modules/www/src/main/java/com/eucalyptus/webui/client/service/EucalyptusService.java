@@ -391,7 +391,7 @@ public interface EucalyptusService extends RemoteService {
    * @param policySerialized
    * @throws EucalyptusServiceException
    */
-  void deletePolicy( Session session, SearchResultRow policySerialized ) throws EucalyptusServiceException;
+  void deletePolicy( Session session, ArrayList<String> ids ) throws EucalyptusServiceException;
   
   /**
    * Delete an access key.

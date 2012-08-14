@@ -93,7 +93,7 @@ public interface EucalyptusServiceAsync {
 
 	void removeUsersFromGroup(Session session, ArrayList<String> userIds, AsyncCallback<Void> callback);
 
-	void deletePolicy(Session session, SearchResultRow policySerialized, AsyncCallback<Void> callback);
+	void deletePolicy(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
 
 	void deleteAccessKey(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
 

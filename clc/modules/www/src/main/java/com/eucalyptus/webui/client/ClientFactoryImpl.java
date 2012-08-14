@@ -15,8 +15,6 @@ import com.eucalyptus.webui.client.view.AccountView;
 import com.eucalyptus.webui.client.view.AccountViewImpl;
 import com.eucalyptus.webui.client.view.ActionResultView;
 import com.eucalyptus.webui.client.view.ActionResultViewImpl;
-import com.eucalyptus.webui.client.view.CertAddView;
-import com.eucalyptus.webui.client.view.CertAddViewImpl;
 import com.eucalyptus.webui.client.view.CertView;
 import com.eucalyptus.webui.client.view.CertViewImpl;
 import com.eucalyptus.webui.client.view.CloudRegistrationView;
@@ -156,7 +154,6 @@ public class ClientFactoryImpl implements ClientFactory {
 	private DeviceVMView deviceVMView;
 	private DeviceBWView deviceBWView;
 	private DeviceTemplateView deviceTemplateView;
-	private CertAddView certAddView;
 
 	// Dialogs
 	private ConfirmationView confirmationView;
@@ -579,12 +576,5 @@ public class ClientFactoryImpl implements ClientFactory {
     }
     return uploadImageView;
   }
-
-@Override
-public CertAddView getCertAddView() {
-	if(certAddView == null){
-		certAddView = new CertAddViewImpl();
-	}
-	return certAddView;
-}
+  
 }

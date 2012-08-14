@@ -1,6 +1,7 @@
 package com.eucalyptus.webui.client.activity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -9,15 +10,19 @@ import com.eucalyptus.webui.client.place.SearchPlace;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.view.CertAddView;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.GroupListView;
+import com.eucalyptus.webui.client.view.InputField;
+import com.eucalyptus.webui.client.view.InputView;
 import com.eucalyptus.webui.client.view.UserAddView;
 import com.eucalyptus.webui.client.view.UserView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
+import com.eucalyptus.webui.client.view.InputField.ValueType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.shared.checker.ValueChecker;
+import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
@@ -27,7 +32,7 @@ import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class UserActivity extends AbstractSearchActivity
-    implements UserView.Presenter, ConfirmationView.Presenter, UserAddView.Presenter, GroupListView.Presenter, CertAddView.Presenter {
+    implements UserView.Presenter, ConfirmationView.Presenter, UserAddView.Presenter, GroupListView.Presenter, InputView.Presenter {
   
   public static final String[] TITLE = {"USERS", "用户"};
 
@@ -268,11 +273,47 @@ public class UserActivity extends AbstractSearchActivity
 		// TODO Auto-generated method stub
 		if (!oneSelectionIsValid())
 			return;
-		
-		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
-		confirmView.setPresenter(this);
-	  
-		confirmView.display(ADD_POLICY_CAPTION[1], ADD_POLICY_SUBJECT[1]);
+
+		InputView dialog = this.clientFactory.getInputView();
+		dialog.setPresenter(this);
+		dialog.display(ADD_POLICY_CAPTION[1], ADD_POLICY_SUBJECT[1],
+				new ArrayList<InputField>(Arrays.asList(
+					new InputField() {
+	
+						@Override
+						public String getTitle() {
+							return POLICY_NAME_INPUT_TITLE[1];
+						}
+	
+						@Override
+						public ValueType getType() {
+							return ValueType.TEXT;
+						}
+	
+						@Override
+						public ValueChecker getChecker() {
+							return ValueCheckerFactory.createPolicyNameChecker();
+						}
+	
+					}, 
+					new InputField() {
+	
+						@Override
+						public String getTitle() {
+							return POLICY_CONTENT_INPUT_TITLE[1];
+						}
+	
+						@Override
+						public ValueType getType() {
+							return ValueType.TEXTAREA;
+						}
+	
+						@Override
+						public ValueChecker getChecker() {
+							return ValueCheckerFactory.createNonEmptyValueChecker();
+						}
+
+				})));
 	}
 
 	@Override
@@ -289,17 +330,32 @@ public class UserActivity extends AbstractSearchActivity
 	
 	@Override
 	public void onAddCert() {
-		// TODO Auto-generated method stub
-		if (!oneSelectionIsValid())
-			return;
+		if ( currentSelected == null || currentSelected.size( ) != 1 ) {
+		      clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Must select a single user to add certificate", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		      return;
+		    }
+		    InputView dialog = this.clientFactory.getInputView( );
+		    dialog.setPresenter( this );
+		    dialog.display( ADD_CERT_CAPTION[1], ADD_CERT_SUBJECT[1], new ArrayList<InputField>( Arrays.asList( new InputField( ) {
+
+		      @Override
+		      public String getTitle( ) {
+		        return CERT_PEM_INPUT_TITLE[1];
+		      }
+
+		      @Override
+		      public ValueType getType( ) {
+		        return ValueType.TEXTAREA;
+		      }
+
+		      @Override
+		      public ValueChecker getChecker( ) {
+		        return ValueCheckerFactory.createNonEmptyValueChecker( );
+		      }
+		      
+		    } ) ) );
 		
-//		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
-//		confirmView.setPresenter(this);
-//		confirmView.display(ADD_CERT_CAPTION[1], ADD_CERT_SUBJECT[1]);
 		
-		CertAddView certAddView = this.clientFactory.getCertAddView();
-		certAddView.setPresenter(this);
-		certAddView.display(ADD_CERT_CAPTION[1]);
 	}
 	
 	@Override
@@ -599,7 +655,16 @@ public class UserActivity extends AbstractSearchActivity
 	}
 
 	@Override
-	public void processAddCert(String pem) {
-		doAddCert(pem);
+	public void process(String subject, ArrayList<String> values) {
+		if (ADD_CERT_SUBJECT[1].equals(subject)) {
+			doAddCert(values.get(0));
+		}else if (ADD_POLICY_SUBJECT[1].equals(subject)) {
+			doAddPolicy(values.get(0), values.get(1));
+		}
 	}
+
+//	@Override
+//	public void processAddCert(String pem) {
+//		doAddCert(pem);
+//	}
 }

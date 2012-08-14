@@ -152,7 +152,8 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	        throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
-		return null;
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+		return policyServiceProc.lookupPolicy(curUser, search, range);
 	}
 
 	@Override
@@ -449,31 +450,27 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	public void addAccountPolicy(Session session, String accountId, String name, String document)
 	        throws EucalyptusServiceException {
 		verifySession(session);
-		//TODO: fix me
-		//authServiceProc.addAccountPolicy(session, accountId, name, document);
+		policyServiceProc.addAccountPolicy(accountId, name, document);
 	}
 
 	@Override
 	public void addUserPolicy(Session session, String userId, String name, String document)
 	        throws EucalyptusServiceException {
 		verifySession(session);
-		//TODO: fix me
-		//authServiceProc.addUserPolicy(session, userId, name, document);
+		policyServiceProc.addUserPolicy(userId, name, document);
 	}
 
 	@Override
 	public void addGroupPolicy(Session session, String groupId, String name, String document)
 	        throws EucalyptusServiceException {
 		verifySession(session);
-		//TODO: fix me
-		//authServiceProc.addGroupPolicy(session, groupId, name, document);
+		policyServiceProc.addGroupPolicy(groupId, name, document);
 	}
 
 	@Override
-	public void deletePolicy(Session session, SearchResultRow policySerialized) throws EucalyptusServiceException {
+	public void deletePolicy(Session session, ArrayList<String> ids) throws EucalyptusServiceException {
 		verifySession(session);
-		//TODO: fix me
-		//authServiceProc.deletePolicy(session, policySerialized);
+		policyServiceProc.deletePolicy(ids);
 	}
 
 	@Override
