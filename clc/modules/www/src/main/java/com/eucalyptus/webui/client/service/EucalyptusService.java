@@ -391,7 +391,7 @@ public interface EucalyptusService extends RemoteService {
    * @param policySerialized
    * @throws EucalyptusServiceException
    */
-  void deletePolicy( Session session, SearchResultRow policySerialized ) throws EucalyptusServiceException;
+  void deletePolicy( Session session, ArrayList<String> ids ) throws EucalyptusServiceException;
   
   /**
    * Delete an access key.
@@ -400,7 +400,7 @@ public interface EucalyptusService extends RemoteService {
    * @param keySerialized
    * @throws EucalyptusServiceException
    */
-  void deleteAccessKey( Session session, SearchResultRow keySerialized ) throws EucalyptusServiceException;
+  void deleteAccessKey( Session session, ArrayList<String> ids ) throws EucalyptusServiceException;
   
   /**
    * Delete certificate.
@@ -409,7 +409,7 @@ public interface EucalyptusService extends RemoteService {
    * @param certSerialized
    * @throws EucalyptusServiceException
    */
-  void deleteCertificate( Session session, SearchResultRow certSerialized ) throws EucalyptusServiceException;
+  void deleteCertificate( Session session, ArrayList<String> ids ) throws EucalyptusServiceException;
  
   /**
    * Add users to groups using user names input
@@ -486,7 +486,7 @@ public interface EucalyptusService extends RemoteService {
    * @param values
    * @throws EucalyptusServiceException
    */
-  void modifyAccessKey( Session session, ArrayList<String> values ) throws EucalyptusServiceException;
+  void modifyAccessKey( Session session, ArrayList<String> values, boolean active) throws EucalyptusServiceException;
   
   /**
    * Modify certificate info.
@@ -495,7 +495,7 @@ public interface EucalyptusService extends RemoteService {
    * @param values
    * @throws EucalyptusServiceException
    */
-  void modifyCertificate( Session session, ArrayList<String> values ) throws EucalyptusServiceException;
+  void modifyCertificate( Session session, ArrayList<String> ids, Boolean active, Boolean revoked ) throws EucalyptusServiceException;
 
   /**
    * Add an access key to a user.
@@ -712,5 +712,49 @@ public interface EucalyptusService extends RemoteService {
         String bw, String image);
 
   SearchResult lookupDeviceVM(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException;
+  
+  /**
+   * Acquire access keys by user id
+   * @param session
+   * @param userId
+   * @return
+   * @throws EucalyptusServiceException
+   */
+//  SearchResult listAccessKeysByUser(Session session, String userId) throws EucalyptusServiceException;
+  
+  /**
+   * Acquire all access keys
+   * @param session
+   * @return
+   * @throws EucalyptusServiceException
+   */
+//  SearchResult listAccessKeys(Session session) throws EucalyptusServiceException;
+  
+  /**
+   * Acquire certificates by user id
+   * @param session
+   * @param userId
+   * @return
+   * @throws EucalyptusServiceException
+   */
+//  SearchResult listCertificatesByUser(Session session, String userId) throws EucalyptusServiceException;
+  
+  /**
+   * Acquire all certificates
+   * @param session
+   * @return
+   * @throws EucalyptusServiceException
+   */
+//  SearchResult listCertificates(Session session) throws EucalyptusServiceException;
+  
+  /**
+   * 
+   * @param session
+   * @return
+   * @throws EucalyptusServiceException
+   */
+//  SearchResult listPolicies(Session session) throws EucalyptusServiceException;
+  
+  void modifyPolicy(Session session, String policyId, String name, String content) throws EucalyptusServiceException;
 
 }

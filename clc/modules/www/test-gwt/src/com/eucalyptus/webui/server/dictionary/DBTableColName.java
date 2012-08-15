@@ -14,6 +14,35 @@ public class DBTableColName {
 		public final String ACCOUNT_ID = "account_id";
 	}
 
+	public interface USER_KEY {
+		public final String ID = "key_id";
+		public final String AKEY = "key_akey";
+		public final String SKEY = "key_skey";
+		public final String ACTIVE = "key_active";
+		public final String CREATED_DATE = "key_created_date";
+		public final String USER_ID = "user_id";
+	}
+	
+	public interface USER_CERT {
+		public final String ID = "cert_id";
+		public final String CERT_ID = "cert_cert_id";
+		public final String PEM = "cert_pem";
+		public final String ACTIVE = "cert_active";
+		public final String REVOKED = "cert_revoked";
+		public final String CREATED_DATE = "cert_created_date";
+		public final String USER_ID = "user_id";
+	}
+	
+	public interface USER_POLICY {
+		public final String ID = "policy_id";
+		public final String NAME = "policy_name";
+		public final String VERSION = "policy_version";
+		public final String TEXT = "policy_text";
+		public final String ACCOUNT_ID = "account_id";
+		public final String GROUP_ID = "group_id";
+		public final String USER_ID = "user_id";
+	}
+	
 	public interface ACCOUNT {
 		public final String ID = "account_id";
 		public final String NAME = "account_name";
@@ -147,5 +176,6 @@ public class DBTableColName {
 		public final String IMAGE = "template_image";
 		public final String STARTTIME = "template_starttime";
 	}
+	
 	
 }

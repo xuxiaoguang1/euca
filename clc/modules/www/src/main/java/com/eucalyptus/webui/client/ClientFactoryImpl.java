@@ -610,4 +610,5 @@ public class ClientFactoryImpl implements ClientFactory {
     }
     return areaView;
   }
+
 }

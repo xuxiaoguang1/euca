@@ -36,14 +36,34 @@ public class CertViewImpl extends Composite implements CertView {
   
   private Presenter presenter;
   
-  public CertViewImpl( ) {
-    initWidget( uiBinder.createAndBindUi( this ) );
-  }
+	public CertViewImpl() {
+		initWidget(uiBinder.createAndBindUi(this));
+	}
 
-  @UiHandler( "delButton" )
-  void handleDelButtonClick( ClickEvent e ) {
-    this.presenter.onDeleteCert( );
-  }
+	@UiHandler("delButton")
+	void handleDelButtonClick(ClickEvent e) {
+		this.presenter.onDeleteCert();
+	}
+
+	@UiHandler("activateButton")
+	void handleActivateButtonClick(ClickEvent e) {
+		this.presenter.onActivateCert();
+	}
+
+	@UiHandler("deactivateButton")
+	void handleDeactivateButtonClick(ClickEvent e) {
+		this.presenter.onDeactivateCert();
+	}
+
+	@UiHandler("revokeButton")
+	void handleReovkeButtonClick(ClickEvent e) {
+		this.presenter.onRevokeCert();
+	}
+
+	@UiHandler("authorizeButton")
+	void handleAuthorizeButtonClick(ClickEvent e) {
+		this.presenter.onAuthorizeCert();
+	}
   
   public void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
     tablePanel.clear( );

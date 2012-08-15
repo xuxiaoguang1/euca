@@ -1,6 +1,7 @@
 package com.eucalyptus.webui.client.activity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,11 +13,16 @@ import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.GroupListView;
+import com.eucalyptus.webui.client.view.InputField;
+import com.eucalyptus.webui.client.view.InputView;
 import com.eucalyptus.webui.client.view.UserAddView;
 import com.eucalyptus.webui.client.view.UserView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
+import com.eucalyptus.webui.client.view.InputField.ValueType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.shared.checker.ValueChecker;
+import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
@@ -26,7 +32,7 @@ import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class UserActivity extends AbstractSearchActivity
-    implements UserView.Presenter, ConfirmationView.Presenter, UserAddView.Presenter, GroupListView.Presenter {
+    implements UserView.Presenter, ConfirmationView.Presenter, UserAddView.Presenter, GroupListView.Presenter, InputView.Presenter {
   
   public static final String[] TITLE = {"USERS", "用户"};
 
@@ -51,6 +57,21 @@ public class UserActivity extends AbstractSearchActivity
   public static final String[] REMOVE_FROM_GROUPS_CAPTION = {"Remove users from selected groups", "从选择的组中删除用户"};
   public static final String[] REMOVE_FROM_GROUPS_SUBJECT = {"Are you sure to remove the selected users from the group", "确定要将所选择的用户从组中删除？"};
   
+  public static final String[] ADD_POLICY_CAPTION = {"Add new policy", "增加策略"};
+  public static final String[] ADD_POLICY_SUBJECT = {"Enter new policy to assign to the selected user:", "为选中的用户输入策略"};
+  public static final String[] POLICY_NAME_INPUT_TITLE = {"Policy name", "策略名称"};
+  public static final String[] POLICY_CONTENT_INPUT_TITLE = {"Policy content", "策略内容"};
+  
+  public static final String[] ADD_KEY_CAPTION = {"Add new key", "增加密钥"};
+  public static final String[] ADD_KEY_SUBJECT = {"Enter new key to assign to the selected user:", "为选中的用户增加密钥"};
+  
+  public static final String[] ADD_CERT_CAPTION = {"Add new certificate", "增加证书"};
+  public static final String[] ADD_CERT_SUBJECT = {"Enter new certificate to assign to the selected user:", "为选定的用户增加证书"};
+  public static final String[] CERT_PEM_INPUT_TITLE = {"Certificate (PEM)", "证书(PEM)"};
+  
+  private final String[] FOOTERVIEW_USER_NO_SELECTION = {"Must select users", "必须选择至少一个用户"};
+  private final String[] FOOTERVIEW_USER_ONE_SELECTION = {"Must select one user", "必须选择一个用户"};
+
   private static final Logger LOG = Logger.getLogger( UserActivity.class.getName( ) );
   
   private Set<SearchResultRow> currentSelected;
@@ -250,15 +271,93 @@ public class UserActivity extends AbstractSearchActivity
 	@Override
 	public void onAddPolicy() {
 		// TODO Auto-generated method stub
-		
+		if (!oneSelectionIsValid())
+			return;
+
+		InputView dialog = this.clientFactory.getInputView();
+		dialog.setPresenter(this);
+		dialog.display(ADD_POLICY_CAPTION[1], ADD_POLICY_SUBJECT[1],
+				new ArrayList<InputField>(Arrays.asList(
+					new InputField() {
+	
+						@Override
+						public String getTitle() {
+							return POLICY_NAME_INPUT_TITLE[1];
+						}
+	
+						@Override
+						public ValueType getType() {
+							return ValueType.TEXT;
+						}
+	
+						@Override
+						public ValueChecker getChecker() {
+							return ValueCheckerFactory.createPolicyNameChecker();
+						}
+	
+					}, 
+					new InputField() {
+	
+						@Override
+						public String getTitle() {
+							return POLICY_CONTENT_INPUT_TITLE[1];
+						}
+	
+						@Override
+						public ValueType getType() {
+							return ValueType.TEXTAREA;
+						}
+	
+						@Override
+						public ValueChecker getChecker() {
+							return ValueCheckerFactory.createNonEmptyValueChecker();
+						}
+
+				})));
 	}
 
 	@Override
 	public void onAddKey() {
 		// TODO Auto-generated method stub
+		if (!oneSelectionIsValid())
+			return;
+		
+		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
+		confirmView.setPresenter(this);
+	  
+		confirmView.display(ADD_KEY_CAPTION[1], ADD_KEY_SUBJECT[1]);
+	}
+	
+	@Override
+	public void onAddCert() {
+		if ( currentSelected == null || currentSelected.size( ) != 1 ) {
+		      clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "必须选中一个用户", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		      return;
+		    }
+		    InputView dialog = this.clientFactory.getInputView( );
+		    dialog.setPresenter( this );
+		    dialog.display( ADD_CERT_CAPTION[1], ADD_CERT_SUBJECT[1], new ArrayList<InputField>( Arrays.asList( new InputField( ) {
+
+		      @Override
+		      public String getTitle( ) {
+		        return CERT_PEM_INPUT_TITLE[1];
+		      }
+
+		      @Override
+		      public ValueType getType( ) {
+		        return ValueType.TEXTAREA;
+		      }
+
+		      @Override
+		      public ValueChecker getChecker( ) {
+		        return ValueCheckerFactory.createNonEmptyValueChecker( );
+		      }
+		      
+		    } ) ) );
+		
 		
 	}
-		
+	
 	@Override
 	public void onResumeUses() {
 		// TODO Auto-generated method stub
@@ -294,10 +393,19 @@ public class UserActivity extends AbstractSearchActivity
 		confirmView.display(BAN_USERS_CAPTION[1], BAN_USERS_SUBJECT[1]);
 	}
 	
-	private final String[] FOOTERVIEW_USER_NO_SELECTION = {"Must select users to add to groups", "必须选择至少一个用户"};
+	
 	private boolean selectionIsValid() {
 		if ( currentSelected == null || currentSelected.size( ) < 1 ) {
 			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_USER_NO_SELECTION[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+			return false;
+		}
+	  
+		return true;
+	}
+	
+	private boolean oneSelectionIsValid() {
+		if ( currentSelected == null || currentSelected.size( ) != 1 ) {
+			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_USER_ONE_SELECTION[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 			return false;
 		}
 	  
@@ -309,13 +417,19 @@ public class UserActivity extends AbstractSearchActivity
     if ( DELETE_USERS_SUBJECT[1].equals( subject ) ) {
     	doDeleteUsers( );
     } else if ( RESUME_USERS_SUBJECT[1].equals( subject ) ) {
-    	updateUserState(EnumState.NORMAL);
+    	doUpdateUserState(EnumState.NORMAL);
     } else if ( PAUSE_USERS_SUBJECT[1].equals( subject ) ) {
-    	updateUserState(EnumState.PAUSE);
+    	doUpdateUserState(EnumState.PAUSE);
     } else if ( BAN_USERS_SUBJECT[1].equals( subject ) ) {
-    	updateUserState(EnumState.BAN);
+    	doUpdateUserState(EnumState.BAN);
     } else if ( REMOVE_FROM_GROUPS_SUBJECT[1].equals( subject ) ) {
     	doRemoveUserFromGroup();
+    } else if ( ADD_POLICY_SUBJECT[1].equals( subject ) ) {
+    	//doAddPolicy();
+    } else if ( ADD_KEY_SUBJECT[1].equals( subject ) ) {
+    	doAddKey();
+    } else if ( ADD_CERT_SUBJECT[1].equals( subject ) ) {
+    	//doAddCert();
     }
   }
 
@@ -349,11 +463,99 @@ public class UserActivity extends AbstractSearchActivity
 	    	}
 	    });
 	}
+
+  private void doAddKey( ) {
+	    if ( currentSelected == null || currentSelected.size( ) != 1 ) {
+	    	return;
+	    }
+	    
+	    final String userId = this.currentSelected.toArray( new SearchResultRow[0] )[0].getField( 0 );
+	    this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "Adding access key ...", 0 );
+	    
+	    this.clientFactory.getBackendService( ).addAccessKey( this.clientFactory.getLocalSession( ).getSession( ), userId, new AsyncCallback<Void>( ) {
+	  
+	        @Override
+	        public void onFailure( Throwable caught ) {
+	        	ActivityUtil.logoutForInvalidSession( clientFactory, caught );
+	        	clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Failed to add access key", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+	        	clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to add access key for user " + userId + ": " + caught.getMessage( ) );
+	        }
+	  	    @Override
+	        public void onSuccess( Void arg ) {
+	  	    	clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Access key added", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+	  	    	clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "New access key is added to user " + userId );
+	  	    	reloadCurrentRange( );
+	        }
+	     });
+  }
+
+	  
+	private void doAddCert(final String pem) {
+		if (currentSelected == null || currentSelected.size() != 1 || pem == null) {
+			return;
+		}
+
+		final String userId = this.currentSelected.toArray(new SearchResultRow[0])[0].getField(0);
+		this.clientFactory.getShellView().getFooterView().showStatus(StatusType.LOADING, "Adding certificate...", 0);
+		clientFactory.getBackendService().addCertificate(
+				clientFactory.getLocalSession().getSession(), userId, pem,
+				new AsyncCallback<Void>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						ActivityUtil.logoutForInvalidSession(clientFactory,
+								caught);
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.ERROR, "创建证书失败", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory
+								.getShellView()
+								.getLogView()
+								.log(LogType.ERROR, "创建证书失败" + ": " + caught.getMessage());
+					}
+
+					@Override
+					public void onSuccess(Void arg0) {
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.NONE, "创建证书成功", FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory.getShellView().getLogView()
+								.log(LogType.INFO, "Create certificate");
+						reloadCurrentRange();
+					}
+				});
+	}
+
+  private void doAddPolicy( final String name, final String document ) {
+	  if ( currentSelected == null || currentSelected.size( ) != 1 ) {
+		  return;
+	  }
+	  final String userId = this.currentSelected.toArray( new SearchResultRow[0] )[0].getField( 0 );
+	  this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "Adding policy " + name + " ...", 0 );
+	      
+	  this.clientFactory.getBackendService( ).addUserPolicy( this.clientFactory.getLocalSession( ).getSession( ), userId, name, document, new AsyncCallback<Void>() {  
+		  @Override
+		  public void onFailure( Throwable caught ) {
+			  ActivityUtil.logoutForInvalidSession( clientFactory, caught );
+		      clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Failed to add policy", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		      clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to add policy " + name + " for user " + userId + ": " + caught.getMessage( ) );
+		  }
+		  
+		  @Override
+		  public void onSuccess( Void arg ) {
+			  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Policy added", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		      clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "New policy " + name + " is added to user " + userId );
+		      reloadCurrentRange( );
+		  }
+	  });
+  }
 	  
   static final String[] FOOTERVIEW_UPDATE_USER_STATE = {"Update user state", "更新用户状态"};
   static final String[] FOOTERVIEW_UPDATE_USER_FAILS = {"Update user state fails", "更新用户状态"};
     
-  private void updateUserState(EnumState userState) {
+  private void doUpdateUserState(EnumState userState) {
 	// TODO Auto-generated method stub
 			if ( currentSelected == null || currentSelected.size( ) < 1 ) {
 				//clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Select users to delete", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
@@ -451,4 +653,18 @@ public class UserActivity extends AbstractSearchActivity
 																}
 															);
 	}
+
+	@Override
+	public void process(String subject, ArrayList<String> values) {
+		if (ADD_CERT_SUBJECT[1].equals(subject)) {
+			doAddCert(values.get(0));
+		}else if (ADD_POLICY_SUBJECT[1].equals(subject)) {
+			doAddPolicy(values.get(0), values.get(1));
+		}
+	}
+
+//	@Override
+//	public void processAddCert(String pem) {
+//		doAddCert(pem);
+//	}
 }

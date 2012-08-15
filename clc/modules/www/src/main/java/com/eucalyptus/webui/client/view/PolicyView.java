@@ -8,7 +8,10 @@ public interface PolicyView extends IsWidget, CanDisplaySearchResult, Clearable,
   
   public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize {
 
-    void onDeletePolicy( );
+    void onDeletePolicy();
+    
+    void onModifyPolicy();
+    
   }
   
 }

@@ -24,7 +24,7 @@ public class QuickLinks {
   
 	private static ArrayList<QuickLinkTag> getSystemAdminTags( ) throws EucalyptusServiceException {
 		try {
-			return new ArrayList<QuickLinkTag>( Arrays.asList(getQuickLinkTag("用户管理", "用户管理", "组管理", "账户管理"),
+			return new ArrayList<QuickLinkTag>( Arrays.asList(getQuickLinkTag("用户管理", "用户管理", "组管理", "账户管理", "策略管理", "密钥管理", "证书管理"),
 									getQuickLinkTag("资源管理", "服务器管理",  "内存管理", "硬盘管理", "CPU管理", "带宽管理", "IP管理", "模板管理", "虚拟机管理", "镜像管理", "Keypair管理"),
 									getQuickLinkTag("组件管理", "节点控制器管理", "集群控制器管理", "存储控制器管理", "Walrus控制器管理")));
 		} catch ( Exception e ) { 
@@ -52,6 +52,9 @@ public class QuickLinks {
 			getQuickLink("用户管理", "user", QueryType.user),
 			getQuickLink("组管理", "group", QueryType.group),
 			getQuickLink("账户管理", "accout", QueryType.account),
+			getQuickLink("策略管理", "policy", QueryType.policy),
+			getQuickLink("密钥管理", "key", QueryType.key),
+			getQuickLink("证书管理", "cert", QueryType.cert),
 			getQuickLink("服务器管理", "device", QueryType.device_server),
 			getQuickLink("内存管理", "device", QueryType.device_memory),
 			getQuickLink("硬盘管理", "device", QueryType.device_disk),

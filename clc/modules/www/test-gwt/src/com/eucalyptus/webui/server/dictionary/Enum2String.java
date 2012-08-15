@@ -31,6 +31,20 @@ public class Enum2String {
 		return getName(userType);
 	}
 	
+	public String getActiveState(boolean active) {
+		if (active)
+			return USER_KEY_ACTIVE[1];
+		else
+			return USER_KEY_NON_ACTIVE[1];
+	}
+	
+	public String getRevokedState(boolean active) {
+		if (active)
+			return USER_KEY_REVOKED[1];
+		else
+			return USER_KEY_NON_REVOKED[1];
+	}
+	
 	private Enum2String () {   
 		userTypeDic.put(EnumUserType.ADMIN, USER_TYPE_ADMIN_NAME[1]);
 		userTypeDic.put(EnumUserType.USER, USER_TYPE_USER_NAME[1]);
@@ -38,6 +52,7 @@ public class Enum2String {
 		userStateDic.put(EnumState.NORMAL, USER_STATE_NORMAL_NAME[1]);
 		userStateDic.put(EnumState.PAUSE, USER_STATE_PAUSE_NAME[1]);
 		userStateDic.put(EnumState.BAN, USER_STATE_BAN_NAME[1]);
+		
 	}
 	
 	private final Hashtable<EnumUserType, String> userTypeDic = new Hashtable<EnumUserType, String>();
@@ -51,4 +66,10 @@ public class Enum2String {
 	private final String[] USER_STATE_NORMAL_NAME = {"Normal", "正常"};
 	private final String[] USER_STATE_PAUSE_NAME = {"Pause", "暂停"};
 	private final String[] USER_STATE_BAN_NAME = {"Ban", "禁止"};
+	
+	private final String[] USER_KEY_ACTIVE = {"true", "激活"};
+	private final String[] USER_KEY_NON_ACTIVE = {"false", "未激活"};
+	
+	private final String[] USER_KEY_REVOKED = {"true", "是"};
+	private final String[] USER_KEY_NON_REVOKED = {"false", "否"};
 }

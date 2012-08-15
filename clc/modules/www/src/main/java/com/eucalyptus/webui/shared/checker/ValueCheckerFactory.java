@@ -27,7 +27,7 @@ public class ValueCheckerFactory {
       @Override
       public String check( String value ) throws InvalidValueException {
         if ( Strings.isNullOrEmpty( value ) ) {
-          throw new InvalidValueException( InvalidValueExceptionMsg.ACCOUNT_NAME_IS_EMPTY[1] );
+          throw new InvalidValueException( InvalidValueExceptionMsg.CONTENT_IS_EMPTY[1] );
         }
         return value;
       }
@@ -127,7 +127,7 @@ public class ValueCheckerFactory {
       @Override
       public String check( String value ) throws InvalidValueException {
         if ( Strings.isNullOrEmpty( value ) ) {
-          throw new InvalidValueException( InvalidValueExceptionMsg.USER_OR_GROUP_NAME_IS_EMPTY[1] );
+          throw new InvalidValueException( InvalidValueExceptionMsg.CONTENT_IS_EMPTY[1] );
         }
         for ( int i = 0; i < value.length( ); i++ ) {
           char c = value.charAt( i );
