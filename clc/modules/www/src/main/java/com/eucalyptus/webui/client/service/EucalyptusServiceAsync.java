@@ -95,11 +95,11 @@ public interface EucalyptusServiceAsync {
 	
 	void removeUsersFromGroup(Session session, ArrayList<String> userIds, AsyncCallback<Void> callback);
 
-	void deletePolicy(Session session, SearchResultRow policySerialized, AsyncCallback<Void> callback);
+	void deletePolicy(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
 
 	void deleteAccessKey(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
 
-	void deleteCertificate(Session session, SearchResultRow certSerialized, AsyncCallback<Void> callback);
+	void deleteCertificate(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
 
 	void addAccountPolicy(Session session, String accountId, String name, String document, AsyncCallback<Void> callback);
 
@@ -124,7 +124,7 @@ public interface EucalyptusServiceAsync {
 
 	void modifyAccessKey(Session session, ArrayList<String> values, boolean active, AsyncCallback<Void> callback);
 
-	void modifyCertificate(Session session, ArrayList<String> values, AsyncCallback<Void> callback);
+	void modifyCertificate(Session session, ArrayList<String> ids, Boolean active, Boolean revoked, AsyncCallback<Void> callback);
 
 	void addAccessKey(Session session, String userId, AsyncCallback<Void> callback);
 
@@ -255,4 +255,12 @@ public interface EucalyptusServiceAsync {
 	
 	void addUserApp(Session session, String userId, String templateId, AsyncCallback<Void> callback);
 
+	
+//	void listAccessKeysByUser(Session session, String userId, AsyncCallback<SearchResult> callback);
+//	void listAccessKeys(Session session, AsyncCallback<SearchResult> callback);
+//	void listCertificatesByUser(Session session, String userId, AsyncCallback<SearchResult> callback);
+//	void listCertificates(Session session, AsyncCallback<SearchResult> callback);
+//	void listPolicies(Session session, AsyncCallback<SearchResult> callback);
+	
+	void modifyPolicy(Session session, String policyId, String name, String content, AsyncCallback<Void> callback);
 }

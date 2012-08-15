@@ -21,4 +21,6 @@ public interface CmdService extends RemoteService {
 	
 	public String uploadImage(Session session, String file, ImageType type, String bucket, String name, String kernel, String ramdisk);
 	
+	public String runInstance(Session session, String image, String keypair, String vmtype, String group);
+	
 }

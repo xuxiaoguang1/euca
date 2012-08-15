@@ -43,7 +43,17 @@ public class DBTableColName {
 		public final String USER_ID = "user_id";
 		public final String TEMPLATE_ID = "template_id";	
 	}	
-	
+
+	public interface USER_POLICY {
+		public final String ID = "policy_id";
+		public final String NAME = "policy_name";
+		public final String VERSION = "policy_version";
+		public final String TEXT = "policy_text";
+		public final String ACCOUNT_ID = "account_id";
+		public final String GROUP_ID = "group_id";
+		public final String USER_ID = "user_id";
+	}
+
 	public interface ACCOUNT {
 		public final String ID = "account_id";
 		public final String NAME = "account_name";
@@ -177,5 +187,4 @@ public class DBTableColName {
 		public final String IMAGE = "template_image";
 		public final String STARTTIME = "template_starttime";
 	}
-	
 }

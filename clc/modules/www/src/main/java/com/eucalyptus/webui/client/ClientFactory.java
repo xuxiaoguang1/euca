@@ -7,6 +7,7 @@ import com.eucalyptus.webui.client.session.LocalSession;
 import com.eucalyptus.webui.client.session.SessionData;
 import com.eucalyptus.webui.client.view.AccountView;
 import com.eucalyptus.webui.client.view.ActionResultView;
+import com.eucalyptus.webui.client.view.AreaView;
 import com.eucalyptus.webui.client.view.CertView;
 import com.eucalyptus.webui.client.view.CloudRegistrationView;
 import com.eucalyptus.webui.client.view.ClusterCtrlView;
@@ -31,6 +32,7 @@ import com.eucalyptus.webui.client.view.InputView;
 import com.eucalyptus.webui.client.view.InstanceView;
 import com.eucalyptus.webui.client.view.ItemView;
 import com.eucalyptus.webui.client.view.KeyView;
+import com.eucalyptus.webui.client.view.KeypairView;
 import com.eucalyptus.webui.client.view.LoadingAnimationView;
 import com.eucalyptus.webui.client.view.LoadingProgressView;
 import com.eucalyptus.webui.client.view.LoginView;
@@ -38,6 +40,7 @@ import com.eucalyptus.webui.client.view.ConfigView;
 import com.eucalyptus.webui.client.view.NodeCtrlView;
 import com.eucalyptus.webui.client.view.PolicyView;
 import com.eucalyptus.webui.client.view.ReportView;
+import com.eucalyptus.webui.client.view.RunInstanceView;
 import com.eucalyptus.webui.client.view.ShellView;
 import com.eucalyptus.webui.client.view.StartView;
 import com.eucalyptus.webui.client.view.StorageCtrlView;
@@ -162,6 +165,8 @@ public interface ClientFactory {
 	ItemView createItemView();
 	
 	UploadImageView createUploadImageView();
+	RunInstanceView createRunInstanceView();
+	AreaView createAreaView();
 
 	CloudRegistrationView getCloudRegistrationView();
 
@@ -202,5 +207,6 @@ public interface ClientFactory {
 	ClusterCtrlView getClusterCtrlView( );
 	WalrusCtrlView getWalrusCtrlView( );
 	StorageCtrlView getStorageCtrlView( );
+	KeypairView getKeypairView( );
   
 }

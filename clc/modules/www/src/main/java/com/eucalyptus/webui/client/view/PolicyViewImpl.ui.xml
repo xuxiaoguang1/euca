@@ -20,7 +20,13 @@
                         <tr>
                             <td>
                                 <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.small} {global.buttonCss.button}" ui:field="delButton">
-                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>Delete policy
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>删除策略
+                                </g:Anchor>
+                            </td>
+                            <td>&nbsp;</td>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.small} {global.buttonCss.button}" ui:field="modifyButton">
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>修改策略
                                 </g:Anchor>
                             </td>
                         </tr>

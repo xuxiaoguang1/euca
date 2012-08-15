@@ -448,7 +448,7 @@ public interface EucalyptusService extends RemoteService {
 	 * @param policySerialized
 	 * @throws EucalyptusServiceException
 	 */
-	void deletePolicy(Session session, SearchResultRow policySerialized)
+	void deletePolicy(Session session, ArrayList<String> ids)
 			throws EucalyptusServiceException;
 
 	/**
@@ -468,7 +468,7 @@ public interface EucalyptusService extends RemoteService {
 	 * @param certSerialized
 	 * @throws EucalyptusServiceException
 	 */
-	void deleteCertificate(Session session, SearchResultRow certSerialized)
+	void deleteCertificate(Session session, ArrayList<String> ids)
 			throws EucalyptusServiceException;
 
 	/**
@@ -564,7 +564,7 @@ public interface EucalyptusService extends RemoteService {
 	 * @param values
 	 * @throws EucalyptusServiceException
 	 */
-	void modifyCertificate(Session session, ArrayList<String> values)
+	void modifyCertificate(Session session, ArrayList<String> values, Boolean active, Boolean revoked)
 			throws EucalyptusServiceException;
 
 	/**
@@ -885,6 +885,7 @@ public interface EucalyptusService extends RemoteService {
 			throws EucalyptusServiceException;
 	
 	
+
 	/**
 	 * Add a user app.
 	 * 
@@ -893,5 +894,49 @@ public interface EucalyptusService extends RemoteService {
 	 * @throws EucalyptusServiceException
 	 */
 	void addUserApp(Session session, String userId, String templateId) throws EucalyptusServiceException;
+  
+  /**
+   * Acquire access keys by user id
+   * @param session
+   * @param userId
+   * @return
+   * @throws EucalyptusServiceException
+   */
+//  SearchResult listAccessKeysByUser(Session session, String userId) throws EucalyptusServiceException;
+  
+  /**
+   * Acquire all access keys
+   * @param session
+   * @return
+   * @throws EucalyptusServiceException
+   */
+//  SearchResult listAccessKeys(Session session) throws EucalyptusServiceException;
+  
+  /**
+   * Acquire certificates by user id
+   * @param session
+   * @param userId
+   * @return
+   * @throws EucalyptusServiceException
+   */
+//  SearchResult listCertificatesByUser(Session session, String userId) throws EucalyptusServiceException;
+  
+  /**
+   * Acquire all certificates
+   * @param session
+   * @return
+   * @throws EucalyptusServiceException
+   */
+//  SearchResult listCertificates(Session session) throws EucalyptusServiceException;
+  
+  /**
+   * 
+   * @param session
+   * @return
+   * @throws EucalyptusServiceException
+   */
+//  SearchResult listPolicies(Session session) throws EucalyptusServiceException;
+  
+  void modifyPolicy(Session session, String policyId, String name, String content) throws EucalyptusServiceException;
 
 }

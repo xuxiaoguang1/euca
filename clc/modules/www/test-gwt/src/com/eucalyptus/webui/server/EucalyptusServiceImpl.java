@@ -39,9 +39,12 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	private static final Random RANDOM = new Random();
 	private static AuthenticateUserLogin authenticateUserLogin = new AuthenticateUserLogin();
 
+	private UserKeyServiceProcImpl userKeyServiceProc = new UserKeyServiceProcImpl();
+	private CertificateServiceProcImpl certServiceProc = new CertificateServiceProcImpl();
+	private PolicyServiceProcImpl policyServiceProc = new PolicyServiceProcImpl();
+	
 	private AccountServiceProcImpl accountServiceProc = new AccountServiceProcImpl();
 	private UserServiceProcImpl userServiceProc = new UserServiceProcImpl();
-	private UserKeyServiceProcImpl userKeyServiceProc = new UserKeyServiceProcImpl();
 	private UserAppServiceProcImpl userAppServiceProc = new UserAppServiceProcImpl();
 	private GroupServiceProcImpl groupServiceProc = new GroupServiceProcImpl();
 	private DeviceServerServiceProcImpl deviceServerServiceProc = new DeviceServerServiceProcImpl();
@@ -151,7 +154,8 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	        throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
-		return null;
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+		return policyServiceProc.lookupPolicy(curUser, search, range);
 	}
 
 	@Override
@@ -167,7 +171,8 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	        throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
-		return null;
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+		return certServiceProc.lookupCertificate(curUser, search, range);
 	}
 
 	@Override
@@ -457,42 +462,41 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	@Override
 	public void addAccountPolicy(Session session, String accountId, String name, String document)
 	        throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
 		verifySession(session);
+		policyServiceProc.addAccountPolicy(accountId, name, document);
 	}
 
 	@Override
-	public void addUserPolicy(Session session, String usertId, String name, String document)
+	public void addUserPolicy(Session session, String userId, String name, String document)
 	        throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
 		verifySession(session);
+		policyServiceProc.addUserPolicy(userId, name, document);
 	}
 
 	@Override
 	public void addGroupPolicy(Session session, String groupId, String name, String document)
 	        throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
 		verifySession(session);
+		policyServiceProc.addGroupPolicy(groupId, name, document);
 	}
 
 	@Override
-	public void deletePolicy(Session session, SearchResultRow policySerialized) throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
+	public void deletePolicy(Session session, ArrayList<String> ids) throws EucalyptusServiceException {
 		verifySession(session);
+		policyServiceProc.deletePolicy(ids);
 	}
 
 	@Override
 	public void deleteAccessKey(Session session, ArrayList<String> ids) throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
 		verifySession(session);
-		
+		//authServiceProc.deleteAccessKey(session, keySerialized);
 		userKeyServiceProc.deleteUserKeys(ids);
 	}
 
 	@Override
-	public void deleteCertificate(Session session, SearchResultRow certSerialized) throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
+	public void deleteCertificate(Session session, ArrayList<String> ids) throws EucalyptusServiceException {
 		verifySession(session);
+		certServiceProc.deleteCertification(ids);
 	}
 
 	@Override
@@ -517,23 +521,23 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 
 	@Override
-	public void modifyCertificate(Session session, ArrayList<String> values) throws EucalyptusServiceException {
+	public void modifyCertificate(Session session, ArrayList<String> ids, Boolean active, Boolean revoked) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
+		certServiceProc.modifiCertificate(ids, active, revoked);
 	}
 
 	@Override
 	public void addAccessKey(Session session, String userId) throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
 		verifySession(session);
-		
+		//authServiceProc.addAccessKey(session, userId);
 		userKeyServiceProc.addAccessKey(Integer.parseInt(userId));
 	}
 
 	@Override
 	public void addCertificate(Session session, String userId, String pem) throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
 		verifySession(session);
+		certServiceProc.addCertificate(userId, pem);
 	}
 
 	@Override
@@ -935,4 +939,39 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		// TODO Auto-generated method stub
 		userAppServiceProc.addUserApp(Integer.valueOf(userId), Integer.valueOf(templateId));
 	}
+
+	public void modifyPolicy(Session session, String policyId, String name, String content) throws EucalyptusServiceException {
+		verifySession(session);
+		policyServiceProc.modifyPolicy(policyId, name, content);
+	}
+
+//	@Override
+//	public SearchResult listAccessKeysByUser(Session session, String userId)
+//			throws EucalyptusServiceException {
+//		return authServiceProc.listAccesssKeyByUser(session, userId);
+//	}
+
+//	@Override
+//	public SearchResult listAccessKeys(Session session)
+//			throws EucalyptusServiceException {
+//		return authServiceProc.listAccessKeys(session);
+//	}
+
+//	@Override
+//	public SearchResult listCertificatesByUser(Session session, String userId)
+//			throws EucalyptusServiceException {
+//		return authServiceProc.listCertificatesByUser(session, userId);
+//	}
+
+//	@Override
+//	public SearchResult listCertificates(Session session)
+//			throws EucalyptusServiceException {
+//		return authServiceProc.listCertificates(session);
+//	}
+
+//	@Override
+//	public SearchResult listPolicies(Session session)
+//			throws EucalyptusServiceException {
+//		return authServiceProc.listPolicies(session);
+//	}
 }

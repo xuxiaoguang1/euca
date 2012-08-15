@@ -34,6 +34,7 @@ public enum QueryType {
   clusterCtrl,
   storageCtrl,
   walrusCtrl,
+  keypair,
   
   device_server,
   device_cpu,

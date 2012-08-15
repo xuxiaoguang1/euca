@@ -464,9 +464,9 @@ public class UserDBProcWrapper {
 	public ResultSetWrapper queryUserKeysBy(int accountId, int userId, EnumUserType userType)  throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
-		StringBuilder sql = userAccountGroupViewSql();
+		StringBuilder sql = userKeyAccountGroupViewSql();
 		sql.append(" AND ").
-		append(DBTableName.ACCOUNT).append(".").append(DBTableColName.USER.ACCOUNT_ID).
+		append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
 		append(" = '").append(accountId).append("' ");
 		
 		switch (userType) {
@@ -475,7 +475,7 @@ public class UserDBProcWrapper {
 			  
 		  case USER:
 			  sql.append(" AND ").
-			  append(DBTableColName.USER.ID).
+			  append(DBTableName.USER).append(".").append(DBTableColName.USER.ID).
 			  append(" = '").
 			  append(userId).
 			  append("'");

@@ -8,7 +8,8 @@ public interface InputField {
     TEXT,
     TEXTAREA,
     PASSWORD,
-    NEWPASSWORD
+    NEWPASSWORD, 
+    LISTBOX,
   }
   
   String getTitle( );
