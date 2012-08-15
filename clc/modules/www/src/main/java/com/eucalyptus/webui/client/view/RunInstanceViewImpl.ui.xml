@@ -1,0 +1,60 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.important {
+			font-weight: bold;
+		}
+	</ui:style>
+	<ui:with field="global" type="com.eucalyptus.webui.client.view.GlobalResources"/>
+	<g:HTMLPanel ui:field="panel">
+		<table>
+		<tbody>
+		<tr>
+			<td>
+			<g:Label ui:field="imageLabel" text="镜像"/>
+			</td>
+			<td>
+			<g:ListBox ui:field="imageBox" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<g:Label ui:field="keyPairLabel" text="Keypair"/>
+			</td>
+			<td>
+			<g:ListBox ui:field="keypairBox" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<g:Label ui:field="vmtypeLabel" text="模板"/>
+			</td>
+			<td>
+			<g:ListBox ui:field="vmtypeBox" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+			<g:Label ui:field="groupLabel" text="安全组"/>
+			</td>
+			<td>
+			<g:ListBox ui:field="groupBox" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+		    <g:Anchor styleName="{global.buttonCss.button}" ui:field="okButton">
+            <span class=""/>确定
+            </g:Anchor>
+			</td>
+			<td>
+		    <g:Anchor styleName="{global.buttonCss.button}" ui:field="cancelButton">
+            <span class=""/>取消
+            </g:Anchor>			
+			</td>
+		</tr>
+		</tbody>
+		</table>
+	</g:HTMLPanel>
+</ui:UiBinder> 

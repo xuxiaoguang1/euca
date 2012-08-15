@@ -27,4 +27,7 @@ public interface CmdServiceAsync {
   void uploadImage(Session session, String file, ImageType type, String bucket,
       String name, String kernel, String ramdisk, AsyncCallback<String> callback);
 
+  void runInstance(Session session, String image, String keypair,
+      String vmtype, String group, AsyncCallback<String> callback);
+
 }
