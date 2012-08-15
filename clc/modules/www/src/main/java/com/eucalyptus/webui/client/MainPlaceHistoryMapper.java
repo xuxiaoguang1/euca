@@ -19,6 +19,7 @@ import com.eucalyptus.webui.client.place.ImagePlace;
 import com.eucalyptus.webui.client.place.InstancePlace;
 import com.eucalyptus.webui.client.place.IndividualPlace;
 import com.eucalyptus.webui.client.place.KeyPlace;
+import com.eucalyptus.webui.client.place.KeypairPlace;
 import com.eucalyptus.webui.client.place.NodeCtrlPlace;
 import com.eucalyptus.webui.client.place.PolicyPlace;
 import com.eucalyptus.webui.client.place.RejectPlace;
@@ -59,7 +60,8 @@ import com.google.gwt.place.shared.WithTokenizers;
   DeviceIPPlace.Tokenizer.class,
   DeviceBWPlace.Tokenizer.class,
   DeviceTemplatePlace.Tokenizer.class,
-  DeviceVMPlace.Tokenizer.class
+  DeviceVMPlace.Tokenizer.class, 
+  KeypairPlace.Tokenizer.class,
 
 } )
 public interface MainPlaceHistoryMapper extends PlaceHistoryMapper {

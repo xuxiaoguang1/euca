@@ -49,6 +49,7 @@ public class UploadImageViewImpl extends DialogBox implements UploadImageView {
   
   @UiField
   Anchor okButton;
+  @UiField
   Anchor cancelButton;
   
   SingleUploader uploader;
@@ -82,6 +83,7 @@ public class UploadImageViewImpl extends DialogBox implements UploadImageView {
 		  
 		});
 		okButton.addClickHandler(clickHandler);
+		cancelButton.addClickHandler(clickHandler);
 		
 		
 	}

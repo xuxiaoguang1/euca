@@ -1,0 +1,30 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:euca="urn:import:com.eucalyptus.webui.client.view">
+
+    <ui:style>
+        .outer {
+        	width:100%;
+        }
+    </ui:style>
+    <ui:with field="global" type="com.eucalyptus.webui.client.view.GlobalResources"/>
+
+    <g:HTMLPanel>
+        <table class="{style.outer}" >
+            <tbody align="center">
+                <tr>
+                    <td><g:TextArea ui:field="input"/></td>
+                </tr>
+                <tr>
+                     <td>
+                       <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.middle}" ui:field="button">
+                           <span class="{global.buttonCss.check} {global.buttonCss.icon}"/>关闭
+                       </g:Anchor>
+                    </td>                   
+                </tr>
+            </tbody>
+        </table>
+    </g:HTMLPanel>
+    
+</ui:UiBinder> 

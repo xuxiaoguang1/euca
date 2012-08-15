@@ -3,17 +3,27 @@ package com.eucalyptus.webui.server;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.CreateKeyPairRequest;
+import com.amazonaws.services.ec2.model.CreateKeyPairResult;
+import com.amazonaws.services.ec2.model.DeleteKeyPairRequest;
 import com.amazonaws.services.ec2.model.DescribeImagesResult;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
+import com.amazonaws.services.ec2.model.DescribeKeyPairsResult;
 import com.amazonaws.services.ec2.model.Image;
 import com.amazonaws.services.ec2.model.Instance;
+import com.amazonaws.services.ec2.model.InstanceStatus;
+import com.amazonaws.services.ec2.model.InstanceType;
+import com.amazonaws.services.ec2.model.KeyPairInfo;
 import com.amazonaws.services.ec2.model.Reservation;
+import com.amazonaws.services.ec2.model.RunInstancesRequest;
+import com.amazonaws.services.ec2.model.RunInstancesResult;
 import com.amazonaws.services.ec2.model.StartInstancesRequest;
 import com.amazonaws.services.ec2.model.StopInstancesRequest;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
@@ -24,19 +34,30 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
 import com.google.common.collect.Lists;
+import com.google.gwt.dev.util.collect.HashSet;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
-	static final String ACCESS_KEY="YA8IBOXPEL3X3J7F2ZWYT";
-	static final String SECRET_KEY="GZO4qV10hsKJ5abci3pRYGNnX7J8KG71MNcrz7Q2";
+	static final String ACCESS_KEY="K65XB0GX0BLHXV97DL6AO";
+	static final String SECRET_KEY="UvZ1fGaECy4nutoVJke7GcEZR1dQ2ktBeBcA3vJm";
 	static final String ENDPOINT="http://166.111.134.80:8773/services/Eucalyptus";
+	
+	static final String TYPE_KERNEL = "kernel";
+	static final String TYPE_RAMDISK = "ramdisk";
+	static final String TYPE_ROOTFS = "machine";
+	static final Set<String> TYPES = new HashSet<String>();
+	static {
+	  TYPES.add(TYPE_KERNEL);
+	  TYPES.add(TYPE_RAMDISK);
+	  TYPES.add(TYPE_ROOTFS);
+	}
 	
 	public static final ArrayList<SearchResultFieldDesc> INSTANCE_COMMON_FIELD_DESCS = Lists.newArrayList();
 	static {
 		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "虚拟机ID", true, "10%") );
 		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "镜像ID", true, "10%") );
 		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "IP地址", true, "10%") );
-		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "带宽", true, "10%") );
+		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "密钥", true, "10%") );
 		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "所属安全组", true, "10%") );
 		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "使用用户", true, "10%") );
 		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "开始时间", true, "10%") );
@@ -55,6 +76,12 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 		IMAGE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("状态", true, "10%"));
 	}
 
+  public static final ArrayList<SearchResultFieldDesc> KEYPAIR_COMMON_FIELD_DESCS = Lists.newArrayList();
+  static {
+    KEYPAIR_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("名称", true, "10%"));
+    KEYPAIR_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("指纹", true, "10%"));
+  }
+	
 	
 	AmazonEC2 getEC2(Session s) {
 		AWSCredentials credentials = new BasicAWSCredentials(ACCESS_KEY, SECRET_KEY);
@@ -89,7 +116,8 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 			String state = ins.getState().getName();
 			String seGroup = res.getGroups().size() > 0 ? res.getGroups().get(0).getGroupName() : "";
 			String date = ins.getLaunchTime().toString();
-			data.add(new SearchResultRow(Arrays.asList(id, image, priIp, "", seGroup, owner, date, "", "", state)));
+			String key = ins.getKeyName();
+			data.add(new SearchResultRow(Arrays.asList(id, image, priIp, key, seGroup, owner, date, "", "", state)));
 		}
 		
 		int resultLength = data.size();
@@ -135,7 +163,8 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 			String kern = i.getKernelId();
 			String rd = i.getRamdiskId();
 			String state = i.getState();
-			data.add(new SearchResultRow(Arrays.asList(id, type, arch, loc, kern, rd, state)));
+			if (!TYPES.contains(search) || type.equals(search))
+		    data.add(new SearchResultRow(Arrays.asList(id, type, arch, loc, kern, rd, state)));
 		}
 		int resultLength = data.size();
 		SearchResult result = new SearchResult(data.size(), range);
@@ -143,4 +172,62 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 		result.setRows(data.subList(range.getStart(), range.getStart() + resultLength));
 		return result;
 	}
+
+  @Override
+  public String runInstance(Session session, String image, String key) {
+    //FIXME !@!@#*!#(!#*!@()* failed silently
+    AmazonEC2 ec2 = getEC2(session);
+    RunInstancesRequest r = new RunInstancesRequest();
+    System.out.println("!!image: " + image + " key:" + key);
+    r.setImageId(image);
+    r.setKeyName(key);
+    r.setInstanceType(InstanceType.M1Small);
+    r.setMinCount(1);
+    r.setMaxCount(1);
+    RunInstancesResult ret = ec2.runInstances(r);
+    System.out.println("??" + ret.toString());
+    return ret.getReservation().getInstances().get(0).getInstanceId();
+  }
+
+  @Override
+  public SearchResult lookupKeypair(Session session, String search,
+      SearchRange range) {
+    AmazonEC2 ec2 = getEC2(session);
+    DescribeKeyPairsResult r = ec2.describeKeyPairs();
+    List<SearchResultRow> data = new ArrayList<SearchResultRow>();
+    for (KeyPairInfo k : r.getKeyPairs()) {
+      String name = k.getKeyName();
+      String footprint = k.getKeyFingerprint();
+      data.add(new SearchResultRow(Arrays.asList(name, footprint)));
+    }
+    int resultLength = data.size();
+    SearchResult result = new SearchResult(data.size(), range);
+    result.setDescs(KEYPAIR_COMMON_FIELD_DESCS);
+    result.setRows(data.subList(range.getStart(), range.getStart() + resultLength));
+    return result;
+  }
+
+  @Override
+  public String addKeypair(Session session, String name) {
+    AmazonEC2 ec2 = getEC2(session);
+    CreateKeyPairRequest req = new CreateKeyPairRequest();
+    req.setKeyName(name);
+    CreateKeyPairResult ret = ec2.createKeyPair(req);
+    return ret.getKeyPair().getKeyMaterial();
+  }
+
+  @Override
+  public void importKeypair(Session session, String name, String key) {
+    // TODO Auto-generated method stub
+  }
+
+  @Override
+  public void deleteKeypairs(Session session, List<String> keys) {
+    AmazonEC2 ec2 = getEC2(session);
+    for (String k : keys) {
+      DeleteKeyPairRequest req = new DeleteKeyPairRequest();
+      req.setKeyName(k);
+      ec2.deleteKeyPair(req);
+    }
+  }
 }

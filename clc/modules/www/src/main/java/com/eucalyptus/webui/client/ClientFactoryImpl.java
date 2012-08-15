@@ -15,6 +15,8 @@ import com.eucalyptus.webui.client.view.AccountView;
 import com.eucalyptus.webui.client.view.AccountViewImpl;
 import com.eucalyptus.webui.client.view.ActionResultView;
 import com.eucalyptus.webui.client.view.ActionResultViewImpl;
+import com.eucalyptus.webui.client.view.AreaView;
+import com.eucalyptus.webui.client.view.AreaViewImpl;
 import com.eucalyptus.webui.client.view.CertView;
 import com.eucalyptus.webui.client.view.CertViewImpl;
 import com.eucalyptus.webui.client.view.CloudRegistrationView;
@@ -61,6 +63,8 @@ import com.eucalyptus.webui.client.view.ItemView;
 import com.eucalyptus.webui.client.view.ItemViewImpl;
 import com.eucalyptus.webui.client.view.KeyView;
 import com.eucalyptus.webui.client.view.KeyViewImpl;
+import com.eucalyptus.webui.client.view.KeypairView;
+import com.eucalyptus.webui.client.view.KeypairViewImpl;
 import com.eucalyptus.webui.client.view.LoadingAnimationView;
 import com.eucalyptus.webui.client.view.LoadingAnimationViewImpl;
 import com.eucalyptus.webui.client.view.LoadingProgressView;
@@ -75,6 +79,8 @@ import com.eucalyptus.webui.client.view.PolicyView;
 import com.eucalyptus.webui.client.view.PolicyViewImpl;
 import com.eucalyptus.webui.client.view.ReportView;
 import com.eucalyptus.webui.client.view.ReportViewImpl;
+import com.eucalyptus.webui.client.view.RunInstanceView;
+import com.eucalyptus.webui.client.view.RunInstanceViewImpl;
 import com.eucalyptus.webui.client.view.ShellView;
 import com.eucalyptus.webui.client.view.ShellViewImpl;
 import com.eucalyptus.webui.client.view.StartView;
@@ -154,6 +160,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private DeviceVMView deviceVMView;
 	private DeviceBWView deviceBWView;
 	private DeviceTemplateView deviceTemplateView;
+	private KeypairView keyPairView;
 
 	// Dialogs
 	private ConfirmationView confirmationView;
@@ -164,6 +171,9 @@ public class ClientFactoryImpl implements ClientFactory {
 	private GroupDetailView groupDetailView;
 	private UserListView userListView;
 	private UploadImageView uploadImageView;
+	private RunInstanceView runInstanceView;
+	private AreaView areaView;
+	
 
 	// Snippets
 	private CloudRegistrationView cloudRegView;
@@ -577,4 +587,28 @@ public class ClientFactoryImpl implements ClientFactory {
     return uploadImageView;
   }
   
+  @Override
+  public RunInstanceView createRunInstanceView() {
+    if (runInstanceView == null) {
+      runInstanceView = new RunInstanceViewImpl();
+    }
+    return runInstanceView;
+  }
+
+  @Override
+  public KeypairView getKeypairView() {
+    if (keyPairView == null) {
+      keyPairView = new KeypairViewImpl();
+    }
+    return keyPairView;
+  }
+
+  @Override
+  public AreaView createAreaView() {
+    if (areaView == null) {
+      areaView = new AreaViewImpl();
+    }
+    return areaView;
+  }
+
 }

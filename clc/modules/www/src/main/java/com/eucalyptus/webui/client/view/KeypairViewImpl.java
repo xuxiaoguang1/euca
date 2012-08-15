@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResult;
+import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -20,16 +20,40 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 
-public class InstanceViewImpl extends Composite implements InstanceView {
+public class KeypairViewImpl extends Composite implements KeypairView {
   
-  private static final Logger LOG = Logger.getLogger( InstanceViewImpl.class.getName( ) );
+  private static final Logger LOG = Logger.getLogger( KeypairViewImpl.class.getName( ) );
   
-  private static InstanceViewImplUiBinder uiBinder = GWT.create( InstanceViewImplUiBinder.class );
+  private static KeypairViewImplUiBinder uiBinder = GWT.create( KeypairViewImplUiBinder.class );
   
-  interface InstanceViewImplUiBinder extends UiBinder<Widget, InstanceViewImpl> {}
+  interface KeypairViewImplUiBinder extends UiBinder<Widget, KeypairViewImpl> {}
   
   @UiField
   LayoutPanel tablePanel;
+  
+  @UiField
+  Anchor newButton;
+  
+  @UiField
+  Anchor delButton;
+
+  @UiField
+  Anchor importButton;
+  
+  @UiHandler( "newButton" )
+  void handleNewButtonClick( ClickEvent e ) {
+    this.presenter.onAddKeypair();
+  }
+  
+  @UiHandler( "delButton" )
+  void handleDelButtonClick( ClickEvent e ) {
+    this.presenter.onDelKeypair();
+  }
+  
+  @UiHandler( "importButton" )
+  void handleImportButtonClick( ClickEvent e ) {
+    this.presenter.onImportKeypair();
+  }
   
   
   private MultiSelectionModel<SearchResultRow> selectionModel;
@@ -38,25 +62,9 @@ public class InstanceViewImpl extends Composite implements InstanceView {
   
   private Presenter presenter;
   
-  @UiHandler( "startButton" )
-  void handleStartButtonClick( ClickEvent e ) {
-    this.presenter.onStartInstances();
-  }
-
-  @UiHandler( "stopButton" )
-  void handleStopButtonClick( ClickEvent e ) {
-    this.presenter.onTerminateInstances();
-  }
-  
-  @UiHandler( "runButton" )
-  void handleRunButtonClick( ClickEvent e ) {
-    this.presenter.onRunInstance();
-  }
-
-  public InstanceViewImpl( ) {
+  public KeypairViewImpl( ) {
     initWidget( uiBinder.createAndBindUi( this ) );
   }
-
 
   public void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
     tablePanel.clear( );
@@ -73,20 +81,13 @@ public class InstanceViewImpl extends Composite implements InstanceView {
     tablePanel.add( table );
     table.load( );
   }
-
-  @Override
-  public void setPresenter( Presenter presenter ) {
-    this.presenter = presenter;
-  }
-
+  
   @Override
   public void showSearchResult( SearchResult result ) {
-	
     if ( this.table == null ) {
       initializeTable( this.presenter.getPageSize( ), result.getDescs( ) );
     }
     table.setData( result );
-    
   }
 
   @Override
@@ -96,8 +97,13 @@ public class InstanceViewImpl extends Composite implements InstanceView {
   }
 
   @Override
-  public void clearSelection( ) {
-    selectionModel.clear( );
+  public void setPresenter( Presenter presenter ) {
+    this.presenter = presenter;
   }
 
+  @Override
+  public void clearSelection( ) {
+    this.selectionModel.clear( );
+  }
+  
 }

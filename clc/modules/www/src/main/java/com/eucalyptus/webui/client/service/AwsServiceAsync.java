@@ -25,5 +25,19 @@ public interface AwsServiceAsync {
 	void lookupImage(Session session, String search, SearchRange range,
 			AsyncCallback<SearchResult> callback);
 
+  void runInstance(Session session, String image, String key,
+      AsyncCallback<String> callback);
+
+  void lookupKeypair(Session session, String search, SearchRange range,
+      AsyncCallback<SearchResult> callback);
+
+  void addKeypair(Session session, String name, AsyncCallback<String> callback);
+
+  void importKeypair(Session session, String name, String key,
+      AsyncCallback<Void> callback);
+
+  void deleteKeypairs(Session session, List<String> keys,
+      AsyncCallback<Void> callback);
+
 
 }

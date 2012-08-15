@@ -21,6 +21,7 @@ import com.eucalyptus.webui.client.activity.GroupActivity;
 import com.eucalyptus.webui.client.activity.ImageActivity;
 import com.eucalyptus.webui.client.activity.IndividualActivity;
 import com.eucalyptus.webui.client.activity.KeyActivity;
+import com.eucalyptus.webui.client.activity.KeypairActivity;
 import com.eucalyptus.webui.client.activity.LogoutActivity;
 import com.eucalyptus.webui.client.activity.ConfigActivity;
 import com.eucalyptus.webui.client.activity.NodeCtrlActivity;
@@ -53,6 +54,7 @@ import com.eucalyptus.webui.client.place.GroupPlace;
 import com.eucalyptus.webui.client.place.ImagePlace;
 import com.eucalyptus.webui.client.place.IndividualPlace;
 import com.eucalyptus.webui.client.place.KeyPlace;
+import com.eucalyptus.webui.client.place.KeypairPlace;
 import com.eucalyptus.webui.client.place.LogoutPlace;
 import com.eucalyptus.webui.client.place.ConfigPlace;
 import com.eucalyptus.webui.client.place.NodeCtrlPlace;
@@ -165,7 +167,10 @@ public class MainActivityMapper implements ActivityMapper {
 		else if ( place instanceof StorageCtrlPlace ) {
 			return new StorageCtrlActivity( ( StorageCtrlPlace )place, this.clientFactory );
 		}
-
+    else if ( place instanceof KeypairPlace ) {
+      return new KeypairActivity( ( KeypairPlace )place, this.clientFactory );
+    }
+		
 		return null;
 	}
 }

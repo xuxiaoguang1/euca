@@ -20,6 +20,7 @@
         		<g:Button text="延续服务"/>
         		<g:Button text="变更"/>
         		<g:Button text="删除"/>
+        		<g:Button text="创建" ui:field="runButton"/>
         	</g:FlowPanel>
         </g:north>
         <g:center size="1000">

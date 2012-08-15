@@ -2,6 +2,7 @@ package com.eucalyptus.webui.client.activity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,23 +16,28 @@ import com.eucalyptus.webui.client.view.DetailView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.InputField;
 import com.eucalyptus.webui.client.view.InputView;
+import com.eucalyptus.webui.client.view.UploadImageView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.InputField.ValueType;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.InstanceView;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.client.view.RunInstanceView;
 import com.eucalyptus.webui.shared.checker.ValueChecker;
 import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class InstanceActivity extends AbstractSearchActivity
-    implements InstanceView.Presenter, ConfirmationView.Presenter, InputView.Presenter {
+    implements InstanceView.Presenter, ConfirmationView.Presenter, InputView.Presenter, RunInstanceView.Presenter {
   
   public static final String TITLE = "虚拟机管理";
   private static final Logger LOG = Logger.getLogger( InstanceActivity.class.getName( ) );
 
   private Set<SearchResultRow> currentSelected;
+  
+  private ArrayList<String> mImages;
+  private ArrayList<String> mKeypairs;
     
   public InstanceActivity( InstancePlace place, ClientFactory clientFactory ) {
     super( place, clientFactory );
@@ -165,10 +171,89 @@ public void onTerminateInstances() {
 	      }
 	      @Override
 	      public void onSuccess( ArrayList<String> arg ) {
-	    	  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Instances stopped", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+	    	  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "正在关闭虚拟机...", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+	    	  InstanceActivity.this.reloadCurrentRange();
 	    	// Log
 	      }
 	});
 	
+}
+
+@Override
+public void onRunInstance() {
+  this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "获取信息中...", 0 );
+  mImages = new ArrayList<String>();
+  mKeypairs = new ArrayList<String>();
+  this.clientFactory.getBackendAwsService().lookupKeypair(clientFactory.getLocalSession( ).getSession( ), "", new SearchRange(), new AsyncCallback<SearchResult> () {
+
+    @Override
+    public void onFailure(Throwable caught) {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void onSuccess(SearchResult result) {
+      for (SearchResultRow r : result.getRows()) 
+        mKeypairs.add(r.getField(0));
+      InstanceActivity.this.clientFactory.getBackendAwsService().lookupImage(clientFactory.getLocalSession( ).getSession( ), "machine", new SearchRange(), new AsyncCallback<SearchResult>() {
+
+        @Override
+        public void onFailure(Throwable caught) {
+          // TODO Auto-generated method stub
+          
+        }
+
+        @Override
+        public void onSuccess(SearchResult result) {
+          for (SearchResultRow r : result.getRows()) 
+            mImages.add(r.getField(0));
+          clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+          _onRunInstance();
+        }     
+      });
+    }
+    
+  });
+  
+}
+
+private void _onRunInstance() {
+  final RunInstanceView dialog = this.clientFactory.createRunInstanceView();
+  dialog.setPresenter(this);
+  dialog.display();  
+}
+
+@Override
+public void processRun(String image, String keypair, String vmtype, String group) {
+  this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "虚拟机创建中...", 0 );
+  this.clientFactory.getBackendCmdService().runInstance(clientFactory.getLocalSession( ).getSession( ), image, keypair, vmtype, group, new AsyncCallback<String>() {
+  //this.clientFactory.getBackendAwsService().runInstance(clientFactory.getLocalSession( ).getSession( ), image, keypair, new AsyncCallback<String>() {
+
+    @Override
+    public void onFailure(Throwable caught) {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void onSuccess(String result) {
+      clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "虚拟机 " + result + " 已创建", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+      reloadCurrentRange();
+    }
+  
+});
+}
+
+@Override
+public List<String> getImages() {
+  // TODO Auto-generated method stub
+  return mImages;
+}
+
+@Override
+public List<String> getKeypairs() {
+  // TODO Auto-generated method stub
+  return mKeypairs;
 }
 }

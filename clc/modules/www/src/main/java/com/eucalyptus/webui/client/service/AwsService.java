@@ -11,9 +11,17 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("awsBackend")
 public interface AwsService extends RemoteService {
 	public SearchResult lookupInstance(Session session, String search, SearchRange range);
+	public SearchResult lookupImage(Session session, String search, SearchRange range);
+	public SearchResult lookupKeypair(Session session, String search, SearchRange range);
+	
 	public ArrayList<String> stopInstances(Session session, List<String> ids);
 	public ArrayList<String> startInstances(Session session, List<String> ids);
 	public ArrayList<String> terminateInstances(Session session, List<String> ids);
-	public SearchResult lookupImage(Session session, String search, SearchRange range);
+		
+	public String runInstance(Session session, String image, String key);
+	public String addKeypair(Session session, String name);
+	public void importKeypair(Session session, String name, String key);
+	public void deleteKeypairs(Session session, List<String> keys);
+	
 
 }

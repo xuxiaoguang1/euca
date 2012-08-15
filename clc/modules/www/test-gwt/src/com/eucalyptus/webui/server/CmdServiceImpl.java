@@ -22,8 +22,8 @@ import com.google.common.collect.Lists;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
-	static final String EC2_ACCESS_KEY="YA8IBOXPEL3X3J7F2ZWYT";
-	static final String EC2_SECRET_KEY="GZO4qV10hsKJ5abci3pRYGNnX7J8KG71MNcrz7Q2";
+	static final String EC2_ACCESS_KEY="K65XB0GX0BLHXV97DL6AO";
+	static final String EC2_SECRET_KEY="UvZ1fGaECy4nutoVJke7GcEZR1dQ2ktBeBcA3vJm";
 	static final String EC2_URL="http://166.111.134.80:8773/services/Eucalyptus";
 	static final String SSH_HOST="root@166.111.134.80";
 	//FIXME !! howto get certs? 
@@ -31,6 +31,8 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 	static final String EC2_PRIVATE_KEY="/root/cr/euca2-admin-005381a0-pk.pem";
 	static final String EC2_USER_ID="950563033661";
 	static final String EUCALYPTUS_CERT="/root/cr/cloud-cert.pem";
+	
+	static final String IMAGE_PATH = "/home/images/";
 	
 	public static final ArrayList<SearchResultFieldDesc> CTRL_COMMON_FIELD_DESCS = Lists.newArrayList();
 	static {
@@ -147,17 +149,26 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
   @Override
   public String uploadImage(Session session, String file, ImageType type, String bucket,
       String name, String kernel, String ramdisk) {
-    //won't need if run on server
-    final String[] cmd0 = {"scp", file, SSH_HOST + ":/tmp/"};
+    //won't need if run on server    
+    final String[] cmd0 = {"scp", file, SSH_HOST + ":" + IMAGE_PATH};
     String ret = run(session, cmd0);
     System.out.println("ret: " + ret);
     
+    file = file.replace("/tmp/", IMAGE_PATH);
     //rename
-    String _file = "/tmp/" + name;
+    String _file = IMAGE_PATH + name;
     String s = "mv " + file + " " + _file;
     final String[] cmd = {s};
     ret = sshRun(session, cmd);
     System.out.println("ret: " + ret);
+    
+    //gunzip if needed
+    if (name.endsWith(".gz")) {
+      final String[] _cmd = {"gunzip", _file};
+      ret = sshRun(session, _cmd);
+      System.out.println("ret: " + ret);
+      _file = _file.substring(0, _file.length() - 3);
+    }
     
     //bundle
     String[] cmd1 = null;
@@ -207,5 +218,36 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
       }    
     }
     return ret; 
+  }
+
+  @Override
+  public String runInstance(Session session, String image, String keypair,
+      String vmtype, String group) {
+    List<String> cmd = new ArrayList<String>();
+    cmd.add("euca-run-instances");
+    if (!keypair.equals("")) {
+      cmd.add("-k");
+      cmd.add(keypair);
+    }
+    if (!vmtype.equals("")) {
+      cmd.add("-t");
+      cmd.add(vmtype);
+    }
+    if (!group.equals("")) {
+      cmd.add("-g");
+      cmd.add(group);
+    }
+    cmd.add(image);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    System.out.println("ret: " + ret);
+    {
+      String[] tmp  = ret.split("\n");
+      for (String t : tmp) {
+        if (t.contains("INSTANCE")) {
+          ret = t.split("\\s")[1];
+        }
+      }    
+    }
+    return ret;
   }
 }
