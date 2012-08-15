@@ -131,24 +131,23 @@ public class CertificateDBProcWrapper {
 	
 	public ResultSetWrapper queryCertificatesBy(int accountId, int userId, EnumUserType userType)  throws CertificateSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
+
+		StringBuilder sql = certificateAccountGroupViewSql();
 		
-		StringBuilder sql = userAccountGroupViewSql();
 		sql.append(" AND ").
-		append(DBTableName.ACCOUNT).append(".").append(DBTableColName.USER.ACCOUNT_ID).
+		append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
 		append(" = '").append(accountId).append("' ");
 		
 		switch (userType) {
 		  case ADMIN:
 			  break;
-			  
 		  case USER:
 			  sql.append(" AND ").
-			  append(DBTableColName.USER.ID).
+			  append(DBTableName.USER).append(".").append(DBTableColName.USER.ID).
 			  append(" = '").
 			  append(userId).
 			  append("'");
 			  break;
-			  
 		  default:
 			  return null;
 		  }
@@ -156,9 +155,7 @@ public class CertificateDBProcWrapper {
 		System.out.println(sql.toString());
 		
 		try {
-			System.out.println(sql.toString());
 			ResultSetWrapper result = dbProc.query(sql.toString());
-			
 			return result;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -337,34 +334,6 @@ public class CertificateDBProcWrapper {
 				append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
 				append(" = ").
 				append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).
-				append(" WHERE 1=1 ");
-		
-		return sql;
-	}
-	
-	private StringBuilder userAccountGroupViewSql() {
-		StringBuilder sql = new StringBuilder("SELECT ").
-				append(DBTableName.USER).append(".*").
-				append(", ").
-				append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.NAME).
-				append(", ").
-				append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.NAME).
-				append(" FROM ").
-				append("( ").
-				append(DBTableName.USER).
-				append(" LEFT JOIN ").
-				append(DBTableName.ACCOUNT).
-				append(" ON ").
-				append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).
-				append(" = ").
-				append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
-				append(" ) ").
-				append(" LEFT JOIN ").
-				append(DBTableName.GROUP).
-				append(" ON ").
-				append(DBTableName.USER).append(".").append(DBTableColName.USER.GROUP_ID).
-				append(" = ").
-				append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.ID).
 				append(" WHERE 1=1 ");
 		
 		return sql;

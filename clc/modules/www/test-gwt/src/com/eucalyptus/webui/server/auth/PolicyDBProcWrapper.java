@@ -270,9 +270,9 @@ public class PolicyDBProcWrapper {
 	public ResultSetWrapper queryPoliciesBy(int accountId, int userId, EnumUserType userType)  throws CertificateSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
-		StringBuilder sql = userAccountGroupViewSql();
+		StringBuilder sql = plicyAccountGroupViewSql();
 		sql.append(" AND ").
-		append(DBTableName.ACCOUNT).append(".").append(DBTableColName.USER.ACCOUNT_ID).
+		append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
 		append(" = '").append(accountId).append("' ");
 		
 		switch (userType) {
@@ -281,7 +281,7 @@ public class PolicyDBProcWrapper {
 			  
 		  case USER:
 			  sql.append(" AND ").
-			  append(DBTableColName.USER.ID).
+			  append(DBTableName.USER).append(".").append(DBTableColName.USER.ID).
 			  append(" = '").
 			  append(userId).
 			  append("'");
@@ -304,32 +304,5 @@ public class PolicyDBProcWrapper {
 		}
 	}
 	
-	private StringBuilder userAccountGroupViewSql() {
-		StringBuilder sql = new StringBuilder("SELECT ").
-				append(DBTableName.USER).append(".*").
-				append(", ").
-				append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.NAME).
-				append(", ").
-				append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.NAME).
-				append(" FROM ").
-				append("( ").
-				append(DBTableName.USER).
-				append(" LEFT JOIN ").
-				append(DBTableName.ACCOUNT).
-				append(" ON ").
-				append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).
-				append(" = ").
-				append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
-				append(" ) ").
-				append(" LEFT JOIN ").
-				append(DBTableName.GROUP).
-				append(" ON ").
-				append(DBTableName.USER).append(".").append(DBTableColName.USER.GROUP_ID).
-				append(" = ").
-				append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.ID).
-				append(" WHERE 1=1 ");
-		
-		return sql;
-	}
-
+	
 }

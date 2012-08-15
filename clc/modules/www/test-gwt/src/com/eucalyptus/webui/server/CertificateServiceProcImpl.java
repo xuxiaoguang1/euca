@@ -197,8 +197,7 @@ public class CertificateServiceProcImpl {
 			if (isRootAdmin) {
 				rs = certDBProc.queryTotalCertificates();
 			} else {
-				rs = certDBProc.queryCertificatesBy(curUser.getAccountId(),
-						curUser.getUserId(), curUser.getUserType());
+				rs = certDBProc.queryCertificatesBy(curUser.getAccountId(), curUser.getUserId(), curUser.getUserType());
 			}
 		} catch (CertificateSyncException e) {
 			e.printStackTrace();

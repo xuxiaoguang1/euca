@@ -106,7 +106,10 @@ public class QuickLinks {
 		//new QuickLink("个人管理", "个人管理", "individual", QueryBuilder.get( ).start( QueryType.individual ).query()),
 		new QuickLink("用户管理", "用户管理", "user", QueryBuilder.get( ).start( QueryType.user ).query()),
 		new QuickLink("组管理", "组管理", "group", QueryBuilder.get( ).start( QueryType.group ).query()),
-		new QuickLink("账户管理", "账户管理", "accout", QueryBuilder.get( ).start( QueryType.account ).query())
+		new QuickLink("账户管理", "账户管理", "accout", QueryBuilder.get( ).start( QueryType.account ).query()),
+		new QuickLink("策略管理", "策略管理", "policy", QueryBuilder.get( ).start( QueryType.policy ).query()),
+		new QuickLink("密钥管理", "密钥管理", "key", QueryBuilder.get( ).start( QueryType.key ).query()),
+		new QuickLink("证书管理", "证书管理", "certificate", QueryBuilder.get( ).start( QueryType.cert ).query())
 	};
 	
 	private static QuickLink serviceLinks[] = {
@@ -119,9 +122,9 @@ public class QuickLinks {
 		new QuickLink( "使用报告", "Resource usage report", "report", QueryBuilder.get( ).start( QueryType.report ).query( ))
 	};
 		
-	private static ArrayList<QuickLink> sysAdminUserLinks = new ArrayList<QuickLink>(Arrays.asList(userLinks[0], userLinks[1], userLinks[2]));
+	private static ArrayList<QuickLink> sysAdminUserLinks = new ArrayList<QuickLink>(Arrays.asList(userLinks[0], userLinks[1], userLinks[2], userLinks[3], userLinks[4], userLinks[5]));
 	private static ArrayList<QuickLink> sysAdminSysLinks = new ArrayList<QuickLink>(Arrays.asList(serviceLinks[0]));
 	private static ArrayList<QuickLink> sysAdminResLinks = new ArrayList<QuickLink>(Arrays.asList(resourceLinks[0], resourceLinks[1], resourceLinks[2]));
   
-	private static ArrayList<QuickLink> accountdminUserLinks = new ArrayList<QuickLink>(Arrays.asList(userLinks[0], userLinks[1]));
+	private static ArrayList<QuickLink> accountdminUserLinks = new ArrayList<QuickLink>(Arrays.asList(userLinks[0], userLinks[1], userLinks[3], userLinks[4], userLinks[5]));
 }
