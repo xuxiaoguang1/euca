@@ -1,13 +1,16 @@
-package com.eucalyptus.webui.server.user;
+package com.eucalyptus.webui.shared.user;
 
 import java.util.Date;
 
-import com.eucalyptus.webui.shared.user.EnumUserAppState;
 
-public class UserApp {
+public class UserApp implements java.io.Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
 	private int id;
 	private Date time;
 	private EnumUserAppState state;
+	private EnumUserAppResult result;
 	private int del;
 	private String content;
 	private String comment;
@@ -34,6 +37,13 @@ public class UserApp {
 	}
 	public EnumUserAppState getState() {
 		return this.state;
+	}
+	
+	public void setResult(EnumUserAppResult result) {
+		this.result = result;
+	}
+	public EnumUserAppResult getResult() {
+		return this.result;
 	}
 	
 	public void setDelState(int del) {

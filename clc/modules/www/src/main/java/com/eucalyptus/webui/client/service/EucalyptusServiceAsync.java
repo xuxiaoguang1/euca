@@ -15,6 +15,7 @@ import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
+import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -254,7 +255,8 @@ public interface EucalyptusServiceAsync {
 	void lookupDeviceVM(Session session, String search, SearchRange range, int queryState, AsyncCallback<SearchResult> callback);
 	
 	void addUserApp(Session session, String userId, String templateId, AsyncCallback<Void> callback);
-
+	void deleteUserApp(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
+	void modifyUserApp(Session session, ArrayList<UserApp> userApps, AsyncCallback<Void> callback);
 	
 //	void listAccessKeysByUser(Session session, String userId, AsyncCallback<SearchResult> callback);
 //	void listAccessKeys(Session session, AsyncCallback<SearchResult> callback);

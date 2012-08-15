@@ -15,6 +15,7 @@ import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
+import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -894,6 +895,25 @@ public interface EucalyptusService extends RemoteService {
 	 * @throws EucalyptusServiceException
 	 */
 	void addUserApp(Session session, String userId, String templateId) throws EucalyptusServiceException;
+	
+	/**
+	 * Delete user applications.
+	 * 
+	 * @param session
+	 * @param ids
+	 * @throws EucalyptusServiceException
+	 */
+	void deleteUserApp(Session session, ArrayList<String> ids) throws EucalyptusServiceException;
+	
+	/**
+	 * Modify user applications.
+	 * 
+	 * @param session
+	 * @param ids
+	 * @throws EucalyptusServiceException
+	 */
+	void modifyUserApp(Session session, ArrayList<UserApp> userApps) throws EucalyptusServiceException;
+	
   
   /**
    * Acquire access keys by user id

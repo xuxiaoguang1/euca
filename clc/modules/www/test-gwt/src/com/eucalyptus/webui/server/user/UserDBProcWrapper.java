@@ -63,11 +63,11 @@ public class UserDBProcWrapper {
 					String mobile = rs.getString(DBTableColName.USER.MOBILE);
 					String email = rs.getString(DBTableColName.USER.EMAIL);
 					
-					EnumState userState = EnumState.NULL;
-					EnumState groupState = EnumState.NULL;
-					EnumState accountState = EnumState.NULL;
+					EnumState userState = EnumState.NONE;
+					EnumState groupState = EnumState.NONE;
+					EnumState accountState = EnumState.NONE;
 					
-					EnumUserType userType = EnumUserType.NULL;
+					EnumUserType userType = EnumUserType.NONE;
 					int groupId = 0;
 					int accountId = 0;
 

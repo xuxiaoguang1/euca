@@ -84,7 +84,7 @@ public class UserAppViewImpl extends Composite implements UserAppView {
 	}
 	@UiHandler("labelToSolve")
 	void onLabelToSolveClick(ClickEvent event) {
-		this.presenter.onToSolvingApps();
+		this.presenter.onToSolveApps();
 	}
 	@UiHandler("labelSolving")
 	void onLabelSolvingClick(ClickEvent event) {

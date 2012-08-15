@@ -37,6 +37,7 @@ public class DBTableColName {
 		public final String ID = "ua_id";
 		public final String TIME = "ua_time";
 		public final String STATE = "ua_state";
+		public final String RESULT = "ua_result";
 		public final String DEL = "ua_del";
 		public final String CONTENT = "ua_content";
 		public final String COMMENT = "ua_comment";

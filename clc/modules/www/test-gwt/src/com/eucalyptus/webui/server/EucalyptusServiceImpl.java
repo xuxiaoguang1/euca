@@ -27,6 +27,7 @@ import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
+import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.common.base.Strings;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
@@ -937,9 +938,30 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	@Override
 	public void addUserApp(Session session, String userId, String templateId) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
+		verifySession(session);
 		userAppServiceProc.addUserApp(Integer.valueOf(userId), Integer.valueOf(templateId));
 	}
 
+	@Override
+	public void deleteUserApp(Session session, ArrayList<String> ids)
+			throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		userAppServiceProc.deleteUserApps(ids);
+	}
+	
+	@Override
+	//public void modifyUserApp(Session session, ArrayList<UserApp> userApps)	throws EucalyptusServiceException {
+	public void modifyUserApp(Session session, ArrayList<UserApp> userApps)	throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		
+		for (UserApp app : userApps) {
+			userAppServiceProc.updateUserApp(app);
+		}
+	}	
+	
+	@Override
 	public void modifyPolicy(Session session, String policyId, String name, String content) throws EucalyptusServiceException {
 		verifySession(session);
 		policyServiceProc.modifyPolicy(policyId, name, content);

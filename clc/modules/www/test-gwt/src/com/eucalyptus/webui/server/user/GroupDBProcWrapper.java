@@ -143,7 +143,7 @@ public class GroupDBProcWrapper {
 					return null;
 				}
 				else {
-					EnumState state = EnumState.NULL;
+					EnumState state = EnumState.NONE;
 					int accountId = 0;
 					
 					try {

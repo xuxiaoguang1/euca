@@ -18,6 +18,6 @@ public interface UserAppView extends IsWidget, CanDisplaySearchResult, Clearable
 	    void onShowAllApps();
 	    void onSolvedApps();
 	    void onSolvingApps();
-	    void onToSolvingApps();
+	    void onToSolveApps();
 	}
 }

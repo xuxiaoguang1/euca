@@ -16,7 +16,9 @@ import com.eucalyptus.webui.client.view.UserAppView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.shared.user.EnumUserAppResult;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
+import com.eucalyptus.webui.shared.user.UserApp;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -25,24 +27,35 @@ public class UserAppActivity extends AbstractSearchActivity
 
 public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 
-  public static final String[] APPROVE_USER_APPLICATION_CAPTION = {"Approve user application", "通过申请"};
-  public static final String[] APPROE_USER_APPLICATION_SUBJECT = {"Are you sure to resume users?", "确定激活所选用户?"};
+  public static final String[] APPROVE_USER_APP_CAPTION = {"Approve user application", "通过申请"};
+  public static final String[] APPROVE_USER_APP_SUBJECT = {"Are you sure to resume users?", "确定通过所选申请?"};
   
-  public static final String[] REJECT_USER_APPLICATION_CAPTION = {"Pause users", "暂停用户"};
-  public static final String[] REJECT_USER_APPLICATION_SUBJECT = {"Are you sure to pause users?", "确定暂停所选用户?"};
+  public static final String[] REJECT_USER_APP_CAPTION = {"Pause users", "拒绝申请"};
+  public static final String[] REJECT_USER_APP_SUBJECT = {"Are you sure to pause users?", "确定拒绝选择申请?"};
   
-  public static final String[] DEL_USER_APPLICATION_CAPTION = {"Add users", "添加用户"};
-  public static final String[] DEL_USER_APPLICATION_SUBJECT = {"Are you sure to add user?", "确定添加该用户"};
+  public static final String[] DEL_USER_APP_CAPTION = {"Add users", "删除申请"};
+  public static final String[] DEL_USER_APP_SUBJECT = {"Are you sure to add user?", "确定删除所选用户申请"};
   
   private final String[] FOOTERVIEW_USER_NO_SELECTION = {"Must select users", "必须选择至少一个用户"};
   private final String[] FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES = {"Failed to query templates", "查询模板库失败"};
   
-  private final String[] FOOTERVIEW_FAILED_TO_ADD_USERAPP = {"Failed to add user app", "增加用户申请失败"};
-  private final String[] FOOTERVIEW_ADD_USERAPP = {"Successfully add user apps", "增加用户申请成功"};
+  private final String[] FOOTERVIEW_FAILED_TO_ADD_USERAPP = {"Failed to add user app", "增加申请失败"};
+  private final String[] FOOTERVIEW_ADD_USERAPP = {"Successfully add user apps", "增加申请成功"};
+  
+  private final String[] FOOTERVIEW_FAILED_TO_DEL_USERAPP = {"Failed to del user app", "删除申请失败"};
+  private final String[] FOOTERVIEW_DEL_USERAPP = {"Successfully del user apps", "删除申请成功"};
+  
+  private final String[] FOOTERVIEW_FAILED_TO_APPROVE_USERAPP = {"Failed to approve user app", "批准申请失败"};
+  private final String[] FOOTERVIEW_APPROVE_USERAPP = {"Successfully approve user apps", "批准申请成功"};
+  
+  private final String[] FOOTERVIEW_FAILED_TO_REJECT_USERAPP = {"Failed to reject user app", "拒绝申请失败"};
+  private final String[] FOOTERVIEW_REJECT_USERAPP = {"Successfully reject user apps", "拒绝申请成功"};
 
   private static final Logger LOG = Logger.getLogger( UserAppActivity.class.getName( ) );
   
   private Set<SearchResultRow> currentSelected;
+  
+  private EnumUserAppState appState = EnumUserAppState.NONE;
   
   public UserAppActivity( SearchPlace place, ClientFactory clientFactory ) {
     super( place, clientFactory );
@@ -50,23 +63,7 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 
   @Override
   protected void doSearch( String query, SearchRange range ) {
-    this.clientFactory.getBackendService( ).lookupUserApp(this.clientFactory.getLocalSession( ).getSession( ), search, range, EnumUserAppState.DEFAULT, 
-                                                           new AsyncCallback<SearchResult>( ) {
-      
-      @Override
-      public void onFailure( Throwable caught ) {
-        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-        LOG.log( Level.WARNING, "Search failed: " + caught );
-        displayData( null );
-      }
-      
-      @Override
-      public void onSuccess( SearchResult result ) {
-        LOG.log( Level.INFO, "Search success:" + result );
-        displayData( result );
-      }
-      
-    } );
+	  showUserAppByState(appState);
   }
   
   @Override
@@ -106,14 +103,24 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   
   @Override
   public void onApproveUserApp() {
-  	// TODO Auto-generated method stub
-  	
+	  // TODO Auto-generated method stub
+	  if (!selectionIsValid())
+		  return;
+  
+	  ConfirmationView dialog = this.clientFactory.getConfirmationView( );
+	  dialog.setPresenter( this );
+	  dialog.display( APPROVE_USER_APP_CAPTION[1], APPROVE_USER_APP_SUBJECT[1]);
   }
 
   @Override
   public void onRejectUserApp() {
-  	// TODO Auto-generated method stub
-  	
+	  // TODO Auto-generated method stub
+	  if (!selectionIsValid())
+		  return;
+  
+	  ConfirmationView dialog = this.clientFactory.getConfirmationView( );
+	  dialog.setPresenter( this );
+	  dialog.display( REJECT_USER_APP_CAPTION[1], REJECT_USER_APP_SUBJECT[1]);
   }
 
   @Override
@@ -140,32 +147,61 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   	
   @Override
   public void onDeleteUserApp() {
-  	// TODO Auto-generated method stub
-  	
+	  // TODO Auto-generated method stub
+	  if (!selectionIsValid())
+		  return;
+  
+	  ConfirmationView dialog = this.clientFactory.getConfirmationView( );
+	  dialog.setPresenter( this );
+	  dialog.display( DEL_USER_APP_CAPTION[1], DEL_USER_APP_SUBJECT[1]);
   }
  
   @Override
   public void onShowAllApps() {
-  	// TODO Auto-generated method stub
-  	
+	  // TODO Auto-generated method stub
+	  this.appState = EnumUserAppState.NONE;
+	  showUserAppByState(appState);
   }
 
   @Override
   public void onSolvedApps() {
-  	// TODO Auto-generated method stub
-  	
+	  // TODO Auto-generated method stub
+	  this.appState = EnumUserAppState.SOLVED;
+	  showUserAppByState(appState);
   }
 
   @Override
   public void onSolvingApps() {
-  	// TODO Auto-generated method stub
-  	
+	  // TODO Auto-generated method stub
+	  this.appState = EnumUserAppState.SOLVING;
+	  showUserAppByState(appState);
   }
 
   @Override
-  public void onToSolvingApps() {
-  	// TODO Auto-generated method stub
-  	
+  public void onToSolveApps() {
+	  // TODO Auto-generated method stub
+	  this.appState = EnumUserAppState.TOSOLVE;
+	  showUserAppByState(appState);
+  }
+  
+  private void showUserAppByState(EnumUserAppState state) {
+	  this.clientFactory.getBackendService( ).lookupUserApp(this.clientFactory.getLocalSession( ).getSession( ), search, range, state, 
+              new AsyncCallback<SearchResult>( ) {
+
+				@Override
+				public void onFailure( Throwable caught ) {
+				ActivityUtil.logoutForInvalidSession( clientFactory, caught );
+				LOG.log( Level.WARNING, "Search failed: " + caught );
+				displayData( null );
+				}
+				
+				@Override
+				public void onSuccess( SearchResult result ) {
+				LOG.log( Level.INFO, "Search success:" + result );
+				displayData( result );
+				}
+				
+	  } );
   }
 
   private boolean selectionIsValid() {
@@ -179,26 +215,73 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   
   @Override
   public void confirm( String subject ) {
-    if ( APPROE_USER_APPLICATION_SUBJECT[1].equals( subject ) ) {
+    if ( APPROVE_USER_APP_SUBJECT[1].equals( subject ) ) {
     	doApproveUserApp();
-    } else if ( REJECT_USER_APPLICATION_SUBJECT[1].equals( subject ) ) {
+    } else if ( REJECT_USER_APP_SUBJECT[1].equals( subject ) ) {
     	doRejectUserApp();
-    } else if ( DEL_USER_APPLICATION_SUBJECT[1].equals( subject ) ) {
+    } else if ( DEL_USER_APP_SUBJECT[1].equals( subject ) ) {
     	doDelUserApp();
     } 
   }
 
   private void doApproveUserApp( ) {
-	    final ArrayList<String> ids = Lists.newArrayList( ); 
+	    final ArrayList<UserApp> apps = Lists.newArrayList( ); 
 	    for ( SearchResultRow row : currentSelected ) {
-	      ids.add( row.getField( 0 ) );
+	    	UserApp app = new UserApp();
+	    	app.setUAId(Integer.valueOf(row.getField(0)));
+	    	app.setState(EnumUserAppState.SOLVED);
+	    	app.setResult(EnumUserAppResult.APPROVED);
+	    	
+	    	apps.add(app);
 	    }
+
+	    this.clientFactory.getBackendService().modifyUserApp(clientFactory.getLocalSession().getSession(), apps, 
+					new AsyncCallback<Void>() {
+						@Override
+						public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_APPROVE_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+						clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_APPROVE_USERAPP[1] + ":" + caught.getMessage( ) );
+						}
+						@Override
+						public void onSuccess(Void result) {
+						// TODO Auto-generated method stub
+						clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_APPROVE_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+						clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_APPROVE_USERAPP[1]);
+						
+						reloadCurrentRange();
+						}
+					});
 	}
 
   private void doRejectUserApp( ) {
-	    if ( currentSelected == null || currentSelected.size( ) != 1 ) {
-	    	return;
+	  	final ArrayList<UserApp> apps = Lists.newArrayList( ); 
+	    for ( SearchResultRow row : currentSelected ) {
+	    	UserApp app = new UserApp();
+	    	app.setUAId(Integer.valueOf(row.getField(0)));
+	    	app.setState(EnumUserAppState.SOLVED);
+	    	app.setResult(EnumUserAppResult.REJECTED);
+	    	
+	    	apps.add(app);
 	    }
+	    
+	    this.clientFactory.getBackendService().modifyUserApp(clientFactory.getLocalSession().getSession(), apps, 
+					new AsyncCallback<Void>() {
+						@Override
+						public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+						clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_REJECT_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+						clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_REJECT_USERAPP[1] + ":" + caught.getMessage( ) );
+						}
+						@Override
+						public void onSuccess(Void result) {
+						// TODO Auto-generated method stub
+						clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_REJECT_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+						clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_REJECT_USERAPP[1]);
+						
+						reloadCurrentRange();
+						}
+					});
   }
 
   @Override
@@ -227,6 +310,34 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   }
   
   private void doDelUserApp( ) {
+	  
+	  if ( currentSelected == null || currentSelected.size( ) < 1 ) {
+	      return;
+	  }
+  
+	  final ArrayList<String> ids = Lists.newArrayList( ); 
+	  for ( SearchResultRow row : currentSelected ) {
+	      ids.add( row.getField( 0 ) );
+	  }
+	    
+	  clientFactory.getBackendService().deleteUserApp(clientFactory.getLocalSession().getSession(), ids,
+								new AsyncCallback<Void>() {
+									@Override
+									public void onFailure(Throwable caught) {
+									// TODO Auto-generated method stub
+										clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_DEL_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+										clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_DEL_USERAPP[1] + ":" + caught.getMessage( ) );
+									}
+									@Override
+									public void onSuccess(Void result) {
+									// TODO Auto-generated method stub
+										clientFactory.getShellView( ).getFooterView().showStatus( StatusType.NONE, FOOTERVIEW_DEL_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+										clientFactory.getShellView( ).getLogView().log( LogType.ERROR, FOOTERVIEW_DEL_USERAPP[1]);
+										
+										reloadCurrentRange();
+									}
+	  						}
+			  			);
   }
 
 }

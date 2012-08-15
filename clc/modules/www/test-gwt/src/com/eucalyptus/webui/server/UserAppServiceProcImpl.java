@@ -19,20 +19,20 @@ import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.device.DeviceSyncException;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.Enum2String;
-import com.eucalyptus.webui.server.user.UserApp;
 import com.eucalyptus.webui.server.user.UserAppDBProcWrapper;
 import com.eucalyptus.webui.server.user.UserSyncException;
+import com.eucalyptus.webui.shared.user.EnumUserAppResult;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
+import com.eucalyptus.webui.shared.user.UserApp;
 
 public class UserAppServiceProcImpl {
 	  
 	  public void addUserApp(int userId, int templateId) throws EucalyptusServiceException {
-		  boolean active = true;
-		  
 		  UserApp userApp = new UserApp();
 		  
 		  userApp.setState(EnumUserAppState.TOSOLVE);
+		  userApp.setResult(EnumUserAppResult.NONE);
 		  userApp.setDelState(0);
 		  userApp.setUserId(userId);
 		  userApp.setTemplateId(templateId);
@@ -74,7 +74,7 @@ public class UserAppServiceProcImpl {
 		  ResultSetWrapper rs;
 		  try {
 			  if (isRootAdmin) {
-				  rs = userAppDBProc.queryUserApp(0, curUser.getUserId(), state);
+				  rs = userAppDBProc.queryUserApp(0, 0, state);
 			  }
 			  else {		  
 				  rs = userAppDBProc.queryUserApp(curUser.getAccountId(), curUser.getUserId(), state);
@@ -153,15 +153,19 @@ public class UserAppServiceProcImpl {
 				  while (rs.next()) {
 					  String id = rs.getString(DBTableColName.USER_APP.ID);
 					  String time = rs.getString(DBTableColName.USER_APP.TIME);
+					  String state = Enum2String.getInstance().getUserAppStateName(rs.getString(DBTableColName.USER_APP.STATE));
+					  String appResult = Enum2String.getInstance().getUserAppResultName(rs.getString(DBTableColName.USER_APP.RESULT));
 					  String content = rs.getString(DBTableColName.USER_APP.CONTENT);
 					  String comment = rs.getString(DBTableColName.USER_APP.COMMENT);
 					  String accountName = rs.getNString(DBTableColName.ACCOUNT.NAME);
 					  String userName = rs.getString(DBTableColName.USER.NAME);
 					  
 					  if (isRootView)
-						  result.add( new SearchResultRow(Arrays.asList(id, Integer.toString(index++), time, content, comment, accountName, userName)));
+						  result.add( new SearchResultRow(Arrays.asList(id, Integer.toString(index++), time, state, appResult, 
+								  										content != null ? content : "", comment != null ? comment : "", accountName, userName)));
 					  else
-						  result.add( new SearchResultRow(Arrays.asList(id, Integer.toString(index++), time, content, comment, userName)));
+						  result.add( new SearchResultRow(Arrays.asList(id, Integer.toString(index++), time, state, appResult, 
+								  										content != null ? content : "", comment != null ? comment : "", userName)));
 				  }
 			  }
 			rsWrapper.close();			
@@ -181,27 +185,33 @@ public class UserAppServiceProcImpl {
 	  private static final String[] TABLE_COL_TITLE_CHECKALL = {"Check All", "全选"};
 	  private static final String[] TABLE_COL_TITLE_NO = {"No.", "序号"};
 	  private static final String[] TABLE_COL_TITLE_TIME = {"Applying Time", "申请时间"};
+	  private static final String[] TABLE_COL_TITLE_STATE = {"Application State", "申请状态"};
+	  private static final String[] TABLE_COL_TITLE_RESULT = {"Examination Result", "审批结果"};
 	  private static final String[] TABLE_COL_TITLE_CONTENT = {"Active", "内容"};
 	  private static final String[] TABLE_COL_TITLE_COMMENT = {"Created Date", "备注"};
 	  private static final String[] TABLE_COL_TITLE_ACCOUNT_NAME = {"Account", "账户"};
 	  private static final String[] TABLE_COL_TITLE_NAME = {"ID", "用户"};
 	
 	  private static final List<SearchResultFieldDesc> FIELDS_ROOT = Arrays.asList(
-				new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "10%", false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "6%", false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "6%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_TIME[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_CONTENT[1], true, "25%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_COMMENT[1], true, "25%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false )
+				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "6%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_RESULT[1], true, "6%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_CONTENT[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_COMMENT[1], true, "18%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_NAME[1], true, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false )
 			);
 	  
 	  private static final List<SearchResultFieldDesc> FIELDS_NONROOT = Arrays.asList(
-			  new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "10%", false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+			  new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "6%", false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "6%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_TIME[1], true, "30%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_CONTENT[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_COMMENT[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false )
+				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "11%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_RESULT[1], true, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_CONTENT[1], true, "18%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_COMMENT[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "6%", TableDisplay.MANDATORY, Type.TEXT, false, false )
 			);
 }

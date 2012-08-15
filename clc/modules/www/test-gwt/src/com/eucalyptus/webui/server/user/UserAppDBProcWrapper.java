@@ -6,7 +6,9 @@ import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.DBTableName;
+import com.eucalyptus.webui.shared.user.EnumUserAppResult;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
+import com.eucalyptus.webui.shared.user.UserApp;
 
 public class UserAppDBProcWrapper {
 	public void addUserApp(UserApp userApp) throws UserSyncException {
@@ -26,6 +28,8 @@ public class UserAppDBProcWrapper {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		String sql = updateUserAppSql(userApp);
 		
+		System.out.println(sql);
+		
 		try {
 			dbProc.update(sql);
 		} catch (SQLException e) {
@@ -39,7 +43,7 @@ public class UserAppDBProcWrapper {
 		StringBuilder sql = userAppAccountUserViewSql();
 				
 		//EnumUserAppState.DEFAULT means that query all the user applications
-		if (state != EnumUserAppState.DEFAULT) {
+		if (state != EnumUserAppState.NONE) {
 			sql.append(" AND ").
 			append(DBTableName.USER_APP).
 			append(".").
@@ -120,6 +124,7 @@ public class UserAppDBProcWrapper {
 		append(DBTableColName.USER_APP.ID).append(", ").
 		append(DBTableColName.USER_APP.TIME).append(", ").
 		append(DBTableColName.USER_APP.STATE).append(", ").
+		append(DBTableColName.USER_APP.RESULT).append(", ").
 		append(DBTableColName.USER_APP.DEL).append(", ").
 		append(DBTableColName.USER_APP.CONTENT).append(", ").
 		append(DBTableColName.USER_APP.COMMENT).append(", ").
@@ -133,14 +138,17 @@ public class UserAppDBProcWrapper {
 		str.append(userApp.getState().ordinal());
 		str.append("', '");
 		
-		str.append(userApp.getDelState());
+		str.append(userApp.getResult().ordinal());
 		str.append("', '");
+		
+		str.append(userApp.getDelState());
+		str.append("', ");
 		
 		str.append(userApp.getContent());
-		str.append("', '");
+		str.append(", ");
 		
 		str.append(userApp.getComments());
-		str.append("', '");
+		str.append(", '");
 		
 		str.append(userApp.getUserId());
 		str.append("', ");
@@ -158,9 +166,15 @@ public class UserAppDBProcWrapper {
 	private String updateUserAppSql(UserApp userApp) {
 		StringBuilder str = new StringBuilder("UPDATE ").append(DBTableName.USER_APP).append(" SET ");
 		
-		if (userApp.getState() != EnumUserAppState.DEFAULT) {
+		if (userApp.getState() != EnumUserAppState.NONE) {
 			str.append(DBTableColName.USER_APP.STATE).append(" = '").
-			append(userApp.getState()).
+			append(userApp.getState().ordinal()).
+			append("', ");
+		}
+		
+		if (userApp.getResult() != EnumUserAppResult.NONE) {
+			str.append(DBTableColName.USER_APP.RESULT).append(" = '").
+			append(userApp.getResult().ordinal()).
 			append("', ");
 		}
 		
@@ -190,8 +204,12 @@ public class UserAppDBProcWrapper {
 		
 		if (userApp.getTemplateId() != 0) {
 			str.append(DBTableColName.USER_APP.TEMPLATE_ID).append(" = ").
-			append(userApp.getTemplateId());
+			append(userApp.getTemplateId()).
+			append(", ");
 		}
+		
+		if (str.length() > 2)
+			str.delete(str.length() -2, str.length());
 		
 		str.append(" WHERE ").append(DBTableColName.USER_APP.ID).append(" = ").
 		append(userApp.getUAId());
@@ -222,7 +240,9 @@ public class UserAppDBProcWrapper {
 				append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
 				append(" = ").
 				append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).
-				append(" WHERE 1=1 ");
+				append(" WHERE ").
+				append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.DEL).
+				append(" = 0 ");
 		
 		return sql;
 	}
@@ -255,6 +275,30 @@ public class UserAppDBProcWrapper {
 		append(DBTableColName.USER_APP.STATE).
 		append(" = ").
 		append(state.ordinal()).
+		append(" WHERE ");
+		
+		for (String str : ids) {
+			sql.append(DBTableColName.USER_APP.ID).
+			append(" = '").
+			append(str).
+			append("' or ");
+		}
+		
+		sql.delete(sql.length() -3 , sql.length());
+		
+		System.out.println(sql);
+		
+		return sql.toString();
+	}
+	
+	private String updateUserAppResultSql(ArrayList<String> ids, EnumUserAppResult result) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("UPDATE ").
+		append(DBTableName.USER_APP).
+		append(" SET ").
+		append(DBTableColName.USER_APP.RESULT).
+		append(" = ").
+		append(result.ordinal()).
 		append(" WHERE ");
 		
 		for (String str : ids) {
