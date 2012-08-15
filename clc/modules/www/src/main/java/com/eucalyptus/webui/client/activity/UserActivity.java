@@ -331,7 +331,7 @@ public class UserActivity extends AbstractSearchActivity
 	@Override
 	public void onAddCert() {
 		if ( currentSelected == null || currentSelected.size( ) != 1 ) {
-		      clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Must select a single user to add certificate", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		      clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "必须选中一个用户", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 		      return;
 		    }
 		    InputView dialog = this.clientFactory.getInputView( );

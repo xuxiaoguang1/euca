@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.SearchPlace;
+import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
@@ -158,7 +159,7 @@ public class PolicyActivity extends AbstractSearchActivity implements PolicyView
 		    }
 		InputView dialog = this.clientFactory.getInputView();
 		dialog.setPresenter(this);
-		dialog.display(MODIFY_POLICY_CAPTION[1], MODIFY_POLICY_CAPTION[1],
+		dialog.display(MODIFY_POLICY_CAPTION[1], MODIFY_POLICY_SUBJECT[1],
 				new ArrayList<InputField>(Arrays.asList(
 					new InputField() {
 	
@@ -209,9 +210,38 @@ public class PolicyActivity extends AbstractSearchActivity implements PolicyView
 		if (currentSelected == null || currentSelected.size() != 1) {
 			return;
 		}
-
-		//TODO: modify....
+		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "Modifying policy ...", 0 );
 		
+		String policyId = Lists.newArrayList(currentSelected).get(0).getField(0);
+
+		clientFactory.getBackendService().modifyPolicy(clientFactory.getLocalSession().getSession(), policyId, name,content, 
+				new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						ActivityUtil.logoutForInvalidSession(clientFactory,
+								caught);
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.ERROR,"Failed to modify policy",FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory
+								.getShellView()
+								.getLogView()
+								.log(LogType.ERROR,"Failed to modify policy " + ": "+ caught.getMessage());
+					}
+
+					@Override
+					public void onSuccess(Void arg0) {
+						clientFactory
+								.getShellView()
+								.getFooterView()
+								.showStatus(StatusType.NONE, "Policy modified",FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+						clientFactory.getShellView().getLogView()
+								.log(LogType.INFO, "Policy modified");
+						reloadCurrentRange();
+					}
+
+				});
 	}
   
 }

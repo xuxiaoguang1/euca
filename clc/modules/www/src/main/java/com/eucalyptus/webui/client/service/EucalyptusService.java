@@ -754,5 +754,7 @@ public interface EucalyptusService extends RemoteService {
    * @throws EucalyptusServiceException
    */
 //  SearchResult listPolicies(Session session) throws EucalyptusServiceException;
+  
+  void modifyPolicy(Session session, String policyId, String name, String content) throws EucalyptusServiceException;
 
 }

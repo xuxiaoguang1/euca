@@ -245,24 +245,21 @@ public class PolicyDBProcWrapper {
 				append(" FROM ").
 				append("( (").
 				append(DBTableName.USER_POLICY).
-				append(" LEFT JOIN ").
-				append(DBTableName.USER).
+				append(" LEFT JOIN ").append(DBTableName.USER).
 				append(" ON ").
-				append(DBTableName.USER_POLICY).append(".").append(DBTableColName.USER_KEY.USER_ID).
+				append(DBTableName.USER_POLICY).append(".").append(DBTableColName.USER_POLICY.USER_ID).
 				append(" = ").
 				append(DBTableName.USER).append(".").append(DBTableColName.USER.ID).
 				append(") ").
-				append(" LEFT JOIN ").
-				append(DBTableName.GROUP).
+				append(" LEFT JOIN ").append(DBTableName.GROUP).
 				append(" ON ").
-				append(DBTableName.USER).append(".").append(DBTableColName.USER.GROUP_ID).
+				append(DBTableName.USER_POLICY).append(".").append(DBTableColName.USER_POLICY.GROUP_ID).
 				append(" = ").
 				append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.ID).
 				append(" ) ").
-				append(" LEFT JOIN ").
-				append(DBTableName.ACCOUNT).
+				append(" LEFT JOIN ").append(DBTableName.ACCOUNT).
 				append(" ON ").
-				append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
+				append(DBTableName.USER_POLICY).append(".").append(DBTableColName.USER_POLICY.ACCOUNT_ID).
 				append(" = ").
 				append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).
 				append(" WHERE 1=1 ");

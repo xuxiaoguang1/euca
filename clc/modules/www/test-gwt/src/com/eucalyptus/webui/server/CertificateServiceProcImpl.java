@@ -144,20 +144,20 @@ public class CertificateServiceProcImpl {
 		}
 		
 		//TODO:just test
-//		{
-//			Certificate cert = new Certificate(userId, B64.url.encString(pem));
-//			cert.setActive(true);
-//			cert.setRevoked(false);
-//
-//			try {
-//				certDBProc.addCertificate(cert);
-//			} catch (CertificateSyncException e) {
-//				e.printStackTrace();
-//				throw new EucalyptusServiceException("Failed to create certificate");
-//			}
-//			
-//			if(true) return;
-//		}
+		{
+			Certificate cert = new Certificate(userId, B64.url.encString(pem));
+			cert.setActive(true);
+			cert.setRevoked(false);
+
+			try {
+				certDBProc.addCertificate(cert);
+			} catch (CertificateSyncException e) {
+				e.printStackTrace();
+				throw new EucalyptusServiceException("Failed to create certificate");
+			}
+			
+			if(true) return;
+		}
 
 		try {
 			String encodedPem = B64.url.encString(pem);

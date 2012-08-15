@@ -90,10 +90,9 @@ public class PolicyServiceProcImpl {
 										Integer.toString(index++),
 										rs.getString(DBTableColName.USER_POLICY.NAME),
 										rs.getString(DBTableColName.USER_POLICY.VERSION),
-										rs.getString(DBTableColName.USER_POLICY.ACCOUNT_ID),
-										rs.getString(DBTableColName.USER_POLICY.GROUP_ID),
-										rs.getString(DBTableColName.USER_POLICY.USER_ID),
-										rs.getString(DBTableColName.USER_POLICY.TEXT))));
+										rs.getString(DBTableColName.ACCOUNT.NAME),
+										rs.getString(DBTableColName.GROUP.NAME),
+										rs.getString(DBTableColName.USER.NAME))));
 					} else {
 						result.add(new SearchResultRow(
 								Arrays.asList(
@@ -101,9 +100,9 @@ public class PolicyServiceProcImpl {
 										Integer.toString(index++),
 										rs.getString(DBTableColName.USER_POLICY.NAME),
 										rs.getString(DBTableColName.USER_POLICY.VERSION),
-										rs.getString(DBTableColName.USER_POLICY.ACCOUNT_ID),
-										rs.getString(DBTableColName.USER_POLICY.GROUP_ID),
-										rs.getString(DBTableColName.USER_POLICY.USER_ID),
+										rs.getString(DBTableColName.ACCOUNT.NAME),
+										rs.getString(DBTableColName.GROUP.NAME),
+										rs.getString(DBTableColName.USER.NAME),
 										rs.getString(DBTableColName.USER_POLICY.TEXT))));
 					}
 				}
@@ -203,8 +202,7 @@ public class PolicyServiceProcImpl {
 
 	public void deletePolicy(ArrayList<String> ids) throws EucalyptusServiceException {
 		if (ids == null || ids.size() == 0) {
-			throw new EucalyptusServiceException(
-					"SearchResultRow cannot be NULL");
+			throw new EucalyptusServiceException("SearchResultRow cannot be NULL");
 		}
 
 		try {
