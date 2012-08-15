@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.client.view;
 
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,45 +14,42 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
+import com.google.gwt.view.client.SingleSelectionModel;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.LayoutPanel;
 
-public class UserListViewImpl extends DialogBox implements UserListView {
+public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTemplateListView {
 
-	interface UserListViewImplUiBinder extends
-			UiBinder<Widget, UserListViewImpl> {
+	interface DeviceTemplateListViewImplUiBinder extends
+			UiBinder<Widget, DeviceTemplateListViewImpl> {
 	}
 
-	public UserListViewImpl() {
+	public DeviceTemplateListViewImpl() {
 		setWidget(uiBinder.createAndBindUi(this));
 		this.currentSelected = null;
 		
-		setGlassEnabled( true );
+		setGlassEnabled(true);
 	}
 
 	@UiHandler("buttonOk")
 	void onButtonOkClick(ClickEvent event) {
 		this.hide();
 		
-		if (this.currentSelected == null || this.currentSelected.size() == 0)
+		if (this.currentSelected == null)
 			return;
 		
-		ArrayList<String> ids = new ArrayList<String>();
-		for (SearchResultRow row : this.currentSelected) {
-			ids.add(row.getField(0));
-		}
-		
-		this.presenter.process(ids);
+		String templateId = this.currentSelected.getField(0);
+		this.presenter.doCreateUserApp(templateId);
 		
 		clearSelection();
 	}
+	
 	@UiHandler("buttonCancle")
 	void onButtonCancleClick(ClickEvent event) {
-		clearSelection();
 		this.hide();
+		clearSelection();
 	}
 
 	@Override
@@ -80,23 +76,21 @@ public class UserListViewImpl extends DialogBox implements UserListView {
 	}
 	
 	@Override
-	public void display() {
+	public void display(SearchResult result) {
 		// TODO Auto-generated method stub
+		this.showSearchResult(result);
 		this.center();
 		this.show();
 	}
 		
 	private void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
 		tablePanel.clear( );
-		selectionModel = new MultiSelectionModel<SearchResultRow>( SearchResultRow.KEY_PROVIDER );
+		selectionModel = new SingleSelectionModel<SearchResultRow>( SearchResultRow.KEY_PROVIDER );
 		selectionModel.addSelectionChangeHandler( new Handler( ) {
 			@Override
 			public void onSelectionChange( SelectionChangeEvent event ) {
-		        Set<SearchResultRow> rows = selectionModel.getSelectedSet( );
-		        LOG.log( Level.INFO, "Selection changed: " + rows );
-		        currentSelected = rows;
-		        
-		        System.out.println(rows.size());
+				currentSelected = selectionModel.getSelectedObject();
+		        LOG.log( Level.INFO, "Selection changed: " + currentSelected );
 			}
 		} );
     
@@ -105,8 +99,8 @@ public class UserListViewImpl extends DialogBox implements UserListView {
 		table.load( );
 	}
 	
-	private static UserListViewImplUiBinder uiBinder = GWT
-			.create(UserListViewImplUiBinder.class);
+	private static DeviceTemplateListViewImplUiBinder uiBinder = GWT
+			.create(DeviceTemplateListViewImplUiBinder.class);
 	
 	private static final Logger LOG = Logger.getLogger( UserViewImpl.class.getName( ) );
 	
@@ -114,10 +108,10 @@ public class UserListViewImpl extends DialogBox implements UserListView {
 	@UiField Button buttonOk;
 	@UiField Button buttonCancle;
 
-	private MultiSelectionModel<SearchResultRow> selectionModel;
+	private SingleSelectionModel<SearchResultRow> selectionModel;
 	private SearchResultTable table;
 	
-	private Set<SearchResultRow> currentSelected;
+	private SearchResultRow currentSelected;
 	
 	private Presenter presenter;
 }

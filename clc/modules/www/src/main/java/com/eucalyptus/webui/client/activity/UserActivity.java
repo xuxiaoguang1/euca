@@ -148,7 +148,7 @@ public class UserActivity extends AbstractSearchActivity
     if ( this.view == null ) {
       this.view = this.clientFactory.getUserView( );
       ( ( UserView ) this.view ).setPresenter( this );
-      ( ( UserView ) this.view ).setPresenter(this.clientFactory.getSessionData().getLoginUser());
+      ( ( UserView ) this.view ).updateLoginUserProfile(this.clientFactory.getSessionData().getLoginUser());
       container.setWidget( this.view );
       ( ( UserView ) this.view ).clear( );
     }

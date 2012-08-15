@@ -35,6 +35,8 @@ import com.eucalyptus.webui.client.view.DeviceServerView;
 import com.eucalyptus.webui.client.view.DeviceServerViewImpl;
 import com.eucalyptus.webui.client.view.DeviceIPView;
 import com.eucalyptus.webui.client.view.DeviceIPViewImpl;
+import com.eucalyptus.webui.client.view.DeviceTemplateListView;
+import com.eucalyptus.webui.client.view.DeviceTemplateListViewImpl;
 import com.eucalyptus.webui.client.view.DeviceTemplateView;
 import com.eucalyptus.webui.client.view.DeviceTemplateViewImpl;
 import com.eucalyptus.webui.client.view.DeviceVMView;
@@ -85,6 +87,8 @@ import com.eucalyptus.webui.client.view.UploadImageView;
 import com.eucalyptus.webui.client.view.UploadImageViewImpl;
 import com.eucalyptus.webui.client.view.UserAddView;
 import com.eucalyptus.webui.client.view.UserAddViewImpl;
+import com.eucalyptus.webui.client.view.UserAppView;
+import com.eucalyptus.webui.client.view.UserAppViewImpl;
 import com.eucalyptus.webui.client.view.UserListView;
 import com.eucalyptus.webui.client.view.UserListViewImpl;
 import com.eucalyptus.webui.client.view.UserView;
@@ -135,6 +139,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private ReportView reportView;
 	private GroupView groupView;
 	private UserView userView;
+	private UserAppView userAppView;
 	private PolicyView policyView;
 	private KeyView keyView;
 	private CertView certView;
@@ -154,6 +159,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private DeviceVMView deviceVMView;
 	private DeviceBWView deviceBWView;
 	private DeviceTemplateView deviceTemplateView;
+	private DeviceTemplateListView deviceTemplateListView;
 
 	// Dialogs
 	private ConfirmationView confirmationView;
@@ -576,4 +582,22 @@ public class ClientFactoryImpl implements ClientFactory {
     }
     return uploadImageView;
   }
+
+  @Override
+  public UserAppView getUserAppView() {
+	// TODO Auto-generated method stub
+	if (userAppView == null) {
+		userAppView = new UserAppViewImpl();
+	}
+	return userAppView;
+  }
+
+@Override
+public DeviceTemplateListView getDeviceTemplateListView() {
+	// TODO Auto-generated method stub
+	if (deviceTemplateListView == null) {
+		deviceTemplateListView = new DeviceTemplateListViewImpl();
+	}
+	return deviceTemplateListView;
+}
 }

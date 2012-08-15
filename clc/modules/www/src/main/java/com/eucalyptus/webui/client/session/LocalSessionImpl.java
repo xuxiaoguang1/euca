@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.client.session;
 
 import java.util.Date;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.gwt.user.client.Cookies;

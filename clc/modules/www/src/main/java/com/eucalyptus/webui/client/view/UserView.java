@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 public interface UserView extends IsWidget, CanDisplaySearchResult, Clearable, SelectionController {
     
   void setPresenter( Presenter presenter );
-  void setPresenter(LoginUserProfile curUser);
+  void updateLoginUserProfile(LoginUserProfile curUser);
   
   public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize {
 	void onAddUser();

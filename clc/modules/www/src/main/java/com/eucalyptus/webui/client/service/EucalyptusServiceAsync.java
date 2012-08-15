@@ -12,6 +12,7 @@ import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
+import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserInfo;
@@ -88,9 +89,10 @@ public interface EucalyptusServiceAsync {
 
 	void lookupUserByAccountId(Session session, int accountId, SearchRange range, AsyncCallback<SearchResult> callback);
 
-	void lookupUserExcludeGroupId(Session session, int accountId, int groupId, SearchRange range,
-	        AsyncCallback<SearchResult> callback);
+	void lookupUserExcludeGroupId(Session session, int accountId, int groupId, SearchRange range, AsyncCallback<SearchResult> callback);
 
+	void lookupUserApp( Session session, String search, SearchRange range, EnumUserAppState state, AsyncCallback<SearchResult> callback);
+	
 	void removeUsersFromGroup(Session session, ArrayList<String> userIds, AsyncCallback<Void> callback);
 
 	void deletePolicy(Session session, SearchResultRow policySerialized, AsyncCallback<Void> callback);
@@ -250,5 +252,7 @@ public interface EucalyptusServiceAsync {
             String image, AsyncCallback<SearchResultRow> callback);
 	
 	void lookupDeviceVM(Session session, String search, SearchRange range, int queryState, AsyncCallback<SearchResult> callback);
+	
+	void addUserApp(Session session, String userId, String templateId, AsyncCallback<Void> callback);
 
 }

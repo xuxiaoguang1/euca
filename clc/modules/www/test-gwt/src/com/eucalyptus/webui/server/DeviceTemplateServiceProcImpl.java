@@ -20,6 +20,7 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
+import com.eucalyptus.webui.server.device.DeviceSyncException;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.DBTableName;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
@@ -128,9 +129,9 @@ public class DeviceTemplateServiceProcImpl {
 	public SearchResult lookupTemplate(Session session, String search, SearchRange range, Date starttime, Date endtime) {
 		ResultSetWrapper rsw = null;
 		try {
-			if (!getUser(session).isSystemAdmin()) {
-				return null;
-			}
+//			if (!getUser(session).isSystemAdmin()) {
+//				return null;
+//			}
 			
 			String sstarttime = null;
 			if (starttime != null) {
@@ -256,6 +257,10 @@ public class DeviceTemplateServiceProcImpl {
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	public void updateDeviceState(int userId, int templateId) throws DeviceSyncException {
+		
 	}
 
 	private boolean deleteTemplate(int template_id) {

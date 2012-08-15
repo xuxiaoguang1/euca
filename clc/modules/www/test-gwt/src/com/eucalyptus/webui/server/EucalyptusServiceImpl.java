@@ -24,6 +24,7 @@ import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.server.user.PwdResetProc;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
+import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserInfo;
@@ -41,6 +42,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	private AccountServiceProcImpl accountServiceProc = new AccountServiceProcImpl();
 	private UserServiceProcImpl userServiceProc = new UserServiceProcImpl();
 	private UserKeyServiceProcImpl userKeyServiceProc = new UserKeyServiceProcImpl();
+	private UserAppServiceProcImpl userAppServiceProc = new UserAppServiceProcImpl();
 	private GroupServiceProcImpl groupServiceProc = new GroupServiceProcImpl();
 	private DeviceServerServiceProcImpl deviceServerServiceProc = new DeviceServerServiceProcImpl();
 	private DeviceCPUServiceProcImpl deviceCPUServiceProc = new DeviceCPUServiceProcImpl();
@@ -309,6 +311,17 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		verifySession(session);
 		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
 		return userServiceProc.lookupUser(curUser, search, range);
+	}
+	
+	@Override
+	public SearchResult lookupUserApp(Session session, String search,
+			SearchRange range, EnumUserAppState state)
+			throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+		
+		return userAppServiceProc.lookupUserApp(curUser, search, range, state);
 	}
 
 	@Override
@@ -917,5 +930,9 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		return deviceVMServiceProc.lookupVM(session, search, range, queryState);
 	}
 
-
+	@Override
+	public void addUserApp(Session session, String userId, String templateId) throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		userAppServiceProc.addUserApp(Integer.valueOf(userId), Integer.valueOf(templateId));
+	}
 }

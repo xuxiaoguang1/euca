@@ -37,12 +37,13 @@ command 'delete from account where 1=1'
 command insert into account \(account_name, account_email, account_descrip, account_state\) \
     values \(\"root\", \"email\", \"desc\", 0\)
 
-id=`getvalue account account_id account_name root`
+command insert into account \(account_name, account_email, account_descrip, account_state\) \
+    values \(\"abc\", \"email\", \"desc\", 0\)
 
+id=`getvalue account account_id account_name root`
 
 command insert into groups \(group_name, group_descrip, group_state, account_id\) \
     values \(\"root\", \"desc\", 0, $id\)
-
 
 group=`getvalue groups group_id group_name root`
 account=`getvalue groups account_id group_name root`
@@ -50,6 +51,10 @@ account=`getvalue groups account_id group_name root`
 command insert into user \(user_name, user_pwd, user_title, user_mobile, user_email, user_type, user_state, group_id, account_id\) \
     values \(\"admin\", \"admin\", \"title\", \"mobile\", \"email\", 0, 0, $group, $account\)
 
+account1=`getvalue groups account_id group_name abc`
+
+command insert into user \(user_name, user_pwd, user_title, user_mobile, user_email, user_type, user_state, group_id, account_id\) \
+    values \(\"admin\", \"admin\", \"title\", \"mobile\", \"email\", 0, 0, null, $account1\)
 
 for ((i=0;i<5;i++)) do
     command insert into account \(account_name, account_email, account_descrip, account_state\) \

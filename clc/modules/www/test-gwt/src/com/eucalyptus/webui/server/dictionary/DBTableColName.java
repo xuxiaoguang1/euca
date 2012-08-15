@@ -33,6 +33,17 @@ public class DBTableColName {
 		public final String USER_ID = "user_id";
 	}
 	
+	public interface USER_APP {
+		public final String ID = "ua_id";
+		public final String TIME = "ua_time";
+		public final String STATE = "ua_state";
+		public final String DEL = "ua_del";
+		public final String CONTENT = "ua_content";
+		public final String COMMENT = "ua_comment";
+		public final String USER_ID = "user_id";
+		public final String TEMPLATE_ID = "template_id";	
+	}	
+	
 	public interface ACCOUNT {
 		public final String ID = "account_id";
 		public final String NAME = "account_name";

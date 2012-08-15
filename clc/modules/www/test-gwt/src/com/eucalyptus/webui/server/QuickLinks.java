@@ -24,7 +24,7 @@ public class QuickLinks {
   
 	private static ArrayList<QuickLinkTag> getSystemAdminTags( ) throws EucalyptusServiceException {
 		try {
-			return new ArrayList<QuickLinkTag>( Arrays.asList(getQuickLinkTag("用户管理", "用户管理", "组管理", "账户管理", "策略管理", "密钥管理", "证书管理"),
+			return new ArrayList<QuickLinkTag>( Arrays.asList(getQuickLinkTag("用户管理", "用户管理", "组管理", "账户管理", "策略管理", "密钥管理", "证书管理", "用户申请管理"),
 									getQuickLinkTag("资源管理", "服务器管理",  "内存管理", "硬盘管理", "CPU管理", "带宽管理", "IP管理", "模板管理", "虚拟机管理", "镜像管理"),
 									getQuickLinkTag("组件管理", "节点控制器管理", "集群控制器管理", "存储控制器管理", "Walrus控制器管理")));
 		} catch ( Exception e ) { 
@@ -34,7 +34,7 @@ public class QuickLinks {
   
 	private static ArrayList<QuickLinkTag> getAccountAdminTags( ) throws EucalyptusServiceException {
 		try {
-			return new ArrayList<QuickLinkTag>( Arrays.asList(new QuickLinkTag( "用户管理", accountdminUserLinks)));
+			return new ArrayList<QuickLinkTag>( Arrays.asList(getQuickLinkTag("用户管理", "用户管理", "组管理", "策略管理", "密钥管理", "证书管理", "用户申请管理")));
 	    } catch ( Exception e ) { 
 	    	throw new EucalyptusServiceException( "Failed to load user information for ");
 	    }
@@ -42,7 +42,7 @@ public class QuickLinks {
 	
 	private static ArrayList<QuickLinkTag> getUserTags( ) throws EucalyptusServiceException {
 		try {
-			return new ArrayList<QuickLinkTag>( Arrays.asList(new QuickLinkTag( "用户管理", sysAdminUserLinks)));
+			return new ArrayList<QuickLinkTag>( Arrays.asList(getQuickLinkTag("用户管理", "用户管理", "策略管理", "密钥管理", "证书管理", "用户申请管理")));
 	    } catch ( Exception e ) { 
 	    	throw new EucalyptusServiceException( "Failed to load user information for ");
 	    }
@@ -50,6 +50,7 @@ public class QuickLinks {
   
 	private static QuickLink allQuickLinks[] = {
 			getQuickLink("用户管理", "user", QueryType.user),
+			getQuickLink("用户申请管理", "user_req", QueryType.user_req),
 			getQuickLink("组管理", "group", QueryType.group),
 			getQuickLink("账户管理", "accout", QueryType.account),
 			getQuickLink("策略管理", "policy", QueryType.policy),
@@ -118,10 +119,4 @@ public class QuickLinks {
 		new QuickLink( "虚拟机类型", "Virtual machine types", "type", QueryBuilder.get( ).start( QueryType.vmtype ).query( ) ),
 		new QuickLink( "使用报告", "Resource usage report", "report", QueryBuilder.get( ).start( QueryType.report ).query( ))
 	};
-		
-	private static ArrayList<QuickLink> sysAdminUserLinks = new ArrayList<QuickLink>(Arrays.asList(userLinks[0], userLinks[1], userLinks[2]));
-	private static ArrayList<QuickLink> sysAdminSysLinks = new ArrayList<QuickLink>(Arrays.asList(serviceLinks[0]));
-	private static ArrayList<QuickLink> sysAdminResLinks = new ArrayList<QuickLink>(Arrays.asList(resourceLinks[0], resourceLinks[1], resourceLinks[2]));
-  
-	private static ArrayList<QuickLink> accountdminUserLinks = new ArrayList<QuickLink>(Arrays.asList(userLinks[0], userLinks[1]));
 }
