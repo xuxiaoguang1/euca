@@ -860,8 +860,7 @@ public interface EucalyptusService extends RemoteService {
 	List<SearchResultRow> deleteDeviceBWService(Session session,
 			List<SearchResultRow> list);
 
-	boolean addDeviceBWService(Session session, String account, String user,
-			String starttime, int life, String ip, int bandwidth);
+	boolean addDeviceBWService(Session session, String account, String user, String starttime, int life, String ip, long bandwidth);
 
 	List<String> listDeviceBWAccounts(Session session);
 
@@ -876,11 +875,9 @@ public interface EucalyptusService extends RemoteService {
 	List<SearchResultRow> deleteDeviceTemplate(Session session,
 			List<SearchResultRow> list);
 
-	boolean addDeviceTemplate(Session session, String mark, String cpu,
-			String mem, String disk, String bw, String image);
-
-	SearchResultRow modifyDeviceTempate(Session session, SearchResultRow row,
-			String cpu, String mem, String disk, String bw, String image);
+	boolean addDeviceTemplate(Session session, String mark, String cpu, int ncpus, String mem, String disk, String bw, String image);
+	SearchResultRow modifyDeviceTempate(Session session, SearchResultRow row, String cpu, int ncpus, String mem, String disk, String bw, String image);
+	List<String> listDeviceTemplateCPUNames(Session session);
 
 	SearchResult lookupDeviceVM(Session session, String search,
 			SearchRange range, int queryState)

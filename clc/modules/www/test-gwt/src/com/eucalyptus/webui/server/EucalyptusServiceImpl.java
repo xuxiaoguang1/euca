@@ -889,7 +889,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 
 	@Override
 	public boolean addDeviceBWService(Session session, String account, String user, String starttime, int life,
-	        String ip, int bandwidth) {
+	        String ip, long bandwidth) {
 		return deviceBWServiceProc.addService(session, account, user, starttime, life, ip, bandwidth);
 	}
 
@@ -920,15 +920,20 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 
 	@Override
-	public boolean addDeviceTemplate(Session session, String mark, String cpu, String mem, String disk, String bw,
+	public boolean addDeviceTemplate(Session session, String mark, String cpu, int ncpus, String mem, String disk, String bw,
 	        String image) {
-		return deviceTemplateServiceProc.addTemplate(session, mark, cpu, mem, disk, bw, image);
+		return deviceTemplateServiceProc.addTemplate(session, mark, cpu, ncpus, mem, disk, bw, image);
 	}
 
 	@Override
-	public SearchResultRow modifyDeviceTempate(Session session, SearchResultRow row, String cpu, String mem,
+	public SearchResultRow modifyDeviceTempate(Session session, SearchResultRow row, String cpu, int ncpus, String mem,
 	        String disk, String bw, String image) {
-		return deviceTemplateServiceProc.modifyTemplate(session, row, cpu, mem, disk, bw, image);
+		return deviceTemplateServiceProc.modifyTemplate(session, row, cpu, ncpus, mem, disk, bw, image);
+	}
+	
+	@Override
+	public List<String> listDeviceTemplateCPUNames(Session session) {
+		return deviceTemplateServiceProc.listDeviceCPUNames(session);
 	}
 	
 	@Override

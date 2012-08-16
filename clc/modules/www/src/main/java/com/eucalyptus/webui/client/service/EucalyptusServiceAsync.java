@@ -239,7 +239,7 @@ public interface EucalyptusServiceAsync {
 	void deleteDeviceBWService(Session session, List<SearchResultRow> list,
 	        AsyncCallback<List<SearchResultRow>> callback);
 	void addDeviceBWService(Session session, String account, String user, String starttime,
-	        int life, String ip, int bandwidth, AsyncCallback<Boolean> callback);
+	        int life, String ip, long bandwidth, AsyncCallback<Boolean> callback);
 	void listDeviceBWAccounts(Session session, AsyncCallback<List<String>> callback);
 	void listDeviceBWUsersByAccount(Session session, String account, AsyncCallback<List<String>> callback);
 	void listDeviceIPsByUser(Session session, String account, String user, AsyncCallback<List<String>> callback);
@@ -248,10 +248,9 @@ public interface EucalyptusServiceAsync {
 	        AsyncCallback<SearchResult> callback);
 	void deleteDeviceTemplate(Session session, List<SearchResultRow> list,
 	        AsyncCallback<List<SearchResultRow>> callback);
-	void addDeviceTemplate(Session session, String mark, String cpu, String mem, String disk, String bw, String image,
-            AsyncCallback<Boolean> callback);
-	void modifyDeviceTempate(Session session, SearchResultRow row, String cpu, String mem, String disk, String bw,
-            String image, AsyncCallback<SearchResultRow> callback);
+	void addDeviceTemplate(Session session, String mark, String cpu, int ncpus, String mem, String disk, String bw, String image, AsyncCallback<Boolean> callback);
+	void modifyDeviceTempate(Session session, SearchResultRow row, String cpu, int ncpus, String mem, String disk, String bw, String image, AsyncCallback<SearchResultRow> callback);
+	void listDeviceTemplateCPUNames(Session session, AsyncCallback<List<String>> callback);
 	
 	void lookupDeviceVM(Session session, String search, SearchRange range, int queryState, AsyncCallback<SearchResult> callback);
 	

@@ -407,12 +407,16 @@ public class DeviceIPServiceProcImpl {
 		return LoginUserProfileStorer.instance().get(session.getId());
 	}
 	
+	private boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
+	}
+	
 	public List<String> listVMsByUser(Session session, String account, String user) {
 		try {
 			if (!getUser(session).isSystemAdmin()) {
 				return null;
 			}
-			if (account == null || user == null) {
+			if (isEmpty(account) || isEmpty(user)) {
 				return null;
 			}
 			return listVMsByUser(account, user);
@@ -438,7 +442,7 @@ public class DeviceIPServiceProcImpl {
 
 	public List<String> listUsersByAccount(Session session, String account) {
 		try {
-			if (account != null) {
+			if (!isEmpty(account)) {
 				LoginUserProfile user = getUser(session);
 				if (user.isSystemAdmin()) {
 					return listUsersByAccount(account);
@@ -564,7 +568,10 @@ public class DeviceIPServiceProcImpl {
 				else {
 					result.setDescs(FIELDS_USER);
 				}
-				result.setRows(rows.subList(range.getStart(), range.getStart() + length));
+				int from = range.getStart(), to = range.getStart() + length;
+				if (from < to) {
+					result.setRows(rows.subList(from, to));
+				}
 				for (SearchResultRow row : result.getRows()) {
 					System.out.println(row);
 				}
@@ -608,7 +615,7 @@ public class DeviceIPServiceProcImpl {
 
 	public SearchResultRow modifyService(Session session, SearchResultRow row, String sendtime, int state) {
 		try {
-			if (sendtime == null) {
+			if (isEmpty(sendtime)) {
 				return null;
 			}
 			if (IPState.getIPState(state) == null || IPState.getIPState(state) == IPState.RESERVED) {
@@ -730,13 +737,13 @@ public class DeviceIPServiceProcImpl {
 	public SearchResultRow addService(Session session, SearchResultRow row, String account, String user,
 	        String vmMark, String sstarttime, int life, int state) {
 		try {
-			if (!getUser(session).isSystemAdmin()) {
+			if (!getUser(session).isSystemAdmin() || row == null) {
 				return null;
 			}
-			if (row == null || account == null || user == null || vmMark == null) {
+			if (isEmpty(account) || isEmpty(user) || isEmpty(vmMark)) {
 				return null;
 			}
-			if (sstarttime == null || !(life >= 0)) {
+			if (isEmpty(sstarttime) || !(life >= 0)) {
 				return null;
 			}
 			if (IPState.getIPState(state) == null || IPState.getIPState(state) == IPState.RESERVED) {
@@ -816,7 +823,7 @@ public class DeviceIPServiceProcImpl {
 
 	private void addDevice(List<String> ipList, int type) throws Exception {
 		for (String ip : ipList) {
-			if (ip != null && ip.length() != 0) {
+			if (!isEmpty(ip)) {
 				dbproc.addDevice(ip, type);
 			}
 		}

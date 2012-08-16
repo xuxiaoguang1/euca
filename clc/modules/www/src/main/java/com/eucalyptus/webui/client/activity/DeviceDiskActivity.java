@@ -98,7 +98,7 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 					Window.alert(sb.toString());
 					return false;
 				}
-				if (account == null || user == null || state == null || !(used > 0 && used <= max)) {
+				if (isEmpty(account) || isEmpty(user) || isEmpty(state) || !(used > 0 && used <= max)) {
 					StringBuilder sb = new StringBuilder();
 					sb.append(ADD_SERVICE_FAILURE_INVALID_ARGS[LAN_SELECT]).append("\n");
 					sb.append("<account='").append(account).append("'").append(", ");
@@ -206,6 +206,10 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 			}
 
 		});
+	}
+	
+	private boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
 	}
 
 	private EucalyptusServiceAsync getBackendService() {
@@ -476,7 +480,7 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 			used = row.getField(DeviceDiskServiceProcImpl.TABLE_COL_INDEX_USED);
 		}
 		Date date0 = null, date1 = null;
-		if (starttime != null) {
+		if (!isEmpty(starttime)) {
 			date0 = DeviceServiceDatePicker.parse(starttime);
 			date1 = DeviceServiceDatePicker.parse(starttime, life);
 		}
@@ -497,7 +501,7 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 			state = row.getField(DeviceDiskServiceProcImpl.TABLE_COL_INDEX_USER_STATE);
 			life = row.getField(DeviceDiskServiceProcImpl.TABLE_COL_INDEX_USER_LIFE);
 		}
-		assert (starttime != null && state != null && life != null);
+		assert (!isEmpty(starttime) && !isEmpty(state) && !isEmpty(life));
 		final String[] stateValueList = new String[]{DiskState.INUSE.toString(), DiskState.STOP.toString()};
 		serviceModifyView.setValue(row, DeviceServiceDatePicker.parse(starttime),
 		        DeviceServiceDatePicker.parse(starttime, life), stateValueList, state);
@@ -547,7 +551,7 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 	}
 
 	private void handleAddDevice(String serverMark, String name, long total, int num) {
-		assert (serverMark != null && name != null);
+		assert (!isEmpty(serverMark) && !isEmpty(name));
 		getBackendService().addDeviceDiskDevice(getSession(), serverMark, name, total, num,
 		        new AsyncCallback<Boolean>() {
 
@@ -564,8 +568,8 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 				        }
 				        else {
 					        showStatus(ADD_DEVICE_SUCCESS[LAN_SELECT]);
-					        reloadCurrentRange();
 				        }
+				        reloadCurrentRange();
 			        }
 
 		        });
@@ -594,8 +598,7 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 
 							        @Override
 							        public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								        return row0.getField(col) != null
-								                && row0.getField(col).equals(row1.getField(col));
+								        return row0.getField(col).equals(row1.getField(col));
 							        }
 
 						        };
@@ -611,15 +614,12 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 						        else {
 						        	getView().getMirrorTable().deleteRow(result, matcher);
 						        }
-						        reloadLabels();
-					        }
-					        else {
-					        	reloadCurrentRange();
 					        }
 				        }
 				        else {
 					        showStatus(ADD_SERVICE_FAILURE[LAN_SELECT]);
 				        }
+			        	reloadCurrentRange();
 			        }
 
 		        });
@@ -647,21 +647,17 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 
 							        @Override
 							        public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								        return row0.getField(col) != null
-								                && row0.getField(col).equals(row1.getField(col));
+								        return row0.getField(col).equals(row1.getField(col));
 							        }
 
 						        };
 						        getView().getMirrorTable().updateRow(result, matcher);
-						        reloadLabels();
-					        }
-					        else {
-					        	reloadCurrentRange();
 					        }
 				        }
 				        else {
 					        showStatus(UPDATE_SERVICE_FAILURE[LAN_SELECT]);
 				        }
+			        	reloadCurrentRange();
 			        }
 
 		        });
@@ -688,22 +684,19 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 
 							@Override
 							public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								return row0.getField(col) != null && row0.getField(col).equals(row1.getField(col));
+								return row0.getField(col).equals(row1.getField(col));
 							}
 
 						};
 						for (SearchResultRow row : result) {
 							getView().getMirrorTable().deleteRow(row, matcher);
 						}
-						reloadLabels();
-			        }
-			        else {
-			        	reloadCurrentRange();
 			        }
 				}
 				else {
 					showStatus(DELETE_SERVICE_FAILURE[LAN_SELECT]);
 				}
+	        	reloadCurrentRange();
 			}
 
 		});
@@ -730,22 +723,19 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 
 							@Override
 							public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								return row0.getField(col) != null && row0.getField(col).equals(row1.getField(col));
+								return row0.getField(col).equals(row1.getField(col));
 							}
 
 						};
 						for (SearchResultRow row : result) {
 							getView().getMirrorTable().deleteRow(row, matcher);
 						}
-						reloadLabels();
-			        }
-			        else {
-			        	reloadCurrentRange();
 			        }
 				}
 				else {
 					showStatus(DELETE_DEVICE_FAILURE[LAN_SELECT]);
 				}
+	        	reloadCurrentRange();
 			}
 
 		});
@@ -765,7 +755,7 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 		else {
 			col = DeviceDiskServiceProcImpl.TABLE_COL_INDEX_USER_STARTTIME;
 		}
-		return row.getField(col) != null;
+		return !isEmpty(row.getField(col));
 	}
 
 	@Override
@@ -829,7 +819,7 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 				String used = row.getField(DeviceDiskServiceProcImpl.TABLE_COL_INDEX_USED);
 				String total = row.getField(DeviceDiskServiceProcImpl.TABLE_COL_INDEX_TOTAL);
 				try {
-					if (total != null && used != null) {
+					if (!isEmpty(total) && !isEmpty(used)) {
 						if (Long.parseLong(total) != Long.parseLong(used)) {
 							continue ;
 						}
@@ -859,7 +849,6 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 			serviceAddView.clearCache();
 		}
 		getView().closeMirrorMode();
-		reloadCurrentRange();
 	}
 
 	@Override

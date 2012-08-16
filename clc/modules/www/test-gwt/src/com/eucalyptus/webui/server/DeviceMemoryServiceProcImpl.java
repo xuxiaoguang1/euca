@@ -550,7 +550,10 @@ public class DeviceMemoryServiceProcImpl {
 				else {
 					result.setDescs(FIELDS_USER);
 				}
-				result.setRows(rows.subList(range.getStart(), range.getStart() + length));
+				int from = range.getStart(), to = range.getStart() + length;
+				if (from < to) {
+					result.setRows(rows.subList(from, to));
+				}
 				for (SearchResultRow row : result.getRows()) {
 					System.out.println(row);
 				}
@@ -591,10 +594,14 @@ public class DeviceMemoryServiceProcImpl {
 			return null;
 		}
 	}
+	
+	private boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
+	}
 
 	public SearchResultRow modifyService(Session session, SearchResultRow row, String sendtime, int state) {
 		try {
-			if (sendtime == null) {
+			if (isEmpty(sendtime)) {
 				return null;
 			}
 			if (MemoryState.getMemoryState(state) == null || MemoryState.getMemoryState(state) == MemoryState.RESERVED) {
@@ -723,13 +730,13 @@ public class DeviceMemoryServiceProcImpl {
 	public SearchResultRow addService(Session session, SearchResultRow row, String account, String user,
 	        long used, String sstarttime, int life, int state) {
 		try {
-			if (!getUser(session).isSystemAdmin()) {
+			if (row == null || !getUser(session).isSystemAdmin()) {
 				return null;
 			}
-			if (row == null || account == null || user == null) {
+			if (isEmpty(account) || isEmpty(user)) {
 				return null;
 			}
-			if (sstarttime == null || !(life >= 0)) {
+			if (isEmpty(sstarttime) || !(life >= 0)) {
 				return null;
 			}
 			if (MemoryState.getMemoryState(state) == null || MemoryState.getMemoryState(state) == MemoryState.RESERVED) {
@@ -751,7 +758,7 @@ public class DeviceMemoryServiceProcImpl {
 			if (!getUser(session).isSystemAdmin()) {
 				return false;
 			}
-			if (serverMark == null || name == null || total <= 0 || num <= 0) {
+			if (isEmpty(serverMark) || isEmpty(name) || total <= 0 || num <= 0) {
 				return false;
 			}
 			addDevice(serverMark, name, total, num);

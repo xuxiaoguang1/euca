@@ -187,5 +187,6 @@ public class DBTableColName {
 		public final String BW = "template_bw";
 		public final String IMAGE = "template_image";
 		public final String STARTTIME = "template_starttime";
+		public final String NCPUS = "template_ncpus";
 	}
 }

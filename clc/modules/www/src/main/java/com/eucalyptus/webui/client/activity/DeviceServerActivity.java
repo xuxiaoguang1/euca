@@ -63,7 +63,7 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 
 			@Override
 			public boolean onOK(String mark, String name, String conf, String ip, int bw, String sstate, String room) {
-				if (mark == null || mark.length() == 0) {
+				if (isEmpty(mark) || isEmpty(name)) {
 					StringBuilder sb = new StringBuilder();
 					sb.append(ADD_DEVICE_FAILURE_INVALID_ARGS[LAN_SELECT]).append("\n");
 					sb.append("<mark='").append(mark).append("'").append(", ");
@@ -87,6 +87,10 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 			}
 
 		});
+	}
+	
+	private boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
 	}
 
 	private EucalyptusServiceAsync getBackendService() {
@@ -386,8 +390,8 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 				        }
 				        else {
 					        showStatus(ADD_DEVICE_SUCCESS[LAN_SELECT]);
-					        reloadCurrentRange();
 				        }
+				        reloadCurrentRange();
 			        }
 
 		        });
@@ -414,20 +418,17 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 
 							@Override
 							public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								return row0.getField(col) != null && row0.getField(col).equals(row1.getField(col));
+								return row0.getField(col).equals(row1.getField(col));
 							}
 
 						};
 						getView().getMirrorTable().updateRow(result, matcher);
-						reloadLabels();
-					}
-					else {
-						reloadCurrentRange();
 					}
 				}
 				else {
 					showStatus(UPDATE_SERVER_FAILURE[LAN_SELECT]);
 				}
+				reloadCurrentRange();
 			}
 
 		});
@@ -454,22 +455,19 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 
 							@Override
 							public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								return row0.getField(col) != null && row0.getField(col).equals(row1.getField(col));
+								return row0.getField(col).equals(row1.getField(col));
 							}
 
 						};
 						for (SearchResultRow row : result) {
 							getView().getMirrorTable().deleteRow(row, matcher);
 						}
-						reloadLabels();
-					}
-					else {
-						reloadCurrentRange();
 					}
 				}
 				else {
 					showStatus(DELETE_DEVICE_FAILURE[LAN_SELECT]);
 				}
+				reloadCurrentRange();
 			}
 
 		});
@@ -524,7 +522,6 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 	@Override
 	public void onMirrorBack() {
 		getView().closeMirrorMode();
-		reloadCurrentRange();
 	}
 
 	@Override

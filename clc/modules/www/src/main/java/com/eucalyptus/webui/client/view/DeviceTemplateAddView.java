@@ -1,5 +1,7 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.List;
+
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceTemplateAddView extends IsWidget {
@@ -8,9 +10,13 @@ public interface DeviceTemplateAddView extends IsWidget {
 	
 	void popup();
 	
+	void setCPUNameList(List<String> list);
+	
 	public interface Presenter {
 		
-		boolean onOK(String mark, String cpu, String mem, String disk, String bw, String image);
+		boolean onOK(String mark, String cpu, int ncpus, String mem, String disk, String bw, String image);
+		
+		void lookupCPUNames();
 		
 	}
 

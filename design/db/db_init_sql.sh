@@ -45,6 +45,7 @@ id=`getvalue account account_id account_name root`
 command insert into groups \(group_name, group_descrip, group_state, account_id\) \
     values \(\"root\", \"desc\", 0, $id\)
 
+
 group=`getvalue groups group_id group_name root`
 account=`getvalue groups account_id group_name root`
 
@@ -204,14 +205,16 @@ for ((i=0;i<10;i++)) do
         template_disk, \
         template_bw, \
         template_image, \
-        template_starttime\) \
+        template_starttime, \
+        template_ncpus\) \
         values \( \
         \"mark$i\", \
-        \"cpu$i\", \
-        \"mem$i\", \
-        \"disk$i\", \
-        \"bw$i\", \
+        \"cpu0\", \
+        \"2$i""000\", \
+        \"3$i""000\", \
+        \"4$i\", \
         \"image$i\", \
-        \"2012-07-$d\"\
+        \"2012-07-$d\", \
+        \"1\" \
         \)
 done
