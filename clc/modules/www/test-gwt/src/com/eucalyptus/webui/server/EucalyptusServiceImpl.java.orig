@@ -47,7 +47,10 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	
 	private AccountServiceProcImpl accountServiceProc = new AccountServiceProcImpl();
 	private UserServiceProcImpl userServiceProc = new UserServiceProcImpl();
+<<<<<<< HEAD
+=======
 	private UserAppServiceProcImpl userAppServiceProc = new UserAppServiceProcImpl();
+>>>>>>> 709d357a85b27b7244b1eaa78e6baf7e755d121c
 	private GroupServiceProcImpl groupServiceProc = new GroupServiceProcImpl();
 	private DeviceServerServiceProcImpl deviceServerServiceProc = new DeviceServerServiceProcImpl();
 	private DeviceCPUServiceProcImpl deviceCPUServiceProc = new DeviceCPUServiceProcImpl();
@@ -942,6 +945,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 
 	@Override
+<<<<<<< HEAD
 	public void modifyPolicy(Session session, String policyId, String name, String content) throws EucalyptusServiceException {
 		verifySession(session);
 		policyServiceProc.modifyPolicy(policyId, name, content);
@@ -977,12 +981,13 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 //		return authServiceProc.listPolicies(session);
 //	}
 
-	@Override
+=======
 	public void addUserApp(Session session, String userId, String templateId) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
 		userAppServiceProc.addUserApp(Integer.valueOf(userId), Integer.valueOf(templateId));
 	}
+>>>>>>> 709d357a85b27b7244b1eaa78e6baf7e755d121c
 
 	@Override
 	public void deleteUserApp(Session session, ArrayList<String> ids)
@@ -1010,6 +1015,12 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
 		
 		return userAppServiceProc.countUserApp(curUser);
+	}
+
+	@Override
+	public void modifyPolicy(Session session, String policyId, String name, String content) throws EucalyptusServiceException {
+		verifySession(session);
+		policyServiceProc.modifyPolicy(policyId, name, content);
 	}
 
 	
