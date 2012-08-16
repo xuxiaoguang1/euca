@@ -1012,12 +1012,6 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		return userAppServiceProc.countUserApp(curUser);
 	}
 
-	@Override
-	public void modifyPolicy(Session session, String policyId, String name, String content) throws EucalyptusServiceException {
-		verifySession(session);
-		policyServiceProc.modifyPolicy(policyId, name, content);
-	}
-
 	
 //	@Override
 //	public SearchResult listAccessKeysByUser(Session session, String userId)

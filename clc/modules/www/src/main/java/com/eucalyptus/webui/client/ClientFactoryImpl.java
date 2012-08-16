@@ -634,29 +634,6 @@ public DeviceTemplateListView getDeviceTemplateListView() {
     }
     return areaView;
   }
-  
-  @Override
-  public RunInstanceView createRunInstanceView() {
-    if (runInstanceView == null) {
-      runInstanceView = new RunInstanceViewImpl();
-    }
-    return runInstanceView;
-  }
 
-  @Override
-  public KeypairView getKeypairView() {
-    if (keyPairView == null) {
-      keyPairView = new KeypairViewImpl();
-    }
-    return keyPairView;
-  }
-
-  @Override
-  public AreaView createAreaView() {
-    if (areaView == null) {
-      areaView = new AreaViewImpl();
-    }
-    return areaView;
-  }
 
 }
