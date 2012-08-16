@@ -33,6 +33,18 @@ public class DBTableColName {
 		public final String USER_ID = "user_id";
 	}
 	
+	public interface USER_APP {
+		public final String ID = "ua_id";
+		public final String TIME = "ua_time";
+		public final String STATE = "ua_state";
+		public final String RESULT = "ua_result";
+		public final String DEL = "ua_del";
+		public final String CONTENT = "ua_content";
+		public final String COMMENT = "ua_comment";
+		public final String USER_ID = "user_id";
+		public final String TEMPLATE_ID = "template_id";	
+	}	
+
 	public interface USER_POLICY {
 		public final String ID = "policy_id";
 		public final String NAME = "policy_name";
@@ -42,7 +54,7 @@ public class DBTableColName {
 		public final String GROUP_ID = "group_id";
 		public final String USER_ID = "user_id";
 	}
-	
+
 	public interface ACCOUNT {
 		public final String ID = "account_id";
 		public final String NAME = "account_name";
@@ -175,7 +187,7 @@ public class DBTableColName {
 		public final String BW = "template_bw";
 		public final String IMAGE = "template_image";
 		public final String STARTTIME = "template_starttime";
+		public final String NCPUS = "template_ncpus";
 	}
-	
 	
 }

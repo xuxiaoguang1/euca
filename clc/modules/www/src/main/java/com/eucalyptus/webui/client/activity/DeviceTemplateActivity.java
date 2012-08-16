@@ -45,8 +45,14 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 		templateModifyView.setPresenter(new DeviceTemplateModifyView.Presenter() {
 
 			@Override
-			public boolean onOK(SearchResultRow row, String cpu, String mem, String disk, String bw, String image) {
-				handleModifyService(row, cpu, mem, disk, bw, image);
+			public boolean onOK(SearchResultRow row, String cpu, int ncpus, String mem, String disk, String bw, String image) {
+				if (isEmpty(cpu)) {
+					ncpus = 0;
+				}
+				if (ncpus == 0) {
+					cpu = "";
+				}
+				handleModifyService(row, cpu, ncpus, mem, disk, bw, image);
 				getView().getMirrorTable().clearSelection();
 				return true;
 			}
@@ -55,18 +61,41 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 				getView().getMirrorTable().clearSelection();
 			}
 
+			@Override
+			public void lookupCPUNames() {
+				getBackendService().listDeviceTemplateCPUNames(getSession(), new AsyncCallback<List<String>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						log(QUERY_CPUNAMES_FAILURE[LAN_SELECT], caught);
+					}
+
+					@Override
+					public void onSuccess(List<String> result) {
+						if (result != null) {
+							templateModifyView.setCPUNameList(result);
+						}
+						else {
+							showStatus(QUERY_CPUNAMES_FAILURE[LAN_SELECT]);
+						}
+					}
+					
+				});
+			}
+
 		});
 
 		templateAddView = new DeviceTemplateAddViewImpl();
 		templateAddView.setPresenter(new DeviceTemplateAddView.Presenter() {
 
 			@Override
-			public boolean onOK(String mark, String cpu, String mem, String disk, String bw, String image) {
-				if (mark == null || mark.length() == 0) {
+			public boolean onOK(String mark, String cpu, int ncpus, String mem, String disk, String bw, String image) {
+				if (isEmpty(mark)) {
 					StringBuilder sb = new StringBuilder();
 					sb.append(ADD_TEMPLATE_FAILURE_INVALID_ARGS[LAN_SELECT]).append("\n");
 					sb.append("<mark='").append(mark).append("'").append(", ");
 					sb.append("cpu='").append(cpu).append("'").append("', ");
+					sb.append("ncpus='").append(ncpus).append("'").append("', ");
 					sb.append("mem='").append(cpu).append("'").append("', ");
 					sb.append("disk='").append(cpu).append("'").append("', ");
 					sb.append("bw='").append(cpu).append("'").append("', ");
@@ -74,16 +103,48 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 					Window.alert(sb.toString());
 					return false;
 				}
-				handleAddTemplate(mark, cpu, mem, disk, bw, image);
+				if (isEmpty(cpu)) {
+					ncpus = 0;
+				}
+				if (ncpus == 0) {
+					cpu = "";
+				}
+				handleAddTemplate(mark, cpu, ncpus, mem, disk, bw, image);
 				return true;
+			}
+
+			@Override
+			public void lookupCPUNames() {
+				getBackendService().listDeviceTemplateCPUNames(getSession(), new AsyncCallback<List<String>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						log(QUERY_CPUNAMES_FAILURE[LAN_SELECT], caught);
+					}
+
+					@Override
+					public void onSuccess(List<String> result) {
+						if (result != null) {
+							templateAddView.setCPUNameList(result);
+						}
+						else {
+							showStatus(QUERY_CPUNAMES_FAILURE[LAN_SELECT]);
+						}
+					}
+					
+				});
 			}
 
 		});
 	}
 	
-	private void handleAddTemplate(String mark, String cpu, String mem, String disk, String bw, String image) {
+	private boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
+	}
+	
+	private void handleAddTemplate(String mark, String cpu, int ncpus, String mem, String disk, String bw, String image) {
 		getBackendService().addDeviceTemplate(getSession(), 
-				mark, cpu, mem, disk, bw, image, new AsyncCallback<Boolean>() {
+				mark, cpu, ncpus, mem, disk, bw, image, new AsyncCallback<Boolean>() {
 
 			        @Override
 			        public void onFailure(Throwable caught) {
@@ -95,11 +156,11 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 			        public void onSuccess(Boolean result) {
 				        if (result) {
 					        showStatus(ADD_TEMPLATE_SUCCESS[LAN_SELECT]);
-				        	reloadCurrentRange();
 				        }
 				        else {
 					        showStatus(ADD_TEMPLATE_FAILURE[LAN_SELECT]);
 				        }
+			        	reloadCurrentRange();
 			        }
 
 		        });
@@ -226,9 +287,9 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 		}
 	}
 
-	private void handleModifyService(SearchResultRow row, String cpu, String mem, String disk, String bw, String image) {
+	private void handleModifyService(SearchResultRow row, String cpu, int ncpus, String mem, String disk, String bw, String image) {
 		assert (row != null && getView().getMirrorModeType() == MirrorModeType.MODIFY_TEMPLATE);
-		getBackendService().modifyDeviceTempate(getSession(), row, cpu, mem, disk, bw, image, 
+		getBackendService().modifyDeviceTempate(getSession(), row, cpu, ncpus, mem, disk, bw, image, 
 		        new AsyncCallback<SearchResultRow>() {
 
 			        @Override
@@ -248,20 +309,17 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 
 							        @Override
 							        public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								        return row0.getField(col) != null
-								                && row0.getField(col).equals(row1.getField(col));
+								        return row0.getField(col).equals(row1.getField(col));
 							        }
 
 						        };
 						        getView().getMirrorTable().updateRow(result, matcher);
 					        }
-					        else {
-					        	reloadCurrentRange();
-					        }
 				        }
 				        else {
 					        showStatus(UPDATE_TEMPLATE_FAILURE[LAN_SELECT]);
 				        }
+			        	reloadCurrentRange();
 			        }
 
 		        });
@@ -288,7 +346,7 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 
 							@Override
 							public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								return row0.getField(col) != null && row0.getField(col).equals(row1.getField(col));
+								return row0.getField(col).equals(row1.getField(col));
 							}
 
 						};
@@ -296,13 +354,11 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 							getView().getMirrorTable().deleteRow(row, matcher);
 						}
 			        }
-			        else {
-			        	reloadCurrentRange();
-			        }
 				}
 				else {
 					showStatus(DELETE_TEMPLATE_FAILURE[LAN_SELECT]);
 				}
+	        	reloadCurrentRange();
 			}
 
 		});
@@ -355,7 +411,6 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 	@Override
 	public void onMirrorBack() {
 		getView().closeMirrorMode();
-		reloadCurrentRange();
 	}
 
 	@Override
@@ -410,5 +465,7 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 		this.endtime = endtime;
 		reloadCurrentRange();
     }
+	
+	private static final String[] QUERY_CPUNAMES_FAILURE = {"", "获取CPU列表失败"};
 
 }

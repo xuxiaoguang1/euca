@@ -16,9 +16,6 @@ import com.eucalyptus.webui.client.activity.DeviceMemoryActivity;
 import com.eucalyptus.webui.client.activity.DeviceServerActivity;
 import com.eucalyptus.webui.client.activity.DeviceIPActivity;
 import com.eucalyptus.webui.client.activity.DeviceTemplateActivity;
-import com.eucalyptus.webui.client.activity.ErrorSinkActivity;
-import com.eucalyptus.webui.client.activity.GroupActivity;
-import com.eucalyptus.webui.client.activity.ImageActivity;
 import com.eucalyptus.webui.client.activity.IndividualActivity;
 import com.eucalyptus.webui.client.activity.KeyActivity;
 import com.eucalyptus.webui.client.activity.KeypairActivity;
@@ -31,6 +28,7 @@ import com.eucalyptus.webui.client.activity.ReportActivity;
 import com.eucalyptus.webui.client.activity.StartActivity;
 import com.eucalyptus.webui.client.activity.StorageCtrlActivity;
 import com.eucalyptus.webui.client.activity.UserActivity;
+import com.eucalyptus.webui.client.activity.UserAppActivity;
 import com.eucalyptus.webui.client.activity.VmTypeActivity;
 import com.eucalyptus.webui.client.activity.WalrusCtrlActivity;
 import com.eucalyptus.webui.client.place.AccountPlace;
@@ -49,9 +47,6 @@ import com.eucalyptus.webui.client.place.DeviceMemoryPlace;
 import com.eucalyptus.webui.client.place.DeviceServerPlace;
 import com.eucalyptus.webui.client.place.DeviceIPPlace;
 import com.eucalyptus.webui.client.place.DeviceTemplatePlace;
-import com.eucalyptus.webui.client.place.ErrorSinkPlace;
-import com.eucalyptus.webui.client.place.GroupPlace;
-import com.eucalyptus.webui.client.place.ImagePlace;
 import com.eucalyptus.webui.client.place.IndividualPlace;
 import com.eucalyptus.webui.client.place.KeyPlace;
 import com.eucalyptus.webui.client.place.KeypairPlace;
@@ -63,6 +58,7 @@ import com.eucalyptus.webui.client.place.RejectPlace;
 import com.eucalyptus.webui.client.place.ReportPlace;
 import com.eucalyptus.webui.client.place.StartPlace;
 import com.eucalyptus.webui.client.place.StorageCtrlPlace;
+import com.eucalyptus.webui.client.place.UserAppPlace;
 import com.eucalyptus.webui.client.place.UserPlace;
 import com.eucalyptus.webui.client.place.VmTypePlace;
 import com.eucalyptus.webui.client.place.WalrusCtrlPlace;
@@ -106,6 +102,9 @@ public class MainActivityMapper implements ActivityMapper {
 		}
 		else if (place instanceof UserPlace) {
 			return new UserActivity((UserPlace)place, this.clientFactory);
+		}
+		else if (place instanceof UserAppPlace) {
+			return new UserAppActivity((UserAppPlace)place, this.clientFactory);
 		}
 		else if (place instanceof IndividualPlace) {
 			return new IndividualActivity((IndividualPlace)place, this.clientFactory);

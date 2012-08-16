@@ -454,7 +454,7 @@ public class DeviceDiskServiceProcImpl {
 
 	public List<String> listUsersByAccount(Session session, String account) {
 		try {
-			if (account != null) {
+			if (!isEmpty(account)) {
 				LoginUserProfile user = getUser(session);
 				if (user.isSystemAdmin()) {
 					return listUsersByAccount(account);
@@ -476,7 +476,7 @@ public class DeviceDiskServiceProcImpl {
 			ResultSet rs = rsw.getResultSet();
 			while (rs.next()) {
 				String account = rs.getString(DBTableColName.ACCOUNT.NAME);
-				if (account != null) {
+				if (!isEmpty(account)) {
 					list.add(account);
 				}
 			}
@@ -505,7 +505,7 @@ public class DeviceDiskServiceProcImpl {
 			ResultSet rs = rsw.getResultSet();
 			while (rs.next()) {
 				String user = rs.getString(DBTableColName.USER.NAME);
-				if (user != null) {
+				if (!isEmpty(user)) {
 					list.add(user);
 				}
 			}
@@ -550,7 +550,10 @@ public class DeviceDiskServiceProcImpl {
 				else {
 					result.setDescs(FIELDS_USER);
 				}
-				result.setRows(rows.subList(range.getStart(), range.getStart() + length));
+				int from = range.getStart(), to = range.getStart() + length;
+				if (from < to) {
+					result.setRows(rows.subList(from, to));
+				}
 				for (SearchResultRow row : result.getRows()) {
 					System.out.println(row);
 				}
@@ -591,10 +594,14 @@ public class DeviceDiskServiceProcImpl {
 			return null;
 		}
 	}
+	
+	private boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
+	}
 
 	public SearchResultRow modifyService(Session session, SearchResultRow row, String sendtime, int state) {
 		try {
-			if (sendtime == null) {
+			if (isEmpty(sendtime)) {
 				return null;
 			}
 			if (DiskState.getDiskState(state) == null || DiskState.getDiskState(state) == DiskState.RESERVED) {
@@ -673,10 +680,7 @@ public class DeviceDiskServiceProcImpl {
 
 	public List<SearchResultRow> deleteService(Session session, List<SearchResultRow> list) {
 		try {
-			if (list == null) {
-				return null;
-			}
-			if (!getUser(session).isSystemAdmin()) {
+			if (list == null || !getUser(session).isSystemAdmin()) {
 				return null;
 			}
 			List<SearchResultRow> result = new ArrayList<SearchResultRow>();
@@ -722,13 +726,13 @@ public class DeviceDiskServiceProcImpl {
 	public SearchResultRow addService(Session session, SearchResultRow row, String account, String user,
 	        long used, String sstarttime, int life, int state) {
 		try {
-			if (!getUser(session).isSystemAdmin()) {
+			if (row == null || !getUser(session).isSystemAdmin()) {
 				return null;
 			}
-			if (row == null || account == null || user == null) {
+			if (isEmpty(account) || isEmpty(user)) {
 				return null;
 			}
-			if (sstarttime == null || !(life >= 0)) {
+			if (isEmpty(sstarttime) || !(life >= 0)) {
 				return null;
 			}
 			if (DiskState.getDiskState(state) == null || DiskState.getDiskState(state) == DiskState.RESERVED) {
@@ -750,7 +754,7 @@ public class DeviceDiskServiceProcImpl {
 			if (!getUser(session).isSystemAdmin()) {
 				return false;
 			}
-			if (serverMark == null || name == null || total <= 0 || num <= 0) {
+			if (isEmpty(serverMark) || isEmpty(name) || total <= 0 || num <= 0) {
 				return false;
 			}
 			addDevice(serverMark, name, total, num);
@@ -942,8 +946,8 @@ public class DeviceDiskServiceProcImpl {
 		}
 		return new SearchResultRow(Arrays.asList(rs.getString(DBTableColName.DISK_SERVICE.ID),
 		        rs.getString(DBTableColName.DISK.ID), "", Integer.toString(index),
-		        rs.getString(DBTableColName.SERVER.NAME), stotal, sused,
-		        account, user, sstarttime, slife, sremains, sstate));
+		        rs.getString(DBTableColName.SERVER.NAME), rs.getString(DBTableColName.DISK.NAME),
+		        stotal, sused, account, user, sstarttime, slife, sremains, sstate));
 	}
 
 	private SearchResultRow convertUserResultRow(ResultSet rs, int index) throws SQLException {
@@ -977,8 +981,8 @@ public class DeviceDiskServiceProcImpl {
 		}
 		return new SearchResultRow(Arrays.asList(rs.getString(DBTableColName.DISK_SERVICE.ID),
 		        rs.getString(DBTableColName.DISK.ID), "", Integer.toString(index),
-		        rs.getString(DBTableColName.SERVER.NAME), stotal, sused,
-		        sstarttime, slife, sremains, sstate));
+		        rs.getString(DBTableColName.SERVER.NAME), rs.getString(DBTableColName.DISK.NAME),
+		        stotal, sused, sstarttime, slife, sremains, sstate));
 	}
 
 	private void queryAllDiskCounts(Map<Integer, Long> map, int user_id) throws Exception {
@@ -1036,22 +1040,23 @@ public class DeviceDiskServiceProcImpl {
 	public static final int TABLE_COL_INDEX_DISK_ID = 1;
 	public static final int TABLE_COL_INDEX_CHECKBOX = 2;
 	public static final int TABLE_COL_INDEX_NO = 3;
-	public static final int TABLE_COL_INDEX_TOTAL = 5;
-	public static final int TABLE_COL_INDEX_USED = 6;
-	public static final int TABLE_COL_INDEX_ROOT_ACCOUNT = 7;
-	public static final int TABLE_COL_INDEX_ROOT_USER = 8;
-	public static final int TABLE_COL_INDEX_ROOT_STARTTIME = 9;
-	public static final int TABLE_COL_INDEX_ROOT_LIFE = 10;
-	public static final int TABLE_COL_INDEX_ROOT_REMAINS = 11;
-	public static final int TABLE_COL_INDEX_ROOT_STATE = 12;
-	public static final int TABLE_COL_INDEX_USER_STARTTIME = 7;
-	public static final int TABLE_COL_INDEX_USER_LIFE = 8;
-	public static final int TABLE_COL_INDEX_USER_REMAINS = 9;
-	public static final int TABLE_COL_INDEX_USER_STATE = 10;
+	public static final int TABLE_COL_INDEX_TOTAL = 6;
+	public static final int TABLE_COL_INDEX_USED = 7;
+	public static final int TABLE_COL_INDEX_ROOT_ACCOUNT = 8;
+	public static final int TABLE_COL_INDEX_ROOT_USER = 9;
+	public static final int TABLE_COL_INDEX_ROOT_STARTTIME = 10;
+	public static final int TABLE_COL_INDEX_ROOT_LIFE = 11;
+	public static final int TABLE_COL_INDEX_ROOT_REMAINS = 12;
+	public static final int TABLE_COL_INDEX_ROOT_STATE = 13;
+	public static final int TABLE_COL_INDEX_USER_STARTTIME = 8;
+	public static final int TABLE_COL_INDEX_USER_LIFE = 9;
+	public static final int TABLE_COL_INDEX_USER_REMAINS = 10;
+	public static final int TABLE_COL_INDEX_USER_STATE = 11;
 
 	private static final String[] TABLE_COL_TITLE_CHECKBOX = {"", ""};
 	private static final String[] TABLE_COL_TITLE_NO = {"", "序号"};
 	private static final String[] TABLE_COL_TITLE_SERVER = {"", "服务器"};
+	private static final String[] TABLE_COL_TITLE_NAME = {"", "名称"};
 	private static final String[] TABLE_COL_TITLE_TOTAL = {"", "总大小"};
 	private static final String[] TABLE_COL_TITLE_USED = {"", "此项大小"};
 	private static final String[] TABLE_COL_TITLE_STARTTIME = {"", "开始时间"};
@@ -1067,6 +1072,7 @@ public class DeviceDiskServiceProcImpl {
 			new SearchResultFieldDesc(TABLE_COL_TITLE_CHECKBOX[LAN_SELECT], "4%", false),
 			new SearchResultFieldDesc(TABLE_COL_TITLE_NO[LAN_SELECT], false, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_SERVER[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+	        new SearchResultFieldDesc(TABLE_COL_TITLE_NAME[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_TOTAL[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_USED[LAN_SELECT], false, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_ACCOUNT[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false),
@@ -1081,6 +1087,7 @@ public class DeviceDiskServiceProcImpl {
 			new SearchResultFieldDesc(TABLE_COL_TITLE_CHECKBOX[LAN_SELECT], "4%", false),
 			new SearchResultFieldDesc(TABLE_COL_TITLE_NO[LAN_SELECT], false, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_SERVER[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+	        new SearchResultFieldDesc(TABLE_COL_TITLE_NAME[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_TOTAL[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_USED[LAN_SELECT], false, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(TABLE_COL_TITLE_STARTTIME[LAN_SELECT], false, "14%", TableDisplay.MANDATORY, Type.TEXT, false, false),

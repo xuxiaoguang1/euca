@@ -10,7 +10,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.IntegerBox;
+import com.google.gwt.user.client.ui.LongBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.datepicker.client.DatePicker;
@@ -46,13 +46,13 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 	@UiField
 	ListBox ipList;
 	@UiField
-	IntegerBox bandwidthBox;
+	LongBox bandwidthBox;
 
 	public DeviceBWServiceAddViewImpl() {
 		super(false);
 		setWidget(uiBinder.createAndBindUi(this));
 	}
-
+	
 	private DeviceBWServiceAddView.Presenter presenter;
 
 	@Override
@@ -65,18 +65,18 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 	
 	private static final Date today = new Date();
 	
-	class IntegerBoxChangeHandler implements ChangeHandler {
+	class LongBoxChangeHandler implements ChangeHandler {
 		
-		IntegerBox box;
+		LongBox box;
 		
-		IntegerBoxChangeHandler(IntegerBox box) {
+		LongBoxChangeHandler(LongBox box) {
 			this.box = box;
 			box.setText(Long.toString(0));
 		}
 
 		@Override
         public void onChange(ChangeEvent event) {
-			String value = Long.toString(intValue(box.getText()));
+			String value = Long.toString(longValue(box.getText()));
 			if (!value.equals(box.getText())) {
 				box.setText(value);
 			}
@@ -84,17 +84,28 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 		
 	}
 	
-	private Integer intValue(String s) {
+	private Long longValue(String s) {
 		try {
-			return Integer.parseInt(s);
+			return Long.parseLong(s);
 		}
 		catch (Exception e) {
-			return 0;
+			return (long)0;
 		}
+	}
+	
+	private boolean initialized = false;
+	
+	private void init() {
+		if (initialized) {
+			return;
+		}
+		initialized = true;
+		bandwidthBox.addChangeHandler(new LongBoxChangeHandler(bandwidthBox));
 	}
 	
 	@Override
 	public void popup() {
+		init();
 		if (pickerStarttime == null) {
 			pickerStarttime = new DeviceServiceDatePicker(datePickerStarttime, yearListStarttime, monthListStarttime,
 			        dayListStarttime);
@@ -119,7 +130,7 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 			}
 		}
 		
-		bandwidthBox.setText(Long.toString(intValue(bandwidthBox.getText())));
+		bandwidthBox.setText(Long.toString(longValue(bandwidthBox.getText())));
 		show();
 	}
 
@@ -207,7 +218,7 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 	void handleButtonOK(ClickEvent event) {
 		if (presenter.onOK(getSelectedItem(accountList), getSelectedItem(userList),
 				pickerStarttime.getValue(), pickerEndtime.getValue(), getSelectedItem(ipList),
-				intValue(bandwidthBox.getText()))) {
+				longValue(bandwidthBox.getText()))) {
 			this.hide();
 		}
 	}

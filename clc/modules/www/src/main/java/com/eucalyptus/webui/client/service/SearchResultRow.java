@@ -36,14 +36,24 @@ public class SearchResultRow implements Serializable {
     this( row, null );
   }
   
-  public SearchResultRow( List<String> row, List<SearchResultFieldDesc> extra ) {
-    if ( row != null ) {
-      this.row.addAll( row );
-    }
-    if ( extra != null ) {
-      this.extraFields.addAll( extra );
-    }
-  }
+	public SearchResultRow(List<String> row, List<SearchResultFieldDesc> extra) {
+		if (row != null) {
+			for (String field : row) {
+				if (field == null) {
+					field = "";
+				}
+				this.row.add(field);
+			}
+		}
+		if (extra != null) {
+			for (SearchResultFieldDesc field : extra) {
+				if (field == null) {
+					field = new SearchResultFieldDesc();
+				}
+				this.extraFields.add(field);
+			}
+		}
+	}
   
   @Override
   public String toString( ) {

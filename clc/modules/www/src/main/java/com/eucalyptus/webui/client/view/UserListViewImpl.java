@@ -30,6 +30,8 @@ public class UserListViewImpl extends DialogBox implements UserListView {
 	public UserListViewImpl() {
 		setWidget(uiBinder.createAndBindUi(this));
 		this.currentSelected = null;
+		
+		setGlassEnabled( true );
 	}
 
 	@UiHandler("buttonOk")

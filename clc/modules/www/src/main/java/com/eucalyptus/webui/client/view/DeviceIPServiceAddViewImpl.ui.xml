@@ -156,12 +156,12 @@
 					</table>
 				</g:HTMLPanel>
 			</g:at>
-			<g:at left="460" top="233" style="font-size:90%;">
+			<g:at left="450" top="233" style="font-size:90%;">
 				<g:Anchor styleName="{global.buttonCss.button}"
 					horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonOK">确&nbsp;定
 				</g:Anchor>
 			</g:at>
-			<g:at left="540" top="233" style="font-size:90%;">
+			<g:at left="530" top="233" style="font-size:90%;">
 				<g:Anchor styleName="{global.buttonCss.button}"
 					horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonCancel">取&nbsp;消
 				</g:Anchor>

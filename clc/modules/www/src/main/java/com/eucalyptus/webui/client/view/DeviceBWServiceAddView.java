@@ -19,7 +19,7 @@ public interface DeviceBWServiceAddView extends IsWidget {
 	
 	public interface Presenter {
 		
-		boolean onOK(String account, String user, Date starttime, Date endtime, String ip, int bandwidth);
+		boolean onOK(String account, String user, Date starttime, Date endtime, String ip, long bandwidth);
 		
 		void lookupAccounts();
 		

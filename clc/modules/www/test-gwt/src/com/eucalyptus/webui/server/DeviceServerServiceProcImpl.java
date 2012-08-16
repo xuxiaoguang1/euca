@@ -29,21 +29,21 @@ import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
 class DeviceServerDBProcWrapper {
-
+	
 	private static final Logger LOG = Logger.getLogger(DeviceServerDBProcWrapper.class.getName());
-
+	
 	DBProcWrapper wrapper = DBProcWrapper.Instance();
-
+	
 	ResultSetWrapper doQuery(String request) throws Exception {
 		LOG.info(request);
 		return wrapper.query(request);
 	}
-
+	
 	void doUpdate(String request) throws Exception {
 		LOG.info(request);
 		wrapper.update(request);
 	}
-
+	
 	ResultSetWrapper getCountsByState() throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT ");
@@ -54,13 +54,13 @@ class DeviceServerDBProcWrapper {
 		sb.append(DBTableColName.SERVER.STATE);
 		return doQuery(sb.toString());
 	}
-
+	
 	ResultSetWrapper queryAllServers(int queryState) throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT * FROM ");
 		sb.append(DBTableName.SERVER);
 		sb.append(" WHERE 1=1");
-
+		
 		if (queryState >= 0) {
 			sb.append(" AND ");
 			sb.append(DBTableColName.SERVER.STATE);
@@ -68,7 +68,7 @@ class DeviceServerDBProcWrapper {
 		}
 		return doQuery(sb.toString());
 	}
-
+	
 	ResultSetWrapper queryServer(int server_id) throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT * FROM ");
@@ -78,7 +78,7 @@ class DeviceServerDBProcWrapper {
 		sb.append(" = ").append(server_id);
 		return doQuery(sb.toString());
 	}
-
+	
 	void modifyServerState(int server_id, int server_state) throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append("UPDATE ");
@@ -89,7 +89,7 @@ class DeviceServerDBProcWrapper {
 		sb.append(DBTableColName.SERVER.ID).append(" = ").append(server_id);
 		doUpdate(sb.toString());
 	}
-
+	
 	void deleteDevice(int server_id) throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE ");
@@ -98,9 +98,9 @@ class DeviceServerDBProcWrapper {
 		sb.append(DBTableColName.SERVER.ID).append(" = ").append(server_id);
 		doUpdate(sb.toString());
 	}
-
+	
 	void addDevice(String mark, String name, String conf, String ip, int bw, int state, String room, String starttime)
-	        throws Exception {
+			throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append("INSERT INTO ").append(DBTableName.SERVER);
 		sb.append(" (");
@@ -124,17 +124,17 @@ class DeviceServerDBProcWrapper {
 		sb.append("\"").append(starttime).append("\")");
 		doUpdate(sb.toString());
 	}
-
+	
 }
 
 public class DeviceServerServiceProcImpl {
-
+	
 	private DeviceServerDBProcWrapper dbproc = new DeviceServerDBProcWrapper();
-
+	
 	private LoginUserProfile getUser(Session session) {
 		return LoginUserProfileStorer.instance().get(session.getId());
 	}
-
+	
 	public SearchResult lookupServer(Session session, String search, SearchRange range, int queryState) {
 		ResultSetWrapper rsw = null;
 		try {
@@ -147,7 +147,10 @@ public class DeviceServerServiceProcImpl {
 				int length = Math.min(range.getLength(), rows.size() - range.getStart());
 				SearchResult result = new SearchResult(rows.size(), range);
 				result.setDescs(FIELDS_ROOT);
-				result.setRows(rows.subList(range.getStart(), range.getStart() + length));
+				int from = range.getStart(), to = range.getStart() + length;
+				if (from < to) {
+					result.setRows(rows.subList(from, to));
+				}
 				for (SearchResultRow row : result.getRows()) {
 					System.out.println(row);
 				}
@@ -170,7 +173,7 @@ public class DeviceServerServiceProcImpl {
 			}
 		}
 	}
-
+	
 	public Map<Integer, Integer> getServerCounts(Session session) {
 		try {
 			if (!getUser(session).isSystemAdmin()) {
@@ -185,7 +188,7 @@ public class DeviceServerServiceProcImpl {
 			return null;
 		}
 	}
-
+	
 	public SearchResultRow modifyServerState(Session session, SearchResultRow row, int state) {
 		try {
 			if (!getUser(session).isSystemAdmin()) {
@@ -200,7 +203,7 @@ public class DeviceServerServiceProcImpl {
 		}
 		return null;
 	}
-
+	
 	private SearchResultRow lookupServer(SearchResultRow row, int server_id) throws Exception {
 		ResultSetWrapper rsw = null;
 		try {
@@ -226,7 +229,7 @@ public class DeviceServerServiceProcImpl {
 			}
 		}
 	}
-
+	
 	public List<SearchResultRow> deleteDevice(Session session, List<SearchResultRow> list) {
 		try {
 			if (list == null || !getUser(session).isSystemAdmin()) {
@@ -247,13 +250,14 @@ public class DeviceServerServiceProcImpl {
 		}
 		return null;
 	}
-
+	
+	private boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
+	}
+	
 	public boolean addDevice(Session session, String mark, String name, String conf, String ip, int bw, int state, String room) {
 		try {
-			if (!getUser(session).isSystemAdmin()) {
-				return false;
-			}
-			if (mark == null || mark.length() == 0) {
+			if (!getUser(session).isSystemAdmin() || isEmpty(name)) {
 				return false;
 			}
 			addDevice(mark, name, conf, ip, bw, state, room);
@@ -264,11 +268,11 @@ public class DeviceServerServiceProcImpl {
 		}
 		return false;
 	}
-
+	
 	private void modifyServerState(int server_id, int state) throws Exception {
 		dbproc.modifyServerState(server_id, state);
 	}
-
+	
 	private boolean deleteDevice(int server_id) {
 		try {
 			dbproc.deleteDevice(server_id);
@@ -279,11 +283,11 @@ public class DeviceServerServiceProcImpl {
 			return false;
 		}
 	}
-
+	
 	private void addDevice(String mark, String name, String conf, String ip, int bw, int state, String room) throws Exception {
 		dbproc.addDevice(mark, name, conf, ip, bw, state, room, formatter.format(new Date()));
 	}
-
+	
 	private List<SearchResultRow> convertResults(ResultSetWrapper rsw) {
 		if (rsw != null) {
 			ResultSet rs = rsw.getResultSet();
@@ -291,7 +295,7 @@ public class DeviceServerServiceProcImpl {
 			try {
 				int index = 1;
 				while (rs.next()) {
-					rows.add(convertRootResultRow(rs, index ++));
+					rows.add(convertRootResultRow(rs, index ++ ));
 				}
 				return rows;
 			}
@@ -309,9 +313,9 @@ public class DeviceServerServiceProcImpl {
 		}
 		return null;
 	}
-
+	
 	DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-
+	
 	private SearchResultRow convertRootResultRow(ResultSet rs, int index) throws SQLException {
 		String state = null;
 		try {
@@ -320,12 +324,12 @@ public class DeviceServerServiceProcImpl {
 		catch (Exception e) {
 		}
 		return new SearchResultRow(Arrays.asList(rs.getString(DBTableColName.SERVER.ID), "", Integer.toString(index),
-		        rs.getString(DBTableColName.SERVER.NAME), rs.getString(DBTableColName.SERVER.MARK),
-		        rs.getString(DBTableColName.SERVER.CONF), rs.getString(DBTableColName.SERVER.IP),
-		        rs.getString(DBTableColName.SERVER.BW), rs.getString(DBTableColName.SERVER.ROOM),
-		        rs.getString(DBTableColName.SERVER.STARTTIME), state));
+				rs.getString(DBTableColName.SERVER.NAME), rs.getString(DBTableColName.SERVER.MARK),
+				rs.getString(DBTableColName.SERVER.CONF), rs.getString(DBTableColName.SERVER.IP),
+				rs.getString(DBTableColName.SERVER.BW), rs.getString(DBTableColName.SERVER.ROOM),
+				rs.getString(DBTableColName.SERVER.STARTTIME), state));
 	}
-
+	
 	private void queryAllServerCounts(Map<Integer, Integer> map) throws Exception {
 		ResultSetWrapper rsw = null;
 		try {
@@ -353,14 +357,14 @@ public class DeviceServerServiceProcImpl {
 			}
 		}
 	}
-
+	
 	private static final int LAN_SELECT = 1;
-
+	
 	public static final int TABLE_COL_INDEX_SERVER_ID = 0;
 	public static final int TABLE_COL_INDEX_CHECKBOX = 1;
 	public static final int TABLE_COL_INDEX_NO = 2;
 	public static final int TABLE_COL_INDEX_STATE = 10;
-
+	
 	private static final String[] TABLE_COL_TITLE_CHECKBOX = {"", ""};
 	private static final String[] TABLE_COL_TITLE_NO = {"", "序号"};
 	private static final String[] TABLE_COL_TITLE_NAME = {"", "名称"};
@@ -371,20 +375,18 @@ public class DeviceServerServiceProcImpl {
 	private static final String[] TABLE_COL_TITLE_ROOM = {"", "位置"};
 	private static final String[] TABLE_COL_TITLE_STARTTIME = {"", "开始时间"};
 	private static final String[] TABLE_COL_TITLE_STATE = {"", "状态"};
-
-	private static final List<SearchResultFieldDesc> FIELDS_ROOT = Arrays.asList(new SearchResultFieldDesc(null, "0%",
-	        false), new SearchResultFieldDesc(TABLE_COL_TITLE_CHECKBOX[LAN_SELECT], "4%", false),
-	        new SearchResultFieldDesc(TABLE_COL_TITLE_NO[LAN_SELECT], false, "8%", TableDisplay.MANDATORY, Type.TEXT,
-	                false, false), new SearchResultFieldDesc(TABLE_COL_TITLE_NAME[LAN_SELECT], false, "10%",
-	                TableDisplay.MANDATORY, Type.TEXT, false, false), new SearchResultFieldDesc(
-	                TABLE_COL_TITLE_MARK[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false),
-	        new SearchResultFieldDesc(TABLE_COL_TITLE_CONF[LAN_SELECT], false, "10%", TableDisplay.MANDATORY,
-	                Type.TEXT, false, false), new SearchResultFieldDesc(TABLE_COL_TITLE_IP[LAN_SELECT], false, "14%",
-	                TableDisplay.MANDATORY, Type.TEXT, false, false), new SearchResultFieldDesc(
-	                TABLE_COL_TITLE_BW[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false),
-	        new SearchResultFieldDesc(TABLE_COL_TITLE_ROOM[LAN_SELECT], false, "10%", TableDisplay.MANDATORY,
-	                Type.TEXT, false, false), new SearchResultFieldDesc(TABLE_COL_TITLE_STARTTIME[LAN_SELECT], false,
-	                "10%", TableDisplay.MANDATORY, Type.TEXT, false, false), new SearchResultFieldDesc(
-	                TABLE_COL_TITLE_STATE[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false));
-
+	
+	private static final List<SearchResultFieldDesc> FIELDS_ROOT = Arrays.asList(
+			new SearchResultFieldDesc(null, "0%",false),
+			new SearchResultFieldDesc(TABLE_COL_TITLE_CHECKBOX[LAN_SELECT], "4%", false),
+			new SearchResultFieldDesc(TABLE_COL_TITLE_NO[LAN_SELECT], false, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+			new SearchResultFieldDesc(TABLE_COL_TITLE_NAME[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+			new SearchResultFieldDesc(TABLE_COL_TITLE_MARK[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+			new SearchResultFieldDesc(TABLE_COL_TITLE_CONF[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+			new SearchResultFieldDesc(TABLE_COL_TITLE_IP[LAN_SELECT], false, "14%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+			new SearchResultFieldDesc(TABLE_COL_TITLE_BW[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+			new SearchResultFieldDesc(TABLE_COL_TITLE_ROOM[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+			new SearchResultFieldDesc(TABLE_COL_TITLE_STARTTIME[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+			new SearchResultFieldDesc(TABLE_COL_TITLE_STATE[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false));
+	
 }

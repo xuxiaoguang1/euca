@@ -97,7 +97,7 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 					Window.alert(sb.toString());
 					return false;
 				}
-				if (account == null || user == null || state == null || vmMark == null) {
+				if (isEmpty(account) || isEmpty(user) || isEmpty(state) || isEmpty(vmMark)) {
 					StringBuilder sb = new StringBuilder();
 					sb.append(ADD_SERVICE_FAILURE_INVALID_ARGS[LAN_SELECT]).append("\n");
 					sb.append("<account='").append(account).append("'").append(", ");
@@ -196,6 +196,10 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 			}
 
 		});
+	}
+	
+	private boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
 	}
 
 	private EucalyptusServiceAsync getBackendService() {
@@ -539,7 +543,7 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 			life = row.getField(DeviceIPServiceProcImpl.TABLE_COL_INDEX_USER_LIFE);
 		}
 		Date date0 = null, date1 = null;
-		if (starttime != null) {
+		if (!isEmpty(starttime)) {
 			date0 = DeviceServiceDatePicker.parse(starttime);
 			date1 = DeviceServiceDatePicker.parse(starttime, life);
 		}
@@ -560,7 +564,7 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 			state = row.getField(DeviceIPServiceProcImpl.TABLE_COL_INDEX_USER_STATE);
 			life = row.getField(DeviceIPServiceProcImpl.TABLE_COL_INDEX_USER_LIFE);
 		}
-		assert (starttime != null && state != null && life != null);
+		assert (!isEmpty(starttime) && !isEmpty(state) && !isEmpty(life));
 		final String[] stateValueList = new String[]{IPState.INUSE.toString(), IPState.STOP.toString()};
 		serviceModifyView.setValue(row, DeviceServiceDatePicker.parse(starttime),
 		        DeviceServiceDatePicker.parse(starttime, life), stateValueList, state);
@@ -626,8 +630,8 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 				        }
 				        else {
 					        showStatus(ADD_DEVICE_SUCCESS[LAN_SELECT]);
-					        reloadCurrentRange();
 				        }
+				        reloadCurrentRange();
 			        }
 
 		        });
@@ -656,21 +660,17 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 
 							        @Override
 							        public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								        return row0.getField(col) != null
-								                && row0.getField(col).equals(row1.getField(col));
+							        	return row0.getField(col).equals(row1.getField(col));
 							        }
 
 						        };
 						        getView().getMirrorTable().updateRow(result, matcher);
-						        reloadLabels();
-					        }
-					        else {
-					        	reloadCurrentRange();
 					        }
 				        }
 				        else {
 					        showStatus(ADD_SERVICE_FAILURE[LAN_SELECT]);
 				        }
+			        	reloadCurrentRange();
 			        }
 
 		        });
@@ -698,21 +698,17 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 
 							        @Override
 							        public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								        return row0.getField(col) != null
-								                && row0.getField(col).equals(row1.getField(col));
+							        	return row0.getField(col).equals(row1.getField(col));
 							        }
 
 						        };
 						        getView().getMirrorTable().updateRow(result, matcher);
-						        reloadLabels();
-					        }
-					        else {
-					        	reloadCurrentRange();
 					        }
 				        }
 				        else {
 					        showStatus(UPDATE_SERVICE_FAILURE[LAN_SELECT]);
 				        }
+			        	reloadCurrentRange();
 			        }
 
 		        });
@@ -739,22 +735,19 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 
 							@Override
 							public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								return row0.getField(col) != null && row0.getField(col).equals(row1.getField(col));
+								return row0.getField(col).equals(row1.getField(col));
 							}
 
 						};
 						for (SearchResultRow row : result) {
 							getView().getMirrorTable().deleteRow(row, matcher);
 						}
-						reloadLabels();
-			        }
-			        else {
-			        	reloadCurrentRange();
 			        }
 				}
 				else {
 					showStatus(DELETE_SERVICE_FAILURE[LAN_SELECT]);
 				}
+	        	reloadCurrentRange();
 			}
 
 		});
@@ -781,22 +774,19 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 
 							@Override
 							public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								return row0.getField(col) != null && row0.getField(col).equals(row1.getField(col));
+								return row0.getField(col).equals(row1.getField(col));
 							}
 
 						};
 						for (SearchResultRow row : result) {
 							getView().getMirrorTable().deleteRow(row, matcher);
 						}
-						reloadLabels();
-			        }
-			        else {
-			        	reloadCurrentRange();
 			        }
 				}
 				else {
 					showStatus(DELETE_DEVICE_FAILURE[LAN_SELECT]);
 				}
+	        	reloadCurrentRange();
 			}
 
 		});
@@ -816,7 +806,7 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 		else {
 			col = DeviceIPServiceProcImpl.TABLE_COL_INDEX_USER_STARTTIME;
 		}
-		return row.getField(col) != null;
+		return !isEmpty(row.getField(col));
 	}
 
 	@Override
@@ -899,7 +889,6 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 			serviceAddView.clearCache();
 		}
 		getView().closeMirrorMode();
-		reloadCurrentRange();
 	}
 
 	@Override

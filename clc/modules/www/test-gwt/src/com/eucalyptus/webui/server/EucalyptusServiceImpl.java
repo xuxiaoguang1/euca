@@ -24,8 +24,11 @@ import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.server.user.PwdResetProc;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
+import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
+import com.eucalyptus.webui.shared.user.UserApp;
+import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.common.base.Strings;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
@@ -44,6 +47,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	
 	private AccountServiceProcImpl accountServiceProc = new AccountServiceProcImpl();
 	private UserServiceProcImpl userServiceProc = new UserServiceProcImpl();
+	private UserAppServiceProcImpl userAppServiceProc = new UserAppServiceProcImpl();
 	private GroupServiceProcImpl groupServiceProc = new GroupServiceProcImpl();
 	private DeviceServerServiceProcImpl deviceServerServiceProc = new DeviceServerServiceProcImpl();
 	private DeviceCPUServiceProcImpl deviceCPUServiceProc = new DeviceCPUServiceProcImpl();
@@ -314,6 +318,17 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		verifySession(session);
 		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
 		return userServiceProc.lookupUser(curUser, search, range);
+	}
+	
+	@Override
+	public SearchResult lookupUserApp(Session session, String search,
+			SearchRange range, EnumUserAppState state)
+			throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+		
+		return userAppServiceProc.lookupUserApp(curUser, search, range, state);
 	}
 
 	@Override
@@ -874,7 +889,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 
 	@Override
 	public boolean addDeviceBWService(Session session, String account, String user, String starttime, int life,
-	        String ip, int bandwidth) {
+	        String ip, long bandwidth) {
 		return deviceBWServiceProc.addService(session, account, user, starttime, life, ip, bandwidth);
 	}
 
@@ -905,15 +920,20 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 
 	@Override
-	public boolean addDeviceTemplate(Session session, String mark, String cpu, String mem, String disk, String bw,
+	public boolean addDeviceTemplate(Session session, String mark, String cpu, int ncpus, String mem, String disk, String bw,
 	        String image) {
-		return deviceTemplateServiceProc.addTemplate(session, mark, cpu, mem, disk, bw, image);
+		return deviceTemplateServiceProc.addTemplate(session, mark, cpu, ncpus, mem, disk, bw, image);
 	}
 
 	@Override
-	public SearchResultRow modifyDeviceTempate(Session session, SearchResultRow row, String cpu, String mem,
+	public SearchResultRow modifyDeviceTempate(Session session, SearchResultRow row, String cpu, int ncpus, String mem,
 	        String disk, String bw, String image) {
-		return deviceTemplateServiceProc.modifyTemplate(session, row, cpu, mem, disk, bw, image);
+		return deviceTemplateServiceProc.modifyTemplate(session, row, cpu, ncpus, mem, disk, bw, image);
+	}
+	
+	@Override
+	public List<String> listDeviceTemplateCPUNames(Session session) {
+		return deviceTemplateServiceProc.listDeviceCPUNames(session);
 	}
 	
 	@Override
@@ -957,5 +977,75 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 //		return authServiceProc.listPolicies(session);
 //	}
 
+	@Override
+	public void addUserApp(Session session, String userId, String templateId) throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		userAppServiceProc.addUserApp(Integer.valueOf(userId), Integer.valueOf(templateId));
+	}
 
+	@Override
+	public void deleteUserApp(Session session, ArrayList<String> ids)
+			throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		userAppServiceProc.deleteUserApps(ids);
+	}
+	
+	@Override
+	//public void modifyUserApp(Session session, ArrayList<UserApp> userApps)	throws EucalyptusServiceException {
+	public void modifyUserApp(Session session, ArrayList<UserApp> userApps)	throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		
+		for (UserApp app : userApps) {
+			userAppServiceProc.updateUserApp(app);
+		}
+	}	
+	
+	@Override
+	public ArrayList<UserAppStateCount> countUserApp(Session session) throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+		
+		return userAppServiceProc.countUserApp(curUser);
+	}
+
+	@Override
+	public void modifyPolicy(Session session, String policyId, String name, String content) throws EucalyptusServiceException {
+		verifySession(session);
+		policyServiceProc.modifyPolicy(policyId, name, content);
+	}
+
+	
+//	@Override
+//	public SearchResult listAccessKeysByUser(Session session, String userId)
+//			throws EucalyptusServiceException {
+//		return authServiceProc.listAccesssKeyByUser(session, userId);
+//	}
+
+//	@Override
+//	public SearchResult listAccessKeys(Session session)
+//			throws EucalyptusServiceException {
+//		return authServiceProc.listAccessKeys(session);
+//	}
+
+//	@Override
+//	public SearchResult listCertificatesByUser(Session session, String userId)
+//			throws EucalyptusServiceException {
+//		return authServiceProc.listCertificatesByUser(session, userId);
+//	}
+
+//	@Override
+//	public SearchResult listCertificates(Session session)
+//			throws EucalyptusServiceException {
+//		return authServiceProc.listCertificates(session);
+//	}
+
+//	@Override
+//	public SearchResult listPolicies(Session session)
+//			throws EucalyptusServiceException {
+//		return authServiceProc.listPolicies(session);
+//	}
 }

@@ -176,7 +176,7 @@ class DeviceBWDBProcWrapper {
 		doUpdate(sb.toString());
 	}
 
-	void addService(String account, String user, String bs_starttime, int bs_life, String ip, int bandwidth)
+	void addService(String account, String user, String bs_starttime, int bs_life, String ip, long bandwidth)
 	        throws Exception {
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT ");
@@ -296,7 +296,7 @@ public class DeviceBWServiceProcImpl {
 
 	public List<String> listUsersByAccount(Session session, String account) {
 		try {
-			if (account != null) {
+			if (!isEmpty(account)) {
 				LoginUserProfile user = getUser(session);
 				if (user.isSystemAdmin()) {
 					return listUsersByAccount(account);
@@ -312,7 +312,7 @@ public class DeviceBWServiceProcImpl {
 	
 	public List<String> listIPsByUser(Session session, String account, String user) {
 		try {
-			if (account != null && user != null) {
+			if (!isEmpty(account) || !isEmpty(user)) {
 				if (getUser(session).isSystemAdmin()) {
 					return listIPsByUser(account, user);
 				}
@@ -436,7 +436,10 @@ public class DeviceBWServiceProcImpl {
 				else {
 					result.setDescs(FIELDS_USER);
 				}
-				result.setRows(rows.subList(range.getStart(), range.getStart() + length));
+				int from = range.getStart(), to = range.getStart() + length;
+				if (from < to) {
+					result.setRows(rows.subList(from, to));
+				}
 				for (SearchResultRow row : result.getRows()) {
 					System.out.println(row);
 				}
@@ -459,10 +462,14 @@ public class DeviceBWServiceProcImpl {
 			}
 		}
 	}
+	
+	private boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
+	}
 
 	public SearchResultRow modifyService(Session session, SearchResultRow row, String sendtime) {
 		try {
-			if (sendtime == null) {
+			if (row == null || isEmpty(sendtime)) {
 				return null;
 			}
 			LoginUserProfile user = getUser(session);
@@ -522,10 +529,7 @@ public class DeviceBWServiceProcImpl {
 
 	public List<SearchResultRow> deleteService(Session session, List<SearchResultRow> list) {
 		try {
-			if (list == null) {
-				return null;
-			}
-			if (!getUser(session).isSystemAdmin()) {
+			if (!getUser(session).isSystemAdmin() || list == null) {
 				return null;
 			}
 			List<SearchResultRow> result = new ArrayList<SearchResultRow>();
@@ -545,15 +549,15 @@ public class DeviceBWServiceProcImpl {
 	}
 
 	public boolean addService(Session session, String account, String user,
-	        String sstarttime, int life, String ip, int bandwidth) {
+	        String sstarttime, int life, String ip, long bandwidth) {
 		try {
 			if (!getUser(session).isSystemAdmin()) {
 				return false;
 			}
-			if (account == null || user == null || ip == null) {
+			if (isEmpty(account) || isEmpty(user) || isEmpty(ip)) {
 				return false;
 			}
-			if (sstarttime == null || !(life >= 0)) {
+			if (isEmpty(sstarttime) || !(life >= 0)) {
 				return false;
 			}
 			addService(account, user, sstarttime, life, ip, bandwidth);
@@ -580,7 +584,7 @@ public class DeviceBWServiceProcImpl {
 		dbproc.modifyService(bs_id, user_id, endtime);
 	}
 
-	private void addService(String account, String user, String starttime, int life, String ip, int bandwidth)
+	private void addService(String account, String user, String starttime, int life, String ip, long bandwidth)
 	        throws Exception {
 		dbproc.addService(account, user, starttime, life, ip, bandwidth);
 	}

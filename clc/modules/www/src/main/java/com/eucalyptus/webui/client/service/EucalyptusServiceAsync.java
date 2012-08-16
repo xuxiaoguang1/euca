@@ -12,8 +12,11 @@ import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
+import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
+import com.eucalyptus.webui.shared.user.UserApp;
+import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -88,9 +91,10 @@ public interface EucalyptusServiceAsync {
 
 	void lookupUserByAccountId(Session session, int accountId, SearchRange range, AsyncCallback<SearchResult> callback);
 
-	void lookupUserExcludeGroupId(Session session, int accountId, int groupId, SearchRange range,
-	        AsyncCallback<SearchResult> callback);
+	void lookupUserExcludeGroupId(Session session, int accountId, int groupId, SearchRange range, AsyncCallback<SearchResult> callback);
 
+	void lookupUserApp( Session session, String search, SearchRange range, EnumUserAppState state, AsyncCallback<SearchResult> callback);
+	
 	void removeUsersFromGroup(Session session, ArrayList<String> userIds, AsyncCallback<Void> callback);
 
 	void deletePolicy(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
@@ -235,7 +239,7 @@ public interface EucalyptusServiceAsync {
 	void deleteDeviceBWService(Session session, List<SearchResultRow> list,
 	        AsyncCallback<List<SearchResultRow>> callback);
 	void addDeviceBWService(Session session, String account, String user, String starttime,
-	        int life, String ip, int bandwidth, AsyncCallback<Boolean> callback);
+	        int life, String ip, long bandwidth, AsyncCallback<Boolean> callback);
 	void listDeviceBWAccounts(Session session, AsyncCallback<List<String>> callback);
 	void listDeviceBWUsersByAccount(Session session, String account, AsyncCallback<List<String>> callback);
 	void listDeviceIPsByUser(Session session, String account, String user, AsyncCallback<List<String>> callback);
@@ -244,13 +248,16 @@ public interface EucalyptusServiceAsync {
 	        AsyncCallback<SearchResult> callback);
 	void deleteDeviceTemplate(Session session, List<SearchResultRow> list,
 	        AsyncCallback<List<SearchResultRow>> callback);
-	void addDeviceTemplate(Session session, String mark, String cpu, String mem, String disk, String bw, String image,
-            AsyncCallback<Boolean> callback);
-	void modifyDeviceTempate(Session session, SearchResultRow row, String cpu, String mem, String disk, String bw,
-            String image, AsyncCallback<SearchResultRow> callback);
+	void addDeviceTemplate(Session session, String mark, String cpu, int ncpus, String mem, String disk, String bw, String image, AsyncCallback<Boolean> callback);
+	void modifyDeviceTempate(Session session, SearchResultRow row, String cpu, int ncpus, String mem, String disk, String bw, String image, AsyncCallback<SearchResultRow> callback);
+	void listDeviceTemplateCPUNames(Session session, AsyncCallback<List<String>> callback);
 	
 	void lookupDeviceVM(Session session, String search, SearchRange range, int queryState, AsyncCallback<SearchResult> callback);
-
+	
+	void addUserApp(Session session, String userId, String templateId, AsyncCallback<Void> callback);
+	void deleteUserApp(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
+	void modifyUserApp(Session session, ArrayList<UserApp> userApps, AsyncCallback<Void> callback);
+	void countUserApp(Session session, AsyncCallback<ArrayList<UserAppStateCount>> callback);
 	
 //	void listAccessKeysByUser(Session session, String userId, AsyncCallback<SearchResult> callback);
 //	void listAccessKeys(Session session, AsyncCallback<SearchResult> callback);

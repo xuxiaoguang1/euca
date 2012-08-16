@@ -133,7 +133,7 @@ public class UserViewImpl extends Composite implements UserView {
 	}
 
 	@Override
-	public void setPresenter(LoginUserProfile curUser) {
+	public void updateLoginUserProfile(LoginUserProfile curUser) {
 		// TODO Auto-generated method stub
 		if (curUser.isSystemAdmin()) {
 			this.buttonAddToGroup.setVisible(false);

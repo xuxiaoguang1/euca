@@ -433,7 +433,7 @@ public class GroupActivity extends AbstractSearchActivity
         public void onSuccess( Void arg ) {
           clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Policy added", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
           clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "New policy " + name + " is added to group " + groupId );
-          //reloadCurrentRange( );
+          reloadCurrentRange( );
         }
         
       } );

@@ -388,7 +388,7 @@ public class DeviceCPUServiceProcImpl {
 
 	public List<String> listUsersByAccount(Session session, String account) {
 		try {
-			if (account != null) {
+			if (!isEmpty(account)) {
 				LoginUserProfile user = getUser(session);
 				if (user.isSystemAdmin()) {
 					return listUsersByAccount(account);
@@ -410,7 +410,7 @@ public class DeviceCPUServiceProcImpl {
 			ResultSet rs = rsw.getResultSet();
 			while (rs.next()) {
 				String account = rs.getString(DBTableColName.ACCOUNT.NAME);
-				if (account != null) {
+				if (!isEmpty(account)) {
 					list.add(account);
 				}
 			}
@@ -439,7 +439,7 @@ public class DeviceCPUServiceProcImpl {
 			ResultSet rs = rsw.getResultSet();
 			while (rs.next()) {
 				String user = rs.getString(DBTableColName.USER.NAME);
-				if (user != null) {
+				if (!isEmpty(user)) {
 					list.add(user);
 				}
 			}
@@ -484,7 +484,10 @@ public class DeviceCPUServiceProcImpl {
 				else {
 					result.setDescs(FIELDS_USER);
 				}
-				result.setRows(rows.subList(range.getStart(), range.getStart() + length));
+				int from = range.getStart(), to = range.getStart() + length;
+				if (from < to) {
+					result.setRows(rows.subList(from, to));
+				}
 				for (SearchResultRow row : result.getRows()) {
 					System.out.println(row);
 				}
@@ -525,10 +528,14 @@ public class DeviceCPUServiceProcImpl {
 			return null;
 		}
 	}
+	
+	private boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
+	}
 
 	public SearchResultRow modifyService(Session session, SearchResultRow row, String sendtime, int state) {
 		try {
-			if (sendtime == null) {
+			if (isEmpty(sendtime)) {
 				return null;
 			}
 			if (CPUState.getCPUState(state) == null || CPUState.getCPUState(state) == CPUState.RESERVED) {
@@ -650,13 +657,13 @@ public class DeviceCPUServiceProcImpl {
 	public SearchResultRow addService(Session session, SearchResultRow row, String account, String user,
 	        String sstarttime, int life, int state) {
 		try {
-			if (!getUser(session).isSystemAdmin()) {
+			if (!getUser(session).isSystemAdmin() || row == null) {
 				return null;
 			}
-			if (row == null || account == null || user == null) {
+			if (isEmpty(account) || isEmpty(user)) {
 				return null;
 			}
-			if (sstarttime == null || !(life >= 0)) {
+			if (isEmpty(sstarttime) || !(life >= 0)) {
 				return null;
 			}
 			if (CPUState.getCPUState(state) == null || CPUState.getCPUState(state) == CPUState.RESERVED) {
@@ -686,7 +693,7 @@ public class DeviceCPUServiceProcImpl {
 			if (!getUser(session).isSystemAdmin()) {
 				return false;
 			}
-			if (serverMark == null || name == null || num <= 0) {
+			if (isEmpty(serverMark) || isEmpty(name) || num <= 0) {
 				return false;
 			}
 			if (vendor == null) {
@@ -874,7 +881,8 @@ public class DeviceCPUServiceProcImpl {
 		}
 		return new SearchResultRow(Arrays.asList(rs.getString(DBTableColName.CPU_SERVICE.ID),
 		        rs.getString(DBTableColName.CPU.ID), "", Integer.toString(index),
-		        rs.getString(DBTableColName.SERVER.NAME), rs.getString(DBTableColName.CPU.VENDOR),
+		        rs.getString(DBTableColName.SERVER.NAME), rs.getString(DBTableColName.CPU.NAME),
+		        rs.getString(DBTableColName.CPU.VENDOR),
 		        rs.getString(DBTableColName.CPU.MODEL), rs.getString(DBTableColName.CPU.GHZ),
 		        rs.getString(DBTableColName.CPU.CACHE), account, user, sstarttime, slife, sremains, sstate));
 	}
@@ -901,7 +909,8 @@ public class DeviceCPUServiceProcImpl {
 		}
 		return new SearchResultRow(Arrays.asList(rs.getString(DBTableColName.CPU_SERVICE.ID),
 		        rs.getString(DBTableColName.CPU.ID), "", Integer.toString(index),
-		        rs.getString(DBTableColName.SERVER.NAME), rs.getString(DBTableColName.CPU.VENDOR),
+		        rs.getString(DBTableColName.SERVER.NAME), rs.getString(DBTableColName.CPU.NAME),
+		        rs.getString(DBTableColName.CPU.VENDOR),
 		        rs.getString(DBTableColName.CPU.MODEL), rs.getString(DBTableColName.CPU.GHZ),
 		        rs.getString(DBTableColName.CPU.CACHE), sstarttime, slife, sremains, sstate));
 	}
@@ -959,20 +968,21 @@ public class DeviceCPUServiceProcImpl {
 	public static final int TABLE_COL_INDEX_CPU_ID = 1;
 	public static final int TABLE_COL_INDEX_CHECKBOX = 2;
 	public static final int TABLE_COL_INDEX_NO = 3;
-	public static final int TABLE_COL_INDEX_ROOT_ACCOUNT = 9;
-	public static final int TABLE_COL_INDEX_ROOT_USER = 10;
-	public static final int TABLE_COL_INDEX_ROOT_STARTTIME = 11;
-	public static final int TABLE_COL_INDEX_ROOT_LIFE = 12;
-	public static final int TABLE_COL_INDEX_ROOT_REMAINS = 13;
-	public static final int TABLE_COL_INDEX_ROOT_STATE = 14;
-	public static final int TABLE_COL_INDEX_USER_STARTTIME = 9;
-	public static final int TABLE_COL_INDEX_USER_LIFE = 10;
-	public static final int TABLE_COL_INDEX_USER_REMAINS = 11;
-	public static final int TABLE_COL_INDEX_USER_STATE = 12;
+	public static final int TABLE_COL_INDEX_ROOT_ACCOUNT = 10;
+	public static final int TABLE_COL_INDEX_ROOT_USER = 11;
+	public static final int TABLE_COL_INDEX_ROOT_STARTTIME = 12;
+	public static final int TABLE_COL_INDEX_ROOT_LIFE = 13;
+	public static final int TABLE_COL_INDEX_ROOT_REMAINS = 14;
+	public static final int TABLE_COL_INDEX_ROOT_STATE = 15;
+	public static final int TABLE_COL_INDEX_USER_STARTTIME = 10;
+	public static final int TABLE_COL_INDEX_USER_LIFE = 11;
+	public static final int TABLE_COL_INDEX_USER_REMAINS = 12;
+	public static final int TABLE_COL_INDEX_USER_STATE = 13;
 
 	private static final String[] TABLE_COL_TITLE_CHECKBOX = {"", ""};
 	private static final String[] TABLE_COL_TITLE_NO = {"", "序号"};
 	private static final String[] TABLE_COL_TITLE_SERVER = {"", "服务器"};
+	private static final String[] TABLE_COL_TITLE_NAME = {"", "名称"};
 	private static final String[] TABLE_COL_TITLE_VENDOR = {"", "厂家"};
 	private static final String[] TABLE_COL_TITLE_MODEL = {"", "型号"};
 	private static final String[] TABLE_COL_TITLE_GHZ = {"", "主频"};
@@ -990,6 +1000,7 @@ public class DeviceCPUServiceProcImpl {
 			new SearchResultFieldDesc(TABLE_COL_TITLE_CHECKBOX[LAN_SELECT], "4%", false),
 			new SearchResultFieldDesc(TABLE_COL_TITLE_NO[LAN_SELECT], false, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_SERVER[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+	        new SearchResultFieldDesc(TABLE_COL_TITLE_NAME[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_VENDOR[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_MODEL[LAN_SELECT], false, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_GHZ[LAN_SELECT], false, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false),
@@ -1005,7 +1016,8 @@ public class DeviceCPUServiceProcImpl {
 			new SearchResultFieldDesc(null, "0%", false), new SearchResultFieldDesc(null, "0%", false),
 			new SearchResultFieldDesc(TABLE_COL_TITLE_CHECKBOX[LAN_SELECT], "4%", false),
 			new SearchResultFieldDesc(TABLE_COL_TITLE_NO[LAN_SELECT], false, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false),
-	        new SearchResultFieldDesc(TABLE_COL_TITLE_SERVER[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false), 
+	        new SearchResultFieldDesc(TABLE_COL_TITLE_SERVER[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+	        new SearchResultFieldDesc(TABLE_COL_TITLE_NAME[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(TABLE_COL_TITLE_VENDOR[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(TABLE_COL_TITLE_MODEL[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_GHZ[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false),

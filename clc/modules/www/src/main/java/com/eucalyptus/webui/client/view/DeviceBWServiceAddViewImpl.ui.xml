@@ -146,7 +146,7 @@
 											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">带宽(KB)</g:Anchor>
 										</g:at>
 										<g:at left="390" top="23">
-											<g:IntegerBox ui:field="bandwidthBox" maxLength="20" width="65px" />
+											<g:LongBox ui:field="bandwidthBox" maxLength="20" width="65px" />
 										</g:at>
 									</g:AbsolutePanel>
 								</td>

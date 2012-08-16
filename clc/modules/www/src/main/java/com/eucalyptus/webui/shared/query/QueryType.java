@@ -14,6 +14,7 @@ public enum QueryType {
   policy,
   key,
   cert,
+  user_req,
   
   
   image,

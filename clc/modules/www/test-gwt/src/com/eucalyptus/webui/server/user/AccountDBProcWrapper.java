@@ -99,7 +99,7 @@ public class AccountDBProcWrapper {
 					return null;
 				}
 				else {
-					EnumState state = EnumState.NULL;
+					EnumState state = EnumState.NONE;
 					
 					try {
 						state = EnumState.values()[Integer.valueOf(rs.getString(DBTableColName.ACCOUNT.STATE))];

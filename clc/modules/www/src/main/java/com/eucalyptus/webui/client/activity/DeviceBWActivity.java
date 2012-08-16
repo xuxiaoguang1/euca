@@ -78,7 +78,7 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 		serviceAddView.setPresenter(new DeviceBWServiceAddView.Presenter() {
 
 			@Override
-			public boolean onOK(String account, String user, Date starttime, Date endtime, String ip, int bandwidth) {
+			public boolean onOK(String account, String user, Date starttime, Date endtime, String ip, long bandwidth) {
 				final long div = DeviceServiceDatePicker.DAY_MILLIS;
 				if (starttime.getTime() / div > endtime.getTime() / div) {
 					StringBuilder sb = new StringBuilder();
@@ -90,7 +90,7 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 					Window.alert(sb.toString());
 					return false;
 				}
-				if (account == null || user == null || ip == null) {
+				if (isEmpty(account) || isEmpty(user) || isEmpty(ip)) {
 					StringBuilder sb = new StringBuilder();
 					sb.append(ADD_SERVICE_FAILURE_INVALID_ARGS[LAN_SELECT]).append("\n");
 					sb.append("<account='").append(account).append("'").append(", ");
@@ -175,6 +175,10 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 			}
 
 		});
+	}
+	
+	private boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
 	}
 
 	private EucalyptusServiceAsync getBackendService() {
@@ -283,7 +287,7 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 			starttime = row.getField(DeviceBWServiceProcImpl.TABLE_COL_INDEX_USER_STARTTIME);
 			life = row.getField(DeviceBWServiceProcImpl.TABLE_COL_INDEX_USER_LIFE);
 		}
-		assert (starttime != null && life != null);
+		assert (!isEmpty(starttime) && !isEmpty(life));
 		serviceModifyView.setValue(row, DeviceServiceDatePicker.parse(starttime),
 		        DeviceServiceDatePicker.parse(starttime, life));
 	}
@@ -315,7 +319,7 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 		}
 	}
 
-	private void handleAddService(String account, String user, String starttime, int life, String ip, int bandwidth) {
+	private void handleAddService(String account, String user, String starttime, int life, String ip, long bandwidth) {
 		getBackendService().addDeviceBWService(getSession(), account, user, starttime, life, ip, bandwidth,
 				new AsyncCallback<Boolean>() {
 
@@ -329,11 +333,11 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 			        public void onSuccess(Boolean result) {
 				        if (result) {
 					        showStatus(ADD_SERVICE_SUCCESS[LAN_SELECT]);
-				        	reloadCurrentRange();
 				        }
 				        else {
 					        showStatus(ADD_SERVICE_FAILURE[LAN_SELECT]);
 				        }
+			        	reloadCurrentRange();
 			        }
 
 		        });
@@ -361,20 +365,17 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 
 							        @Override
 							        public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								        return row0.getField(col) != null
-								                && row0.getField(col).equals(row1.getField(col));
+								        return row0.getField(col).equals(row1.getField(col));
 							        }
 
 						        };
 						        getView().getMirrorTable().updateRow(result, matcher);
 					        }
-					        else {
-					        	reloadCurrentRange();
-					        }
 				        }
 				        else {
 					        showStatus(UPDATE_SERVICE_FAILURE[LAN_SELECT]);
 				        }
+			        	reloadCurrentRange();
 			        }
 
 		        });
@@ -401,7 +402,7 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 
 							@Override
 							public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								return row0.getField(col) != null && row0.getField(col).equals(row1.getField(col));
+								return row0.getField(col).equals(row1.getField(col));
 							}
 
 						};
@@ -409,13 +410,11 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 							getView().getMirrorTable().deleteRow(row, matcher);
 						}
 			        }
-			        else {
-			        	reloadCurrentRange();
-			        }
 				}
 				else {
 					showStatus(DELETE_SERVICE_FAILURE[LAN_SELECT]);
 				}
+	        	reloadCurrentRange();
 			}
 
 		});
@@ -435,7 +434,7 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 		else {
 			col = DeviceBWServiceProcImpl.TABLE_COL_INDEX_USER_STARTTIME;
 		}
-		return row.getField(col) != null;
+		return !isEmpty(row.getField(col));
 	}
 
 	@Override
@@ -483,7 +482,6 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 	@Override
 	public void onMirrorBack() {
 		getView().closeMirrorMode();
-		reloadCurrentRange();
 	}
 
 	@Override
