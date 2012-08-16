@@ -28,6 +28,7 @@ import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserApp;
+import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.common.base.Strings;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
@@ -962,11 +963,21 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}	
 	
 	@Override
+	public ArrayList<UserAppStateCount> countUserApp(Session session) throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+		
+		return userAppServiceProc.countUserApp(curUser);
+	}
+
+	@Override
 	public void modifyPolicy(Session session, String policyId, String name, String content) throws EucalyptusServiceException {
 		verifySession(session);
 		policyServiceProc.modifyPolicy(policyId, name, content);
 	}
 
+	
 //	@Override
 //	public SearchResult listAccessKeysByUser(Session session, String userId)
 //			throws EucalyptusServiceException {

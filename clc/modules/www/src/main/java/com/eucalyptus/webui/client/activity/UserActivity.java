@@ -45,8 +45,8 @@ public class UserActivity extends AbstractSearchActivity
   public static final String[] PAUSE_USERS_CAPTION = {"Pause users", "暂停用户"};
   public static final String[] PAUSE_USERS_SUBJECT = {"Are you sure to pause users?", "确定暂停所选用户?"};
   
-  public static final String[] BAN_USERS_CAPTION = {"Add users", "添加用户"};
-  public static final String[] BAN_USERS_SUBJECT = {"Are you sure to add user?", "确定添加该用户"};
+  public static final String[] BAN_USERS_CAPTION = {"Add users", "禁止用户"};
+  public static final String[] BAN_USERS_SUBJECT = {"Are you sure to add user?", "确定禁止所选用户？"};
   
   public static final String[] DELETE_USERS_CAPTION = {"Delete selected users", "删除选择的用户"};
   public static final String[] DELETE_USERS_SUBJECT = {"Are you sure you want to delete following selected users?", "确定删除选择的用户?"};

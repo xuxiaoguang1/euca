@@ -19,6 +19,7 @@ import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.user.EnumUserAppResult;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.UserApp;
+import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -64,6 +65,7 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   @Override
   protected void doSearch( String query, SearchRange range ) {
 	  showUserAppByState(appState);
+	  updateUserAppCountInfo();
   }
   
   @Override
@@ -191,14 +193,14 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 				@Override
 				public void onFailure( Throwable caught ) {
 				ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-				LOG.log( Level.WARNING, "Search failed: " + caught );
-				displayData( null );
+					LOG.log( Level.WARNING, "Search failed: " + caught );
+					displayData( null );
 				}
 				
 				@Override
 				public void onSuccess( SearchResult result ) {
-				LOG.log( Level.INFO, "Search success:" + result );
-				displayData( result );
+					LOG.log( Level.INFO, "Search success:" + result );
+					displayData( result );
 				}
 				
 	  } );
@@ -248,8 +250,11 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 						// TODO Auto-generated method stub
 						clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_APPROVE_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 						clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_APPROVE_USERAPP[1]);
-						
+
 						reloadCurrentRange();
+						updateUserAppCountInfo();
+						
+						clientFactory.getUserAppView().clearSelection();
 						}
 					});
 	}
@@ -280,6 +285,9 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 						clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_REJECT_USERAPP[1]);
 						
 						reloadCurrentRange();
+						updateUserAppCountInfo();
+						
+						clientFactory.getUserAppView().clearSelection();
 						}
 					});
   }
@@ -305,6 +313,7 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 	    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_ADD_USERAPP[1]);
 	    		
 	    		reloadCurrentRange();
+	    		updateUserAppCountInfo();
 			}
       });
   }
@@ -335,10 +344,26 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 										clientFactory.getShellView( ).getLogView().log( LogType.ERROR, FOOTERVIEW_DEL_USERAPP[1]);
 										
 										reloadCurrentRange();
+										updateUserAppCountInfo();
 									}
 	  						}
 			  			);
   }
-
-}
   
+  private void updateUserAppCountInfo() {	  
+	  clientFactory.getBackendService().countUserApp(clientFactory.getLocalSession().getSession(),
+					new AsyncCallback<ArrayList<UserAppStateCount>>() {
+							@Override
+							public void onFailure(Throwable caught) {
+							// TODO Auto-generated method stub
+							}
+							@Override
+							public void onSuccess(ArrayList<UserAppStateCount> countInfo ) {
+							// TODO Auto-generated method stub
+								clientFactory.getUserAppView().updateCountInfo(countInfo);
+							}
+					}
+			  );
+  }
+  
+}

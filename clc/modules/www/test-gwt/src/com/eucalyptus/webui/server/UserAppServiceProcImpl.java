@@ -25,6 +25,7 @@ import com.eucalyptus.webui.shared.user.EnumUserAppResult;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserApp;
+import com.eucalyptus.webui.shared.user.UserAppStateCount;
 
 public class UserAppServiceProcImpl {
 	  
@@ -103,6 +104,22 @@ public class UserAppServiceProcImpl {
 	  public void updateUserApp(UserApp userApp) throws EucalyptusServiceException {
 		  try {
 			  userAppDBProc.updateUserApp(userApp);
+		} catch (UserSyncException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new EucalyptusServiceException("Failed to update user apps");
+		}
+	  }
+	  
+	  public ArrayList<UserAppStateCount> countUserApp(LoginUserProfile curUser) throws EucalyptusServiceException {
+		  try {
+			  if (curUser.isSystemAdmin())
+				  return userAppDBProc.countUserAppByState(0,0);
+			  else if (curUser.isAccountAdmin())
+				  return userAppDBProc.countUserAppByState(curUser.getAccountId(), 0);
+			  else
+				  return userAppDBProc.countUserAppByState(curUser.getAccountId(), curUser.getUserId());
+			  
 		} catch (UserSyncException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

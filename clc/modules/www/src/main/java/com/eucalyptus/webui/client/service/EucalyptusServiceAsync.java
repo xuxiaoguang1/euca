@@ -16,6 +16,7 @@ import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserApp;
+import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -257,6 +258,7 @@ public interface EucalyptusServiceAsync {
 	void addUserApp(Session session, String userId, String templateId, AsyncCallback<Void> callback);
 	void deleteUserApp(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
 	void modifyUserApp(Session session, ArrayList<UserApp> userApps, AsyncCallback<Void> callback);
+	void countUserApp(Session session, AsyncCallback<ArrayList<UserAppStateCount>> callback);
 	
 //	void listAccessKeysByUser(Session session, String userId, AsyncCallback<SearchResult> callback);
 //	void listAccessKeys(Session session, AsyncCallback<SearchResult> callback);

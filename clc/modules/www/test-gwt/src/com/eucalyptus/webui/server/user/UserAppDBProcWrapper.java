@@ -1,14 +1,21 @@
 package com.eucalyptus.webui.server.user;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.DBTableName;
+import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserAppResult;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
+import com.eucalyptus.webui.shared.user.EnumUserType;
 import com.eucalyptus.webui.shared.user.UserApp;
+import com.eucalyptus.webui.shared.user.UserAppStateCount;
+import com.eucalyptus.webui.shared.user.UserInfo;
+import com.google.common.base.Strings;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 
 public class UserAppDBProcWrapper {
 	public void addUserApp(UserApp userApp) throws UserSyncException {
@@ -110,6 +117,52 @@ public class UserAppDBProcWrapper {
 		
 		try {
 			dbProc.update(sql);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new UserSyncException("Database fails");
+		}
+	}
+	
+	public ArrayList<UserAppStateCount> countUserAppByState(int accountId, int userId) throws UserSyncException {
+		String sql = countUserAppByStateSql(accountId, userId);
+		
+		DBProcWrapper dbProc = DBProcWrapper.Instance();
+		
+		try {
+			ResultSetWrapper rsw = dbProc.query(sql);
+			ResultSet rs = rsw.getResultSet();
+			
+            if (rs != null) {
+            	ArrayList<UserAppStateCount> counts = Lists.newArrayList();
+            	
+            	while (rs.next()) { 
+            		
+            		EnumUserAppState appState = EnumUserAppState.NONE;
+					
+					String appStateStr = rs.getString(DBTableColName.USER_APP.STATE);
+					if (!Strings.isNullOrEmpty(appStateStr))
+						appState = EnumUserAppState.values()[Integer.valueOf(appStateStr)];
+					
+					int count = 0;
+					String countStr = rs.getString("count");
+					if (!Strings.isNullOrEmpty(countStr))
+						count = Integer.valueOf(countStr);
+						
+					UserAppStateCount userAppState = new UserAppStateCount();
+					userAppState.setCountValue(appState, count);
+					
+					counts.add(userAppState);
+                }
+            	
+            	rsw.close();
+            	return counts;
+            } 
+            else {	
+				rsw.close();
+				return null;
+			}
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -291,25 +344,39 @@ public class UserAppDBProcWrapper {
 		return sql.toString();
 	}
 	
-	private String updateUserAppResultSql(ArrayList<String> ids, EnumUserAppResult result) {
+	private String countUserAppByStateSql(int accountId, int userId) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("UPDATE ").
+		sql.append("SELECT ").
+		append(DBTableColName.USER_APP.STATE).append(", ").
+		append(" COUNT(*) AS count").
+		append(" FROM ").
+		append("( ").
 		append(DBTableName.USER_APP).
-		append(" SET ").
-		append(DBTableColName.USER_APP.RESULT).
+		append(" LEFT JOIN ").
+		append(DBTableName.USER).
+		append(" ON ").
+		append(DBTableName.USER).append(".").append(DBTableColName.USER.ID).
 		append(" = ").
-		append(result.ordinal()).
-		append(" WHERE ");
+		append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.USER_ID).
+		append(" ) ").
+		append(" LEFT JOIN ").
+		append(DBTableName.ACCOUNT).
+		append(" ON ").
+		append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
+		append(" = ").
+		append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).
+		append(" WHERE 1=1 AND ").
+		append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.DEL).append(" = 0 ");;
 		
-		for (String str : ids) {
-			sql.append(DBTableColName.USER_APP.ID).
-			append(" = '").
-			append(str).
-			append("' or ");
-		}
+		if (accountId > 0)
+			sql.append(" AND ").append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).append(" = ").append(accountId);
 		
-		sql.delete(sql.length() -3 , sql.length());
+		if (userId > 0)
+			sql.append(" AND ").append(DBTableName.USER).append(".").append(DBTableColName.USER_APP.USER_ID).append(" = ").append(userId);
 		
+		sql.append(" GROUP BY ").
+		append(DBTableColName.USER_APP.STATE);
+				
 		System.out.println(sql);
 		
 		return sql.toString();

@@ -76,7 +76,7 @@
 									</div>
 									<div height="10px">&nbsp;</div>
 									<div>
-										<g:Anchor styleName="{style.topLinks}" ui:field="labelSolving">正处理申请数量：0</g:Anchor>
+										<g:Anchor styleName="{style.topLinks}" ui:field="labelSolving"><font color="blue">正处理申请数量：0</font>></g:Anchor>
 									</div>
 									<div height="10px">&nbsp;</div>
 								</td>

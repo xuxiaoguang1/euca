@@ -8,7 +8,9 @@ import java.util.logging.Logger;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
+import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -43,6 +45,15 @@ public class UserAppViewImpl extends Composite implements UserAppView {
 	Anchor buttonOnDelUserApp;
 	@UiField 
 	Anchor buttonOnCreateUserApp;
+	
+	@UiField 
+	Anchor labelAll;
+	@UiField 
+	Anchor labelToSolve;
+	@UiField 
+	Anchor labelSolved;
+	@UiField 
+	Anchor labelSolving;
 
 	interface UserAppViewImplUiBinder extends
 		UiBinder<Widget, UserAppViewImpl> {
@@ -155,5 +166,29 @@ public class UserAppViewImpl extends Composite implements UserAppView {
 			this.buttonOnCreateUserApp.setVisible(false);
 			this.buttonOnDelUserApp.setVisible(true);
 		}
+	}
+
+	@Override
+	public void updateCountInfo(ArrayList<UserAppStateCount> countInfo) {
+		// TODO Auto-generated method stub
+		int noneCount = 0, toSolveCount = 0, solvingCount = 0, solvedCount = 0;
+		
+		for (UserAppStateCount i : countInfo) {
+			if (i.getAppState() == EnumUserAppState.NONE)
+				noneCount = i.getCount();
+			else if (i.getAppState() == EnumUserAppState.SOLVED)
+				solvedCount = i.getCount();
+			if (i.getAppState() == EnumUserAppState.SOLVING)
+				solvingCount = i.getCount();
+			if (i.getAppState() == EnumUserAppState.TOSOLVE)
+				toSolveCount = i.getCount();
+		}
+		
+		int count = noneCount + toSolveCount + solvingCount + solvedCount;
+		
+		this.labelAll.setText("总申请数量: " + count);
+		this.labelToSolve.setText("待解决申请数量: " + toSolveCount);
+		this.labelSolved.setText("已处理申请数量: " + solvedCount);
+		this.labelSolving.setText("正处理申请数量: " + solvingCount);
 	}
 }
