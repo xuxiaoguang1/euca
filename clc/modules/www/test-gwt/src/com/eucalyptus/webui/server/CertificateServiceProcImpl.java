@@ -27,12 +27,12 @@ import com.eucalyptus.webui.server.auth.util.B64;
 import com.eucalyptus.webui.server.auth.util.X509CertHelper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
-import com.eucalyptus.webui.server.dictionary.Enum2String;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.server.user.UserSyncException;
 import com.eucalyptus.webui.shared.auth.AccessKey;
 import com.eucalyptus.webui.shared.auth.Certificate;
 import com.eucalyptus.webui.shared.auth.Policy;
+import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.google.common.base.Strings;
 

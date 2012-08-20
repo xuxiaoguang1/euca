@@ -11,6 +11,8 @@ public interface UserAddView {
 	void display();
 	void setAccountsInfo(ArrayList<AccountInfo> accounts);
 	
+	void setUser(UserInfo user);
+	
 	void setPresenter( Presenter presenter );
 	
 	public interface Presenter {

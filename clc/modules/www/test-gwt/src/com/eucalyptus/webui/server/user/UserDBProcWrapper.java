@@ -29,7 +29,7 @@ public class UserDBProcWrapper {
 	public void updateUser(UserInfo user) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		String sql = updateUserSql(user);
-		
+
 		try {
 			dbProc.update(sql);
 		} catch (SQLException e) {
@@ -594,10 +594,6 @@ public class UserDBProcWrapper {
 		append(user.getName()).
 		append("', ").
 		
-		append(DBTableColName.USER.PWD).append(" = '").
-		append(user.getId()).
-		append("', ").
-		
 		append(DBTableColName.USER.TITLE).append(" = '").
 		append(user.getTitle()).
 		append("', ").
@@ -611,15 +607,24 @@ public class UserDBProcWrapper {
 		append("', ").
 		
 		append(DBTableColName.USER.TYPE).append(" = '").
-		append(user.getType()).
+		append(user.getType().ordinal()).
 		append("', ").
 		
-		append(DBTableColName.USER.GROUP_ID).append(" = '").
-		append(user.getGroupId()).
-		append("', ").
+		append(DBTableColName.USER.ACCOUNT_ID).append(" = '").
+		append(user.getAccountId()).
+		append("', ");
 		
-		append(DBTableColName.USER.STATE).append(" = '").
-		append(user.getState()).
+		if (user.getGroupId() != 0) {
+			str.append(DBTableColName.USER.GROUP_ID).append(" = '").
+			append(user.getGroupId()).
+			append("', ");
+		}
+		else {
+			str.append(DBTableColName.USER.GROUP_ID).append(" = null, ");
+		}
+		
+		str.append(DBTableColName.USER.STATE).append(" = '").
+		append(user.getState().ordinal()).
 		append("' ").
 		
 		append("WHERE ").append(DBTableColName.USER.ID).append(" = '").

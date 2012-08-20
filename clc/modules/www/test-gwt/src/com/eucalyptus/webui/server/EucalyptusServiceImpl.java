@@ -308,8 +308,13 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 			throw new EucalyptusServiceException("No permission");
 		}
 
-		int accountId = curUser.getAccountId();
-		userServiceProc.createUser(accountId, user);
+		if (user.getId() == 0) {
+			int accountId = curUser.getAccountId();
+			userServiceProc.createUser(accountId, user);
+		}
+		else {
+			userServiceProc.updateUser(user);
+		}
 	}
 
 	@Override
