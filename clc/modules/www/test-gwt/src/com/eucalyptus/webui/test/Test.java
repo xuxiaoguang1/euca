@@ -1,15 +1,9 @@
 package com.eucalyptus.webui.test;
 
-import java.security.KeyPair;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 
-import com.eucalyptus.webui.server.auth.crypto.Certs;
-import com.eucalyptus.webui.server.auth.crypto.Crypto;
 import com.eucalyptus.webui.server.auth.util.B64;
 import com.eucalyptus.webui.server.auth.util.X509CertHelper;
-import com.eucalyptus.webui.shared.auth.Certificate;
 
 public class Test {
 	public static final String ppp = "" +

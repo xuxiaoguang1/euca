@@ -26,25 +26,39 @@ import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
 public class GroupServiceProcImpl {
 	
-	public void createGroup(Session session, GroupInfo group)
+	public void createGroup(int accountId, GroupInfo group)
 	  		throws EucalyptusServiceException {
 	  	// TODO Auto-generated method stub
 	  	if (group == null) {
-	  		throw new EucalyptusServiceException( "Invalid group para on create group" );
+	  		throw new EucalyptusServiceException( "Invalid group para on creating group" );
 	  	}
-	  			  	
-	  	LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
 	  	
 	  	// group account_id == 0, which means that this group's account is same as the session's account
 		if (group.getAccountId() == 0)
-			  group.setAccountId(curUser.getAccountId());
+			  group.setAccountId(accountId);
 	  	
 	  	try {
 			groupDBProc.addGroup(group);
 		} catch (UserSyncException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new EucalyptusServiceException("Create group fails");
+			throw new EucalyptusServiceException("Failed to create group");
+		}
+	}
+	
+	public void updateGroup(GroupInfo group)
+	  		throws EucalyptusServiceException {
+	  	// TODO Auto-generated method stub
+	  	if (group == null) {
+	  		throw new EucalyptusServiceException( "Invalid group para on updating group" );
+	  	}
+	  	
+	  	try {
+			groupDBProc.updateGroup(group);
+		} catch (UserSyncException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new EucalyptusServiceException("Failed to update group");
 		}
 	}
 
@@ -176,31 +190,19 @@ public class GroupServiceProcImpl {
 				result = new ArrayList<SearchResultRow>();
 				  
 				while (rs.next()) {
-					  
-					  if (isRootView)
+					  if (isRootView) {
 						  result.add( new SearchResultRow(Arrays.asList(rs.getString(DBTableColName.GROUP.ID),
-								  							rs.getString(DBTableColName.GROUP.ACCOUNT_ID),
 								  							Integer.toString(index++),
 								  							rs.getString(DBTableColName.ACCOUNT.NAME),
 								  							rs.getString(DBTableColName.GROUP.NAME),
 															rs.getString(DBTableColName.GROUP.DESCRIPTION),
-															Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.GROUP.STATE))
-															)
-								  							)
-								  	);
-					  else
-						  result.add( new SearchResultRow(Arrays.asList(rs.getString(DBTableColName.GROUP.ID),
-								  	rs.getString(DBTableColName.GROUP.ACCOUNT_ID),
-		  							Integer.toString(index++),
-		  							rs.getString(DBTableColName.GROUP.NAME),
-									rs.getString(DBTableColName.GROUP.DESCRIPTION),
-									Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.GROUP.STATE))
-									)
-		  							)
-								  );
+															Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.GROUP.STATE)),
+															rs.getString(DBTableColName.GROUP.ACCOUNT_ID))
+								  							));
+					  }
 				  }
 			}
-			
+
 			rsWrapper.close();			
 		  } catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -217,25 +219,26 @@ public class GroupServiceProcImpl {
 	  private static final String[] TABLE_COL_TITLE_ACCOUNT_NAME = {"Account", "账户"};
 	  private static final String[] TABLE_COL_TITLE_NAME = {"Group name", "组名"};
 	  private static final String[] TABLE_COL_TITLE_DESCRIPTION = {"Description", "备注"};
-	  private static final String[] TABLE_COL_TITLE_ACCOUNT_ID = {"AccountId", "账户ID"};
 	  private static final String[] TABLE_COL_TITLE_STATE = {"State", "状态"};
+	  private static final String[] TABLE_COL_TITLE_ACCOUNT_ID = {"AccountId", "账户ID"};
 	
 	  private static final List<SearchResultFieldDesc> FIELDS_ROOT = Arrays.asList(
 				new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "10%", false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_ID[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_NAME[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_DESCRIPTION[1], false, "30%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false )					
+				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_ID[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true )					
 			);
 	  
 	  private static final List<SearchResultFieldDesc> FIELDS_NONROOT = Arrays.asList(
-			  new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "10%", false ),
-			  new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_ID[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "25%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_DESCRIPTION[1], false, "35%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false )
+			  	new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "10%", false ),
+			  	new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+			  	new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_NAME[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, true ),
+			  	new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "25%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+			  	new SearchResultFieldDesc( TABLE_COL_TITLE_DESCRIPTION[1], false, "35%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+			  	new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+			  	new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_ID[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true )
 			);
 }
