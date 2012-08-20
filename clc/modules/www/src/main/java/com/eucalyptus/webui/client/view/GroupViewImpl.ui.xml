@@ -13,23 +13,51 @@
     
     <g:DockLayoutPanel unit="PX">
     	<g:north size="56.0">
-    		<g:AbsolutePanel>
-            			<g:at left="29" top="14">
-            				<g:Button width="85px" height="28px" text="增加组" ui:field="addGroupButton"/>
-            			</g:at>
-            			<g:at left="120" top="14">
-            				<g:Button width="85px" height="28px" text="删除组" ui:field="removeGroupButton"/>
-            			</g:at>
-            			<g:at left="211" top="14">
-            				<g:Button width="85px" height="28px" text="恢复" ui:field="resumeGroupButton"/>
-            			</g:at>
-            			<g:at left="302" top="14">
-            				<g:Button width="85px" height="28px" text="暂停" ui:field="pauseGroupButton"/>
-            			</g:at>
-            			<g:at left="393" top="14">
-            				<g:Button width="85px" height="28px" text="禁止" ui:field="banGroupButton"/>
-            			</g:at>
-            		</g:AbsolutePanel>
+    	    <g:HTMLPanel addStyleNames="{style.toolbar}">
+                <table>
+                    <colgroup width="1px"/>
+                    <colgroup width="20px"/>
+                    <colgroup width="1px"/>
+                    <colgroup width="1px"/>
+                    <colgroup width="20px"/>                    
+                    <colgroup width="1px"/>
+                    <colgroup width="1px"/>
+                    <colgroup width="1px"/>
+                    <colgroup width="20px"/>                    
+                    <colgroup width="1px"/>
+                    <colgroup width="1px"/>                    
+                    <tbody>
+                        <tr>
+                        	<td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small}" ui:field="addGroupButton">
+                                    <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>增加组
+                                </g:Anchor>
+                            </td>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small}" ui:field="removeGroupButton">
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>删除组
+                                </g:Anchor>
+                            </td>
+                            <td>&nbsp;</td>
+                            <td>                             
+                                <g:Anchor styleName="{global.buttonCss.positive} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="resumeGroupButton">
+                                    <span class="{global.buttonCss.check} {global.buttonCss.icon}"/>恢复
+                                </g:Anchor>                            
+                            </td>
+                            <td>                             
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="pauseGroupButton">
+                                    <span class="{global.buttonCss.x} {global.buttonCss.icon}"/>暂停
+                                </g:Anchor>                            
+                            </td>  
+                            <td>                             
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="banGroupButton">
+                                    <span class="{global.buttonCss.x} {global.buttonCss.icon}"/>禁止
+                                </g:Anchor>                            
+                            </td>                            
+                        </tr>
+                    </tbody>
+                </table>
+            </g:HTMLPanel>
     	</g:north>
         <g:center>
             <g:LayoutPanel ui:field="tablePanel"/>

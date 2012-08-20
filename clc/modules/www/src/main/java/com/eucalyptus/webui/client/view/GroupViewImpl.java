@@ -14,14 +14,13 @@ import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
-import com.google.gwt.user.client.ui.Button;
 
 public class GroupViewImpl extends Composite implements GroupView {
   
@@ -34,12 +33,12 @@ public class GroupViewImpl extends Composite implements GroupView {
 	@UiField
 	LayoutPanel tablePanel;
   
-	@UiField Button addGroupButton;
-	@UiField Button removeGroupButton;
+	@UiField Anchor addGroupButton;
+	@UiField Anchor removeGroupButton;
   
-	@UiField Button resumeGroupButton;
-	@UiField Button pauseGroupButton;
-	@UiField Button banGroupButton;
+	@UiField Anchor resumeGroupButton;
+	@UiField Anchor pauseGroupButton;
+	@UiField Anchor banGroupButton;
   
 	private MultiSelectionModel<SearchResultRow> selectionModel;
   
