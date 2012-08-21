@@ -47,14 +47,21 @@ public class GroupViewImpl extends Composite implements GroupView {
 	private Presenter presenter;
   
 	@UiHandler("addGroupButton")
-	void onBUTTON_ADD_GROUPClick(ClickEvent event) {
+	void onAddGroupButtonClick(ClickEvent event) {
 		this.presenter.onAddGroup();
+	}
+	@UiHandler("modifyGroupButton")
+	void onModifyGroupButtonClick(ClickEvent event) {
+		this.presenter.onModifyGroup();
 	}
 	@UiHandler( "removeGroupButton" )
 	void handleDelButtonClick( ClickEvent e ) {
 		this.presenter.onDeleteGroup( );
 	}
-	
+	@UiHandler("showGroupDetailsButton")
+	void onShowGroupDetailsButtonClick(ClickEvent event) {
+		this.presenter.showGroupDetails();
+	}
 	@UiHandler("resumeGroupButton")
 	void onBUTTON_RESUMEClick(ClickEvent event) {
 		this.presenter.onResumeGroup();
@@ -121,5 +128,4 @@ public class GroupViewImpl extends Composite implements GroupView {
   public void clearSelection( ) {
     this.selectionModel.clear( );
   }
-
 }

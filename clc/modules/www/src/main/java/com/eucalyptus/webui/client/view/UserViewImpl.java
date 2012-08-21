@@ -52,6 +52,10 @@ public class UserViewImpl extends Composite implements UserView {
 	void onButtonOnAddUserClick(ClickEvent event) {
 		this.presenter.onAddUser();
 	}
+	@UiHandler("buttonOnModifyUser")
+	void onButtonOnModifyUserClick(ClickEvent event) {
+		this.presenter.onModifyUser();
+	}
 	@UiHandler("buttonOnDelUser")
 	void onButtonOnDelUserClick(ClickEvent event) {
 		this.presenter.onDeleteUsers();

@@ -7,12 +7,18 @@
 		}
 	</ui:style>
 	<g:HTMLPanel ui:field="panel">
-		<g:AbsolutePanel height="242px" width="460px">
+		<g:AbsolutePanel height="242px" width="450px">
 			<g:at left="10" top="23">
-				<g:Label text="组名"/>
+				<g:Label text="账户"/>
 			</g:at>
 			<g:at left="55" top="19">
 				<g:TextBox height="17px" width="151px" ui:field="nameInput" alignment="LEFT"/>
+			</g:at>
+			<g:at left="234" top="23">
+				<g:Label width="32px" height="16px" text="邮箱"/>
+			</g:at>
+			<g:at left="279" top="19">
+				<g:TextBox width="151px" height="17px" ui:field="emailInput" alignment="LEFT"/>
 			</g:at>
 			<g:at left="10" top="107">
 				<g:Label text="备注"/>
@@ -26,26 +32,20 @@
 			<g:at left="55" top="107">
 				<g:TextArea width="377px" height="73px" ui:field="descriptionInput"/>
 			</g:at>
-			<g:at left="238" top="23">
-				<g:Label width="32px" height="16px" text="账户" ui:field="accountLable"/>
-			</g:at>
-			<g:at left="283" top="19">
-				<g:ListBox width="157px" height="25px" ui:field="accountCombo"/>
-			</g:at>
 			<g:at left="10" top="66">
 				<g:Label width="32px" height="16px" text="状态"/>
 			</g:at>
 			<g:at left="55" top="66">
-				<g:RadioButton name="state" width="54px" height="20px" text="正常" ui:field="groupStateNormalRadio"/>
+				<g:RadioButton name="state" width="54px" height="20px" text="正常" ui:field="accountStateNormalRadio"/>
 			</g:at>
 			<g:at left="109" top="66">
-				<g:RadioButton name="state" width="54px" height="20px" text="暂停" ui:field="groupStatePauseRadio"/>
+				<g:RadioButton name="state" width="54px" height="20px" text="暂停" ui:field="accountStatePauseRadio"/>
 			</g:at>
 			<g:at left="163" top="66">
-				<g:RadioButton name="state" width="54px" height="20px" text="禁止" ui:field="groupStateBanRadio"/>
+				<g:RadioButton name="state" width="54px" height="20px" text="禁止" ui:field="accountStateBanRadio"/>
 			</g:at>
-			<g:at left="36" top="201">
-				<g:TextBox width="113px" height="17px" ui:field="groupIdInput"/>
+			<g:at left="55" top="0">
+				<g:TextBox height="17px" width="151px" ui:field="idInput" alignment="LEFT"/>
 			</g:at>
 		</g:AbsolutePanel>
 	</g:HTMLPanel>

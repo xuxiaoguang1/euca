@@ -26,7 +26,7 @@ public class UserDBProcWrapper {
 		}
 	}
 	
-	public void updateUser(UserInfo user) throws UserSyncException {
+	public void modifyUser(UserInfo user) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		String sql = updateUserSql(user);
 

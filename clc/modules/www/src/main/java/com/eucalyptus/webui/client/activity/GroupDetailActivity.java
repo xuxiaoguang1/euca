@@ -9,16 +9,16 @@ import com.eucalyptus.webui.client.place.SearchPlace;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.GroupDetailView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.UserListView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class GroupDetailActivity extends AbstractSearchActivity implements GroupDetailView.Presenter, UserListView.Presenter {
+public class GroupDetailActivity extends AbstractSearchActivity implements GroupDetailView.Presenter, UserListView.Presenter, ConfirmationView.Presenter {
 
 	public GroupDetailActivity(SearchPlace place, ClientFactory clientFactory) {
 		super(place, clientFactory);
@@ -91,7 +91,9 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 		        });
 	}
 
-	final static String[] GROUP_ACTIVITY_REMOVE_USERS_CONFIRMATION = {
+	final static String[] GROUP_ACTIVITY_REMOVE_USERS_CAPTION = {
+        "Remove the users", "从组删除用户"};
+	final static String[] GROUP_ACTIVITY_REMOVE_USERS_SUBJECT = {
 	        "Are you sure you remove the selected users from this group?", "确定从该组删除所选用户?"};
 	final static String[] GROUP_ACTIVITY_REMOVE_USERS_STATUS = {"Removing users from selected groups ...",
 	        "从所选的组中删除用户 ..."};
@@ -103,53 +105,13 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 		// TODO Auto-generated method stub
 		if (this.currentSelected == null || this.currentSelected.size() < 1)
 			return;
-
-		if (Window.confirm(GROUP_ACTIVITY_REMOVE_USERS_CONFIRMATION[1]) == true) {
-			final ArrayList<String> ids = new ArrayList<String>();
-
-			for (SearchResultRow row : currentSelected) {
-				ids.add(row.getField(0));
-			}
-
-			clientFactory.getShellView().getFooterView()
-			        .showStatus(StatusType.LOADING, GROUP_ACTIVITY_REMOVE_USERS_STATUS[1], 0);
-
-			clientFactory.getBackendService().removeUsersFromGroup(clientFactory.getLocalSession().getSession(), ids,
-			        new AsyncCallback<Void>() {
-
-				        @Override
-				        public void onFailure(Throwable caught) {
-					        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-					        clientFactory
-					                .getShellView()
-					                .getFooterView()
-					                .showStatus(StatusType.ERROR, GROUP_ACTIVITY_REMOVE_USERS_FAIL[1],
-					                        FooterView.DEFAULT_STATUS_CLEAR_DELAY);
-					        clientFactory
-					                .getShellView()
-					                .getLogView()
-					                .log(LogType.ERROR,
-					                        "Failed to remove users " + ids + " from group " + ": "
-					                                + caught.getMessage());
-				        }
-
-				        @Override
-				        public void onSuccess(Void arg0) {
-					        clientFactory
-					                .getShellView()
-					                .getFooterView()
-					                .showStatus(StatusType.NONE, GROUP_ACTIVITY_REMOVE_USERS_SUCCEED[1],
-					                        FooterView.DEFAULT_STATUS_CLEAR_DELAY);
-					        clientFactory.getShellView().getLogView()
-					                .log(LogType.INFO, "Users " + ids + " are removed from groups ");
-
-					        reloadCurrentRange();
-				        }
-
-			        });
-		}
+		
+		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
+		confirmView.setPresenter(this);
+	  
+		confirmView.display(GROUP_ACTIVITY_REMOVE_USERS_CAPTION[1], GROUP_ACTIVITY_REMOVE_USERS_SUBJECT[1]);
 	}
-
+	
 	@Override
 	protected void doSearch(String query, SearchRange range) {
 		// TODO Auto-generated method stub
@@ -195,4 +157,58 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void confirm(String subject) {
+		// TODO Auto-generated method stub
+		if ( GROUP_ACTIVITY_REMOVE_USERS_SUBJECT[1].equals( subject ) ) {
+			doRemoveUsers( );
+		  }
+	}
+	
+	public void doRemoveUsers() {
+		final ArrayList<String> ids = new ArrayList<String>();
+
+		for (SearchResultRow row : currentSelected) {
+			ids.add(row.getField(0));
+		}
+
+		clientFactory.getShellView().getFooterView()
+		        .showStatus(StatusType.LOADING, GROUP_ACTIVITY_REMOVE_USERS_STATUS[1], 0);
+
+		clientFactory.getBackendService().removeUsersFromGroup(clientFactory.getLocalSession().getSession(), ids,
+		        new AsyncCallback<Void>() {
+
+			        @Override
+			        public void onFailure(Throwable caught) {
+				        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
+				        clientFactory
+				                .getShellView()
+				                .getFooterView()
+				                .showStatus(StatusType.ERROR, GROUP_ACTIVITY_REMOVE_USERS_FAIL[1],
+				                        FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+				        clientFactory
+				                .getShellView()
+				                .getLogView()
+				                .log(LogType.ERROR,
+				                        "Failed to remove users " + ids + " from group " + ": "
+				                                + caught.getMessage());
+			        }
+
+			        @Override
+			        public void onSuccess(Void arg0) {
+				        clientFactory
+				                .getShellView()
+				                .getFooterView()
+				                .showStatus(StatusType.NONE, GROUP_ACTIVITY_REMOVE_USERS_SUCCEED[1],
+				                        FooterView.DEFAULT_STATUS_CLEAR_DELAY);
+				        clientFactory.getShellView().getLogView()
+				                .log(LogType.INFO, "Users " + ids + " are removed from groups ");
+
+				        reloadCurrentRange();
+			        }
+
+		        });
+	}
+
 }

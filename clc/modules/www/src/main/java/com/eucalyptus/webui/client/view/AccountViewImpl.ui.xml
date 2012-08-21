@@ -28,8 +28,13 @@
                     <tbody>
                         <tr>
                             <td>
-                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="newButton">
-                                    <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>新的账户
+                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="createAccountButton">
+                                    <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>增加账户
+                                </g:Anchor>                            
+                            </td>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="modifyAccountButton">
+                                    <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>编辑账户
                                 </g:Anchor>                            
                             </td>
                             <td>

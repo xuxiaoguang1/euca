@@ -46,17 +46,17 @@ public class UserServiceProcImpl {
 		}
 	}
 	
-	public void updateUser(UserInfo user) throws EucalyptusServiceException {
+	public void modifyUser(UserInfo user) throws EucalyptusServiceException {
 		if ( user == null) {
-			throw new EucalyptusServiceException( "Empty accountId or invalid user on creating user" );
+			throw new EucalyptusServiceException( "Empty accountId or invalid user on modifying user" );
 		}
 		
 		try {
-			userDBProc.updateUser(user);
+			userDBProc.modifyUser(user);
 		} catch (UserSyncException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new EucalyptusServiceException("Failed to create user");
+			throw new EucalyptusServiceException("Failed to modify user");
 		}
 	}
 

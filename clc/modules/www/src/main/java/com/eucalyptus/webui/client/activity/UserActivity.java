@@ -19,16 +19,19 @@ import com.eucalyptus.webui.client.view.UserAddView;
 import com.eucalyptus.webui.client.view.UserView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.InputField.ValueType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.checker.ValueChecker;
 import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
+import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
+import com.eucalyptus.webui.shared.user.EnumUserType;
 import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserInfo;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class UserActivity extends AbstractSearchActivity
@@ -217,6 +220,13 @@ public class UserActivity extends AbstractSearchActivity
 			}});
 	  }
   }
+  
+
+	@Override
+	public void onModifyUser() {
+		// TODO Auto-generated method stub
+		this.doModifyUser();
+	}
   
 	@Override
 	public void onDeleteUsers( ) {
@@ -653,6 +663,61 @@ public class UserActivity extends AbstractSearchActivity
 																}
 															);
 	}
+	
+	private void doModifyUser() {
+		if ( this.currentSelected == null || this.currentSelected.size( ) != 1 )
+	    	return;
+	    
+	    final UserAddView window = this.clientFactory.getUserAddView();
+		window.setPresenter(this);
+		SearchResultRow row = this.currentSelected.toArray(new SearchResultRow[0])[0];
+		
+		final UserInfo user = new UserInfo();
+		user.setId(Integer.parseInt(row.getField(0)));
+		user.setName(row.getField(4));
+		user.setTitle(row.getField(5));
+		user.setEmail(row.getField(6));
+		user.setMobile(row.getField(7));
+		String userState = row.getField(8);
+		String userType = row.getField(9);
+		
+		EnumState state = Enum2String.getInstance().getEnumState(userState);
+		EnumUserType type = Enum2String.getInstance().getEnumUserType(userType);
+		
+		user.setState(state);
+		user.setType(type);
+		
+		String accountId = row.getField(10);
+		String groupId = row.getField(11);
+
+		if (!Strings.isNullOrEmpty(accountId))
+			user.setAccountId(Integer.parseInt(accountId));
+		
+		if (!Strings.isNullOrEmpty(groupId))
+			user.setGroupId(Integer.parseInt(groupId));
+		
+		user.setPwd(row.getField(12));
+
+		window.display();
+		
+		LoginUserProfile curUser = this.clientFactory.getSessionData().getLoginUser();
+		if (curUser.isSystemAdmin()) {
+			this.clientFactory.getBackendService().listAccounts(this.clientFactory.getLocalSession().getSession(), new AsyncCallback<ArrayList<AccountInfo>> () {
+		
+				@Override
+				public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+				}
+			
+				@Override
+				public void onSuccess(ArrayList<AccountInfo> result) {
+					// TODO Auto-generated method stub
+					window.setAccountsInfo(result);
+					window.setUser(user);
+				}
+			});
+		 }
+	}
 
 	@Override
 	public void process(String subject, ArrayList<String> values) {
@@ -663,8 +728,10 @@ public class UserActivity extends AbstractSearchActivity
 		}
 	}
 
-//	@Override
-//	public void processAddCert(String pem) {
-//		doAddCert(pem);
-//	}
+	@Override
+	public void onDoubleClick(DoubleClickEvent event) {
+		// TODO Auto-generated method stub
+	    this.doModifyUser();
+	}
+	
 }

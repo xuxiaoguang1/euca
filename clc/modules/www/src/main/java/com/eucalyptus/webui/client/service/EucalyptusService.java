@@ -276,14 +276,14 @@ public interface EucalyptusService extends RemoteService {
 			throws EucalyptusServiceException;
 
 	/**
-	 * Create a new account.
+	 * Create/update a new account.
 	 * 
 	 * @param session
 	 * @param accountName
 	 * @param adminPassword
 	 * @throws EucalyptusServiceException
 	 */
-	String createAccount(Session session, ArrayList<String> values)
+	void createAccount(Session session, AccountInfo account)
 			throws EucalyptusServiceException;
 
 	/**
@@ -294,17 +294,6 @@ public interface EucalyptusService extends RemoteService {
 	 * @throws EucalyptusServiceException
 	 */
 	void deleteAccounts(Session session, ArrayList<String> ids)
-			throws EucalyptusServiceException;
-
-	/**
-	 * Modify account.
-	 * 
-	 * @param session
-	 * @param keys
-	 * @param values
-	 * @throws EucalyptusServiceException
-	 */
-	void modifyAccount(Session session, int accountId, String name, String email)
 			throws EucalyptusServiceException;
 
 	/**

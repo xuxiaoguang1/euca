@@ -191,7 +191,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	 * 
 	 */
 
-	public String createAccount(Session session, ArrayList<String> values) throws EucalyptusServiceException {
+	public void createAccount(Session session, AccountInfo account) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
 
@@ -201,14 +201,11 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		if (!isRootAdmin) {
 			throw new EucalyptusServiceException("No permission");
 		}
-
-		String name = values.get(0);
-		String email = values.get(1);
-		String description = values.get(2);
-
-		this.accountServiceProc.createAccount(name, email, description);
-
-		return name;
+		
+		if (account.getId() == 0)
+			this.accountServiceProc.createAccount(account);
+		else
+			this.accountServiceProc.modifyAccount(account);
 	}
 
 	@Override
@@ -239,21 +236,6 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		}
 
 		this.accountServiceProc.deleteAccounts(ids);
-	}
-
-	@Override
-	public void modifyAccount(Session session, int accountId, String name, String email)
-	        throws EucalyptusServiceException {
-		// TODO Auto-generated method stub
-		verifySession(session);
-
-		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
-		boolean isRootAdmin = curUser.isSystemAdmin();
-		if (!isRootAdmin) {
-			throw new EucalyptusServiceException("No permission");
-		}
-
-		this.accountServiceProc.modifyAccount(accountId, name, email);
 	}
 
 	@Override
@@ -313,7 +295,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 			userServiceProc.createUser(accountId, user);
 		}
 		else {
-			userServiceProc.updateUser(user);
+			userServiceProc.modifyUser(user);
 		}
 	}
 
@@ -428,7 +410,12 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	public void createGroup(Session session, GroupInfo group) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
-		groupServiceProc.createGroup(session, group);
+		if (group.getId() == 0) {
+			LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+			groupServiceProc.createGroup(curUser.getAccountId(), group);
+		}
+		else
+			groupServiceProc.updateGroup(group);
 	}
 
 	@Override

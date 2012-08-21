@@ -12,9 +12,12 @@ import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 
 public class AccountDBProcWrapper {
-	public int addAccount(String name, String email, String description, EnumState state) throws AccountSyncException {
+	public int addAccount(AccountInfo account) throws AccountSyncException {
+		if (account == null)
+			throw new AccountSyncException("Invalid account para for creating");
+		
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
-		String sql = addAccountSql(name, email, description, state);
+		String sql = addAccountSql(account);
 		
 		try {
 			return dbProc.insertAndGetInsertId(sql);
@@ -23,11 +26,11 @@ public class AccountDBProcWrapper {
 		}
 	}
 	
-	public void modifyAccount(int id, String name, String email)  throws AccountSyncException {
-		if (id == 0)
-			return;
+	public void modifyAccount(AccountInfo account)  throws AccountSyncException {
+		if (account == null || account.getId() == 0)
+			throw new AccountSyncException("Invalid account para for updating");
 		
-		String sql = modifyAccountSql(id, name, email);
+		String sql = modifyAccountSql(account);
 		
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
@@ -153,7 +156,7 @@ public class AccountDBProcWrapper {
 	}
 	
 	
-	private String addAccountSql(String name, String email, String description, EnumState state) {
+	private String addAccountSql(AccountInfo account) {
 		StringBuilder str = new StringBuilder();
 		str.append("INSERT INTO ").
 		append(DBTableName.ACCOUNT).append(" ( ").
@@ -165,31 +168,38 @@ public class AccountDBProcWrapper {
 		append(" ) VALUES (null, ");
 		
 		str.append("'");
-		str.append(name);
+		str.append(account.getName());
 		str.append("', '");
-		str.append(email);
+		str.append(account.getEmail());
 		str.append("', '");
-		str.append(description);
+		str.append(account.getDescription());
 		str.append("', ");
-		str.append(state.ordinal());
+		str.append(account.getState().ordinal());
 		str.append(")");
 		
 		return str.toString();
 	}
 	
-	private String modifyAccountSql(int id, String name, String email) {
+	private String modifyAccountSql(AccountInfo account) {
 		StringBuilder str = new StringBuilder("UPDATE ").append(DBTableName.ACCOUNT).append(" SET ");
 		
 		str.append(DBTableColName.ACCOUNT.NAME).append(" = '").
-		append(name).
+		append(account.getName()).
 		append("', ").
 		
 		append(DBTableColName.ACCOUNT.EMAIL).append(" = '").
-		append(email).
-		append("' ").
+		append(account.getEmail()).
+		append("', ").
 		
-		append("WHERE ").append(DBTableColName.ACCOUNT.ID).append(" = ").
-		append(id);
+		append(DBTableColName.ACCOUNT.DES).append(" = '").
+		append(account.getDescription()).
+		append("', ").
+		
+		append(DBTableColName.ACCOUNT.STATE).append(" = ").
+		append(account.getState().ordinal()).
+		
+		append(" WHERE ").append(DBTableColName.ACCOUNT.ID).append(" = ").
+		append(account.getId());
 		
 		return str.toString();
 	}

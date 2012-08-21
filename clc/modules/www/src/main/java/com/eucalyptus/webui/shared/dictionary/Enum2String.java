@@ -63,7 +63,6 @@ public class Enum2String {
 	}
 	
 	private String getName(EnumUserType userType) {
-		System.out.println(userType.toString());
 		for (Pair<EnumUserType, String> ele : this.enumUserType2String) {
 			if (ele.first == userType)
 				return ele.second;

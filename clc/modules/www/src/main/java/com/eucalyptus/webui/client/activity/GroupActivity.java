@@ -18,10 +18,12 @@ import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.client.view.InputView;
+import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -98,16 +100,6 @@ public class GroupActivity extends AbstractSearchActivity
       LOG.log( Level.INFO, "Selection changed to " + selection );
     }
   }
-  
-	@Override
-	public void onDoubleClick(DoubleClickEvent event) {
-		// TODO Auto-generated method stub
-	    if ( this.currentSelected == null || this.currentSelected.size( ) != 1 )
-	    	return;
-	    System.out.println(this.currentSelected.size());  
-	    showSingleSelectedDetails( this.currentSelected.toArray( new SearchResultRow[0] )[0] );
-	}
-  
 
 	static String[] GROUP_VIEW_DETAIL = {"Group View", "组视图"};
 	
@@ -238,6 +230,12 @@ public class GroupActivity extends AbstractSearchActivity
  	}
   
   	@Override
+	public void onModifyGroup() {
+		// TODO Auto-generated method stub
+		this.doModifyGroup();
+	}
+  	
+  	@Override
   	public void onDeleteGroup( ) {
   		if ( currentSelected == null || currentSelected.size( ) < 1 ) {
   			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Select groups to delete", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
@@ -247,6 +245,15 @@ public class GroupActivity extends AbstractSearchActivity
   		dialog.setPresenter( this );
   		dialog.display( DELETE_GROUPS_CAPTION[1], DELETE_GROUPS_SUBJECT[1], currentSelected, new ArrayList<Integer>( Arrays.asList( 0, 1 ) ) );
   	}
+  	
+  	@Override
+	public void showGroupDetails() {
+		// TODO Auto-generated method stub
+  		if ( this.currentSelected == null || this.currentSelected.size( ) != 1 )
+	    	return;
+  		
+	    showSingleSelectedDetails( this.currentSelected.toArray( new SearchResultRow[0] )[0] );
+	}
   	
   	private final static String[] GROUP_ACTIVITY_No_SELECTION = {"Please select at least on group", "请至少选择一个组"};
   	private final static String[] FOOTERVIEW_GROUP_ACTIVITY_UPDATE_USERSTATE_SUCCEED = {"Update user state succeeds", "更新用户状态成功"};
@@ -413,29 +420,77 @@ public class GroupActivity extends AbstractSearchActivity
     } );
   }
   
-    private void doAddPolicy( final String name, final String document ) {
-      if ( currentSelected == null || currentSelected.size( ) != 1 ) {
-        return;
-      }
-      final String groupId = this.currentSelected.toArray( new SearchResultRow[0] )[0].getField( 0 );
-      this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "Adding policy " + name + " ...", 0 );
+	private void doAddPolicy( final String name, final String document ) {
+		if ( currentSelected == null || currentSelected.size( ) != 1 ) {
+			return;
+		}
       
-      this.clientFactory.getBackendService( ).addGroupPolicy( this.clientFactory.getLocalSession( ).getSession( ), groupId, name, document, new AsyncCallback<Void>( ) {
+		final String groupId = this.currentSelected.toArray( new SearchResultRow[0] )[0].getField( 0 );
+		this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "Adding policy " + name + " ...", 0 );
+		this.clientFactory.getBackendService( ).addGroupPolicy( this.clientFactory.getLocalSession( ).getSession( ), groupId, name, document, new AsyncCallback<Void>( ) {
 
         @Override
         public void onFailure( Throwable caught ) {
-          ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-          clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Failed to add policy", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-          clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to add policy " + name + " for group " + groupId + ": " + caught.getMessage( ) );
+        	ActivityUtil.logoutForInvalidSession( clientFactory, caught );
+        	clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Failed to add policy", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+        	clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to add policy " + name + " for group " + groupId + ": " + caught.getMessage( ) );
         }
 
         @Override
         public void onSuccess( Void arg ) {
-          clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Policy added", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-          clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "New policy " + name + " is added to group " + groupId );
-          reloadCurrentRange( );
+        	clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Policy added", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+        	clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "New policy " + name + " is added to group " + groupId );
+        	reloadCurrentRange( );
         }
-        
-      } );
+      });
     }
+    
+	private void doModifyGroup() {
+		if ( this.currentSelected == null || this.currentSelected.size( ) != 1 )
+	    	return;
+	    
+		SearchResultRow row = this.currentSelected.toArray(new SearchResultRow[0])[0];
+		
+		final GroupInfo group = new GroupInfo();
+		group.setId(Integer.parseInt(row.getField(0)));
+		group.setName(row.getField(3));
+		group.setDescription(row.getField(4));
+		
+		String groupState = row.getField(5);		
+		EnumState state = Enum2String.getInstance().getEnumState(groupState);
+		group.setState(state);
+		
+		String accountId = row.getField(6);
+
+		if (!Strings.isNullOrEmpty(accountId))
+			group.setAccountId(Integer.parseInt(accountId));
+		
+		final GroupAddView window = clientFactory.getGroupAddView();
+  		window.setPresenter(this);
+  		window.display();
+  		
+		LoginUserProfile curUser = this.clientFactory.getSessionData().getLoginUser();
+		if (curUser.isSystemAdmin()) {
+			this.clientFactory.getBackendService().listAccounts(this.clientFactory.getLocalSession().getSession(), new AsyncCallback<ArrayList<AccountInfo>> () {
+		
+				@Override
+				public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+				}
+			
+				@Override
+				public void onSuccess(ArrayList<AccountInfo> result) {
+					// TODO Auto-generated method stub
+					window.setAccountsInfo(result);
+					window.setGroup(group);
+				}
+			});
+		 }
+	}
+    
+  	@Override
+  	public void onDoubleClick(DoubleClickEvent event) {
+  		// TODO Auto-generated method stub
+  		this.doModifyGroup();
+  	}
 }

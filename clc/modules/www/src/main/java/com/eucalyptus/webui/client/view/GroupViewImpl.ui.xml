@@ -34,8 +34,19 @@
                                 </g:Anchor>
                             </td>
                             <td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small}" ui:field="modifyGroupButton">
+                                    <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>编辑组
+                                </g:Anchor>
+                            </td>
+                            <td>
                                 <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small}" ui:field="removeGroupButton">
                                     <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>删除组
+                                </g:Anchor>
+                            </td>
+                            <td>&nbsp;</td>
+                             <td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small}" ui:field="showGroupDetailsButton">
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>查看组
                                 </g:Anchor>
                             </td>
                             <td>&nbsp;</td>

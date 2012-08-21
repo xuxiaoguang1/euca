@@ -54,11 +54,9 @@ public interface EucalyptusServiceAsync {
 
 	void lookupImage(Session session, String search, SearchRange range, AsyncCallback<SearchResult> callback);
 
-	void createAccount(Session session, ArrayList<String> values, AsyncCallback<String> callback);
+	void createAccount(Session session, AccountInfo account, AsyncCallback<Void> callback);
 
 	void deleteAccounts(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
-
-	void modifyAccount(Session session, int accountId, String name, String email, AsyncCallback<Void> callback);
 
 	void updateAccountState(Session session, ArrayList<String> ids, EnumState userState,
 	        AsyncCallback<Void> asyncCallback);

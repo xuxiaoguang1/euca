@@ -34,6 +34,11 @@
                                 </g:Anchor>
                             </td>
                             <td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small}" ui:field="buttonOnModifyUser">
+                                    <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>编辑用户
+                                </g:Anchor>
+                            </td>
+                            <td>
                                 <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small}" ui:field="buttonOnDelUser">
                                     <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>删除用户
                                 </g:Anchor>

@@ -8,7 +8,10 @@ public interface GroupView extends IsWidget, CanDisplaySearchResult, Clearable, 
   
   public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, SearchTableDoubleClickHandler {
 	void onAddGroup();
-    void onDeleteGroup( );
+	void onModifyGroup();
+    void onDeleteGroup();
+    
+    void showGroupDetails();
     
     void onPauseGroup();
     void onResumeGroup();
