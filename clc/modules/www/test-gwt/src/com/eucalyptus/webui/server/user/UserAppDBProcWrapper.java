@@ -7,13 +7,10 @@ import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.DBTableName;
-import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserAppResult;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
-import com.eucalyptus.webui.shared.user.EnumUserType;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
-import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.common.base.Strings;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 
