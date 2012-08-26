@@ -593,10 +593,6 @@ public class DeviceTemplateServiceProcImpl {
 		}
 	}
 	
-	public void updateDeviceState(int userId, int templateId) throws DeviceSyncException {
-		
-	}
-	
 	public List<String> listDeviceCPUNames(Session session) {
 		try {
 			LoginUserProfile user = getUser(session);
@@ -618,16 +614,6 @@ public class DeviceTemplateServiceProcImpl {
 		}
 		try {
 			doActionTemplate(template_id, user_id, life);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	{
-		try {
-			Thread.sleep(1000);
-			doActionTemplate(1, 1, 100);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

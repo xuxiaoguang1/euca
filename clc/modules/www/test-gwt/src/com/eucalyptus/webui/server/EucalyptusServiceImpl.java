@@ -970,10 +970,10 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 //	}
 
 	@Override
-	public void addUserApp(Session session, String userId, String templateId) throws EucalyptusServiceException {
+	public void addUserApp(Session session, UserApp userApp) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
-		userAppServiceProc.addUserApp(Integer.valueOf(userId), Integer.valueOf(templateId));
+		userAppServiceProc.addUserApp(session, userApp);
 	}
 
 	@Override

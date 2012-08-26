@@ -39,103 +39,91 @@
     
     <ui:with field="global" type="com.eucalyptus.webui.client.view.GlobalResources"/>
     
-	<g:VerticalPanel width="1000" height="300" horizontalAlignment="ALIGN_LEFT">
-	    <g:Cell>
-			<g:HorizontalPanel>
-				<g:Cell width="40px">
-					<g:AbsolutePanel />
-				</g:Cell>
-				<g:HTMLPanel>
-					<table width="800px">
-						<colgroup width="3%" />
-						<colgroup width="27%" />
-						<colgroup width="20%" />
-						<colgroup width="3%" />
-						<colgroup width="27%" />
-						<colgroup width="20%" />
-						<tbody class="{style.topContent}">
+	<g:DockLayoutPanel unit="PX">
+	    <g:north size="100.0">
+    		<g:HTMLPanel addStyleNames="{style.toolbar}">
+					<table width ="100%" >
+						<colgroup width="1px"/>
+	                    <colgroup width="20px"/>
+	                    <colgroup width="1px"/>
+	                    <colgroup width="1px"/>
+	                    <colgroup width="20px"/>                    
+	                    <colgroup width="1px"/>
+	                    <colgroup width="1px"/>
+	                    <colgroup width="1px"/>
+	                    <colgroup width="20px"/>                    
+	                    <colgroup width="1px"/>
+	                    <colgroup width="1px"/>
+						<tbody>
 							<tr>
-								<td>&nbsp;</td>
-								<td>
-									<div height="10px">&nbsp;</div>
-									<div>
-										<g:Anchor styleName="{style.topLinks}" ui:field="labelAll">总申请数量：0</g:Anchor>
-									</div>
-									<div height="10px">&nbsp;</div>
-									<div>
-										<g:Anchor styleName="{style.topLinks}" ui:field="labelToSolve">待解决申请数量：0</g:Anchor>
-									</div>
-									<div height="10px">&nbsp;</div>
-								</td>
-								<td>&nbsp;</td>
-								<td>&nbsp;</td>
-								<td>
-									<div height="10px">&nbsp;</div>
-									<div>
-										<g:Anchor styleName="{style.topLinks}" ui:field="labelSolved">已处理申请数量：0</g:Anchor>
-									</div>
-									<div height="10px">&nbsp;</div>
-									<div>
-										<g:Anchor styleName="{style.topLinks}" ui:field="labelSolving"><font color="blue">正处理申请数量：0</font>></g:Anchor>
-									</div>
-									<div height="10px">&nbsp;</div>
-								</td>
-								<td>&nbsp;</td>
+								<td colspan="5">&nbsp;</td>
 							</tr>
+							<tr>
+								<td width="10%">&nbsp;</td>
+								<td width="15%">
+									<g:Anchor styleName="{style.topLinks}" ui:field="labelAll" height="35px">全部申请数量：0</g:Anchor>
+								</td>
+								<td width="10%">&nbsp;</td>
+								<td width="15%">
+									<g:Anchor styleName="{style.topLinks}" ui:field="labelToSolve" height="35px">待解决申请数量：0</g:Anchor>
+								</td>
+								<td width="50%">&nbsp;</td>
+							</tr>
+							<tr>
+								<td width="10%">&nbsp;</td>
+								<td width="15%">
+									<g:Anchor styleName="{style.topLinks}" ui:field="labelSolved" height="35px">已处理申请数量：0</g:Anchor>
+								</td>
+								<td width="10%">&nbsp;</td>
+								<td width="15%">
+									<g:Anchor styleName="{style.topLinks}" ui:field="labelSolving" height="35px"><font color="blue">正处理申请数量：0</font>></g:Anchor>
+								</td>
+								<td width="50%">&nbsp;</td>
+							</tr>
+							<tr>
+								<td colspan="5">&nbsp;</td>
+							</tr>
+							<tr>
+	                           <td clolspan="5">
+		                           <table width="30%">
+		                           		<tr>
+				                           <td>                             
+				                               <g:Anchor styleName="{global.buttonCss.positive} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="buttonApproveUserApp">
+				                                   <span class="{global.buttonCss.check} {global.buttonCss.icon}"/>批准
+				                               </g:Anchor>                            
+				                           </td>
+				                           <td>                             
+				                               <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="buttonRejectUserApp">
+				                                   <span class="{global.buttonCss.x} {global.buttonCss.icon}"/>拒绝
+				                               </g:Anchor>                            
+				                           </td>
+				                           <td>&nbsp;</td>
+				                           <td>
+				                               <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small}" ui:field="buttonOnCreateUserApp">
+				                                   <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>申请
+				                               </g:Anchor>
+				                           </td>   
+				                            <td>
+				                               <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small}" ui:field="buttonOnDelUserApp">
+				                                   <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>删除
+				                               </g:Anchor>
+				                           </td>
+				                          </tr>
+				                   </table>
+			                   </td>
+	                       </tr>
 						</tbody>
 					</table>
-				</g:HTMLPanel>
-			</g:HorizontalPanel>
-		</g:Cell>
-		
-   		<g:HTMLPanel height="36px" width="900px" styleName="border-top:1px solid #AAAAAA;">
-               <table>
-                   <colgroup width="1px"/>
-                   <colgroup width="20px"/>
-                   <colgroup width="1px"/>
-                   <colgroup width="1px"/>
-                   <colgroup width="20px"/>                    
-                   <colgroup width="1px"/>
-                   <colgroup width="1px"/>
-                   <colgroup width="1px"/>
-                   <colgroup width="20px"/>                    
-                   <colgroup width="1px"/>
-                   <colgroup width="1px"/>                    
-                   <tbody>
-                       <tr>
-                           <td>                             
-                               <g:Anchor styleName="{global.buttonCss.positive} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="buttonApproveUserApp">
-                                   <span class="{global.buttonCss.check} {global.buttonCss.icon}"/>批准
-                               </g:Anchor>                            
-                           </td>
-                           <td>                             
-                               <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="buttonRejectUserApp">
-                                   <span class="{global.buttonCss.x} {global.buttonCss.icon}"/>拒绝
-                               </g:Anchor>                            
-                           </td>
-                           <td>&nbsp;</td>
-                           <td>
-                               <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small}" ui:field="buttonOnCreateUserApp">
-                                   <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>申请
-                               </g:Anchor>
-                           </td>   
-                            <td>
-                               <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small}" ui:field="buttonOnDelUserApp">
-                                   <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>删除
-                               </g:Anchor>
-                           </td>
-                                                
-                       </tr>
-                   </tbody>
-               </table>
-        </g:HTMLPanel>
-            
-        <g:LayoutPanel ui:field="tablePanel" height="320px">
-           	<g:layer left="-51px" width="103px" top="122px" height="25px">
-           		<g:Button/>
-           	</g:layer>
-        </g:LayoutPanel>
+			</g:HTMLPanel>
+    	</g:north>
+    	<g:center>
+            <g:LayoutPanel ui:field="tablePanel" height="">
+            	<g:layer left="-51px" width="103px" top="122px" height="25px">
+            		<g:Button/>
+            	</g:layer>
+            </g:LayoutPanel>
+        </g:center>
 
-    </g:VerticalPanel>
+    </g:DockLayoutPanel>
     
 </ui:UiBinder> 

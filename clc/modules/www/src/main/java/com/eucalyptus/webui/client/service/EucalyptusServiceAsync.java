@@ -252,7 +252,7 @@ public interface EucalyptusServiceAsync {
 	
 	void lookupDeviceVM(Session session, String search, SearchRange range, int queryState, AsyncCallback<SearchResult> callback);
 	
-	void addUserApp(Session session, String userId, String templateId, AsyncCallback<Void> callback);
+	void addUserApp(Session session, UserApp userApp, AsyncCallback<Void> callback);
 	void deleteUserApp(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
 	void modifyUserApp(Session session, ArrayList<UserApp> userApps, AsyncCallback<Void> callback);
 	void countUserApp(Session session, AsyncCallback<ArrayList<UserAppStateCount>> callback);

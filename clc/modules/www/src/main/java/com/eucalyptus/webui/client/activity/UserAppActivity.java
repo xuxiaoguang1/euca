@@ -293,11 +293,10 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   }
 
   @Override
-  public void doCreateUserApp(String templateId) {
+  public void doCreateUserApp(UserApp userApp) {
 	  // TODO Auto-generated method stub
 	  this.clientFactory.getBackendService().addUserApp(clientFactory.getLocalSession().getSession(), 
-			  											Integer.toString(this.clientFactory.getSessionData().getLoginUser().getUserId()), 
-			  											templateId,
+			  											userApp,
 			  											new AsyncCallback<Void>() {
 
 	        @Override

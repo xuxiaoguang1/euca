@@ -20,6 +20,7 @@ public class DBTableName {
 	public static final String IP_SERVICE = "ip_service";
 	public static final String VM = "vm";
 	public static final String VM_SERVICE = "vm_service";
+	public static final String VM_IMAGE_TYPE = "vm_image_type";
 	public static final String BW_SERVICE = "bw_service";
 	public static final String TEMPLATE = "template";
 	

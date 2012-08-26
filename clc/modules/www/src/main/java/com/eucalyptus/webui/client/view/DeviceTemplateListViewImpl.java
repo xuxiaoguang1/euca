@@ -7,6 +7,8 @@ import java.util.logging.Logger;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.shared.resource.VMImageType;
+import com.eucalyptus.webui.shared.user.UserApp;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -19,8 +21,8 @@ import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 import com.google.gwt.view.client.SingleSelectionModel;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.LayoutPanel;
-import com.google.gwt.user.datepicker.client.DatePicker;
 import com.google.gwt.user.datepicker.client.DateBox;
+import com.google.gwt.user.client.ui.ListBox;
 
 public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTemplateListView {
 
@@ -42,8 +44,22 @@ public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTempl
 		if (this.currentSelected == null)
 			return;
 		
-		String templateId = this.currentSelected.getField(0);
-		this.presenter.doCreateUserApp(templateId);
+		if (this.startingTime.getValue().getTime() - this.endingTime.getValue().getTime() < 0)
+			return;
+		
+		if (this.startingTime.getValue().getTime() - this.endingTime.getValue().getTime() < 0)
+			return;
+		
+		int templateId = Integer.parseInt(this.currentSelected.getField(0));
+		int vmImageTypeId = Integer.parseInt(this.VMImageTypeList.getValue(this.VMImageTypeList.getSelectedIndex()));
+		
+		UserApp userApp = new UserApp();
+		userApp.setTemplateId(templateId);
+		userApp.setVmImageTypeId(vmImageTypeId);
+		userApp.setSrvStartingTime(this.startingTime.getValue());
+		userApp.setSrvEndingingTime(this.endingTime.getValue());
+		
+		this.presenter.doCreateUserApp(userApp);
 		
 		clearSelection();
 	}
@@ -69,12 +85,25 @@ public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTempl
 		// TODO Auto-generated method stub
 		this.tablePanel.clear( );
 		this.table = null;
+		this.VMImageTypeList.clear();
 	}
 
 	@Override
 	public void setPresenter(Presenter presenter) {
 		// TODO Auto-generated method stub
 		this.presenter = presenter;
+	}
+	
+	@Override
+	public void setVMImageTypeList(ArrayList<VMImageType> vmTypeList) {
+		// TODO Auto-generated method stub
+		if (vmTypeList == null)
+			return;
+		
+		for (VMImageType vm : vmTypeList) {
+			String item = vm.getOs() + " (" + vm.getVer() + ")";
+			this.VMImageTypeList.addItem(item, Integer.valueOf(vm.getId()).toString());
+		}
 	}
 	
 	@Override
@@ -107,10 +136,11 @@ public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTempl
 	private static final Logger LOG = Logger.getLogger( UserViewImpl.class.getName( ) );
 	
 	@UiField LayoutPanel tablePanel;
-	@UiField Button buttonOk;
-	@UiField Button buttonCancle;
 	@UiField DateBox startingTime;
 	@UiField DateBox endingTime;
+	@UiField Button buttonOk;
+	@UiField Button buttonCancle;
+	@UiField ListBox VMImageTypeList;
 
 	private SingleSelectionModel<SearchResultRow> selectionModel;
 	private SearchResultTable table;

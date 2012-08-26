@@ -172,41 +172,47 @@ public class UserAppDBProcWrapper {
 		str.append("INSERT INTO ").
 		append(DBTableName.USER_APP).append(" ( ").
 		append(DBTableColName.USER_APP.ID).append(", ").
-		append(DBTableColName.USER_APP.TIME).append(", ").
+		append(DBTableColName.USER_APP.APP_TIME).append(", ").
+		append(DBTableColName.USER_APP.SRV_STARTINGTIME).append(", ").
+		append(DBTableColName.USER_APP.SRV_ENDINGTIME).append(", ").
 		append(DBTableColName.USER_APP.STATE).append(", ").
 		append(DBTableColName.USER_APP.RESULT).append(", ").
 		append(DBTableColName.USER_APP.DEL).append(", ").
-		append(DBTableColName.USER_APP.CONTENT).append(", ").
 		append(DBTableColName.USER_APP.COMMENT).append(", ").
 		append(DBTableColName.USER_APP.USER_ID).append(", ").
-		append(DBTableColName.USER_APP.TEMPLATE_ID).append(") VALUES (null, ");
+		append(DBTableColName.USER_APP.TEMPLATE_ID).append(", ").
+		append(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID).
+		append(") VALUES (null, ");
 		
 		str.append("'");
-		str.append(userApp.getTime().toString());
+		str.append(userApp.getAppTime().toString());
 		str.append("', '");
+		
+		str.append(userApp.getSrvStartingTime().toString());
+		str.append("', '");
+		
+		str.append(userApp.getSrvEndingTime().toString());
+		str.append("', ");
 		
 		str.append(userApp.getState().ordinal());
-		str.append("', '");
-		
-		str.append(userApp.getResult().ordinal());
-		str.append("', '");
-		
-		str.append(userApp.getDelState());
-		str.append("', ");
-		
-		str.append(userApp.getContent());
 		str.append(", ");
 		
-		str.append(userApp.getComments());
+		str.append(userApp.getResult().ordinal());
+		str.append(", ");
+		
+		str.append(userApp.getDelState());
 		str.append(", '");
 		
-		str.append(userApp.getUserId());
+		str.append(userApp.getComments());
 		str.append("', ");
 		
-		if (userApp.getTemplateId() != 0)
-			str.append("null");
-		else
-			str.append(userApp.getTemplateId());
+		str.append(userApp.getUserId());
+		str.append(", ");
+		
+		str.append(userApp.getTemplateId());
+		str.append(", ");
+		
+		str.append(userApp.getVmIdImageTypeId());
 		
 		str.append(")");
 		
@@ -228,16 +234,22 @@ public class UserAppDBProcWrapper {
 			append("', ");
 		}
 		
-		if (userApp.getTime() != null) {
-			str.append(DBTableColName.USER_APP.TIME).append(" = ").
-			append(userApp.getTime()).
+		if (userApp.getAppTime() != null) {
+			str.append(DBTableColName.USER_APP.APP_TIME).append(" = ").
+			append(userApp.getAppTime()).
 			append(", ");
 		}
 		
-		if (userApp.getContent() != null) {
-			str.append(DBTableColName.USER_APP.CONTENT).append(" = '").
-			append(userApp.getContent()).
-			append("', ");
+		if (userApp.getSrvStartingTime() != null) {
+			str.append(DBTableColName.USER_APP.SRV_STARTINGTIME).append(" = ").
+			append(userApp.getSrvStartingTime()).
+			append(", ");
+		}
+		
+		if (userApp.getSrvEndingTime() != null) {
+			str.append(DBTableColName.USER_APP.SRV_ENDINGTIME).append(" = ").
+			append(userApp.getSrvEndingTime()).
+			append(", ");
 		}
 		
 		if (userApp.getComments() != null) {
@@ -246,15 +258,15 @@ public class UserAppDBProcWrapper {
 			append("', ");
 		}
 		
-		if (userApp.getUserId() != 0) {
-			str.append(DBTableColName.USER_APP.USER_ID).append(" = ").
-			append(userApp.getUserId()).
-			append(", ");
-		}
-		
 		if (userApp.getTemplateId() != 0) {
 			str.append(DBTableColName.USER_APP.TEMPLATE_ID).append(" = ").
 			append(userApp.getTemplateId()).
+			append(", ");
+		}
+		
+		if (userApp.getVmIdImageTypeId() != 0) {
+			str.append(DBTableColName.USER_APP.USER_ID).append(" = ").
+			append(userApp.getVmIdImageTypeId()).
 			append(", ");
 		}
 		
@@ -274,9 +286,15 @@ public class UserAppDBProcWrapper {
 				append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.NAME).
 				append(", ").
 				append(DBTableName.USER).append(".*").
+				append(", ").
+				append(DBTableName.TEMPLATE).append(".*").
+				append(", ").
+				append(DBTableName.VM_IMAGE_TYPE).append(".*").
+				
 				append(" FROM ").
 				append("( ").
 				append(DBTableName.USER_APP).
+				
 				append(" LEFT JOIN ").
 				append(DBTableName.USER).
 				append(" ON ").
@@ -284,12 +302,28 @@ public class UserAppDBProcWrapper {
 				append(" = ").
 				append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.USER_ID).
 				append(" ) ").
+				
 				append(" LEFT JOIN ").
 				append(DBTableName.ACCOUNT).
 				append(" ON ").
 				append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
 				append(" = ").
 				append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).
+				
+				append(" LEFT JOIN ").
+				append(DBTableName.TEMPLATE).
+				append(" ON ").
+				append(DBTableName.TEMPLATE).append(".").append(DBTableColName.TEMPLATE.ID).
+				append(" = ").
+				append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.TEMPLATE_ID).
+				
+				append(" LEFT JOIN ").
+				append(DBTableName.VM_IMAGE_TYPE).
+				append(" ON ").
+				append(DBTableName.VM_IMAGE_TYPE).append(".").append(DBTableColName.VM_IMAGE_TYPE.ID).
+				append(" = ").
+				append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID).
+				
 				append(" WHERE ").
 				append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.DEL).
 				append(" = 0 ");

@@ -35,14 +35,16 @@ public class DBTableColName {
 	
 	public interface USER_APP {
 		public final String ID = "ua_id";
-		public final String TIME = "ua_time";
+		public final String APP_TIME = "ua_apptime";
+		public final String SRV_STARTINGTIME = "ua_srv_startingtime";
+		public final String SRV_ENDINGTIME = "ua_srv_endingtime";
 		public final String STATE = "ua_state";
 		public final String RESULT = "ua_result";
 		public final String DEL = "ua_del";
-		public final String CONTENT = "ua_content";
 		public final String COMMENT = "ua_comment";
 		public final String USER_ID = "user_id";
-		public final String TEMPLATE_ID = "template_id";	
+		public final String TEMPLATE_ID = "template_id";
+		public final String VM_IMAGE_TYPE_ID = "vit_id";
 	}	
 
 	public interface USER_POLICY {
@@ -167,6 +169,12 @@ public class DBTableColName {
 	public interface VM_SERVICE {
 		public final String USER_ID = "user_id"; 
 		public final String VM_ID = "vm_id";
+	}
+	
+	public interface VM_IMAGE_TYPE {
+		public final String ID = "vit_id"; 
+		public final String OS = "vit_os";
+		public final String ver = "vit_ver";
 	}
 	
 	public interface BW_SERVICE {

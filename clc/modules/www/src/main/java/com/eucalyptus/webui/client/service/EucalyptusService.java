@@ -881,7 +881,7 @@ public interface EucalyptusService extends RemoteService {
 	 * @param userId
 	 * @throws EucalyptusServiceException
 	 */
-	void addUserApp(Session session, String userId, String templateId) throws EucalyptusServiceException;
+	void addUserApp(Session session, UserApp userApp) throws EucalyptusServiceException;
 	
 	/**
 	 * Delete user applications.
