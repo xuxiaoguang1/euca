@@ -19,6 +19,8 @@ import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 import com.google.gwt.view.client.SingleSelectionModel;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.datepicker.client.DatePicker;
+import com.google.gwt.user.datepicker.client.DateBox;
 
 public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTemplateListView {
 
@@ -107,6 +109,8 @@ public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTempl
 	@UiField LayoutPanel tablePanel;
 	@UiField Button buttonOk;
 	@UiField Button buttonCancle;
+	@UiField DateBox startingTime;
+	@UiField DateBox endingTime;
 
 	private SingleSelectionModel<SearchResultRow> selectionModel;
 	private SearchResultTable table;

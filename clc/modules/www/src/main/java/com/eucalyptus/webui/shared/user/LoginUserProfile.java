@@ -2,7 +2,7 @@ package com.eucalyptus.webui.shared.user;
 
 import java.io.Serializable;
 
-import com.eucalyptus.webui.server.dictionary.RootAccount;
+import com.eucalyptus.webui.shared.dictionary.RootAccount;
 
 //import com.eucalyptus.auth.principal.Account;
 
