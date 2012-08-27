@@ -20,6 +20,7 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 import com.google.gwt.view.client.SingleSelectionModel;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.client.ui.ListBox;
@@ -34,20 +35,22 @@ public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTempl
 		setWidget(uiBinder.createAndBindUi(this));
 		this.currentSelected = null;
 		
+		this.startingTime.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getShortDateFormat()));
+		this.endingTime.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getShortDateFormat()));
+		
 		setGlassEnabled(true);
 	}
 
 	@UiHandler("buttonOk")
 	void onButtonOkClick(ClickEvent event) {
-		this.hide();
-		
+			
 		if (this.currentSelected == null)
 			return;
 		
-		if (this.startingTime.getValue().getTime() - this.endingTime.getValue().getTime() < 0)
+		if (this.startingTime.getValue() == null || this.endingTime.getValue() == null)
 			return;
 		
-		if (this.startingTime.getValue().getTime() - this.endingTime.getValue().getTime() < 0)
+		if (this.startingTime.getValue().getTime() - this.endingTime.getValue().getTime() > 0)
 			return;
 		
 		int templateId = Integer.parseInt(this.currentSelected.getField(0));
@@ -62,6 +65,8 @@ public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTempl
 		this.presenter.doCreateUserApp(userApp);
 		
 		clearSelection();
+		
+		this.hide();
 	}
 	
 	@UiHandler("buttonCancle")
@@ -107,9 +112,9 @@ public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTempl
 	}
 	
 	@Override
-	public void display(SearchResult result) {
+	public void display(SearchResult deviceTemplateList) {
 		// TODO Auto-generated method stub
-		this.showSearchResult(result);
+		this.showSearchResult(deviceTemplateList);
 		this.center();
 		this.show();
 	}

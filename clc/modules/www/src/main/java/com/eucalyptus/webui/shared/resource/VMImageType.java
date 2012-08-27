@@ -10,6 +10,18 @@ public class VMImageType implements java.io.Serializable {
 	private String os;
 	private String ver;
 	
+	public VMImageType() {
+		this.id = 0;
+		this.os = null;
+		this.ver = null;
+	}
+	
+	public VMImageType(int id, String os, String ver) {
+		this.id = id;
+		this.os = os;
+		this.ver = ver;
+	}
+	
 	public void setId(int id) {
 		this.id = id;
 	}

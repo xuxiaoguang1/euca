@@ -128,7 +128,6 @@ public class UserAppServiceProcImpl {
 		  List<SearchResultFieldDesc> FIELDS;
 		  
 		  if (isRootAdmin) {
-			 
 			  FIELDS = FIELDS_ROOT;
 		  }
 		  else {
@@ -137,25 +136,20 @@ public class UserAppServiceProcImpl {
 		  
 		  final int sortField = range.getSortField( );
 		  
-		  DATA = resultSet2List(isRootAdmin, rs);
+		  DATA = resultSet2List(rs);
 		  
 		  int resultLength = Math.min( range.getLength( ), DATA.size( ) - range.getStart( ) );
 		  SearchResult result = new SearchResult( DATA.size( ), range );
 		  result.setDescs( FIELDS );
 		  result.setRows( DATA.subList( range.getStart( ), range.getStart( ) + resultLength ) );
-		
-		  for ( SearchResultRow row : result.getRows( ) ) {
-			  System.out.println( "Row: " + row );
-		  }
 			
 		  return result;
 	  }
-	  private List<SearchResultRow> resultSet2List(boolean isRootView, ResultSetWrapper rsWrapper) {
+	  
+	  private List<SearchResultRow> resultSet2List(ResultSetWrapper rsWrapper) {
 		  ResultSet rs = rsWrapper.getResultSet();
 		  int index = 1;
 		  List<SearchResultRow> result = null;
-		  
-		  Date date = new Date();
 		  
 		  try {
 			  if (rs != null) {
@@ -171,11 +165,10 @@ public class UserAppServiceProcImpl {
 					  String state = Enum2String.getInstance().getUserAppStateName(rs.getString(DBTableColName.USER_APP.STATE));
 					  String appResult = Enum2String.getInstance().getUserAppResultName(rs.getString(DBTableColName.USER_APP.RESULT));
 					  String comment = rs.getString(DBTableColName.USER_APP.COMMENT);
-					 
 					  
 					  result.add( new SearchResultRow(Arrays.asList(id, Integer.toString(index++), 
 							  										accountName, userName,
-							  										"详细", "详细",
+							  										"查看模板", "查看镜像",
 							  										appTime, srvStatingTime, srvEndingTime, 
 							  										state, appResult, comment != null ? comment : "")));
 				  }
@@ -212,13 +205,13 @@ public class UserAppServiceProcImpl {
 				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TEMPLATE[1], true, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_VM_IMAGE_TYPE[1], true, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TEMPLATE[1], true, "10%", TableDisplay.MANDATORY, Type.LINK, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_VM_IMAGE_TYPE[1], true, "10%", TableDisplay.MANDATORY, Type.LINK, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_APPTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_SRV_STARTINGTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_SRV_ENDINGTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_RESULT[1], true, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_RESULT[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_COMMENT[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false )
 				
 			);
@@ -226,15 +219,15 @@ public class UserAppServiceProcImpl {
 	  private static final List<SearchResultFieldDesc> FIELDS_NONROOT = Arrays.asList(
 			  new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "5%", false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, true ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TEMPLATE[1], true, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_VM_IMAGE_TYPE[1], true, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TEMPLATE[1], true, "10%", TableDisplay.MANDATORY, Type.LINK, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_VM_IMAGE_TYPE[1], true, "10%", TableDisplay.MANDATORY, Type.LINK, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_APPTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_SRV_STARTINGTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_SRV_ENDINGTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_RESULT[1], true, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_RESULT[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_COMMENT[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false )
 			);
 }

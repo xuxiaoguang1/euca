@@ -10,6 +10,7 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.DeviceCPUDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
+import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
@@ -256,6 +257,7 @@ public interface EucalyptusServiceAsync {
 	void deleteUserApp(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
 	void modifyUserApp(Session session, ArrayList<UserApp> userApps, AsyncCallback<Void> callback);
 	void countUserApp(Session session, AsyncCallback<ArrayList<UserAppStateCount>> callback);
+	void queryVMImageType(Session session, AsyncCallback<ArrayList<VMImageType>> callback);
 	
 //	void listAccessKeysByUser(Session session, String userId, AsyncCallback<SearchResult> callback);
 //	void listAccessKeys(Session session, AsyncCallback<SearchResult> callback);

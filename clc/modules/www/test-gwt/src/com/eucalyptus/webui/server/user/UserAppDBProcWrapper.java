@@ -2,6 +2,7 @@ package com.eucalyptus.webui.server.user;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
@@ -185,13 +186,13 @@ public class UserAppDBProcWrapper {
 		append(") VALUES (null, ");
 		
 		str.append("'");
-		str.append(userApp.getAppTime().toString());
+		str.append(dateformat.format(userApp.getAppTime()).toString());
 		str.append("', '");
 		
-		str.append(userApp.getSrvStartingTime().toString());
+		str.append(dateformat.format(userApp.getSrvStartingTime()).toString());
 		str.append("', '");
 		
-		str.append(userApp.getSrvEndingTime().toString());
+		str.append(dateformat.format(userApp.getSrvEndingTime()).toString());
 		str.append("', ");
 		
 		str.append(userApp.getState().ordinal());
@@ -201,10 +202,15 @@ public class UserAppDBProcWrapper {
 		str.append(", ");
 		
 		str.append(userApp.getDelState());
-		str.append(", '");
+		str.append(", ");
 		
-		str.append(userApp.getComments());
-		str.append("', ");
+		if (Strings.isNullOrEmpty(userApp.getComments())) {
+			str.append("null, ");
+		}
+		else {
+			str.append("'").append(userApp.getComments());
+			str.append("', ");
+		}
 		
 		str.append(userApp.getUserId());
 		str.append(", ");
@@ -235,21 +241,21 @@ public class UserAppDBProcWrapper {
 		}
 		
 		if (userApp.getAppTime() != null) {
-			str.append(DBTableColName.USER_APP.APP_TIME).append(" = ").
-			append(userApp.getAppTime()).
-			append(", ");
+			str.append(DBTableColName.USER_APP.APP_TIME).append(" = '").
+			append(dateformat.format(userApp.getAppTime()).toString()).
+			append("', ");
 		}
 		
 		if (userApp.getSrvStartingTime() != null) {
-			str.append(DBTableColName.USER_APP.SRV_STARTINGTIME).append(" = ").
-			append(userApp.getSrvStartingTime()).
-			append(", ");
+			str.append(DBTableColName.USER_APP.SRV_STARTINGTIME).append(" = '").
+			append(dateformat.format(userApp.getSrvStartingTime()).toString()).
+			append("', ");
 		}
 		
 		if (userApp.getSrvEndingTime() != null) {
-			str.append(DBTableColName.USER_APP.SRV_ENDINGTIME).append(" = ").
-			append(userApp.getSrvEndingTime()).
-			append(", ");
+			str.append(DBTableColName.USER_APP.SRV_ENDINGTIME).append(" = '").
+			append(dateformat.format(userApp.getSrvEndingTime())).
+			append("', ");
 		}
 		
 		if (userApp.getComments() != null) {
@@ -412,4 +418,6 @@ public class UserAppDBProcWrapper {
 		
 		return sql.toString();
 	}
+	
+	SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
 }

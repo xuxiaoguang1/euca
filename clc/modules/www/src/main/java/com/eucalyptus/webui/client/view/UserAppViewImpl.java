@@ -145,6 +145,9 @@ public class UserAppViewImpl extends Composite implements UserAppView {
 		} );
     
 		table = new SearchResultTable( pageSize, fieldDescs, this.presenter, selectionModel );
+		
+		//table.setCellClickProc();
+		
 		tablePanel.add( table );
 		table.load( );
 	}
@@ -190,5 +193,11 @@ public class UserAppViewImpl extends Composite implements UserAppView {
 		this.labelToSolve.setText("待解决申请数量: " + toSolveCount);
 		this.labelSolved.setText("已处理申请数量: " + solvedCount);
 		this.labelSolving.setText("正处理申请数量: " + solvingCount);
+	}
+
+	@Override
+	public void setCellClickProc(SearchTableCellClickHandler clickHandler) {
+		// TODO Auto-generated method stub
+		this.table.setCellClickHandler(clickHandler);
 	}
 }

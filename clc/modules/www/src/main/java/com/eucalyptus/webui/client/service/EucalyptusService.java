@@ -10,6 +10,7 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.DeviceCPUDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
+import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
@@ -908,6 +909,14 @@ public interface EucalyptusService extends RemoteService {
 	 * @throws EucalyptusServiceException
 	 */
 	ArrayList<UserAppStateCount> countUserApp(Session session) throws EucalyptusServiceException;
+	
+	/**
+	 * query vm image type list.
+	 * 
+	 * @param session
+	 * @throws EucalyptusServiceException
+	 */
+	ArrayList<VMImageType> queryVMImageType(Session session) throws EucalyptusServiceException;
 	
   
   /**

@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 public interface UserAppView extends IsWidget, CanDisplaySearchResult, Clearable, SelectionController {
 	
 	void setPresenter( Presenter presenter );
+	void setCellClickProc(SearchTableCellClickHandler clickHandler);
 	void displayCtrl(LoginUserProfile curUser);
 	void updateCountInfo(ArrayList<UserAppStateCount> countInfo);
 	

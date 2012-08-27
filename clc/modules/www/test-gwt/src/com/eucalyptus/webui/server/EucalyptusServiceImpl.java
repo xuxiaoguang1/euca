@@ -22,6 +22,7 @@ import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
 import com.eucalyptus.webui.server.user.AuthenticateUserLogin;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.server.user.PwdResetProc;
+import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
@@ -1002,6 +1003,14 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
 		
 		return userAppServiceProc.countUserApp(curUser);
+	}
+
+	@Override
+	public ArrayList<VMImageType> queryVMImageType(Session session)
+			throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		verifySession(session);
+		return deviceVMServiceProc.queryVMImageType();
 	}
 
 	

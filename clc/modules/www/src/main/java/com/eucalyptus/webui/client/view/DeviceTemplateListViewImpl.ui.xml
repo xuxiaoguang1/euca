@@ -9,7 +9,7 @@
 					<g:layer left="33px" width="77px" top="17px" height="16px">
 						<g:Label text="服务开始时间"/>
 					</g:layer>
-					<g:layer left="115px" width="160px" top="15px" height="20px">
+					<g:layer left="115px" width="160px" top="15px" height="25px">
 						<p1:DateBox ui:field="startingTime"/>
 					</g:layer>
 					<g:layer left="343px" width="77px" top="17px" height="16px">
@@ -21,7 +21,7 @@
 					<g:layer left="33px" width="77px" top="60px" height="16px">
 						<g:Label text="服务开始时间"/>
 					</g:layer>
-					<g:layer left="115px" width="169px" top="60px" height="25px">
+					<g:layer left="115px" width="161px" top="60px" height="25px">
 						<g:ListBox ui:field="VMImageTypeList"/>
 					</g:layer>
 		</g:LayoutPanel>

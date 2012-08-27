@@ -55,37 +55,39 @@
 	                    <colgroup width="1px"/>
 	                    <colgroup width="1px"/>
 						<tbody>
+							<tr><td>&nbsp;</td></tr>
 							<tr>
-								<td colspan="5">&nbsp;</td>
+							<td width="100%" align="left">
+								<table width="70%">
+								<tr>
+									<td width="5%">&nbsp;</td>
+									<td width="30%">
+										<g:Anchor styleName="{style.topLinks}" ui:field="labelAll" height="35px">全部申请数量：0</g:Anchor>
+									</td>
+									<td width="5%">&nbsp;</td>
+									<td width="30%">
+										<g:Anchor styleName="{style.topLinks}" ui:field="labelToSolve" height="35px">待解决申请数量：0</g:Anchor>
+									</td>
+									<td width="20%">&nbsp;</td>
+								</tr>
+								<tr>
+									<td width="5%">&nbsp;</td>
+									<td width="30%">
+										<g:Anchor styleName="{style.topLinks}" ui:field="labelSolved" height="35px">已处理申请数量：0</g:Anchor>
+									</td>
+									<td width="5%">&nbsp;</td>
+									<td width="30%">
+										<g:Anchor styleName="{style.topLinks}" ui:field="labelSolving" height="35px"><font color="blue">正处理申请数量：0</font>></g:Anchor>
+									</td>
+									<td width="20%">&nbsp;</td>
+								</tr>
+								</table>
+							</td>
 							</tr>
+							<tr><td>&nbsp;</td></tr>
 							<tr>
-								<td width="10%">&nbsp;</td>
-								<td width="15%">
-									<g:Anchor styleName="{style.topLinks}" ui:field="labelAll" height="35px">全部申请数量：0</g:Anchor>
-								</td>
-								<td width="10%">&nbsp;</td>
-								<td width="15%">
-									<g:Anchor styleName="{style.topLinks}" ui:field="labelToSolve" height="35px">待解决申请数量：0</g:Anchor>
-								</td>
-								<td width="50%">&nbsp;</td>
-							</tr>
-							<tr>
-								<td width="10%">&nbsp;</td>
-								<td width="15%">
-									<g:Anchor styleName="{style.topLinks}" ui:field="labelSolved" height="35px">已处理申请数量：0</g:Anchor>
-								</td>
-								<td width="10%">&nbsp;</td>
-								<td width="15%">
-									<g:Anchor styleName="{style.topLinks}" ui:field="labelSolving" height="35px"><font color="blue">正处理申请数量：0</font>></g:Anchor>
-								</td>
-								<td width="50%">&nbsp;</td>
-							</tr>
-							<tr>
-								<td colspan="5">&nbsp;</td>
-							</tr>
-							<tr>
-	                           <td clolspan="5">
-		                           <table width="30%">
+	                           <td align="left">
+		                           <table width="25%">
 		                           		<tr>
 				                           <td>                             
 				                               <g:Anchor styleName="{global.buttonCss.positive} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="buttonApproveUserApp">
@@ -112,6 +114,7 @@
 				                   </table>
 			                   </td>
 	                       </tr>
+	                       <tr><td>&nbsp;</td></tr>
 						</tbody>
 					</table>
 			</g:HTMLPanel>
