@@ -1,0 +1,41 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:euca="urn:import:com.eucalyptus.webui.client.view">
+    
+	<ui:style>
+        .toolbar {
+            width:99%;
+        }
+    </ui:style>
+	
+	<ui:with field="global" type="com.eucalyptus.webui.client.view.GlobalResources"/>
+	
+	<g:DockLayoutPanel unit="PX">
+        <g:north size="36">
+            <g:HTMLPanel addStyleNames="{style.toolbar}">
+                <table>
+                    <colgroup width="1px"/>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.small} {global.buttonCss.button}" ui:field="firButton">
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>一号按钮
+                                </g:Anchor>
+                            </td>
+                            <td>&nbsp;</td>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.small} {global.buttonCss.button}" ui:field="secButton">
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>二号按钮
+                                </g:Anchor>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </g:HTMLPanel>
+        </g:north>
+        <g:center>
+            <g:AbsolutePanel ui:field="chartPanel"/>
+        </g:center>
+    </g:DockLayoutPanel>
+</ui:UiBinder> 

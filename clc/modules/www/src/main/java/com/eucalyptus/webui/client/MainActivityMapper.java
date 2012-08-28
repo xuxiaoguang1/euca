@@ -2,9 +2,11 @@ package com.eucalyptus.webui.client;
 
 import com.eucalyptus.webui.client.activity.AccountActivity;
 import com.eucalyptus.webui.client.activity.ApproveActivity;
+import com.eucalyptus.webui.client.activity.CPUStatActivity;
 import com.eucalyptus.webui.client.activity.CertActivity;
 import com.eucalyptus.webui.client.activity.ClusterCtrlActivity;
 import com.eucalyptus.webui.client.activity.DeviceVMActivity;
+import com.eucalyptus.webui.client.activity.DiskStatActivity;
 import com.eucalyptus.webui.client.activity.ErrorSinkActivity;
 import com.eucalyptus.webui.client.activity.GroupActivity;
 import com.eucalyptus.webui.client.activity.ImageActivity;
@@ -21,6 +23,7 @@ import com.eucalyptus.webui.client.activity.KeyActivity;
 import com.eucalyptus.webui.client.activity.KeypairActivity;
 import com.eucalyptus.webui.client.activity.LogoutActivity;
 import com.eucalyptus.webui.client.activity.ConfigActivity;
+import com.eucalyptus.webui.client.activity.MemoryStatActivity;
 import com.eucalyptus.webui.client.activity.NodeCtrlActivity;
 import com.eucalyptus.webui.client.activity.PolicyActivity;
 import com.eucalyptus.webui.client.activity.RejectActivity;
@@ -33,9 +36,11 @@ import com.eucalyptus.webui.client.activity.VmTypeActivity;
 import com.eucalyptus.webui.client.activity.WalrusCtrlActivity;
 import com.eucalyptus.webui.client.place.AccountPlace;
 import com.eucalyptus.webui.client.place.ApprovePlace;
+import com.eucalyptus.webui.client.place.CPUStatPlace;
 import com.eucalyptus.webui.client.place.CertPlace;
 import com.eucalyptus.webui.client.place.ClusterCtrlPlace;
 import com.eucalyptus.webui.client.place.DeviceVMPlace;
+import com.eucalyptus.webui.client.place.DiskStatPlace;
 import com.eucalyptus.webui.client.place.ErrorSinkPlace;
 import com.eucalyptus.webui.client.place.GroupPlace;
 import com.eucalyptus.webui.client.place.ImagePlace;
@@ -52,6 +57,7 @@ import com.eucalyptus.webui.client.place.KeyPlace;
 import com.eucalyptus.webui.client.place.KeypairPlace;
 import com.eucalyptus.webui.client.place.LogoutPlace;
 import com.eucalyptus.webui.client.place.ConfigPlace;
+import com.eucalyptus.webui.client.place.MemoryStatPlace;
 import com.eucalyptus.webui.client.place.NodeCtrlPlace;
 import com.eucalyptus.webui.client.place.PolicyPlace;
 import com.eucalyptus.webui.client.place.RejectPlace;
@@ -166,10 +172,20 @@ public class MainActivityMapper implements ActivityMapper {
 		else if ( place instanceof StorageCtrlPlace ) {
 			return new StorageCtrlActivity( ( StorageCtrlPlace )place, this.clientFactory );
 		}
-    else if ( place instanceof KeypairPlace ) {
-      return new KeypairActivity( ( KeypairPlace )place, this.clientFactory );
-    }
-		
-		return null;
+	    else if ( place instanceof KeypairPlace ) {
+	    	return new KeypairActivity( ( KeypairPlace )place, this.clientFactory );
+	    }
+	    else if ( place instanceof CPUStatPlace ) {
+	    	return new CPUStatActivity( ( CPUStatPlace )place, this.clientFactory );
+		}
+	    else if ( place instanceof MemoryStatPlace ) {
+	    	return new MemoryStatActivity( ( MemoryStatPlace )place, this.clientFactory );
+		}
+	    else if ( place instanceof DiskStatPlace ) {
+	    	return new DiskStatActivity( ( DiskStatPlace )place, this.clientFactory );
+		}
+	    else{
+			return null;
+	    }
 	}
 }

@@ -26,7 +26,8 @@ public class QuickLinks {
 		try {
 			return new ArrayList<QuickLinkTag>( Arrays.asList(getQuickLinkTag("用户管理", "用户管理", "组管理", "账户管理", "策略管理", "密钥管理", "证书管理", "用户申请管理"),
 									getQuickLinkTag("资源管理", "服务器管理",  "内存管理", "硬盘管理", "CPU管理", "带宽管理", "IP管理", "模板管理", "虚拟机管理", "镜像管理", "Keypair管理"),
-									getQuickLinkTag("组件管理", "节点控制器管理", "集群控制器管理", "存储控制器管理", "Walrus控制器管理")));
+									getQuickLinkTag("组件管理", "节点控制器管理", "集群控制器管理", "存储控制器管理", "Walrus控制器管理"),
+									getQuickLinkTag("统计管理", "基本资源统计", "CPU统计", "内存统计", "硬盘统计", "历史使用情况统计")));
 		} catch ( Exception e ) { 
 			throw new EucalyptusServiceException( "Failed to load user information for ");
 		}    
@@ -81,6 +82,13 @@ public class QuickLinks {
 			getQuickLink("镜像", "image", QueryType.image),
 			getQuickLink("虚拟机类型", "type", QueryType.vmtype),
 			getQuickLink("使用报告", "report", QueryType.report),
+			
+			//统计管理
+			getQuickLink("基本资源统计", "report", QueryType.res_stat),
+			getQuickLink("CPU统计", "report", QueryType.cpu_stat),
+			getQuickLink("内存统计", "report", QueryType.memory_stat),
+			getQuickLink("硬盘统计", "report", QueryType.disk_stat),
+			getQuickLink("历史使用情况统计", "report", QueryType.history_stat),
 	};
 	
 	private static QuickLink getQuickLink(String name, String image, QueryType type) {
