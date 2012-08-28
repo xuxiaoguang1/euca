@@ -174,7 +174,7 @@ public class DBTableColName {
 	public interface VM_IMAGE_TYPE {
 		public final String ID = "vit_id"; 
 		public final String OS = "vit_os";
-		public final String ver = "vit_ver";
+		public final String VER = "vit_ver";
 	}
 	
 	public interface BW_SERVICE {

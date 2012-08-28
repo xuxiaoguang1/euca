@@ -24,6 +24,7 @@ import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.AsyncDataProvider;
@@ -125,8 +126,9 @@ public class SearchResultTable extends Composite {
 	      cellTable.setColumnWidth(checkBoxColumn, desc.getWidth());
       }
       else if (colType == SearchResultFieldDesc.Type.LINK) {
-    	  ClickableTextCell previewButton = new ClickableTextCell();
-    	  Column<SearchResultRow,String> linkColumn = new Column<SearchResultRow,String>(previewButton) {
+    	  SearchTableClickableCell preview = new SearchTableClickableCell();
+    	  preview.setColIndex(index);
+    	  final Column<SearchResultRow, String> linkColumn = new Column<SearchResultRow, String>(preview) {
     	    public String getValue(SearchResultRow object) {
     	      return object.getField(index);
     	    }
@@ -136,8 +138,10 @@ public class SearchResultTable extends Composite {
     		  @Override
     		  public void update(int index, SearchResultRow object, String value) {
     		    // The user clicked on the button for the passed auction.
-    			if (cellClickHandler != null)
-    				cellClickHandler.onClick(index, object, value);
+    			if (cellClickHandler != null) {
+    				int colIndex = ((SearchTableClickableCell)linkColumn.getCell()).getColIndex();
+    				cellClickHandler.onClick(index, colIndex, object);
+    			}
     		  }
     		});
     	  

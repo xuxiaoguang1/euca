@@ -22,21 +22,27 @@ public class SearchResultRow implements Serializable {
   };
   
   private ArrayList<String> row = new ArrayList<String>( );
+  private ArrayList<String> link = new ArrayList<String>( );
+  
   // Row specific extra field descriptions
   private ArrayList<SearchResultFieldDesc> extraFields = new ArrayList<SearchResultFieldDesc>( );
   
   public SearchResultRow copy() {
-	  return new SearchResultRow(row, extraFields);
+	  return new SearchResultRow(row, extraFields, link);
   }
   
   public SearchResultRow( ) {
   }
   
   public SearchResultRow( List<String> row ) {
-    this( row, null );
+    this( row, null, null );
   }
   
-	public SearchResultRow(List<String> row, List<SearchResultFieldDesc> extra) {
+  public SearchResultRow( List<String> row, List<String> link ) {
+	    this( row, null, link );
+  }
+  
+	public SearchResultRow(List<String> row, List<SearchResultFieldDesc> extra, List<String> link) {
 		if (row != null) {
 			for (String field : row) {
 				if (field == null) {
@@ -51,6 +57,14 @@ public class SearchResultRow implements Serializable {
 					field = new SearchResultFieldDesc();
 				}
 				this.extraFields.add(field);
+			}
+		}
+		if (link != null) {
+			for (String field : link) {
+				if (field == null) {
+					field = "";
+				}
+				this.link.add(field);
 			}
 		}
 	}
@@ -86,6 +100,27 @@ public class SearchResultRow implements Serializable {
     row.add( val );
   }
   
+  public String getLink( int i ) {
+	if ( i < link.size( ) ) {
+	  return link.get( i );
+	}
+	return null;
+  }
+  
+  public void setLink( int i, String val ) {
+	if ( val == null ) {
+	  val = "";
+	}    
+	link.set(i, val);
+  }
+
+  public void addLink( String val ) {
+	if ( val == null ) {
+		val = "";
+	}
+	link.add( val );
+  }
+  
   public void setExtraFieldDesc( int i, SearchResultFieldDesc desc ) {
     this.extraFields.set( i, desc );
   }
@@ -110,6 +145,10 @@ public class SearchResultRow implements Serializable {
     return this.row;
   }
   
+  public ArrayList<String> getLink( ) {
+	    return this.link;
+  }
+  
   @Override
   public boolean equals( Object that ) {
     if ( this == that ) {
@@ -126,6 +165,15 @@ public class SearchResultRow implements Serializable {
       if ( ! ( this.row.get( i ).equals( thatRow.row.get( i ) ) ) ) {
         return false;
       }
+    }
+    
+    if ( this.link.size( ) != thatRow.link.size( ) ) {
+        return false;
+    }
+    for ( int i = 0; i < this.link.size( ); i++ ) {
+        if ( ! ( this.link.get( i ).equals( thatRow.link.get( i ) ) ) ) {
+          return false;
+        }
     }
     return true;
   }

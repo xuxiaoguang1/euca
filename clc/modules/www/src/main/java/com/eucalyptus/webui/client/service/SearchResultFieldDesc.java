@@ -27,6 +27,8 @@ public class SearchResultFieldDesc implements Serializable {
     ACTION      // custom action, usually causing a popup
   }
   
+  public static final String LINK_VALUE[] = {"Details ...", "查看 ..."};
+  
   private String name;                // ID of the field, also used as the key of a KEYVAL
   private String title;               // title for display
   private Boolean sortable;           // if sortable in table display

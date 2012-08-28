@@ -166,11 +166,28 @@ public class UserAppServiceProcImpl {
 					  String appResult = Enum2String.getInstance().getUserAppResultName(rs.getString(DBTableColName.USER_APP.RESULT));
 					  String comment = rs.getString(DBTableColName.USER_APP.COMMENT);
 					  
-					  result.add( new SearchResultRow(Arrays.asList(id, Integer.toString(index++), 
+					  String cpu = rs.getString(DBTableColName.TEMPLATE.CPU);
+					  String cpuCount = rs.getString(DBTableColName.TEMPLATE.NCPUS);
+					  String mem = rs.getString(DBTableColName.TEMPLATE.MEM);
+					  String disk = rs.getString(DBTableColName.TEMPLATE.DISK);
+
+					  String template = formatTemplateInfo(cpu, cpuCount, mem, disk);
+				
+					  String os = rs.getString(DBTableColName.VM_IMAGE_TYPE.OS);
+					  String ver = rs.getString(DBTableColName.VM_IMAGE_TYPE.VER);
+					  String vmImageInfo = formatVMImageTypeInfo(os, ver);
+					  
+					  List<String> fields = Arrays.asList(id, Integer.toString(index++), 
 							  										accountName, userName,
-							  										"查看模板", "查看镜像",
+							  										SearchResultFieldDesc.LINK_VALUE[1], SearchResultFieldDesc.LINK_VALUE[1],
 							  										appTime, srvStatingTime, srvEndingTime, 
-							  										state, appResult, comment != null ? comment : "")));
+							  										state, appResult, comment != null ? comment : "");
+					  
+					  List<String> links = Arrays.asList(null, null, null, null, template, vmImageInfo,	null, null, null, null, null, null);
+					  
+					  SearchResultRow row = new SearchResultRow(fields, links);
+					  
+					  result.add(row);
 				  }
 			  }
 			rsWrapper.close();			
@@ -181,6 +198,29 @@ public class UserAppServiceProcImpl {
 		  
 		  return result;
 	  }
+	  
+	  private String formatTemplateInfo(String cpu, String cpuCount, String mem, String disk) {
+		  StringBuilder str = new StringBuilder();
+		  
+		  str.append("模板详细信息：").append("\n");
+		  str.append("    CPU： ").append(cpu).append("\n");
+		  str.append("    CPU数量： ").append(cpuCount).append("\n");
+		  str.append("    内存： ").append(mem).append("GB").append("\n");
+		  str.append("    磁盘： ").append(disk).append("GB");
+		  
+		  return str.toString();
+	  }
+	  
+	  private String formatVMImageTypeInfo(String os, String version) {
+		  StringBuilder str = new StringBuilder();
+		  
+		  str.append("镜像详细信息：").append("\n");
+		  str.append("    操作系统： ").append(os).append("\n");
+		  str.append("    版本： ").append(version);
+		  
+		  return str.toString();
+	  }
+	  
 	  
 	  private UserAppDBProcWrapper userAppDBProc = new UserAppDBProcWrapper();
 	  private DeviceTemplateServiceProcImpl deviceTemDBProc = new DeviceTemplateServiceProcImpl();

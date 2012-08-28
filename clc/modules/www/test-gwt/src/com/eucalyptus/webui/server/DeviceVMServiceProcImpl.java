@@ -37,7 +37,7 @@ public class DeviceVMServiceProcImpl {
 				while (rs.next()) {
 					VMImageType imageType = new VMImageType(Integer.valueOf(rs.getString(DBTableColName.VM_IMAGE_TYPE.ID)),
 							  							rs.getString(DBTableColName.VM_IMAGE_TYPE.OS),
-														rs.getString(DBTableColName.VM_IMAGE_TYPE.ver));
+														rs.getString(DBTableColName.VM_IMAGE_TYPE.VER));
 					list.add(imageType);
 				}
 			}

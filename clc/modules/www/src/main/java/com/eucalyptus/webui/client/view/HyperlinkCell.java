@@ -14,12 +14,12 @@ import com.google.gwt.user.client.ui.Hyperlink;
  * 
  * @author turbomanage
  */
-public class HyperlinkCell extends AbstractCell<Hyperlink>
+public class HyperlinkCell extends AbstractCell<String[]>
 {
         @Override
         public void render(com.google.gwt.cell.client.Cell.Context context,
-                        Hyperlink h, SafeHtmlBuilder sb)
+                        String[] h, SafeHtmlBuilder sb)
         {
-                sb.append(SafeHtmlUtils.fromTrustedString(h.toString()));
+                sb.append(SafeHtmlUtils.fromTrustedString(h[0]));
         }
 }
