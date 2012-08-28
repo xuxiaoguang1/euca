@@ -10,10 +10,8 @@ import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.DetailView;
-import com.eucalyptus.webui.client.view.ImageView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.StorageCtrlView;
-import com.eucalyptus.webui.client.view.WalrusCtrlView;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class StorageCtrlActivity extends AbstractSearchActivity implements StorageCtrlView.Presenter, DetailView.Presenter {

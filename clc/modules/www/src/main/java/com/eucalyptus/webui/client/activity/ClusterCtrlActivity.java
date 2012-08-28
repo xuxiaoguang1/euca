@@ -11,7 +11,6 @@ import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.ClusterCtrlView;
 import com.eucalyptus.webui.client.view.DetailView;
-import com.eucalyptus.webui.client.view.ImageView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

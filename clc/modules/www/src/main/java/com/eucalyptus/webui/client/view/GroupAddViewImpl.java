@@ -34,6 +34,7 @@ public class GroupAddViewImpl extends DialogBox implements GroupAddView {
 	@UiField RadioButton groupStateNormalRadio;
 	@UiField RadioButton groupStatePauseRadio;
 	@UiField RadioButton groupStateBanRadio;
+	@UiField TextBox groupIdInput;
 	
 	Presenter presenter;
 	
@@ -46,11 +47,12 @@ public class GroupAddViewImpl extends DialogBox implements GroupAddView {
 	public GroupAddViewImpl() {
 		setWidget(uiBinder.createAndBindUi(this));
 		
+		this.groupIdInput.setVisible(false);
+		
 		groupStateNormalRadio.setTitle(EnumState.NORMAL.toString());
 		groupStatePauseRadio.setTitle(EnumState.PAUSE.toString());
 		groupStateBanRadio.setTitle(EnumState.BAN.toString());
 		
-		this.groupState = EnumState.NORMAL;
 		this.groupStateNormalRadio.setValue(true);
 		
 		setText(GROUP_ADD_VIEW_CAPTION[1]);
@@ -87,14 +89,59 @@ public class GroupAddViewImpl extends DialogBox implements GroupAddView {
 		// TODO Auto-generated method stub
 		if (accounts == null)
 			return;
+		this.accountCombo.clear();
+				
+		for (AccountInfo account : accounts) {
+			this.accountCombo.addItem(account.getName(), Integer.valueOf(account.getId()).toString());
+		}
 		
 		this.accountLable.setVisible(true);
 		this.accountCombo.setVisible(true);
+	}
+	
+	@Override
+	public void setGroup(GroupInfo group) {
+		// TODO Auto-generated method stub
+		this.groupIdInput.setText(Integer.toString(group.getId()));
+		this.nameInput.setText(group.getName());
+		this.descriptionInput.setText(group.getDescription());
 		
-		this.accountCombo.clear();
+		this.groupStateNormalRadio.setValue(false);
+		this.groupStatePauseRadio.setValue(false);
+		this.groupStateBanRadio.setValue(false);
 		
-		for (AccountInfo account : accounts) {
-			this.accountCombo.addItem(account.getName(), Integer.valueOf(account.getId()).toString());
+		switch (group.getState()) {
+		case NORMAL:
+			this.groupStateNormalRadio.setValue(true);
+			this.groupStatePauseRadio.setValue(false);
+			this.groupStateBanRadio.setValue(false);
+			
+			break;
+		
+		case PAUSE:
+			this.groupStateNormalRadio.setValue(false);
+			this.groupStatePauseRadio.setValue(true);
+			this.groupStateBanRadio.setValue(false);
+			
+			break;
+		
+		case BAN:
+			this.groupStateNormalRadio.setValue(false);
+			this.groupStatePauseRadio.setValue(false);
+			this.groupStateBanRadio.setValue(true);
+		
+			break;
+		}
+		
+		String accountId = Integer.toString(group.getAccountId());
+		
+		int itemCount = this.accountCombo.getItemCount();
+		
+		for (int i=0; i<itemCount; i++) {
+			if (this.accountCombo.getValue(i).equals(accountId)) {
+				this.accountCombo.setSelectedIndex(i);
+				break;
+			}
 		}
 	}
 
@@ -111,20 +158,6 @@ public class GroupAddViewImpl extends DialogBox implements GroupAddView {
 	@UiHandler("cancleButton")
 	void onCancleButtonClick(ClickEvent event) {
 		hide();
-	}
-	
-	
-	@UiHandler("groupStateNormalRadio")
-	void onGroupStateNormalRadioClick(ClickEvent event) {
-		this.groupState = EnumState.NORMAL;
-	}
-	@UiHandler("groupStatePauseRadio")
-	void onGroupStatePauseRadioClick(ClickEvent event) {
-		this.groupState = EnumState.PAUSE;
-	}
-	@UiHandler("groupStateBanRadio")
-	void onGroupStateBanRadioClick(ClickEvent event) {
-		this.groupState = EnumState.BAN;
 	}
 	
 	private void clearInputField() {
@@ -145,9 +178,23 @@ public class GroupAddViewImpl extends DialogBox implements GroupAddView {
 	    String description = descriptionInput.getValue();
 	    
 	    GroupInfo group = new GroupInfo();
+	    
+	    String groupId = this.groupIdInput.getValue();
+	    
+	    if (!Strings.isNullOrEmpty(groupId))
+	    	group.setId(Integer.parseInt(groupId));
+	    
 	    group.setName(name);
 	    group.setDescription(description);
-	    group.setState(groupState);
+	    
+	    if (this.groupStateNormalRadio.getValue() == true)
+	    	group.setState(EnumState.NORMAL);
+	    else if (this.groupStatePauseRadio.getValue() == true)
+	    	group.setState(EnumState.PAUSE);
+	    else if (this.groupStateBanRadio.getValue() == true)
+	    	group.setState(EnumState.BAN);
+	    else
+	    	group.setState(EnumState.NONE);
 	    
 	    String accountId = null;
 	    
@@ -159,7 +206,4 @@ public class GroupAddViewImpl extends DialogBox implements GroupAddView {
 	    
 	    return group;
 	}
-	
-	private EnumState groupState;
-
 }

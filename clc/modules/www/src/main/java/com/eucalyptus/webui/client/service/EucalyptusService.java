@@ -10,6 +10,7 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.DeviceCPUDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
+import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
@@ -276,14 +277,14 @@ public interface EucalyptusService extends RemoteService {
 			throws EucalyptusServiceException;
 
 	/**
-	 * Create a new account.
+	 * Create/update a new account.
 	 * 
 	 * @param session
 	 * @param accountName
 	 * @param adminPassword
 	 * @throws EucalyptusServiceException
 	 */
-	String createAccount(Session session, ArrayList<String> values)
+	void createAccount(Session session, AccountInfo account)
 			throws EucalyptusServiceException;
 
 	/**
@@ -294,17 +295,6 @@ public interface EucalyptusService extends RemoteService {
 	 * @throws EucalyptusServiceException
 	 */
 	void deleteAccounts(Session session, ArrayList<String> ids)
-			throws EucalyptusServiceException;
-
-	/**
-	 * Modify account.
-	 * 
-	 * @param session
-	 * @param keys
-	 * @param values
-	 * @throws EucalyptusServiceException
-	 */
-	void modifyAccount(Session session, int accountId, String name, String email)
 			throws EucalyptusServiceException;
 
 	/**
@@ -892,7 +882,7 @@ public interface EucalyptusService extends RemoteService {
 	 * @param userId
 	 * @throws EucalyptusServiceException
 	 */
-	void addUserApp(Session session, String userId, String templateId) throws EucalyptusServiceException;
+	void addUserApp(Session session, UserApp userApp) throws EucalyptusServiceException;
 	
 	/**
 	 * Delete user applications.
@@ -919,6 +909,14 @@ public interface EucalyptusService extends RemoteService {
 	 * @throws EucalyptusServiceException
 	 */
 	ArrayList<UserAppStateCount> countUserApp(Session session) throws EucalyptusServiceException;
+	
+	/**
+	 * query vm image type list.
+	 * 
+	 * @param session
+	 * @throws EucalyptusServiceException
+	 */
+	ArrayList<VMImageType> queryVMImageType(Session session) throws EucalyptusServiceException;
 	
   
   /**

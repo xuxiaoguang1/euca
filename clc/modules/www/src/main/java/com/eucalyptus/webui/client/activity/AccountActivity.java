@@ -13,21 +13,23 @@ import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.view.AccountView;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
-import com.eucalyptus.webui.client.view.InputField;
-import com.eucalyptus.webui.client.view.InputView;
+import com.eucalyptus.webui.client.view.AccountAddView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.LogView.LogType;
-import com.eucalyptus.webui.shared.checker.ValueChecker;
-import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
+import com.eucalyptus.webui.shared.dictionary.Enum2String;
+import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
+import com.eucalyptus.webui.shared.user.LoginUserProfile;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class AccountActivity extends AbstractSearchActivity
-    implements AccountView.Presenter, ConfirmationView.Presenter, InputView.Presenter {
+    implements AccountView.Presenter, ConfirmationView.Presenter, AccountAddView.Presenter {
   
-  public static final String TITLE = "ACCOUNTS";
+  public static final String[] TITLE = {"ACCOUNTS", "账户"};
   
   public static final String[] CREATE_ACCOUNT_CAPTION = {"Create a new account", "增加一个账户"};
   public static final String[] CREATE_ACCOUNT_SUBJECT = {"Enter information to create a new account:", "输入新账户的信息"};
@@ -46,6 +48,7 @@ public class AccountActivity extends AbstractSearchActivity
   public static final String[] BAN_ACCOUNTS_SUBJECT = {"Are you sure you want to reject following selected accounts?", "确定要禁止所选择的账户？"};
 
   private String[] ACCOUNT_ACTIVITY_NO_SELECTION = {"Select at least one account", "至少选择一个账户"};
+  private String[] ACCOUNT_ACTIVITY_ONE_SELECTION = {"Select one account", "必须选择一个账户"};
   
   private String[] ACCOUNT_ACTIVITY_FOOTVIEW_RESUME_ACCOUNT = {"Select accounts to resume", "激活账户"};
   private String[] ACCOUNT_ACTIVITY_FOOTVIEW_PAUSE_ACCOUNT = {"Select accounts to pause", "暂停账户"};
@@ -95,46 +98,14 @@ public class AccountActivity extends AbstractSearchActivity
       showSingleSelectedDetails( selection.toArray( new SearchResultRow[0] )[0] );
     }
   }
-
-  private static String[] ACCOUNT_ACTIVITY_FOOTERVIEW_MODIFY_GROUP_SUCCEED = {"Successfully modified account", "修改账户成功"};
-  private static String[] ACCOUNT_ACTIVITY_FOOTERVIEW_MODIFY_GROUP_FAIL = {"Failed to modify account", "修改账户失败"};
   
   @Override
   public void saveValue( ArrayList<String> keys, ArrayList<HasValueWidget> values ) {
-    final ArrayList<String> newVals = Lists.newArrayList( );
-    for ( HasValueWidget w : values ) {
-      newVals.add( w.getValue( ) );
-    }
-    
-    final String accountId = emptyForNull( getField( newVals, 0 ) );
-    this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "Modifying account " + accountId + " ...", 0 );
-    
-    String name = getField(newVals, 1);
-    String email = getField(newVals, 2);
-    
-    clientFactory.getBackendService( ).modifyAccount( clientFactory.getLocalSession( ).getSession( ), Integer.valueOf(accountId), name, email, new AsyncCallback<Void>( ) {
-
-      @Override
-      public void onFailure( Throwable caught ) {
-        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, ACCOUNT_ACTIVITY_FOOTERVIEW_MODIFY_GROUP_FAIL[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-        clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to modify account " + accountId  + ": " + caught.getMessage( ) );
-      }
-
-      @Override
-      public void onSuccess( Void arg0 ) {
-        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, ACCOUNT_ACTIVITY_FOOTERVIEW_MODIFY_GROUP_SUCCEED[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-        clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Modified account " + accountId );
-        //clientFactory.getShellView( ).getDetailView( ).disableSave( );
-        reloadCurrentRange( );
-      }
-      
-    } );
   }
 
   @Override
   protected String getTitle( ) {
-    return TITLE;
+    return TITLE[1];
   }
 
   @Override
@@ -155,93 +126,23 @@ public class AccountActivity extends AbstractSearchActivity
 
   @Override
   public void onCreateAccount( ) {
-    InputView dialog = this.clientFactory.getInputView( );
-    dialog.setPresenter( this );
-    dialog.display( CREATE_ACCOUNT_CAPTION[1], CREATE_ACCOUNT_SUBJECT[1], new ArrayList<InputField>( Arrays.asList( new InputField( ) {
-
-      @Override
-      public String getTitle( ) {
-        return ACCOUNT_NAME_INPUT_TITLE[1];
-      }
-
-      @Override
-      public ValueType getType( ) {
-        return ValueType.TEXT;
-      }
-
-      @Override
-      public ValueChecker getChecker( ) {
-        return ValueCheckerFactory.createAccountNameChecker( );
-      }
-      
-    }, new InputField( ) {
-
-      @Override
-      public String getTitle( ) {
-        return EMAIL_INPUT_TITLE[1];
-      }
-
-      @Override
-      public ValueType getType( ) {
-        return ValueType.TEXT;
-      }
-
-      @Override
-      public ValueChecker getChecker( ) {
-        return ValueCheckerFactory.createEmailChecker( );
-      }
-      
-    },
-    new InputField( ) {
-
-        @Override
-        public String getTitle( ) {
-          return DESCRIPTION_INPUT_TITLE[1];
-        }
-
-        @Override
-        public ValueType getType( ) {
-          return ValueType.TEXT;
-        }
-
-        @Override
-        public ValueChecker getChecker( ) {
-          return null;
-        }
-        
-      }) ) );
-  }
-
-  @Override
-  public void process( String subject, ArrayList<String> values ) {
-    if ( CREATE_ACCOUNT_SUBJECT[1].equals( subject ) ) {
-    	doCreateAccount( values );
-    }
-  }
-
-  private void doCreateAccount( final ArrayList<String> values ) {
-    this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "Creating account " + values.get(0) + " ...", 0 );
-    
-    this.clientFactory.getBackendService( ).createAccount( this.clientFactory.getLocalSession( ).getSession( ), values, new AsyncCallback<String>( ) {
-
-      @Override
-      public void onFailure( Throwable caught ) {
-        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Failed to create account", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-        clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Creating account " + values.get(0) + " failed: " + caught.getMessage( ) );
-      }
-
-      @Override
-      public void onSuccess( String accountId ) {
-        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Account " + accountId + " created", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-        clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "New account " + accountId + " created" );
-        reloadCurrentRange( );
-      }
-      
-    } );
+	LoginUserProfile curUser = this.clientFactory.getSessionData().getLoginUser();
+		
+	if (curUser.isSystemAdmin()) {
+		final AccountAddView window = clientFactory.getAccountAddView();
+		window.setPresenter(this);
+		window.display(this.clientFactory);
+	}
   }
   
-  	@Override
+	@Override
+	public void onModifyAccount() {
+		// TODO Auto-generated method stub
+		if (oneSelectionIsValid())
+			this.doModifyAccount();
+	}
+	
+	@Override
   	public void onDeleteAccounts( ) {
   		if (!selectionIsValid())
   			return;
@@ -370,5 +271,85 @@ public class AccountActivity extends AbstractSearchActivity
 		}
 	  
 		return true;
+	}
+	
+	private boolean oneSelectionIsValid() {
+		if ( currentSelected == null || currentSelected.size( ) != 1 ) {
+			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, ACCOUNT_ACTIVITY_ONE_SELECTION[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+			return false;
+		}
+	  
+		return true;
+	}
+	
+	private void doModifyAccount() {
+		if ( this.currentSelected == null || this.currentSelected.size( ) != 1 )
+	    	return;
+	    
+		SearchResultRow row = this.currentSelected.toArray(new SearchResultRow[0])[0];
+		
+		final AccountInfo account = new AccountInfo();
+		account.setId(Integer.parseInt(row.getField(0)));
+		account.setName(row.getField(2));
+		account.setEmail(row.getField(3));
+		account.setDescription(row.getField(4));
+		
+		String groupState = row.getField(5);		
+		EnumState state = Enum2String.getInstance().getEnumState(groupState);
+		account.setState(state);
+		
+		String accountId = row.getField(6);
+
+		if (!Strings.isNullOrEmpty(accountId))
+			account.setId(Integer.parseInt(accountId));
+		
+		final AccountAddView window = clientFactory.getAccountAddView();
+  		window.setPresenter(this);
+  		window.display(this.clientFactory);
+  		window.setAccount(account);
+	}
+
+	@Override
+	public void onDoubleClick(DoubleClickEvent event) {
+		// TODO Auto-generated method stub
+		if (oneSelectionIsValid())
+			this.doModifyAccount();
+	}
+
+	private static String[] ACCOUNT_ACTIVITY_FOOTERVIEW_MODIFY_GROUP_SUCCEED = {"Successfully modified account", "修改账户成功"};
+	private static String[] ACCOUNT_ACTIVITY_FOOTERVIEW_MODIFY_GROUP_FAIL = {"Failed to modify account", "修改账户失败"};
+	@Override
+	public void process(final AccountInfo account) {
+		// TODO Auto-generated method stub
+		this.clientFactory.getBackendService( ).createAccount( this.clientFactory.getLocalSession( ).getSession( ), account, new AsyncCallback<Void>( ) {
+
+		      @Override
+		      public void onFailure( Throwable caught ) {
+		    	  ActivityUtil.logoutForInvalidSession( clientFactory, caught );
+		        
+		    	  if (account.getId() == 0) {
+		    		  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Failed to create account", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		    		  clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Creating account " + account.getName() + " failed: " + caught.getMessage( ) );
+		    	  }
+		    	  else {
+		    		  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, ACCOUNT_ACTIVITY_FOOTERVIEW_MODIFY_GROUP_FAIL[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		    		  clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to modify account " + account.getName()  + ": " + caught.getMessage( ) );
+			      }
+		      }
+
+		      @Override
+		      public void onSuccess( Void result) {
+		    	  if (account.getId() == 0) {
+		    		  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Account " + account.getName() + " created", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		    		  clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "New account " + account.getName() + " created" );
+		    	  }
+		    	  else {
+		    		  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, ACCOUNT_ACTIVITY_FOOTERVIEW_MODIFY_GROUP_SUCCEED[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		    		  clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Modified account " + account.getName());
+		    	  }
+		    	  
+		    	  reloadCurrentRange( );
+		      }
+		    } );
 	}
 }

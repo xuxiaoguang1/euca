@@ -5,6 +5,7 @@ import com.eucalyptus.webui.client.service.CmdServiceAsync;
 import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
 import com.eucalyptus.webui.client.session.LocalSession;
 import com.eucalyptus.webui.client.session.SessionData;
+import com.eucalyptus.webui.client.view.AccountAddView;
 import com.eucalyptus.webui.client.view.AccountView;
 import com.eucalyptus.webui.client.view.ActionResultView;
 import com.eucalyptus.webui.client.view.AreaView;
@@ -176,6 +177,8 @@ public interface ClientFactory {
 	UserAddView getUserAddView();
 
 	GroupAddView getGroupAddView();
+	
+	AccountAddView getAccountAddView();
 
 	GroupListView getGroupListView();
 

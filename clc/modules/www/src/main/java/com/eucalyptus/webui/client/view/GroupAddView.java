@@ -11,6 +11,9 @@ public interface GroupAddView {
 	void setAccountsInfo(ArrayList<AccountInfo> accounts);
 	
 	void setPresenter( Presenter presenter );
+	
+	void setGroup(GroupInfo group);
+	
 	public interface Presenter {
 	    void process( GroupInfo group );
 	}

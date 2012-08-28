@@ -29,6 +29,7 @@ public class UserAddViewImpl extends DialogBox implements UserAddView {
 	@UiField TextBox mobileInput;
 	@UiField TextBox emailInput;
 	@UiField TextBox titleInput;
+	@UiField TextBox userIDInput;
 	
 	@UiField Button okButton;
 	@UiField Button cancleButton;
@@ -42,6 +43,7 @@ public class UserAddViewImpl extends DialogBox implements UserAddView {
 	@UiField ListBox accountCombo;
 	@UiField Label accountLable;
 	
+	
 	EnumUserType userType = EnumUserType.USER;
 	EnumState userState = EnumState.NORMAL;
 	
@@ -54,6 +56,8 @@ public class UserAddViewImpl extends DialogBox implements UserAddView {
 
 	public UserAddViewImpl() {
 		setWidget(uiBinder.createAndBindUi(this));
+		
+		this.userIDInput.setVisible(false);
 		
 		userTypeAdminRadio.setTitle(EnumUserType.ADMIN.toString());
 		userTypeUserRadio.setTitle(EnumUserType.USER.toString());
@@ -102,11 +106,75 @@ public class UserAddViewImpl extends DialogBox implements UserAddView {
 		}
 	}
 	
+	@Override
+	public void setUser(UserInfo user) {
+		// TODO Auto-generated method stub
+		this.userIDInput.setText(Integer.toString(user.getId()));
+		this.nameInput.setText(user.getName());
+		this.titleInput.setText(user.getTitle());
+		this.mobileInput.setText(user.getMobile());
+		this.emailInput.setText(user.getEmail());
+		
+		this.userTypeAdminRadio.setValue(false);
+		this.userTypeUserRadio.setValue(false);
+		
+		switch (user.getType()) {
+		case ADMIN:
+			this.userTypeAdminRadio.setValue(true);
+			this.userTypeUserRadio.setValue(false);
+		break;
+		
+		case USER:
+			this.userTypeAdminRadio.setValue(false);
+			this.userTypeUserRadio.setValue(true);
+		break;
+		}
+		
+		this.userStateNormalRadio.setValue(false);
+		this.userStatePauseRadio.setValue(false);
+		this.userStateBanRadio.setValue(false);
+		
+		switch (user.getState()) {
+		case NORMAL:
+			this.userStateNormalRadio.setValue(true);
+			this.userStatePauseRadio.setValue(false);
+			this.userStateBanRadio.setValue(false);
+			
+			break;
+		
+		case PAUSE:
+			this.userStateNormalRadio.setValue(false);
+			this.userStatePauseRadio.setValue(true);
+			this.userStateBanRadio.setValue(false);
+			
+			break;
+		
+		case BAN:
+			this.userStateNormalRadio.setValue(false);
+			this.userStatePauseRadio.setValue(false);
+			this.userStateBanRadio.setValue(true);
+		
+			break;
+		}
+		
+		String accountId = Integer.toString(user.getAccountId());
+		
+		int itemCount = this.accountCombo.getItemCount();
+		
+		for (int i=0; i<itemCount; i++) {
+			if (this.accountCombo.getValue(i).equals(accountId)) {
+				this.accountCombo.setSelectedIndex(i);
+				break;
+			}
+		}
+	}
+	
 	private void clearInputField() {
 		this.accountCombo.clear();
 		this.accountLable.setVisible(false);
 		this.accountCombo.setVisible(false);
 		
+		this.userIDInput.setText("");
 		this.nameInput.setText("");
 		this.titleInput.setText("");
 		this.emailInput.setText("");
@@ -164,6 +232,11 @@ public class UserAddViewImpl extends DialogBox implements UserAddView {
 	    	accountId = this.accountCombo.getValue(this.accountCombo.getSelectedIndex());
 	    
 	    UserInfo user = new UserInfo();
+	    
+	    String userId = this.userIDInput.getText();
+	    if (!Strings.isNullOrEmpty(userId))
+	    	user.setId(Integer.valueOf(userId));
+	    
 	    user.setName(name);
 	    user.setTitle(title);
 	    user.setMobile(mobile);
@@ -198,5 +271,4 @@ public class UserAddViewImpl extends DialogBox implements UserAddView {
 	void onuserStateBanRadioClick(ClickEvent event) {
 		userState = EnumState.BAN;
 	}
-
 }

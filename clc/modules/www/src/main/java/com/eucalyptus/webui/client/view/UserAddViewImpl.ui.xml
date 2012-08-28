@@ -7,7 +7,7 @@
 		}
 	</ui:style>
 	<g:HTMLPanel ui:field="panel">
-		<g:AbsolutePanel height="188px" width="479px">
+		<g:AbsolutePanel height="213px" width="479px">
 			<g:at left="26" top="24">
 				<g:Label text="ID" horizontalAlignment="ALIGN_LEFT" width="16px" height="16px"/>
 			</g:at>
@@ -64,6 +64,9 @@
 			</g:at>
 			<g:at left="300" top="100">
 				<g:ListBox width="154px" height="25px" ui:field="accountCombo"/>
+			</g:at>
+			<g:at left="338" top="0">
+				<g:TextBox width="46px" height="17px" ui:field="userIDInput"/>
 			</g:at>
 		</g:AbsolutePanel>		
 	</g:HTMLPanel>

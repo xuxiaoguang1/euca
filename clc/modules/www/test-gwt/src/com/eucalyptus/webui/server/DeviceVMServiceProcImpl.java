@@ -1,9 +1,18 @@
 package com.eucalyptus.webui.server;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.session.Session;
+import com.eucalyptus.webui.server.db.ResultSetWrapper;
+import com.eucalyptus.webui.server.device.DeviceSyncException;
+import com.eucalyptus.webui.server.device.VMDBProcWrapper;
+import com.eucalyptus.webui.server.dictionary.DBTableColName;
+import com.eucalyptus.webui.shared.resource.VMImageType;
 
 public class DeviceVMServiceProcImpl {
 
@@ -12,7 +21,44 @@ public class DeviceVMServiceProcImpl {
 		//System.err.println(Debug.footprint());
 		return new SearchResult(0, range);
 	}
+	
+	public ArrayList<VMImageType> queryVMImageType() throws EucalyptusServiceException {
+		//System.err.println(Debug.footprint());
+		try {
+			ResultSetWrapper rsWrapper = this.vmDBProcWrapper.queryVMImageType();
+			
+			ResultSet rs = rsWrapper.getResultSet();
+			
+			ArrayList<VMImageType> list = null;
 
+			if (rs != null) {
+				list = new ArrayList<VMImageType>();
+				  
+				while (rs.next()) {
+					VMImageType imageType = new VMImageType(Integer.valueOf(rs.getString(DBTableColName.VM_IMAGE_TYPE.ID)),
+							  							rs.getString(DBTableColName.VM_IMAGE_TYPE.OS),
+														rs.getString(DBTableColName.VM_IMAGE_TYPE.VER));
+					list.add(imageType);
+				}
+			}
+			  
+			rsWrapper.close();
+			return list;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new EucalyptusServiceException("Failed to query VM image type");
+			
+		} catch (DeviceSyncException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();			
+			throw new EucalyptusServiceException("Failed to query VM image type");
+		} 
+	}
+
+	
+	private VMDBProcWrapper vmDBProcWrapper = new VMDBProcWrapper();
+	
 	final private static int SELECT = 1;
 
 	final private static String[] TABLE_COL_TITLE_CHECKALL = {"", "全选"};

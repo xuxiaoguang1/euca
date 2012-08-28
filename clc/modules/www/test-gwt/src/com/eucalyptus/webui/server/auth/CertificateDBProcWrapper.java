@@ -8,17 +8,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.eucalyptus.webui.client.service.EucalyptusServiceException;
-import com.eucalyptus.webui.client.service.SearchRange;
-import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.DBTableName;
-import com.eucalyptus.webui.server.user.UserSyncException;
 import com.eucalyptus.webui.shared.auth.Certificate;
 import com.eucalyptus.webui.shared.user.EnumUserType;
-import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
 public class CertificateDBProcWrapper {
 

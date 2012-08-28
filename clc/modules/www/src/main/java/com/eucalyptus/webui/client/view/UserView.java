@@ -8,8 +8,9 @@ public interface UserView extends IsWidget, CanDisplaySearchResult, Clearable, S
   void setPresenter( Presenter presenter );
   void updateLoginUserProfile(LoginUserProfile curUser);
   
-  public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize {
+  public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, SearchTableDoubleClickHandler {
 	void onAddUser();
+	void onModifyUser();
     void onDeleteUsers();
     void onPauseUsers();
     void onResumeUses();

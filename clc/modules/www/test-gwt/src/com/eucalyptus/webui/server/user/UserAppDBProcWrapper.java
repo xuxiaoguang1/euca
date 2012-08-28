@@ -2,18 +2,16 @@ package com.eucalyptus.webui.server.user;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.DBTableName;
-import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserAppResult;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
-import com.eucalyptus.webui.shared.user.EnumUserType;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
-import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.common.base.Strings;
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 
@@ -175,41 +173,52 @@ public class UserAppDBProcWrapper {
 		str.append("INSERT INTO ").
 		append(DBTableName.USER_APP).append(" ( ").
 		append(DBTableColName.USER_APP.ID).append(", ").
-		append(DBTableColName.USER_APP.TIME).append(", ").
+		append(DBTableColName.USER_APP.APP_TIME).append(", ").
+		append(DBTableColName.USER_APP.SRV_STARTINGTIME).append(", ").
+		append(DBTableColName.USER_APP.SRV_ENDINGTIME).append(", ").
 		append(DBTableColName.USER_APP.STATE).append(", ").
 		append(DBTableColName.USER_APP.RESULT).append(", ").
 		append(DBTableColName.USER_APP.DEL).append(", ").
-		append(DBTableColName.USER_APP.CONTENT).append(", ").
 		append(DBTableColName.USER_APP.COMMENT).append(", ").
 		append(DBTableColName.USER_APP.USER_ID).append(", ").
-		append(DBTableColName.USER_APP.TEMPLATE_ID).append(") VALUES (null, ");
+		append(DBTableColName.USER_APP.TEMPLATE_ID).append(", ").
+		append(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID).
+		append(") VALUES (null, ");
 		
 		str.append("'");
-		str.append(userApp.getTime().toString());
+		str.append(dateformat.format(userApp.getAppTime()).toString());
 		str.append("', '");
+		
+		str.append(dateformat.format(userApp.getSrvStartingTime()).toString());
+		str.append("', '");
+		
+		str.append(dateformat.format(userApp.getSrvEndingTime()).toString());
+		str.append("', ");
 		
 		str.append(userApp.getState().ordinal());
-		str.append("', '");
-		
-		str.append(userApp.getResult().ordinal());
-		str.append("', '");
-		
-		str.append(userApp.getDelState());
-		str.append("', ");
-		
-		str.append(userApp.getContent());
 		str.append(", ");
 		
-		str.append(userApp.getComments());
-		str.append(", '");
+		str.append(userApp.getResult().ordinal());
+		str.append(", ");
+		
+		str.append(userApp.getDelState());
+		str.append(", ");
+		
+		if (Strings.isNullOrEmpty(userApp.getComments())) {
+			str.append("null, ");
+		}
+		else {
+			str.append("'").append(userApp.getComments());
+			str.append("', ");
+		}
 		
 		str.append(userApp.getUserId());
-		str.append("', ");
+		str.append(", ");
 		
-		if (userApp.getTemplateId() != 0)
-			str.append("null");
-		else
-			str.append(userApp.getTemplateId());
+		str.append(userApp.getTemplateId());
+		str.append(", ");
+		
+		str.append(userApp.getVmIdImageTypeId());
 		
 		str.append(")");
 		
@@ -231,15 +240,21 @@ public class UserAppDBProcWrapper {
 			append("', ");
 		}
 		
-		if (userApp.getTime() != null) {
-			str.append(DBTableColName.USER_APP.TIME).append(" = ").
-			append(userApp.getTime()).
-			append(", ");
+		if (userApp.getAppTime() != null) {
+			str.append(DBTableColName.USER_APP.APP_TIME).append(" = '").
+			append(dateformat.format(userApp.getAppTime()).toString()).
+			append("', ");
 		}
 		
-		if (userApp.getContent() != null) {
-			str.append(DBTableColName.USER_APP.CONTENT).append(" = '").
-			append(userApp.getContent()).
+		if (userApp.getSrvStartingTime() != null) {
+			str.append(DBTableColName.USER_APP.SRV_STARTINGTIME).append(" = '").
+			append(dateformat.format(userApp.getSrvStartingTime()).toString()).
+			append("', ");
+		}
+		
+		if (userApp.getSrvEndingTime() != null) {
+			str.append(DBTableColName.USER_APP.SRV_ENDINGTIME).append(" = '").
+			append(dateformat.format(userApp.getSrvEndingTime())).
 			append("', ");
 		}
 		
@@ -249,15 +264,15 @@ public class UserAppDBProcWrapper {
 			append("', ");
 		}
 		
-		if (userApp.getUserId() != 0) {
-			str.append(DBTableColName.USER_APP.USER_ID).append(" = ").
-			append(userApp.getUserId()).
-			append(", ");
-		}
-		
 		if (userApp.getTemplateId() != 0) {
 			str.append(DBTableColName.USER_APP.TEMPLATE_ID).append(" = ").
 			append(userApp.getTemplateId()).
+			append(", ");
+		}
+		
+		if (userApp.getVmIdImageTypeId() != 0) {
+			str.append(DBTableColName.USER_APP.USER_ID).append(" = ").
+			append(userApp.getVmIdImageTypeId()).
 			append(", ");
 		}
 		
@@ -277,9 +292,15 @@ public class UserAppDBProcWrapper {
 				append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.NAME).
 				append(", ").
 				append(DBTableName.USER).append(".*").
+				append(", ").
+				append(DBTableName.TEMPLATE).append(".*").
+				append(", ").
+				append(DBTableName.VM_IMAGE_TYPE).append(".*").
+				
 				append(" FROM ").
 				append("( ").
 				append(DBTableName.USER_APP).
+				
 				append(" LEFT JOIN ").
 				append(DBTableName.USER).
 				append(" ON ").
@@ -287,12 +308,28 @@ public class UserAppDBProcWrapper {
 				append(" = ").
 				append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.USER_ID).
 				append(" ) ").
+				
 				append(" LEFT JOIN ").
 				append(DBTableName.ACCOUNT).
 				append(" ON ").
 				append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
 				append(" = ").
 				append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).
+				
+				append(" LEFT JOIN ").
+				append(DBTableName.TEMPLATE).
+				append(" ON ").
+				append(DBTableName.TEMPLATE).append(".").append(DBTableColName.TEMPLATE.ID).
+				append(" = ").
+				append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.TEMPLATE_ID).
+				
+				append(" LEFT JOIN ").
+				append(DBTableName.VM_IMAGE_TYPE).
+				append(" ON ").
+				append(DBTableName.VM_IMAGE_TYPE).append(".").append(DBTableColName.VM_IMAGE_TYPE.ID).
+				append(" = ").
+				append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID).
+				
 				append(" WHERE ").
 				append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.DEL).
 				append(" = 0 ");
@@ -381,4 +418,6 @@ public class UserAppDBProcWrapper {
 		
 		return sql.toString();
 	}
+	
+	SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
 }

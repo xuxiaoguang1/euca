@@ -12,19 +12,22 @@ import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.DeviceTemplateListView;
 import com.eucalyptus.webui.client.view.FooterView;
+import com.eucalyptus.webui.client.view.SearchTableCellClickHandler;
 import com.eucalyptus.webui.client.view.UserAppView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.user.EnumUserAppResult;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.google.common.collect.Lists;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class UserAppActivity extends AbstractSearchActivity
-    implements ConfirmationView.Presenter, UserAppView.Presenter, DeviceTemplateListView.Presenter {
+    implements ConfirmationView.Presenter, UserAppView.Presenter, DeviceTemplateListView.Presenter, SearchTableCellClickHandler {
 
 public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 
@@ -39,6 +42,7 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   
   private final String[] FOOTERVIEW_USER_NO_SELECTION = {"Must select users", "必须选择至少一个用户"};
   private final String[] FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES = {"Failed to query templates", "查询模板库失败"};
+  private final String[] FOOTERVIEW_FAILED_TO_QUERY_VM_IMAGE_TYPE = {"Failed to query VM image type", "查询虚拟机镜像类型失败"};
   
   private final String[] FOOTERVIEW_FAILED_TO_ADD_USERAPP = {"Failed to add user app", "增加申请失败"};
   private final String[] FOOTERVIEW_ADD_USERAPP = {"Successfully add user apps", "增加申请成功"};
@@ -100,7 +104,10 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
       ( ( UserAppView ) this.view ).clear( );
     }
     
-    ( ( UserAppView ) this.view ).showSearchResult( result );    
+    ( ( UserAppView ) this.view ).showSearchResult( result );
+    
+    //Registering setCellClickProc must await UserAppView's table inited  
+    ( ( UserAppView ) this.view ).setCellClickProc( this );
   }
   
   @Override
@@ -145,6 +152,23 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 			        clientFactory.getDeviceTemplateListView().display(result);
 		        }
 	        });
+  	
+  	this.clientFactory.getBackendService().queryVMImageType(clientFactory.getLocalSession().getSession(), new AsyncCallback<ArrayList<VMImageType>>() {
+
+		@Override
+		public void onFailure(Throwable caught) {
+			// TODO Auto-generated method stub
+			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_VM_IMAGE_TYPE[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_VM_IMAGE_TYPE[1] + ":" + caught.getMessage( ) );
+		}
+
+		@Override
+		public void onSuccess(ArrayList<VMImageType> result) {
+			// TODO Auto-generated method stub
+			clientFactory.getDeviceTemplateListView().setVMImageTypeList(result);
+		}
+  		
+  	});
   }
   	
   @Override
@@ -293,11 +317,13 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   }
 
   @Override
-  public void doCreateUserApp(String templateId) {
+  public void doCreateUserApp(UserApp userApp) {
 	  // TODO Auto-generated method stub
+	  int userId = this.clientFactory.getSessionData().getLoginUser().getUserId();
+	  userApp.setUserId(userId);
+	  
 	  this.clientFactory.getBackendService().addUserApp(clientFactory.getLocalSession().getSession(), 
-			  											Integer.toString(this.clientFactory.getSessionData().getLoginUser().getUserId()), 
-			  											templateId,
+			  											userApp,
 			  											new AsyncCallback<Void>() {
 
 	        @Override
@@ -366,4 +392,9 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 			  );
   }
   
+  @Override
+  public void onClick(int rowIndex, int colIndex, SearchResultRow row) {
+  	// TODO Auto-generated method stub
+  	Window.alert(row.getLink(colIndex));
+  }
 }

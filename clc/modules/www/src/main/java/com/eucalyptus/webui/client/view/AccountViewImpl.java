@@ -9,6 +9,8 @@ import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -32,8 +34,7 @@ public class AccountViewImpl extends Composite implements AccountView {
   LayoutPanel tablePanel;
   
   @UiField
-  Anchor newButton;
-  
+  Anchor createAccountButton;
   @UiField
   Anchor delButton;
   
@@ -47,11 +48,14 @@ public class AccountViewImpl extends Composite implements AccountView {
     initWidget( uiBinder.createAndBindUi( this ) );
   }
 
-  @UiHandler( "newButton" )
-  void handleNewButtonClick( ClickEvent e ) {
+  @UiHandler( "createAccountButton" )
+  void onCreateAccountButtonClick( ClickEvent e ) {
     this.presenter.onCreateAccount( );
   }
-  
+  @UiHandler("modifyAccountButton")
+  void onModifyAccountButtonClick(ClickEvent event) {
+	  this.presenter.onModifyAccount();
+  }
   @UiHandler( "delButton" )
   void handleDelButtonClick( ClickEvent e ) {
 	  this.presenter.onDeleteAccounts( );
@@ -84,6 +88,16 @@ public class AccountViewImpl extends Composite implements AccountView {
       }
     } );
     table = new SearchResultTable( pageSize, fieldDescs, this.presenter, selectionModel );
+    
+    DoubleClickHandler handler = new DoubleClickHandler() {
+
+		@Override
+		public void onDoubleClick(DoubleClickEvent event) {
+			presenter.onDoubleClick(event);
+		}
+	};
+	table.addDoublClickHandler(handler);
+	
     tablePanel.add( table );
     table.load( );
   }
@@ -109,7 +123,7 @@ public class AccountViewImpl extends Composite implements AccountView {
 
   @Override
   public void enableNewButton(boolean enabled) {
-	newButton.setVisible( enabled );
+	this.createAccountButton.setVisible( enabled );
   }
 
   @Override
@@ -121,5 +135,4 @@ public class AccountViewImpl extends Composite implements AccountView {
   public void clearSelection( ) {
     selectionModel.clear( );
   }
-
 }

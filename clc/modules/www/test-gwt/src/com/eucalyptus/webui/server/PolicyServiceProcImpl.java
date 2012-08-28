@@ -2,8 +2,6 @@ package com.eucalyptus.webui.server;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,25 +13,13 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
-import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.server.auth.AccessKeyDBProcWrapper;
-import com.eucalyptus.webui.server.auth.AccessKeySyncException;
-import com.eucalyptus.webui.server.auth.CertificateDBProcWrapper;
 import com.eucalyptus.webui.server.auth.CertificateSyncException;
 import com.eucalyptus.webui.server.auth.PolicyDBProcWrapper;
 import com.eucalyptus.webui.server.auth.PolicySyncException;
-import com.eucalyptus.webui.server.auth.util.B64;
-import com.eucalyptus.webui.server.auth.util.X509CertHelper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
-import com.eucalyptus.webui.server.dictionary.Enum2String;
-import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
-import com.eucalyptus.webui.server.user.UserSyncException;
-import com.eucalyptus.webui.shared.auth.AccessKey;
-import com.eucalyptus.webui.shared.auth.Certificate;
 import com.eucalyptus.webui.shared.auth.Policy;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
-import com.google.common.base.Strings;
 
 public class PolicyServiceProcImpl {
 	

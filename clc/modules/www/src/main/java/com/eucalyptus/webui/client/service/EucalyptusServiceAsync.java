@@ -10,6 +10,7 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.DeviceCPUDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
+import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
@@ -54,11 +55,9 @@ public interface EucalyptusServiceAsync {
 
 	void lookupImage(Session session, String search, SearchRange range, AsyncCallback<SearchResult> callback);
 
-	void createAccount(Session session, ArrayList<String> values, AsyncCallback<String> callback);
+	void createAccount(Session session, AccountInfo account, AsyncCallback<Void> callback);
 
 	void deleteAccounts(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
-
-	void modifyAccount(Session session, int accountId, String name, String email, AsyncCallback<Void> callback);
 
 	void updateAccountState(Session session, ArrayList<String> ids, EnumState userState,
 	        AsyncCallback<Void> asyncCallback);
@@ -254,10 +253,11 @@ public interface EucalyptusServiceAsync {
 	
 	void lookupDeviceVM(Session session, String search, SearchRange range, int queryState, AsyncCallback<SearchResult> callback);
 	
-	void addUserApp(Session session, String userId, String templateId, AsyncCallback<Void> callback);
+	void addUserApp(Session session, UserApp userApp, AsyncCallback<Void> callback);
 	void deleteUserApp(Session session, ArrayList<String> ids, AsyncCallback<Void> callback);
 	void modifyUserApp(Session session, ArrayList<UserApp> userApps, AsyncCallback<Void> callback);
 	void countUserApp(Session session, AsyncCallback<ArrayList<UserAppStateCount>> callback);
+	void queryVMImageType(Session session, AsyncCallback<ArrayList<VMImageType>> callback);
 	
 //	void listAccessKeysByUser(Session session, String userId, AsyncCallback<SearchResult> callback);
 //	void listAccessKeys(Session session, AsyncCallback<SearchResult> callback);

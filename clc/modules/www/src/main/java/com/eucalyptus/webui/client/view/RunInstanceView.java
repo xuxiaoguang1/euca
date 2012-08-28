@@ -2,8 +2,6 @@ package com.eucalyptus.webui.client.view;
 
 import java.util.List;
 
-import com.eucalyptus.webui.shared.aws.ImageType;
-
 public interface RunInstanceView {
 	void setFocus( );
 	void display();

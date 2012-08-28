@@ -296,11 +296,20 @@ public class GroupDBProcWrapper {
 		append(group.getDescription()).
 		append("', ").
 		
-		append(" ").append(DBTableColName.GROUP.ACCOUNT_ID).append(" = '").
-		append(group.getAccountId()).
-		append("' ").
+		append(" ").append(DBTableColName.GROUP.STATE).append(" = ").
+		append(group.getState().ordinal()).
+		append(", ");
 		
-		append("WHERE ").append(DBTableColName.GROUP.ID).append(" = '").
+		if (group.getAccountId() == 0) {
+			str.append(" ").append(DBTableColName.GROUP.ACCOUNT_ID).append(" = null ");
+		}
+		else {
+			str.append(" ").append(DBTableColName.GROUP.ACCOUNT_ID).append(" = '").
+			append(group.getAccountId()).
+			append("' ");
+		}
+		
+		str.append("WHERE ").append(DBTableColName.GROUP.ID).append(" = '").
 		append(group.getId()).
 		append("'");
 		

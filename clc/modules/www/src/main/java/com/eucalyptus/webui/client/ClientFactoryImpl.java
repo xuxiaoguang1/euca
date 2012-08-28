@@ -11,6 +11,8 @@ import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
 import com.eucalyptus.webui.client.session.LocalSession;
 import com.eucalyptus.webui.client.session.LocalSessionImpl;
 import com.eucalyptus.webui.client.session.SessionData;
+import com.eucalyptus.webui.client.view.AccountAddView;
+import com.eucalyptus.webui.client.view.AccountAddViewImpl;
 import com.eucalyptus.webui.client.view.AccountView;
 import com.eucalyptus.webui.client.view.AccountViewImpl;
 import com.eucalyptus.webui.client.view.ActionResultView;
@@ -183,6 +185,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private InputView inputView;
 	private UserAddView userAddView;
 	private GroupAddView groupAddView;
+	private AccountAddView accountAddView;
 	private GroupListView groupListView;
 	private GroupDetailView groupDetailView;
 	private UserListView userListView;
@@ -445,6 +448,15 @@ public class ClientFactoryImpl implements ClientFactory {
 			groupAddView = new GroupAddViewImpl();
 		}
 		return groupAddView;
+	}	
+
+	@Override
+	public AccountAddView getAccountAddView() {
+		// TODO Auto-generated method stub
+		if (accountAddView == null) {
+			accountAddView = new AccountAddViewImpl();
+		}
+		return accountAddView;
 	}
 
 	@Override

@@ -24,6 +24,8 @@ public class GroupDetailViewImpl extends DialogBox implements GroupDetailView {
   
 	public GroupDetailViewImpl( ) {
 		setWidget( uiBinder.createAndBindUi( this ) );
+		
+		setGlassEnabled( true );
 	}
   
 	@UiHandler("buttonAddUsers")

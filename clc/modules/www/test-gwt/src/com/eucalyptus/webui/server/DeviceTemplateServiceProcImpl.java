@@ -23,7 +23,6 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
-import com.eucalyptus.webui.server.device.DeviceSyncException;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.DBTableName;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
@@ -593,10 +592,6 @@ public class DeviceTemplateServiceProcImpl {
 		}
 	}
 	
-	public void updateDeviceState(int userId, int templateId) throws DeviceSyncException {
-		
-	}
-	
 	public List<String> listDeviceCPUNames(Session session) {
 		try {
 			LoginUserProfile user = getUser(session);
@@ -618,16 +613,6 @@ public class DeviceTemplateServiceProcImpl {
 		}
 		try {
 			doActionTemplate(template_id, user_id, life);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	{
-		try {
-			Thread.sleep(1000);
-			doActionTemplate(1, 1, 100);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

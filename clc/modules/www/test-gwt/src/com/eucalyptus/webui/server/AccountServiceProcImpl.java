@@ -15,9 +15,9 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
-import com.eucalyptus.webui.server.dictionary.Enum2String;
 import com.eucalyptus.webui.server.user.AccountDBProcWrapper;
 import com.eucalyptus.webui.server.user.AccountSyncException;
+import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserType;
@@ -25,15 +25,15 @@ import com.eucalyptus.webui.shared.user.UserInfo;
 
 public class AccountServiceProcImpl {
 	
-	public void createAccount(String name, String email, String description)
+	public void createAccount(AccountInfo account)
 	  		throws EucalyptusServiceException {
 		
-		if ( name == null || email == null) {
-		      throw new EucalyptusServiceException( "Empty account name or email" );
+		if ( account == null ) {
+		      throw new EucalyptusServiceException( "Empty account para" );
 		  }
 		  
 		try {
-			int newAccountId = accountDBProc.addAccount(name, email, description, EnumState.NORMAL);
+			int newAccountId = accountDBProc.addAccount(account);
 			
 			// if creating account is successful, add corresponding admin user in user table
 			if (newAccountId > 0) {
@@ -42,8 +42,8 @@ public class AccountServiceProcImpl {
 				UserInfo user = new UserInfo();
 				user.setAccountId(newAccountId);
 				user.setName("admin");
-				user.setPwd("123456");
-				user.setEmail(email);
+				user.setPwd("admin");
+				user.setEmail(account.getEmail());
 				user.setState(EnumState.NORMAL);
 				user.setType(EnumUserType.ADMIN);
 				
@@ -52,7 +52,23 @@ public class AccountServiceProcImpl {
 		} catch (AccountSyncException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new EucalyptusServiceException("Create user fails");
+			throw new EucalyptusServiceException("Failed to create account");
+		}
+	}
+	
+	public void modifyAccount(AccountInfo account)
+	  		throws EucalyptusServiceException {
+		
+		if ( account == null ) {
+		      throw new EucalyptusServiceException( "Empty account para" );
+		  }
+		  
+		try {
+			accountDBProc.modifyAccount(account);
+		} catch (AccountSyncException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new EucalyptusServiceException("Failed to modify account");
 		}
 	}
 
@@ -74,7 +90,7 @@ public class AccountServiceProcImpl {
 		  } catch (AccountSyncException e) {
 			  // TODO Auto-generated catch block
 			  e.printStackTrace();
-			  throw new EucalyptusServiceException("query accounts fails");
+			  throw new EucalyptusServiceException("Failed to query accounts");
 		  }
 		  
 		  if (rs == null)
@@ -90,17 +106,6 @@ public class AccountServiceProcImpl {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new EucalyptusServiceException("Failed to delete accounts");
-		}
-	  }
-	  
-	  public void modifyAccount( int accountId, String name, String email ) throws EucalyptusServiceException {
-		  try {
-			accountDBProc.modifyAccount(accountId, name, email);
-			
-		} catch (AccountSyncException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new EucalyptusServiceException("Failed to modify account");
 		}
 	  }
 
@@ -182,19 +187,20 @@ public class AccountServiceProcImpl {
 		  List<SearchResultRow> result = null;
 		  try {
 			  if (rs != null) {
-				  result = new ArrayList<SearchResultRow>();
+				 result = new ArrayList<SearchResultRow>();
 				  
-				  while (rs.next()) {
-						  result.add( new SearchResultRow(
+				 while (rs.next()) {
+					 result.add( new SearchResultRow(
 							  			Arrays.asList(rs.getString(DBTableColName.ACCOUNT.ID),
 							  							Integer.toString(index++),
 							  							rs.getString(DBTableColName.ACCOUNT.NAME),
 														rs.getString(DBTableColName.ACCOUNT.EMAIL),
-														Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.ACCOUNT.STATE))
-													)
-						  						)
+														rs.getString(DBTableColName.ACCOUNT.DES),
+														Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.ACCOUNT.STATE)),
+														rs.getString(DBTableColName.ACCOUNT.ID))
+						  								)
 								  	);
-				  }
+				 }
 			  }
 			  
 			  rsWrapper.close();			
@@ -215,13 +221,16 @@ public class AccountServiceProcImpl {
 	  private static final String[] TABLE_COL_ACCOUNT_NAME = {"Account", "账户"};
 	  private static final String[] TABLE_COL_TITLE_EMAIL = {"Emial", "邮箱"};
 	  private static final String[] TABLE_COL_TITLE_STATE = {"State", "状态"};
+	  private static final String[] TABLE_COL_TITLE_DES = {"Description", "描述"};
+	  private static final String[] TABLE_COL_TITLE_ID = {"ID", "账户ID"};
 	  
-	
 	  private static final List<SearchResultFieldDesc> FIELDS = Arrays.asList(
-				new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "10%", false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_ACCOUNT_NAME[1], true, "25%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_EMAIL[1], true, "35%", TableDisplay.MANDATORY, Type.LINK, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false )
+				new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "5%", false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_ACCOUNT_NAME[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_EMAIL[1], true, "25%", TableDisplay.MANDATORY, Type.LINK, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_DES[1], true, "40%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
+				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),				
+				new SearchResultFieldDesc( TABLE_COL_TITLE_ID[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true )
 				);
 }
