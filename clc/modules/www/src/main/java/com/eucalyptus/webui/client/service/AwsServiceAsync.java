@@ -37,5 +37,11 @@ public interface AwsServiceAsync {
   void deleteKeypairs(Session session, List<String> keys,
       AsyncCallback<Void> callback);
 
+  void createSecurityGroup(Session session, String name, String desc,
+      AsyncCallback<String> callback);
+
+  void lookupSecurityGroup(Session session, String search, SearchRange range,
+      AsyncCallback<SearchResult> callback);
+
 
 }

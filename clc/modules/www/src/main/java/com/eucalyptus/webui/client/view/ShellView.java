@@ -18,7 +18,7 @@ public interface ShellView extends IsWidget {
   
   HeaderView getHeaderView( );
   
-  DetailsView getDetailView( );
+  DetailView getDetailView( );
   
   LogView getLogView( );
   

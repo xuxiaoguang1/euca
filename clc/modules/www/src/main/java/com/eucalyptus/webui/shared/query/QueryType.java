@@ -35,6 +35,8 @@ public enum QueryType {
   storageCtrl,
   walrusCtrl,
   keypair,
+  securityGroup,
+  ipPermission,
   
   device_server,
   device_cpu,

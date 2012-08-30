@@ -50,9 +50,9 @@
         <g:center>
             <euca:ContentViewImpl ui:field="content"/>
         </g:center>
-        <g:south size="0">
-            <euca:DetailsViewImpl ui:field="detail"/>
-        </g:south>
+        <g:east size="0">
+            <euca:DetailViewImpl ui:field="detail"/>
+        </g:east>
     </g:DockLayoutPanel>
     
 </ui:UiBinder> 

@@ -42,6 +42,7 @@ import com.eucalyptus.webui.client.view.NodeCtrlView;
 import com.eucalyptus.webui.client.view.PolicyView;
 import com.eucalyptus.webui.client.view.ReportView;
 import com.eucalyptus.webui.client.view.RunInstanceView;
+import com.eucalyptus.webui.client.view.SecurityGroupView;
 import com.eucalyptus.webui.client.view.ShellView;
 import com.eucalyptus.webui.client.view.StartView;
 import com.eucalyptus.webui.client.view.StorageCtrlView;
@@ -58,6 +59,7 @@ import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.place.shared.PlaceHistoryHandler.Historian;
+import com.google.gwt.user.client.ui.IsWidget;
 
 public interface ClientFactory {
 
@@ -211,5 +213,7 @@ public interface ClientFactory {
 	WalrusCtrlView getWalrusCtrlView( );
 	StorageCtrlView getStorageCtrlView( );
 	KeypairView getKeypairView( );
+
+  SecurityGroupView getSecurityGroupView();
   
 }
