@@ -47,4 +47,10 @@ public enum QueryType {
   device_memory,
   device_template,
   device_vm,
+  
+  res_stat,
+  cpu_stat,
+  memory_stat,
+  disk_stat,
+  history_stat,
 }

@@ -23,6 +23,7 @@ import com.eucalyptus.webui.server.auth.CertificateDBProcWrapper;
 import com.eucalyptus.webui.server.auth.CertificateSyncException;
 import com.eucalyptus.webui.server.auth.PolicyDBProcWrapper;
 import com.eucalyptus.webui.server.auth.PolicySyncException;
+import com.eucalyptus.webui.server.auth.crypto.Crypto;
 import com.eucalyptus.webui.server.auth.util.B64;
 import com.eucalyptus.webui.server.auth.util.X509CertHelper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
@@ -145,7 +146,10 @@ public class CertificateServiceProcImpl {
 		
 		//TODO:just test
 		{
-			Certificate cert = new Certificate(userId, B64.url.encString(pem));
+			Certificate cert = new Certificate(
+					userId, 
+					Crypto.generateQueryId(), 
+					B64.url.encString(pem));
 			cert.setActive(true);
 			cert.setRevoked(false);
 
@@ -178,6 +182,7 @@ public class CertificateServiceProcImpl {
 			}
 
 			Certificate cert = new Certificate(userId,
+					Crypto.generateQueryId(), 
 					X509CertHelper.fromCertificate(x509));
 			cert.setActive(true);
 			cert.setRevoked(false);

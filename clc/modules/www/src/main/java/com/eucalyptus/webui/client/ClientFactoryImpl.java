@@ -19,6 +19,8 @@ import com.eucalyptus.webui.client.view.ActionResultView;
 import com.eucalyptus.webui.client.view.ActionResultViewImpl;
 import com.eucalyptus.webui.client.view.AreaView;
 import com.eucalyptus.webui.client.view.AreaViewImpl;
+import com.eucalyptus.webui.client.view.CPUStatView;
+import com.eucalyptus.webui.client.view.CPUStatViewImpl;
 import com.eucalyptus.webui.client.view.CertView;
 import com.eucalyptus.webui.client.view.CertViewImpl;
 import com.eucalyptus.webui.client.view.CloudRegistrationView;
@@ -45,6 +47,8 @@ import com.eucalyptus.webui.client.view.DeviceTemplateView;
 import com.eucalyptus.webui.client.view.DeviceTemplateViewImpl;
 import com.eucalyptus.webui.client.view.DeviceVMView;
 import com.eucalyptus.webui.client.view.DeviceVMViewImpl;
+import com.eucalyptus.webui.client.view.DiskStatView;
+import com.eucalyptus.webui.client.view.DiskStatViewImpl;
 import com.eucalyptus.webui.client.view.ErrorSinkView;
 import com.eucalyptus.webui.client.view.ErrorSinkViewImpl;
 import com.eucalyptus.webui.client.view.GroupAddView;
@@ -77,6 +81,8 @@ import com.eucalyptus.webui.client.view.LoginView;
 import com.eucalyptus.webui.client.view.LoginViewImpl;
 import com.eucalyptus.webui.client.view.ConfigView;
 import com.eucalyptus.webui.client.view.ConfigViewImpl;
+import com.eucalyptus.webui.client.view.MemoryStatView;
+import com.eucalyptus.webui.client.view.MemoryStatViewImpl;
 import com.eucalyptus.webui.client.view.NodeCtrlView;
 import com.eucalyptus.webui.client.view.NodeCtrlViewImpl;
 import com.eucalyptus.webui.client.view.PolicyView;
@@ -172,6 +178,9 @@ public class ClientFactoryImpl implements ClientFactory {
 	private DeviceTemplateListView deviceTemplateListView;
 	private KeypairView keyPairView;
 	private SecurityGroupView securityGroupView;
+	private CPUStatView cpuStatView;
+	private MemoryStatView memoryStatView;
+	private DiskStatView diskStatView;
 
 	// Dialogs
 	private ConfirmationView confirmationView;
@@ -658,4 +667,27 @@ public DeviceTemplateListView getDeviceTemplateListView() {
     }
     return securityGroupView;
   }
+	@Override
+	public CPUStatView getCPUStatView() {
+		if (cpuStatView == null) {
+			cpuStatView = new CPUStatViewImpl();
+		}
+		return cpuStatView;
+	}
+
+	@Override
+	public MemoryStatView getMemoryStatView() {
+		if (memoryStatView == null) {
+			memoryStatView = new MemoryStatViewImpl();
+		}
+		return memoryStatView;
+	}
+
+	@Override
+	public DiskStatView getDiskStatView() {
+		if (diskStatView == null) {
+			diskStatView = new DiskStatViewImpl();
+		}
+		return diskStatView;
+	}
 }

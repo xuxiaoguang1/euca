@@ -3,8 +3,6 @@ package com.eucalyptus.webui.shared.auth;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.eucalyptus.webui.server.auth.crypto.Crypto;
-
 public class AccessKey implements Serializable {
 	
 	public static final String DATE_PATTERN = "yyyy-MM-dd-HH-mm-ss";
@@ -21,13 +19,13 @@ public class AccessKey implements Serializable {
 	private Date createdDate;
 	private String userId;
 
-	public AccessKey(String userId) {
-		this.id = -1;
-		this.accessKey = Crypto.generateQueryId();
-		this.secretKey = Crypto.generateSecretKey();
-		this.createdDate = new Date();
-		this.userId = userId;
-	}
+//	public AccessKey(String userId) {
+//		this.id = -1;
+//		this.accessKey = Crypto.generateQueryId();
+//		this.secretKey = Crypto.generateSecretKey();
+//		this.createdDate = new Date();
+//		this.userId = userId;
+//	}
 
 	public AccessKey(int id, String ak, String sk, boolean active, Date date,
 			String userId) {

@@ -39,6 +39,16 @@
     <!-- This is the default servlet, it puts files in session -->
     <servlet-class>com.eucalyptus.webui.server.UploadServlet</servlet-class>
   </servlet>
+
+	<servlet>
+		<servlet-name>remoteLoggingServiceImpl</servlet-name>
+		<servlet-class>com.google.gwt.libideas.logging.server.RemoteLoggingServiceImpl</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>remoteLoggingServiceImpl</servlet-name>
+		<url-pattern>/charttest/logging</url-pattern>
+	</servlet-mapping>
   
   <servlet-mapping>
     <servlet-name>uploadServlet</servlet-name>

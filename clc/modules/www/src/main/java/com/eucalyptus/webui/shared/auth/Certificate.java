@@ -1,11 +1,12 @@
 package com.eucalyptus.webui.shared.auth;
 
 import java.io.Serializable;
-import java.security.cert.X509Certificate;
 import java.util.Date;
 
-import com.eucalyptus.webui.server.auth.crypto.Crypto;
-import com.eucalyptus.webui.server.auth.util.X509CertHelper;
+//import java.security.cert.X509Certificate;
+//
+//import com.eucalyptus.webui.server.auth.crypto.Crypto;
+//import com.eucalyptus.webui.server.auth.util.X509CertHelper;
 
 public class Certificate implements Serializable {
 
@@ -29,10 +30,10 @@ public class Certificate implements Serializable {
 
 	private String userId;
 
-	public Certificate(String userId, String pem) {
+	public Certificate(String userId, String certId, String pem) {
 		this.isActive = false;
 		this.isRevoked = false;
-		this.certificateId = Crypto.generateQueryId();
+		this.certificateId = certId;
 		this.pem = pem;
 		this.createdDate = new Date();
 		this.userId = userId;
@@ -105,8 +106,8 @@ public class Certificate implements Serializable {
 		this.userId = userId;
 	}
 
-	public X509Certificate getX509Certificate() {
-		return X509CertHelper.toCertificate(pem);
-	}
+//	public X509Certificate getX509Certificate() {
+//		return X509CertHelper.toCertificate(pem);
+//	}
 
 }

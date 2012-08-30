@@ -9,6 +9,7 @@ import com.eucalyptus.webui.client.view.AccountAddView;
 import com.eucalyptus.webui.client.view.AccountView;
 import com.eucalyptus.webui.client.view.ActionResultView;
 import com.eucalyptus.webui.client.view.AreaView;
+import com.eucalyptus.webui.client.view.CPUStatView;
 import com.eucalyptus.webui.client.view.CertView;
 import com.eucalyptus.webui.client.view.CloudRegistrationView;
 import com.eucalyptus.webui.client.view.ClusterCtrlView;
@@ -22,6 +23,7 @@ import com.eucalyptus.webui.client.view.DeviceIPView;
 import com.eucalyptus.webui.client.view.DeviceTemplateListView;
 import com.eucalyptus.webui.client.view.DeviceTemplateView;
 import com.eucalyptus.webui.client.view.DeviceVMView;
+import com.eucalyptus.webui.client.view.DiskStatView;
 import com.eucalyptus.webui.client.view.ErrorSinkView;
 import com.eucalyptus.webui.client.view.GroupAddView;
 import com.eucalyptus.webui.client.view.GroupDetailView;
@@ -38,6 +40,7 @@ import com.eucalyptus.webui.client.view.LoadingAnimationView;
 import com.eucalyptus.webui.client.view.LoadingProgressView;
 import com.eucalyptus.webui.client.view.LoginView;
 import com.eucalyptus.webui.client.view.ConfigView;
+import com.eucalyptus.webui.client.view.MemoryStatView;
 import com.eucalyptus.webui.client.view.NodeCtrlView;
 import com.eucalyptus.webui.client.view.PolicyView;
 import com.eucalyptus.webui.client.view.ReportView;
@@ -213,7 +216,9 @@ public interface ClientFactory {
 	WalrusCtrlView getWalrusCtrlView( );
 	StorageCtrlView getStorageCtrlView( );
 	KeypairView getKeypairView( );
-
   SecurityGroupView getSecurityGroupView();
+	CPUStatView getCPUStatView();
+	MemoryStatView getMemoryStatView();
+	DiskStatView getDiskStatView();
   
 }

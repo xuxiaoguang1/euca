@@ -2,6 +2,7 @@ package com.eucalyptus.webui.client;
 
 import com.eucalyptus.webui.client.place.AccountPlace;
 import com.eucalyptus.webui.client.place.ApprovePlace;
+import com.eucalyptus.webui.client.place.CPUStatPlace;
 import com.eucalyptus.webui.client.place.CertPlace;
 import com.eucalyptus.webui.client.place.ClusterCtrlPlace;
 import com.eucalyptus.webui.client.place.DeviceBWPlace;
@@ -12,6 +13,7 @@ import com.eucalyptus.webui.client.place.DeviceServerPlace;
 import com.eucalyptus.webui.client.place.DeviceIPPlace;
 import com.eucalyptus.webui.client.place.DeviceTemplatePlace;
 import com.eucalyptus.webui.client.place.DeviceVMPlace;
+import com.eucalyptus.webui.client.place.DiskStatPlace;
 import com.eucalyptus.webui.client.place.ErrorSinkPlace;
 import com.eucalyptus.webui.client.place.ConfigPlace;
 import com.eucalyptus.webui.client.place.GroupPlace;
@@ -20,6 +22,7 @@ import com.eucalyptus.webui.client.place.InstancePlace;
 import com.eucalyptus.webui.client.place.IndividualPlace;
 import com.eucalyptus.webui.client.place.KeyPlace;
 import com.eucalyptus.webui.client.place.KeypairPlace;
+import com.eucalyptus.webui.client.place.MemoryStatPlace;
 import com.eucalyptus.webui.client.place.NodeCtrlPlace;
 import com.eucalyptus.webui.client.place.PolicyPlace;
 import com.eucalyptus.webui.client.place.RejectPlace;
@@ -64,8 +67,11 @@ import com.google.gwt.place.shared.WithTokenizers;
   DeviceTemplatePlace.Tokenizer.class,
   DeviceVMPlace.Tokenizer.class,
   UserAppPlace.Tokenizer.class,
-  KeypairPlace.Tokenizer.class, 
-  SecurityGroupPlace.Tokenizer.class
+  SecurityGroupPlace.Tokenizer.class,
+  KeypairPlace.Tokenizer.class,
+  CPUStatPlace.Tokenizer.class,
+  MemoryStatPlace.Tokenizer.class,
+  DiskStatPlace.Tokenizer.class,
 } )
 public interface MainPlaceHistoryMapper extends PlaceHistoryMapper {
 
