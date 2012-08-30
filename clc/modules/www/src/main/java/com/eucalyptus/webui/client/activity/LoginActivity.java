@@ -84,6 +84,11 @@ public class LoginActivity extends AbstractActivity implements LoginView.Present
       this.clientFactory.getLifecyclePlaceController( ).goTo( new ShellPlace( session ) );
     }
   }
+  
+  @Override
+  public void onAccountSignup( ) {
+    this.clientFactory.getLifecyclePlaceController( ).goTo( new ApplyPlace( ApplyType.ACCOUNT ) );
+  }
 
   @Override
   public void onRecoverPassword( ) {
