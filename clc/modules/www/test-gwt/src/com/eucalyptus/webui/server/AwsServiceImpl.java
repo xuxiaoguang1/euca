@@ -10,19 +10,25 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.AuthorizeSecurityGroupEgressRequest;
 import com.amazonaws.services.ec2.model.CreateKeyPairRequest;
 import com.amazonaws.services.ec2.model.CreateKeyPairResult;
+import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
+import com.amazonaws.services.ec2.model.CreateSecurityGroupResult;
 import com.amazonaws.services.ec2.model.DeleteKeyPairRequest;
 import com.amazonaws.services.ec2.model.DescribeImagesResult;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.DescribeKeyPairsResult;
+import com.amazonaws.services.ec2.model.DescribeSecurityGroupsResult;
 import com.amazonaws.services.ec2.model.Image;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceType;
+import com.amazonaws.services.ec2.model.IpPermission;
 import com.amazonaws.services.ec2.model.KeyPairInfo;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
+import com.amazonaws.services.ec2.model.SecurityGroup;
 import com.amazonaws.services.ec2.model.StartInstancesRequest;
 import com.amazonaws.services.ec2.model.StopInstancesRequest;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
@@ -30,16 +36,19 @@ import com.eucalyptus.webui.client.service.AwsService;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
+import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
+import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
+import com.eucalyptus.webui.shared.query.QueryType;
 import com.google.common.collect.Lists;
 import com.google.gwt.dev.util.collect.HashSet;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
-	static final String ACCESS_KEY="K65XB0GX0BLHXV97DL6AO";
-	static final String SECRET_KEY="UvZ1fGaECy4nutoVJke7GcEZR1dQ2ktBeBcA3vJm";
-	static final String ENDPOINT="http://166.111.134.80:8773/services/Eucalyptus";
+	static final String ACCESS_KEY="5VPWK0CGBEORB4ITOOMLL";
+	static final String SECRET_KEY="xHj6hTmtKgGzCEIOAtOc6iUCkuyFBXBQhWOdiSZU";
+	static final String ENDPOINT="http://166.111.134.30:8773/services/Eucalyptus";
 	
 	static final String TYPE_KERNEL = "kernel";
 	static final String TYPE_RAMDISK = "ramdisk";
@@ -79,6 +88,17 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
   static {
     KEYPAIR_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("名称", true, "10%"));
     KEYPAIR_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("指纹", true, "10%"));
+  }
+  
+  public static final ArrayList<SearchResultFieldDesc> SECURITY_GROUP_COMMON_FIELD_DESCS = Lists.newArrayList();
+  public static final String IP_PERMISSION = "ip_permission";
+  public static final String SEGROUP = "segroup";
+  static {
+    SECURITY_GROUP_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("所属用户", true, "10%"));
+    SECURITY_GROUP_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("安全组ID", true, "10%"));
+    SECURITY_GROUP_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("安全组名称", true, "10%"));
+    SECURITY_GROUP_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("安全组描述", true, "10%"));
+    SECURITY_GROUP_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( IP_PERMISSION, "规则列表", false, "0px", TableDisplay.NONE, Type.LINK, false, false ));
   }
 	
 	
@@ -228,5 +248,43 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
       req.setKeyName(k);
       ec2.deleteKeyPair(req);
     }
+  }
+
+  @Override
+  public String createSecurityGroup(Session session, String name, String desc) {
+    AmazonEC2 ec2 = getEC2(session);
+    CreateSecurityGroupRequest req = new CreateSecurityGroupRequest();
+    req.setGroupName(name);
+    req.setDescription(desc);
+    CreateSecurityGroupResult ret = ec2.createSecurityGroup(req);
+    //AuthorizeSecurityGroupEgressRequest req_ = new AuthorizeSecurityGroupEgressRequest();
+    return ret.getGroupId();
+  }
+
+  @Override
+  public SearchResult lookupSecurityGroup(Session session, String search,
+      SearchRange range) {
+    AmazonEC2 ec2 = getEC2(session);
+    DescribeSecurityGroupsResult r = ec2.describeSecurityGroups();
+    List<SearchResultRow> data = new ArrayList<SearchResultRow>();
+    for (SecurityGroup g : r.getSecurityGroups()) {
+      String owner = g.getOwnerId();
+      String id = g.getGroupId();
+      String name = g.getGroupName();
+      String desc = g.getDescription();
+      String url = "";//QueryBuilder.get().start(QueryType.ipPermission).add(SEGROUP, id).url();
+      data.add(new SearchResultRow(Arrays.asList(owner, id, name, desc, url)));
+      
+      /*
+      for (IpPermission i : g.getIpPermissions()) {
+        
+      }
+      */
+    }
+    int resultLength = data.size();
+    SearchResult result = new SearchResult(data.size(), range);
+    result.setDescs(SECURITY_GROUP_COMMON_FIELD_DESCS);
+    result.setRows(data.subList(range.getStart(), range.getStart() + resultLength));
+    return result;
   }
 }

@@ -22,5 +22,8 @@ public interface AwsService extends RemoteService {
 	public void importKeypair(Session session, String name, String key);
 	public void deleteKeypairs(Session session, List<String> keys);
 	
+	public String createSecurityGroup(Session session, String name, String desc);
+	public SearchResult lookupSecurityGroup(Session session, String search, SearchRange range);
+	
 
 }

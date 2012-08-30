@@ -22,15 +22,15 @@ import com.google.common.collect.Lists;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
-	static final String EC2_ACCESS_KEY="K65XB0GX0BLHXV97DL6AO";
-	static final String EC2_SECRET_KEY="UvZ1fGaECy4nutoVJke7GcEZR1dQ2ktBeBcA3vJm";
-	static final String EC2_URL="http://166.111.134.80:8773/services/Eucalyptus";
-	static final String SSH_HOST="root@166.111.134.80";
+	static final String EC2_ACCESS_KEY="5VPWK0CGBEORB4ITOOMLL";
+	static final String EC2_SECRET_KEY="xHj6hTmtKgGzCEIOAtOc6iUCkuyFBXBQhWOdiSZU";
+	static final String EC2_URL="http://166.111.134.30:8773/services/Eucalyptus";
+	static final String SSH_HOST="root@166.111.134.30";
 	//FIXME !! howto get certs? 
-	static final String EC2_CERT="/root/cr/euca2-admin-005381a0-cert.pem";
-	static final String EC2_PRIVATE_KEY="/root/cr/euca2-admin-005381a0-pk.pem";
-	static final String EC2_USER_ID="950563033661";
-	static final String EUCALYPTUS_CERT="/root/cr/cloud-cert.pem";
+	static final String EC2_CERT="/root/admin/euca2-admin-bf8e80b9-cert.pem";
+	static final String EC2_PRIVATE_KEY="/root/admin/euca2-admin-bf8e80b9-pk.pem";
+	static final String EC2_USER_ID="491317658036";
+	static final String EUCALYPTUS_CERT="/root/admin/cloud-cert.pem";
 	
 	static final String IMAGE_PATH = "/home/images/";
 	
@@ -69,7 +69,7 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 	
 	@Override
 	public String sshRun(Session session, String[] cmd) {
-	    final String[] _cmd = {"ssh", SSH_HOST, 
+	    final String[] _cmd = {"ssh", SSH_HOST, "-p", "22220",  //TODO
 	    		"EC2_CERT=" + EC2_CERT + " EC2_ACCESS_KEY=" + EC2_ACCESS_KEY + " EC2_SECRET_KEY=" +  EC2_SECRET_KEY + " " +  " EC2_PRIVATE_KEY=" + EC2_PRIVATE_KEY +  
 	    		" EC2_USER_ID=" + EC2_USER_ID + " EUCALYPTUS_CERT=" + EUCALYPTUS_CERT + " " +   
 	    		StringUtils.join(cmd, " ")};
