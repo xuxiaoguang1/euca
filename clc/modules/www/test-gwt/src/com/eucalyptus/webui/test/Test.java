@@ -1,6 +1,11 @@
 package com.eucalyptus.webui.test;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.cert.X509Certificate;
+
+import org.bouncycastle.openssl.PEMReader;
 
 import com.eucalyptus.webui.server.auth.util.B64;
 import com.eucalyptus.webui.server.auth.util.X509CertHelper;
@@ -117,8 +122,18 @@ public class Test {
 		System.out.println("decoded:");
 		System.out.println(B64.url.decString(encodedPem));
 		
-		X509Certificate x509 = X509CertHelper.toCertificate(encodedPem);
-//		X509Certificate x509 = X509CertHelper.pemToCertificate(encodedPem);
+//		X509Certificate x509 = X509CertHelper.toCertificate(encodedPem);
+//		System.out.println(x509);
+		
+		X509Certificate x509 = null;
+		PEMReader in = null;
+		ByteArrayInputStream pemByteIn = new ByteArrayInputStream(B64.url.dec(encodedPem));
+		in = new PEMReader(new InputStreamReader(pemByteIn));
+		try {
+			x509 = (X509Certificate) in.readObject();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		System.out.println(x509);
 	}
 
