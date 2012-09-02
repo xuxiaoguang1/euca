@@ -91,6 +91,8 @@ import com.eucalyptus.webui.client.view.ReportView;
 import com.eucalyptus.webui.client.view.ReportViewImpl;
 import com.eucalyptus.webui.client.view.RunInstanceView;
 import com.eucalyptus.webui.client.view.RunInstanceViewImpl;
+import com.eucalyptus.webui.client.view.SecurityGroupView;
+import com.eucalyptus.webui.client.view.SecurityGroupViewImpl;
 import com.eucalyptus.webui.client.view.ShellView;
 import com.eucalyptus.webui.client.view.ShellViewImpl;
 import com.eucalyptus.webui.client.view.StartView;
@@ -175,7 +177,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private DeviceTemplateView deviceTemplateView;
 	private DeviceTemplateListView deviceTemplateListView;
 	private KeypairView keyPairView;
-	
+	private SecurityGroupView securityGroupView;
 	private CPUStatView cpuStatView;
 	private MemoryStatView memoryStatView;
 	private DiskStatView diskStatView;
@@ -196,6 +198,7 @@ public class ClientFactoryImpl implements ClientFactory {
 
 	// Snippets
 	private CloudRegistrationView cloudRegView;
+  
 
 	@Override
 	public LocalSession getLocalSession() {
@@ -657,6 +660,13 @@ public DeviceTemplateListView getDeviceTemplateListView() {
     return areaView;
   }
 
+  @Override
+  public SecurityGroupView getSecurityGroupView() {
+    if (securityGroupView == null) {
+      securityGroupView = new SecurityGroupViewImpl();
+    }
+    return securityGroupView;
+  }
 	@Override
 	public CPUStatView getCPUStatView() {
 		if (cpuStatView == null) {

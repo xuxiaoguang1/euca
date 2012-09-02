@@ -38,7 +38,7 @@ public class ShellViewImpl extends Composite implements ShellView {
   DirectoryViewImpl directory;
   
   @UiField
-  DetailsViewImpl detail;
+  DetailViewImpl detail;
   
   @UiField
   FooterViewImpl footer;
@@ -126,7 +126,7 @@ public class ShellViewImpl extends Composite implements ShellView {
   }
 
   @Override
-  public DetailsView getDetailView( ) {
+  public DetailView getDetailView( ) {
     return this.detail;
   }
 

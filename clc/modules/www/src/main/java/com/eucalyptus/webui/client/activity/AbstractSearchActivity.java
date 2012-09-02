@@ -131,7 +131,7 @@ public abstract class AbstractSearchActivity extends AbstractActivity implements
     ArrayList<SearchResultFieldDesc> descs = new ArrayList<SearchResultFieldDesc>( );
     descs.addAll( cache.getDescs( ) );
     descs.addAll( selected.getExtraFieldDescs( ) );
-    //this.clientFactory.getShellView( ).getDetailView( ).showData( descs, selected.getRow( ) );          
+    this.clientFactory.getShellView( ).getDetailView( ).showData( descs, selected.getRow( ) );          
   }
  
   @Override

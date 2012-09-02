@@ -28,6 +28,7 @@ import com.eucalyptus.webui.client.activity.NodeCtrlActivity;
 import com.eucalyptus.webui.client.activity.PolicyActivity;
 import com.eucalyptus.webui.client.activity.RejectActivity;
 import com.eucalyptus.webui.client.activity.ReportActivity;
+import com.eucalyptus.webui.client.activity.SecurityGroupActivity;
 import com.eucalyptus.webui.client.activity.StartActivity;
 import com.eucalyptus.webui.client.activity.StorageCtrlActivity;
 import com.eucalyptus.webui.client.activity.UserActivity;
@@ -62,6 +63,7 @@ import com.eucalyptus.webui.client.place.NodeCtrlPlace;
 import com.eucalyptus.webui.client.place.PolicyPlace;
 import com.eucalyptus.webui.client.place.RejectPlace;
 import com.eucalyptus.webui.client.place.ReportPlace;
+import com.eucalyptus.webui.client.place.SecurityGroupPlace;
 import com.eucalyptus.webui.client.place.StartPlace;
 import com.eucalyptus.webui.client.place.StorageCtrlPlace;
 import com.eucalyptus.webui.client.place.UserAppPlace;
@@ -172,6 +174,9 @@ public class MainActivityMapper implements ActivityMapper {
 		else if ( place instanceof StorageCtrlPlace ) {
 			return new StorageCtrlActivity( ( StorageCtrlPlace )place, this.clientFactory );
 		}
+    else if ( place instanceof SecurityGroupPlace ) {
+      return new SecurityGroupActivity( ( SecurityGroupPlace )place, this.clientFactory );
+    }
 	    else if ( place instanceof KeypairPlace ) {
 	    	return new KeypairActivity( ( KeypairPlace )place, this.clientFactory );
 	    }

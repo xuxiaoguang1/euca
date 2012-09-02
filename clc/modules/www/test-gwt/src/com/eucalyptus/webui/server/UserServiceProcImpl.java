@@ -153,13 +153,10 @@ public class UserServiceProcImpl {
 		  
 		  List<SearchResultFieldDesc> FIELDS;
 		  
-		  if (isRootAdmin) {
-			 
+		  if (isRootAdmin) 
 			  FIELDS = FIELDS_ROOT;
-		  }
-		  else {
+		  else
 			  FIELDS = FIELDS_NONROOT;
-		  }
 		  
 		  final int sortField = range.getSortField( );
 		  

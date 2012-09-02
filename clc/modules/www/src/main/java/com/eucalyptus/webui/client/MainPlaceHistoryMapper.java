@@ -27,6 +27,7 @@ import com.eucalyptus.webui.client.place.NodeCtrlPlace;
 import com.eucalyptus.webui.client.place.PolicyPlace;
 import com.eucalyptus.webui.client.place.RejectPlace;
 import com.eucalyptus.webui.client.place.ReportPlace;
+import com.eucalyptus.webui.client.place.SecurityGroupPlace;
 import com.eucalyptus.webui.client.place.StartPlace;
 import com.eucalyptus.webui.client.place.StorageCtrlPlace;
 import com.eucalyptus.webui.client.place.UserAppPlace;
@@ -66,6 +67,7 @@ import com.google.gwt.place.shared.WithTokenizers;
   DeviceTemplatePlace.Tokenizer.class,
   DeviceVMPlace.Tokenizer.class,
   UserAppPlace.Tokenizer.class,
+  SecurityGroupPlace.Tokenizer.class,
   KeypairPlace.Tokenizer.class,
   CPUStatPlace.Tokenizer.class,
   MemoryStatPlace.Tokenizer.class,

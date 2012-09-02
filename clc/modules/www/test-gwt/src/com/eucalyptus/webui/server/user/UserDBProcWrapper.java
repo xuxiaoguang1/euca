@@ -221,16 +221,13 @@ public class UserDBProcWrapper {
 		  case ADMIN:
 			  break;
 			  
-		  case USER:
+		  default:
 			  sql.append(" AND ").
 			  append(DBTableColName.USER.ID).
 			  append(" = '").
 			  append(userId).
 			  append("'");
 			  break;
-			  
-		  default:
-			  return null;
 		  }
 		
 		System.out.println(sql.toString());
