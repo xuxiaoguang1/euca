@@ -57,7 +57,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 	static final String ACCESS_KEY="5VPWK0CGBEORB4ITOOMLL";
 	static final String SECRET_KEY="xHj6hTmtKgGzCEIOAtOc6iUCkuyFBXBQhWOdiSZU";
-	static final String ENDPOINT="http://166.111.134.30:8773/services/Eucalyptus";
+	static final String ENDPOINT="http://59.66.104.184:8773/services/Eucalyptus";
 	
 	static final String TYPE_KERNEL = "kernel";
 	static final String TYPE_RAMDISK = "ramdisk";
