@@ -27,7 +27,7 @@
                     <tbody>
                         <tr>
                             <td>
-                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="newButton">
+                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="createButton">
                                     <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>添加安全组
                                 </g:Anchor>                            
                             </td>

@@ -77,6 +77,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private DeviceTemplateListView deviceTemplateListView;
 	private KeypairView keyPairView;
 	private SecurityGroupView securityGroupView;
+  private IpPermissionView ipPermissionView;
 	private CPUStatView cpuStatView;
 	private MemoryStatView memoryStatView;
 	private DiskStatView diskStatView;
@@ -599,4 +600,12 @@ public DeviceTemplateListView getDeviceTemplateListView() {
 		}
 		return historyView;
 	}
+
+  @Override
+  public IpPermissionView getIpPermissionView() {
+    if (ipPermissionView == null) {
+      ipPermissionView = new IpPermissionViewImpl();
+    }
+    return ipPermissionView;
+  }
 }

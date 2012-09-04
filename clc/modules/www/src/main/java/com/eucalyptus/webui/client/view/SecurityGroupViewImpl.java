@@ -39,6 +39,21 @@ public class SecurityGroupViewImpl extends Composite implements SecurityGroupVie
   public SecurityGroupViewImpl( ) {
     initWidget( uiBinder.createAndBindUi( this ) );
   }
+  
+  @UiHandler( "createButton" )
+  void onCreateSecurityGroupButtonClick( ClickEvent e ) {
+    this.presenter.onCreateSecurityGroup();
+  }
+
+  @UiHandler( "delButton" )
+  void onDeleteSecurityGroupButtonClick( ClickEvent e ) {
+    this.presenter.onDeleteSecurityGroup();
+  }
+
+  @UiHandler( "ruleButton" )
+  void onAddSecurityRuleButtonClick( ClickEvent e ) {
+    this.presenter.onAddSecurityRule();
+  }
 
   public void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
     tablePanel.clear( );

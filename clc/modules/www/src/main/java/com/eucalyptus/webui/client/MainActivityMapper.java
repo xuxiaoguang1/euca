@@ -20,6 +20,7 @@ import com.eucalyptus.webui.client.activity.DeviceServerActivity;
 import com.eucalyptus.webui.client.activity.DeviceIPActivity;
 import com.eucalyptus.webui.client.activity.DeviceTemplateActivity;
 import com.eucalyptus.webui.client.activity.IndividualActivity;
+import com.eucalyptus.webui.client.activity.IpPermissionActivity;
 import com.eucalyptus.webui.client.activity.KeyActivity;
 import com.eucalyptus.webui.client.activity.KeypairActivity;
 import com.eucalyptus.webui.client.activity.LogoutActivity;
@@ -56,6 +57,7 @@ import com.eucalyptus.webui.client.place.DeviceServerPlace;
 import com.eucalyptus.webui.client.place.DeviceIPPlace;
 import com.eucalyptus.webui.client.place.DeviceTemplatePlace;
 import com.eucalyptus.webui.client.place.IndividualPlace;
+import com.eucalyptus.webui.client.place.IpPermissionPlace;
 import com.eucalyptus.webui.client.place.KeyPlace;
 import com.eucalyptus.webui.client.place.KeypairPlace;
 import com.eucalyptus.webui.client.place.LogoutPlace;
@@ -178,6 +180,9 @@ public class MainActivityMapper implements ActivityMapper {
 		}
     else if ( place instanceof SecurityGroupPlace ) {
       return new SecurityGroupActivity( ( SecurityGroupPlace )place, this.clientFactory );
+    }
+    else if ( place instanceof IpPermissionPlace ) {
+      return new IpPermissionActivity( ( IpPermissionPlace )place, this.clientFactory );
     }
 	    else if ( place instanceof KeypairPlace ) {
 	    	return new KeypairActivity( ( KeypairPlace )place, this.clientFactory );
