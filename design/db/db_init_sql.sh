@@ -33,6 +33,7 @@ command 'delete from server where 1=1'
 command 'delete from user where 1=1'
 command 'delete from groups where 1=1'
 command 'delete from account where 1=1'
+command 'delete from history where 1=1'
 
 command insert into account \(account_name, account_email, account_descrip, account_state\) \
     values \(\"root\", \"email\", \"desc\", 0\)
@@ -218,6 +219,24 @@ for ((i=0;i<10;i++)) do
         \"4$i\", \
         \"image$i\", \
         \"2012-07-$d\", \
+        \"1\" \
+        \)
+done
+
+# inser history
+for ((i=0;i<10;i++)) do
+    let d="10+$i%10";
+    command insert into history \( \
+        history_action, \
+        history_reason, \
+        history_date, \
+        history_user_id, \
+        history_vm_id\) \
+        values \( \
+        \"start\", \
+        \"init cloud environment\", \
+        \"2012-07-$d\", \
+        \"1\", \
         \"1\" \
         \)
 done

@@ -32,7 +32,7 @@ public class CPUStatViewImpl extends Composite implements CPUStatView {
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 	
-	private void initChart(String title, String[] label, double[] size){
+	private void initChart(String title, String[] label, int[] size){
 		PieStatChart chart = new PieStatChart(title, label, size); 
 		chartPanel.add(chart, 80, 20);
 		chart.init();
@@ -54,7 +54,7 @@ public class CPUStatViewImpl extends Composite implements CPUStatView {
 
 	@Override
 	public void showSearchResult(SearchResult result) {
-		initChart("CPU信息", new String[]{"已使用", "未使用"}, new double[]{0.3, 0.7});
+		initChart("CPU信息", new String[]{"已使用", "未使用"}, new int[]{60, 120});
 	}
 
 }

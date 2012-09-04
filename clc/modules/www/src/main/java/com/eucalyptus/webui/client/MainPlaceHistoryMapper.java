@@ -17,6 +17,7 @@ import com.eucalyptus.webui.client.place.DiskStatPlace;
 import com.eucalyptus.webui.client.place.ErrorSinkPlace;
 import com.eucalyptus.webui.client.place.ConfigPlace;
 import com.eucalyptus.webui.client.place.GroupPlace;
+import com.eucalyptus.webui.client.place.HistoryPlace;
 import com.eucalyptus.webui.client.place.ImagePlace;
 import com.eucalyptus.webui.client.place.InstancePlace;
 import com.eucalyptus.webui.client.place.IndividualPlace;
@@ -72,6 +73,7 @@ import com.google.gwt.place.shared.WithTokenizers;
   CPUStatPlace.Tokenizer.class,
   MemoryStatPlace.Tokenizer.class,
   DiskStatPlace.Tokenizer.class,
+  HistoryPlace.Tokenizer.class,
 } )
 public interface MainPlaceHistoryMapper extends PlaceHistoryMapper {
 

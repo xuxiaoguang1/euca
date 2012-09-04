@@ -1,5 +1,7 @@
 package com.eucalyptus.webui.client.chart;
 
+import java.util.Arrays;
+
 import com.googlecode.gchart.client.GChart;
 
 public class PieStatChart extends GChart {
@@ -14,36 +16,59 @@ public class PieStatChart extends GChart {
 	public String[] color = {"#0F0", "#00F", "#F00", "#FF0", "#0FF", "#F0F"};
 
 	public String[] label;
-	public double[] size;
+	public double[] percent;
+	public int[] size;
 	
 	public String title;
 	public int[] chartSize = {300, 240};
 	
 	private int len;
 
-	public PieStatChart(String title, String[] label, double[] size, String[] color) {
+	public PieStatChart(String title, String[] label, int[] size, String[] color) {
+		if(label.length != size.length){
+			throw new RuntimeException("label.length != size.length");
+		}
 		this.title = title;
 		this.label = label;
 		this.size = size;
 		this.color = color;
 		
-		len = Math.min(Math.min(label.length, size.length), color.length);
+		len = label.length;
+		this.percent = new double[len];
+		int sum = 0;
+		for(int i = 0; i < len; ++i){
+			sum += size[i];
+		}
+		for(int i = 0; i < len; ++i){
+			percent[i] = (double)size[i] / (double)sum;
+		}
 	}
 	
-	public PieStatChart(String title, String[] label, double[] size) {
+	public PieStatChart(String title, String[] label, int[] size) {
+		if(label.length != size.length){
+			throw new RuntimeException("label.length != size.length");
+		}
 		this.title = title;
 		this.label = label;
 		this.size = size;
 		
-		len = Math.min(label.length, size.length);
+		len = label.length;
+		this.percent = new double[len];
+		int sum = 0;
+		for(int i = 0; i < len; ++i){
+			sum += size[i];
+		}
+		for(int i = 0; i < len; ++i){
+			percent[i] = (double)size[i] / (double)sum;
+		}
 	}
 	
 	public void init(){
 		setChartSize(chartSize[0], chartSize[1]);
 		setBorderStyle("none");
 		setChartTitle("<h3>" + title + "</h3>");
+		
 		// initial slice sizes
-
 		for (int iCurve = 0; iCurve < len; iCurve++) {
 			addCurve();
 			getCurve().getSymbol().setBorderWidth(SLICE_BORDER_WIDTH);
@@ -57,11 +82,11 @@ public class PieStatChart extends GChart {
 			getCurve().getSymbol().setModelWidth(0);
 			
 			getCurve().getSymbol().setBackgroundColor(color[iCurve]);
-			getCurve().getSymbol().setPieSliceSize(size[iCurve]);
+			getCurve().getSymbol().setPieSliceSize(percent[iCurve]);
 
 			getCurve().addPoint(0.5, 0.5); // pie centered in world units
 			getCurve().getPoint().setAnnotationLocation(AnnotationLocation.OUTSIDE_PIE_ARC);
-			getCurve().getPoint().setAnnotationText(label[iCurve] + ": " + Double.toString(size[iCurve]));
+			getCurve().getPoint().setAnnotationText(label[iCurve] + ": " + size[iCurve]);
 			
 		}
 		getXAxis().setAxisMin(0); // so 0.5,0.5 (see above) centers pie

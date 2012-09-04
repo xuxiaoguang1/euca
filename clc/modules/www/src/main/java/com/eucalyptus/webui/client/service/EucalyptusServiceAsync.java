@@ -266,4 +266,6 @@ public interface EucalyptusServiceAsync {
 //	void listPolicies(Session session, AsyncCallback<SearchResult> callback);
 	
 	void modifyPolicy(Session session, String policyId, String name, String content, AsyncCallback<Void> callback);
+	
+	void lookupHistory(Session session, String search, SearchRange range, AsyncCallback<SearchResult> callback);
 }

@@ -29,6 +29,7 @@ import com.eucalyptus.webui.client.view.GroupAddView;
 import com.eucalyptus.webui.client.view.GroupDetailView;
 import com.eucalyptus.webui.client.view.GroupListView;
 import com.eucalyptus.webui.client.view.GroupView;
+import com.eucalyptus.webui.client.view.HistoryView;
 import com.eucalyptus.webui.client.view.ImageView;
 import com.eucalyptus.webui.client.view.IndividualView;
 import com.eucalyptus.webui.client.view.InputView;
@@ -220,5 +221,6 @@ public interface ClientFactory {
 	CPUStatView getCPUStatView();
 	MemoryStatView getMemoryStatView();
 	DiskStatView getDiskStatView();
+	HistoryView getHistoryView();
   
 }
