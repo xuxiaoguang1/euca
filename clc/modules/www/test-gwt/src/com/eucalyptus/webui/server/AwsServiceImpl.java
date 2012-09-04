@@ -2,6 +2,7 @@ package com.eucalyptus.webui.server;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -51,7 +52,6 @@ import com.eucalyptus.webui.shared.query.QueryParsingException;
 import com.eucalyptus.webui.shared.query.QueryType;
 import com.eucalyptus.webui.shared.query.SearchQuery;
 import com.google.common.collect.Lists;
-import com.google.gwt.dev.util.collect.HashSet;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {

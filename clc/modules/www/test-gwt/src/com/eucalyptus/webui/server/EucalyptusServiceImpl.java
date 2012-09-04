@@ -32,7 +32,6 @@ import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.common.base.Strings;
-import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class EucalyptusServiceImpl extends RemoteServiceServlet implements EucalyptusService {
@@ -104,7 +103,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	public HashMap<String, String> getSystemProperties(Session session) throws EucalyptusServiceException {
 		verifySession(session);
 
-		HashMap<String, String> props = Maps.newHashMap();
+		HashMap<String, String> props = new HashMap<String, String>();
 		props.put("version", "Eucalyptus EEE 3.0");
 		props.put("search-result-page-size", "5");
 		return props;
