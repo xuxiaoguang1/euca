@@ -9,7 +9,7 @@ public class HistoryPlace extends SearchPlace {
     super( search );
   }
   
-  @Prefix( "history" )
+  @Prefix( "history_stat" )
   public static class Tokenizer implements PlaceTokenizer<HistoryPlace> {
 
     @Override

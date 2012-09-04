@@ -55,6 +55,13 @@ public class Enum2String {
 			return USER_KEY_NON_ACTIVE[1];
 	}
 	
+	public String getVMAction(boolean start) {
+		if (start)
+			return HISTORY_START[1];
+		else
+			return HISTORY_STOP[1];
+	}
+	
 	public String getRevokedState(boolean active) {
 		if (active)
 			return USER_KEY_REVOKED[1];
@@ -133,6 +140,9 @@ public class Enum2String {
 	
 	private final String[] USER_KEY_ACTIVE = {"true", "激活"};
 	private final String[] USER_KEY_NON_ACTIVE = {"false", "未激活"};
+	
+	private final String[] HISTORY_START = {"start", "启动"};
+	private final String[] HISTORY_STOP = {"stop", "停止"};
 	
 	private final String[] USER_KEY_REVOKED = {"true", "是"};
 	private final String[] USER_KEY_NON_REVOKED = {"false", "否"};

@@ -7,7 +7,6 @@
 	<classpathentry kind="lib" path="lib/bcprov.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-incubator-20101117-r1766.jar"/>
 	<classpathentry kind="lib" path="lib/gchart.jar"/>
-	<classpathentry kind="lib" path="lib-euca/eucalyptus-www-3.1.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/guava-r09-gwt.jar"/>
 	<classpathentry kind="lib" path="lib/guava-r09.jar"/>

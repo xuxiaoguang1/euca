@@ -32,7 +32,11 @@ public class HistoryServiceProcImpl {
 
 		ResultSetWrapper rs;
 		try {
-			rs = historyDBProc.queryTotalHistory();
+			if (isRootAdmin) {
+				rs = historyDBProc.queryTotalHistory();
+			} else {
+				rs = historyDBProc.queryHistoryBy(curUser.getAccountId(), curUser.getUserId(), curUser.getUserType());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new EucalyptusServiceException("Fail to query certificates");
@@ -82,30 +86,27 @@ public class HistoryServiceProcImpl {
 				result = new ArrayList<SearchResultRow>();
 
 				while (rs.next()) {
-					boolean userKeyActive = Integer.parseInt(rs.getString(DBTableColName.USER_CERT.ACTIVE)) == 1;
-					boolean userKeyRevoked = Integer.parseInt(rs.getString(DBTableColName.USER_CERT.REVOKED)) == 1;
-
+					boolean start = Integer.parseInt(rs.getString(DBTableColName.HISTORY.ACTION)) == 1;
 					if (isRootView) {
 						result.add(new SearchResultRow(
 								Arrays.asList(
-										rs.getString(DBTableColName.USER_CERT.ID),
+										rs.getString(DBTableColName.HISTORY.ID),
 										Integer.toString(index++),
-										Enum2String.getInstance().getActiveState(userKeyActive),
-										Enum2String.getInstance().getRevokedState(userKeyRevoked),
-										rs.getString(DBTableColName.USER_CERT.CREATED_DATE),
-										rs.getString(DBTableColName.ACCOUNT.NAME),
-										rs.getString(DBTableColName.GROUP.NAME),
-										rs.getString(DBTableColName.USER.NAME))));
+										Enum2String.getInstance().getVMAction(start),
+										rs.getString(DBTableColName.HISTORY.REASON),
+										rs.getString(DBTableColName.HISTORY.DATE),
+										rs.getString(DBTableColName.HISTORY.USER_ID),
+										rs.getString(DBTableColName.HISTORY.VM_ID))));
 					} else {
 						result.add(new SearchResultRow(
 								Arrays.asList(
-										rs.getString(DBTableColName.USER_CERT.ID),
+										rs.getString(DBTableColName.HISTORY.ID),
 										Integer.toString(index++),
-										Enum2String.getInstance().getActiveState(userKeyActive),
-										Enum2String.getInstance().getRevokedState(userKeyRevoked),
-										rs.getString(DBTableColName.USER_CERT.CREATED_DATE),
-										rs.getString(DBTableColName.GROUP.NAME),
-										rs.getString(DBTableColName.USER.NAME))));
+										Enum2String.getInstance().getVMAction(start),
+										rs.getString(DBTableColName.HISTORY.REASON),
+										rs.getString(DBTableColName.HISTORY.DATE),
+										rs.getString(DBTableColName.HISTORY.USER_ID),
+										rs.getString(DBTableColName.HISTORY.VM_ID))));
 					}
 				}
 			}
@@ -122,30 +123,28 @@ public class HistoryServiceProcImpl {
 
 	private static final String[] TABLE_COL_TITLE_CHECKALL = { "Check All", "全选" };
 	private static final String[] TABLE_COL_TITLE_NO = { "No.", "序号" };
-	private static final String[] TABLE_COL_TITLE_CERT_ACTIVE = { "Active", "密钥状态" };
-	private static final String[] TABLE_COL_TITLE_CERT_REVOKED = { "Revoked", "是否撤销"};
-	private static final String[] TABLE_COL_TITLE_CERT_CREATED_DATE = {"Created Date", "创建时间" };
-	private static final String[] TABLE_COL_TITLE_ACCOUNT_NAME = {"Account", "账户" };
-	private static final String[] TABLE_COL_TITLE_GROUP_NAME = { "Group", "组" };
-	private static final String[] TABLE_COL_TITLE_NAME = {"ID", "用户"};
+	private static final String[] TABLE_COL_TITLE_HISTORY_ACTION = { "Action", "操作" };
+	private static final String[] TABLE_COL_TITLE_HISTORY_REASON = { "Reason", "原因"};
+	private static final String[] TABLE_COL_TITLE_HISTORY_DATE = {"Date", "时间" };
+	private static final String[] TABLE_COL_TITLE_USER_ID = {"User ID", "用户ID" };
+	private static final String[] TABLE_COL_TITLE_VM_ID = { "VM ID", "虚拟机ID" };
 
 	private static final List<SearchResultFieldDesc> FIELDS_ROOT = Arrays
 			.asList(new SearchResultFieldDesc(TABLE_COL_TITLE_CHECKALL[1], "10%", false), 
 					new SearchResultFieldDesc(TABLE_COL_TITLE_NO[1], false, "10%",TableDisplay.MANDATORY, Type.TEXT, false, false),
-					new SearchResultFieldDesc(TABLE_COL_TITLE_CERT_ACTIVE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false), 
-					new SearchResultFieldDesc(TABLE_COL_TITLE_CERT_REVOKED[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false), 
-					new SearchResultFieldDesc(TABLE_COL_TITLE_CERT_CREATED_DATE[1], true, "25%", TableDisplay.MANDATORY, Type.TEXT, false, false),
-					new SearchResultFieldDesc(TABLE_COL_TITLE_ACCOUNT_NAME[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false), 
-					new SearchResultFieldDesc(TABLE_COL_TITLE_GROUP_NAME[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false),
-					new SearchResultFieldDesc(TABLE_COL_TITLE_NAME[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false));
+					new SearchResultFieldDesc(TABLE_COL_TITLE_HISTORY_ACTION[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false), 
+					new SearchResultFieldDesc(TABLE_COL_TITLE_HISTORY_REASON[1], true, "25%", TableDisplay.MANDATORY, Type.TEXT, false, false), 
+					new SearchResultFieldDesc(TABLE_COL_TITLE_HISTORY_DATE[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+					new SearchResultFieldDesc(TABLE_COL_TITLE_USER_ID[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false), 
+					new SearchResultFieldDesc(TABLE_COL_TITLE_VM_ID[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false));
 
 	private static final List<SearchResultFieldDesc> FIELDS_NONROOT = Arrays
 			.asList(new SearchResultFieldDesc(TABLE_COL_TITLE_CHECKALL[1], "10%", false), 
-					new SearchResultFieldDesc(TABLE_COL_TITLE_NO[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false),
-					new SearchResultFieldDesc(TABLE_COL_TITLE_CERT_ACTIVE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false), 
-					new SearchResultFieldDesc(TABLE_COL_TITLE_CERT_REVOKED[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false), 
-					new SearchResultFieldDesc(TABLE_COL_TITLE_CERT_CREATED_DATE[1], true, "30%", TableDisplay.MANDATORY, Type.TEXT, false, false),
-					new SearchResultFieldDesc(TABLE_COL_TITLE_GROUP_NAME[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false), 
-					new SearchResultFieldDesc(TABLE_COL_TITLE_NAME[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false));
+					new SearchResultFieldDesc(TABLE_COL_TITLE_NO[1], false, "10%",TableDisplay.MANDATORY, Type.TEXT, false, false),
+					new SearchResultFieldDesc(TABLE_COL_TITLE_HISTORY_ACTION[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false), 
+					new SearchResultFieldDesc(TABLE_COL_TITLE_HISTORY_REASON[1], true, "25%", TableDisplay.MANDATORY, Type.TEXT, false, false), 
+					new SearchResultFieldDesc(TABLE_COL_TITLE_HISTORY_DATE[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+					new SearchResultFieldDesc(TABLE_COL_TITLE_USER_ID[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false), 
+					new SearchResultFieldDesc(TABLE_COL_TITLE_VM_ID[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false));
 
 }
