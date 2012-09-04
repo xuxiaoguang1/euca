@@ -20,6 +20,7 @@ import com.eucalyptus.webui.client.place.GroupPlace;
 import com.eucalyptus.webui.client.place.ImagePlace;
 import com.eucalyptus.webui.client.place.InstancePlace;
 import com.eucalyptus.webui.client.place.IndividualPlace;
+import com.eucalyptus.webui.client.place.IpPermissionPlace;
 import com.eucalyptus.webui.client.place.KeyPlace;
 import com.eucalyptus.webui.client.place.KeypairPlace;
 import com.eucalyptus.webui.client.place.MemoryStatPlace;
@@ -68,6 +69,7 @@ import com.google.gwt.place.shared.WithTokenizers;
   DeviceVMPlace.Tokenizer.class,
   UserAppPlace.Tokenizer.class,
   SecurityGroupPlace.Tokenizer.class,
+  IpPermissionPlace.Tokenizer.class,
   KeypairPlace.Tokenizer.class,
   CPUStatPlace.Tokenizer.class,
   MemoryStatPlace.Tokenizer.class,

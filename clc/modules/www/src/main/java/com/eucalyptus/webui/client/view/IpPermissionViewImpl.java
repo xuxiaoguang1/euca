@@ -19,13 +19,13 @@ import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 
-public class SecurityGroupViewImpl extends Composite implements SecurityGroupView {
+public class IpPermissionViewImpl extends Composite implements IpPermissionView {
   
-  private static final Logger LOG = Logger.getLogger( SecurityGroupViewImpl.class.getName( ) );
+  private static final Logger LOG = Logger.getLogger( IpPermissionViewImpl.class.getName( ) );
   
-  private static SecurityGroupViewImplUiBinder uiBinder = GWT.create( SecurityGroupViewImplUiBinder.class );
+  private static IpPermissionViewImplUiBinder uiBinder = GWT.create( IpPermissionViewImplUiBinder.class );
   
-  interface SecurityGroupViewImplUiBinder extends UiBinder<Widget, SecurityGroupViewImpl> {}
+  interface IpPermissionViewImplUiBinder extends UiBinder<Widget, IpPermissionViewImpl> {}
   
   @UiField
   LayoutPanel tablePanel;
@@ -36,24 +36,20 @@ public class SecurityGroupViewImpl extends Composite implements SecurityGroupVie
   
   private Presenter presenter;
   
-  public SecurityGroupViewImpl( ) {
+  public IpPermissionViewImpl( ) {
     initWidget( uiBinder.createAndBindUi( this ) );
   }
   
-  @UiHandler( "createButton" )
-  void onCreateSecurityGroupButtonClick( ClickEvent e ) {
-    this.presenter.onCreateSecurityGroup();
+  @UiHandler( "addButton" )
+  void handleAddButtonClick( ClickEvent e ) {
+    this.presenter.onAddRule();
   }
-
+  
   @UiHandler( "delButton" )
-  void onDeleteSecurityGroupButtonClick( ClickEvent e ) {
-    this.presenter.onDeleteSecurityGroup();
+  void handleDelButtonClick( ClickEvent e ) {
+    this.presenter.onDeleteRule();
   }
 
-  @UiHandler( "ruleButton" )
-  void onAddSecurityRuleButtonClick( ClickEvent e ) {
-    this.presenter.onAddSecurityRule();
-  }
 
   public void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
     tablePanel.clear( );

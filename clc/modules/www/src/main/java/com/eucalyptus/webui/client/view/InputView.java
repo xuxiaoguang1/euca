@@ -7,6 +7,8 @@ public interface InputView extends IsWidget {
   
   void display( String caption, String subject, ArrayList<InputField> fields );
   
+  void setState(int id, String text, boolean enabled);
+  
   void setPresenter( Presenter presenter );
   
   public interface Presenter {

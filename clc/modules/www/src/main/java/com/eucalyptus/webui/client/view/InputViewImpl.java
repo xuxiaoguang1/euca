@@ -319,5 +319,14 @@ public class InputViewImpl extends DialogBox implements InputView {
     }
     return style;
   }
+
+  @Override
+  public void setState(int id, String text, boolean enabled) {
+    //FIXME: just hack to work
+    HasValueWidget w = inputs.get(id);
+    TextBox box = (TextBox)w.getWidget();
+    box.setValue(text);
+    box.setEnabled(enabled);
+  }
   
 }

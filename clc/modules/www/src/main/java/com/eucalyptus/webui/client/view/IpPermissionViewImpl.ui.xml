@@ -27,13 +27,13 @@
                     <tbody>
                         <tr>
                             <td>
-                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="newButton">
-                                    <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>添加安全组
+                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="addButton">
+                                    <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>添加规则
                                 </g:Anchor>                            
                             </td>
                             <td>
                                 <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="delButton">
-                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>删除安全组
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>删除规则
                                 </g:Anchor>
                             </td>
                         </tr>
