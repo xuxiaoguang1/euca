@@ -52,6 +52,10 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 			env.put("EC2_URL", EC2_URL);
 			env.put("EC2_ACCESS_KEY", EC2_ACCESS_KEY);
 			env.put("EC2_SECRET_KEY", EC2_SECRET_KEY);
+			env.put("EC2_CERT", EC2_CERT);
+			env.put("EC2_PRIVATE_KEY", EC2_PRIVATE_KEY);
+			env.put("EC2_USER_ID", EC2_USER_ID);
+			env.put("EUCALYPTUS_CERT", EUCALYPTUS_CERT);
 			Process p = b.start();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String s = reader.readLine();
