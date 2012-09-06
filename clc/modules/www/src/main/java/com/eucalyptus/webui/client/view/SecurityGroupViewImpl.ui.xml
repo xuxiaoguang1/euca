@@ -35,10 +35,10 @@
                                 <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="delButton">
                                     <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>删除安全组
                                 </g:Anchor>
-                            </td>
+                            </td> 
                             <td>
                                 <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="ruleButton">
-                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>添加规则
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>管理规则
                                 </g:Anchor>
                             </td>
                         </tr>

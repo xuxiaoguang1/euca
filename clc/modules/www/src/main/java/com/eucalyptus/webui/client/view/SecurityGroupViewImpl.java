@@ -12,6 +12,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -29,6 +30,7 @@ public class SecurityGroupViewImpl extends Composite implements SecurityGroupVie
   
   @UiField
   LayoutPanel tablePanel;
+  
   
   private MultiSelectionModel<SearchResultRow> selectionModel;
   
@@ -54,6 +56,7 @@ public class SecurityGroupViewImpl extends Composite implements SecurityGroupVie
   void onAddSecurityRuleButtonClick( ClickEvent e ) {
     this.presenter.onAddSecurityRule();
   }
+
 
   public void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
     tablePanel.clear( );

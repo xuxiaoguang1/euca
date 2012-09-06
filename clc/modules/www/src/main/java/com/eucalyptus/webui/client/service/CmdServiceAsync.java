@@ -30,4 +30,26 @@ public interface CmdServiceAsync {
   void runInstance(Session session, String image, String keypair,
       String vmtype, String group, AsyncCallback<String> callback);
 
+  void registerCluster(Session session, String part, String host, String name,
+      AsyncCallback<Void> callback);
+
+  void deregisterCluster(Session session, String part, String name,
+      AsyncCallback<Void> callback);
+
+  void deregisterNode(Session session, String host, AsyncCallback<Void> callback);
+
+  void registerWalrus(Session session, String host, String name,
+      AsyncCallback<Void> callback);
+
+  void registerStorage(Session session, String part, String host, String name,
+      AsyncCallback<Void> callback);
+
+  void deregisterWalrus(Session session, String name,
+      AsyncCallback<Void> callback);
+
+  void registerNode(Session session, String host, AsyncCallback<Void> callback);
+
+  void deregisterStorage(Session session, String part, String name,
+      AsyncCallback<Void> callback);
+
 }

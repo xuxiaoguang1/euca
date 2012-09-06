@@ -23,4 +23,17 @@ public interface CmdService extends RemoteService {
 	
 	public String runInstance(Session session, String image, String keypair, String vmtype, String group);
 	
+	public void registerCluster(Session session, String part, String host, String name) throws EucalyptusServiceException;
+	public void deregisterCluster(Session session, String part, String name) throws EucalyptusServiceException;
+  public void registerNode(Session session, String host) throws EucalyptusServiceException;
+  public void deregisterNode(Session session, String host) throws EucalyptusServiceException;
+  public void registerStorage(Session session, String part, String host, String name) throws EucalyptusServiceException;
+  public void deregisterStorage(Session session, String part, String name) throws EucalyptusServiceException;
+  public void registerWalrus(Session session, String host, String name) throws EucalyptusServiceException;
+  public void deregisterWalrus(Session session, String name) throws EucalyptusServiceException;
+  
+
+	
+	
+	
 }

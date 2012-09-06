@@ -7,6 +7,8 @@ public interface WalrusCtrlView extends IsWidget, CanDisplaySearchResult, Cleara
   void setPresenter( Presenter presenter );
   
   public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize {
+    void onRegister();
+    void onDeregister();
   }
   
 }

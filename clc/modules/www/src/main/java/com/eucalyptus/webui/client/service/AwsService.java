@@ -27,6 +27,7 @@ public interface AwsService extends RemoteService {
 	public SearchResult lookupSecurityGroup(Session session, String search, SearchRange range);
 	public SearchResult lookupSecurityRule(Session session, String search, SearchRange range);
 	public void addSecurityRule(Session session, String group, String fromPort, String toPort, String proto, String ipRange);
+	public void delSecurityRules(Session session, List<String> groups, List<String> fromPorts, List<String> toPorts, List<String> protos, List<String> ipRanges);
 	
 
 }

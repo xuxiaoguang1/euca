@@ -18,7 +18,7 @@ import com.eucalyptus.webui.shared.query.StringValue;
  */
 public class QueryBuilder {
 
-  public static final String BASE = "EucalyptusWebInterface.html#";
+  public static final String BASE = "EucalyptusWebInterface.html?gwt.codesvr=127.0.0.1:9997#";
 
   private SearchQuery query;
   

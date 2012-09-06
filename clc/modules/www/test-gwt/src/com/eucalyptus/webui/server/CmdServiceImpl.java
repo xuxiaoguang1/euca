@@ -12,6 +12,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 
 import com.eucalyptus.webui.client.service.CmdService;
+import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
@@ -36,9 +37,9 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 	
 	public static final ArrayList<SearchResultFieldDesc> CTRL_COMMON_FIELD_DESCS = Lists.newArrayList();
 	static {
-		CTRL_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "ID", true, "10%") );
-		CTRL_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "IP", true, "10%") );
-		CTRL_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "端口号", true, "10%") );
+    CTRL_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "名称", true, "10%") );
+		CTRL_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "分区", true, "10%") );
+		CTRL_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "地址", true, "10%") );
 		CTRL_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "状态", true, "10%") );
 	}
 
@@ -84,8 +85,8 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 		String ret = sshRun(session, cmd);
 		List<SearchResultRow> data = new ArrayList<SearchResultRow>();
 		for (String s : ret.split("\n")) {
-			if (s != null)
-				data.add(new SearchResultRow(Arrays.asList("", s, "", "")));
+			if (s != null && !s.equals(""))
+				data.add(new SearchResultRow(Arrays.asList("", "", s, "")));
 		}
 		SearchResult result = new SearchResult(data.size(), range);
 		result.setDescs(CTRL_COMMON_FIELD_DESCS);
@@ -102,7 +103,9 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 		for (String s : ret.split("\n")) {
 			if (s != null) {
 				String[] i = s.split("\\s+");
-				data.add(new SearchResultRow(Arrays.asList(i[2], i[3], "", i[4])));
+        if (i.length < 5)
+          break;
+				data.add(new SearchResultRow(Arrays.asList(i[2], i[1], i[3], i[4])));
 			}
 		}
 		SearchResult result = new SearchResult(data.size(), range);
@@ -119,7 +122,9 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 		for (String s : ret.split("\n")) {
 			if (s != null) {
 				String[] i = s.split("\\s+");
-				data.add(new SearchResultRow(Arrays.asList(i[2], i[3], "", i[4])));
+        if (i.length < 5)
+          break;
+				data.add(new SearchResultRow(Arrays.asList(i[2], i[1], i[3], i[4])));
 			}
 				
 		}
@@ -137,7 +142,9 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 		for (String s : ret.split("\n")) {
 			if (s != null) {
 				String[] i = s.split("\\s+");
-				data.add(new SearchResultRow(Arrays.asList(i[2], i[3], "", i[4])));
+				if (i.length < 5)
+				  break;
+				data.add(new SearchResultRow(Arrays.asList(i[2], i[1], i[3], i[4])));
 			}
 		}
 		SearchResult result = new SearchResult(data.size(), range);
@@ -249,5 +256,86 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
       }    
     }
     return ret;
+  }
+
+  @Override
+  public void registerCluster(Session session, String part, String host,
+      String name) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca_conf", "--register-cluster", "--partition", part, "--host", host, "--component", name);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+    
+  }
+
+  @Override
+  public void deregisterCluster(Session session, String part, String name) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca_conf", "--deregister-cluster", "--partition", part, "--component", name);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+  }
+
+
+  @Override
+  public void registerStorage(Session session, String part, String host,
+      String name) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca_conf", "--register-sc", "--partition", part, "--host", host, "--component", name);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+  }
+
+  @Override
+  public void deregisterStorage(Session session, String part, String name) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca_conf", "--deregister-sc", "--partition", part, "--component", name);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+    
+  }
+
+  @Override
+  public void registerWalrus(Session session, String host,
+      String name) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca_conf", "--register-walrus", "--partition", "walrus", "--host", host, "--component", name);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+  }
+
+  @Override
+  public void deregisterWalrus(Session session, String name) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca_conf", "--deregister-walrus", "--partition", "walrus", "--component", name);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+    
+  }
+
+  @Override
+  public void registerNode(Session session, String host) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca_conf", "--register-nodes", host);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+    
+  }
+
+  @Override
+  public void deregisterNode(Session session, String host) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca_conf", "--deregister-nodes", host);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+    
   }
 }

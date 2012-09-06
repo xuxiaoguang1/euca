@@ -7,6 +7,8 @@ public interface ClusterCtrlView extends IsWidget, CanDisplaySearchResult, Clear
   void setPresenter( Presenter presenter );
   
   public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize {
+    void onRegister();
+    void onDeregister();
   }
   
 }

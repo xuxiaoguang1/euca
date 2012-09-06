@@ -31,6 +31,7 @@ import com.eucalyptus.webui.shared.query.QueryParser;
 import com.eucalyptus.webui.shared.query.QueryParsingException;
 import com.eucalyptus.webui.shared.query.QueryType;
 import com.eucalyptus.webui.shared.query.SearchQuery;
+import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class IpPermissionActivity extends AbstractSearchActivity implements IpPermissionView.Presenter, DetailView.Presenter, InputView.Presenter, ConfirmationView.Presenter {
@@ -90,11 +91,11 @@ public class IpPermissionActivity extends AbstractSearchActivity implements IpPe
     this.currentSelected = selection;
     if ( selection == null || selection.size( ) != 1 ) {
       LOG.log( Level.INFO, "Not a single selection" );      
-      this.clientFactory.getShellView( ).hideDetail( );
+      //this.clientFactory.getShellView( ).hideDetail( );
     } else {
       LOG.log( Level.INFO, "Selection changed to " + selection );
-      this.clientFactory.getShellView( ).showDetail( DETAIL_PANE_SIZE );
-      showSingleSelectedDetails( selection.toArray( new SearchResultRow[0] )[0] );
+      //this.clientFactory.getShellView( ).showDetail( DETAIL_PANE_SIZE );
+      //showSingleSelectedDetails( selection.toArray( new SearchResultRow[0] )[0] );
     }
   }
 
@@ -210,13 +211,64 @@ public class IpPermissionActivity extends AbstractSearchActivity implements IpPe
 
   @Override
   public void onDeleteRule() {
-    // TODO Auto-generated method stub
+    if ( currentSelected == null || currentSelected.size( ) < 1 ) {
+      clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "请选择要删除的安全规则", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+        return;
+    }
+    System.out.println("size: " + currentSelected.size());
+    
+    ConfirmationView dialog = this.clientFactory.getConfirmationView( );
+    dialog.setPresenter( this );
+    dialog.display( DELETE_SERULE_CAPTION[1], DELETE_SERULE_SUBJECT[1], currentSelected, new ArrayList<Integer>( Arrays.asList(0, 1, 2, 3, 4, 5 ) ));    
     
   }
 
   @Override
   public void confirm(String subject) {
-    // TODO Auto-generated method stub
+    if (DELETE_SERULE_SUBJECT[1].equals(subject)) {
+      doDeleteSecurityRules();
+    }
+    
+  }
+
+  private void doDeleteSecurityRules() {
+    if ( currentSelected == null || currentSelected.size( ) < 1 ) {
+      return;
+    }
+    
+    final ArrayList<String> groups = Lists.newArrayList( );
+    final ArrayList<String> fromPorts = Lists.newArrayList( );
+    final ArrayList<String> toPorts = Lists.newArrayList( );
+    final ArrayList<String> protos = Lists.newArrayList( );
+    final ArrayList<String> ipRanges = Lists.newArrayList( );
+    for ( SearchResultRow row : currentSelected ) {
+      groups.add( row.getField( 1 ) );
+      fromPorts.add( row.getField( 2 ) );
+      toPorts.add( row.getField( 3 ) );
+      protos.add( row.getField( 4 ) );
+      ipRanges.add( row.getField( 5 ) );
+    }
+    
+    clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "删除安全规则中...", 0 );
+    
+    clientFactory.getBackendAwsService( ).delSecurityRules( clientFactory.getLocalSession( ).getSession( ), groups, fromPorts, toPorts, protos, ipRanges, new AsyncCallback<Void>( ) {
+
+      @Override
+      public void onFailure( Throwable caught ) {
+        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
+        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "删除安全规则失败", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+        clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "删除安全规则失败:" + caught.getMessage( ) );
+      }
+
+      @Override
+      public void onSuccess( Void arg0 ) {
+        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "删除安全规则成功", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+        clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "删除安全规则成功" );
+        reloadCurrentRange( );
+        currentSelected = null;
+      }
+    });
+
     
   }
 

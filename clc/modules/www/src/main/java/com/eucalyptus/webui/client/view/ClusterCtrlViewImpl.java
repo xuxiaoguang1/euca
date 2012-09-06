@@ -8,8 +8,10 @@ import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,6 +29,16 @@ public class ClusterCtrlViewImpl extends Composite implements ClusterCtrlView {
   
   @UiField
   LayoutPanel tablePanel;
+  
+  @UiHandler("newButton")
+  void onNewButtonClick(ClickEvent event) {
+    this.presenter.onRegister();
+  } 
+  @UiHandler("delButton")
+  void onDelButtonClick(ClickEvent event) {
+    this.presenter.onDeregister();
+  }
+
   
   private MultiSelectionModel<SearchResultRow> selectionModel;
   

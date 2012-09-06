@@ -81,7 +81,7 @@ public class ShellViewImpl extends Composite implements ShellView {
   @Override
   public void showDetail( int width ) {
     DockLayoutPanel parent = (DockLayoutPanel) this.getWidget( );
-    parent.setWidgetSize( detail, width );
+    //parent.setWidgetSize( detail, width );
   }
 
   @Override

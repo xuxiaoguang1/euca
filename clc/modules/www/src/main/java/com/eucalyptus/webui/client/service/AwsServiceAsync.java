@@ -52,5 +52,9 @@ public interface AwsServiceAsync {
   void addSecurityRule(Session session, String group, String fromPort,
       String toPort, String proto, String ipRange, AsyncCallback<Void> callback);
 
+  void delSecurityRules(Session session, List<String> groups,
+      List<String> fromPorts, List<String> toPorts, List<String> protos,
+      List<String> ipRanges, AsyncCallback<Void> callback);
+
 
 }

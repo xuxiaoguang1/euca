@@ -32,6 +32,7 @@ import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.ec2.model.IpPermission;
 import com.amazonaws.services.ec2.model.KeyPairInfo;
 import com.amazonaws.services.ec2.model.Reservation;
+import com.amazonaws.services.ec2.model.RevokeSecurityGroupIngressRequest;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
 import com.amazonaws.services.ec2.model.SecurityGroup;
@@ -112,6 +113,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
   
   public static final ArrayList<SearchResultFieldDesc> SECURITY_RULE_COMMON_FIELD_DESCS = Lists.newArrayList();
   static {
+    SECURITY_RULE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("ID", true, "10%"));
     SECURITY_RULE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("安全组名称", true, "10%"));
     SECURITY_RULE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("源端口", true, "10%"));
     SECURITY_RULE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("目的端口", true, "10%"));
@@ -298,7 +300,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
       String id = g.getGroupId();
       String name = g.getGroupName();
       String desc = g.getDescription();
-      String url = "";//QueryBuilder.get().start(QueryType.ipPermission).add(SEGROUP, id).url();
+      String url = QueryBuilder.get().start(QueryType.ipPermission).add(SEGROUP, name).url();
       //data.add(new SearchResultRow(Arrays.asList(owner, id, name, desc, url)));
       data.add(new SearchResultRow(Arrays.asList(name, desc, url)));      
     }
@@ -331,16 +333,18 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     }
     DescribeSecurityGroupsResult r = ec2.describeSecurityGroups(req);
     List<SearchResultRow> data = new ArrayList<SearchResultRow>();
+    int total = 0;
     for (SecurityGroup g : r.getSecurityGroups()) {
       String name = g.getGroupName();
       for (IpPermission i : g.getIpPermissions()) {
+        String id = String.valueOf(++ total);
         String fromPort = i.getFromPort().toString();
         String proto = i.getIpProtocol();
         String toPort = i.getToPort().toString();
         List<String> _ipRange = i.getIpRanges();
         //FIXME should it be joined like this?
         String ipRange = StringUtils.join(_ipRange, ",");
-        data.add(new SearchResultRow(Arrays.asList(name, fromPort, toPort, proto, ipRange)));
+        data.add(new SearchResultRow(Arrays.asList(id, name, fromPort, toPort, proto, ipRange)));
       }
     }
     int resultLength = data.size();
@@ -361,5 +365,23 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     req.setIpProtocol(proto);    
     req.setCidrIp(ipRange);
     ec2.authorizeSecurityGroupIngress(req);
+  }
+
+  @Override
+  public void delSecurityRules(Session session, List<String> groups,
+      List<String> fromPorts, List<String> toPorts, List<String> protos,
+      List<String> ipRanges) {
+    AmazonEC2 ec2 = getEC2(session);
+    RevokeSecurityGroupIngressRequest req = new RevokeSecurityGroupIngressRequest();
+    int len = groups.size();
+    for (int i = 0; i < len; ++ i) {
+      req.setGroupName(groups.get(i));
+      req.setFromPort(Integer.parseInt(fromPorts.get(i)));
+      req.setToPort(Integer.parseInt(toPorts.get(i)));
+      req.setIpProtocol(protos.get(i));    
+      req.setCidrIp(ipRanges.get(i));
+      ec2.revokeSecurityGroupIngress(req);
+    }
+  
   }
 }

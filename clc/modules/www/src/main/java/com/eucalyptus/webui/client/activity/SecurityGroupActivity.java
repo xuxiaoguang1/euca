@@ -24,8 +24,10 @@ import com.eucalyptus.webui.client.view.SecurityGroupView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.InputField.ValueType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.client.view.SecurityGroupViewImpl;
 import com.eucalyptus.webui.shared.checker.ValueChecker;
 import com.google.common.collect.Lists;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SecurityGroupActivity extends AbstractSearchActivity implements SecurityGroupView.Presenter, DetailView.Presenter, InputView.Presenter, ConfirmationView.Presenter {
@@ -77,8 +79,8 @@ public class SecurityGroupActivity extends AbstractSearchActivity implements Sec
       this.clientFactory.getShellView( ).hideDetail( );
     } else {
       LOG.log( Level.INFO, "Selection changed to " + selection );
-      this.clientFactory.getShellView( ).showDetail( DETAIL_PANE_SIZE );
-      showSingleSelectedDetails( selection.toArray( new SearchResultRow[0] )[0] );
+      //this.clientFactory.getShellView( ).showDetail( DETAIL_PANE_SIZE );
+      //showSingleSelectedDetails( selection.toArray( new SearchResultRow[0] )[0] );
     }
   }
 
@@ -216,8 +218,13 @@ public class SecurityGroupActivity extends AbstractSearchActivity implements Sec
 
   @Override
   public void onAddSecurityRule() {
-    // TODO Auto-generated method stub
-    
+    if ( currentSelected == null || currentSelected.size( ) != 1 ) {
+      clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "请选择一个安全组", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+        return;
+    }
+    for (SearchResultRow r: currentSelected) {
+      Window.Location.replace(r.getField(2));
+    }
   }
 
   @Override
