@@ -25,14 +25,14 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 	static final String EC2_ACCESS_KEY="5VPWK0CGBEORB4ITOOMLL";
 	static final String EC2_SECRET_KEY="xHj6hTmtKgGzCEIOAtOc6iUCkuyFBXBQhWOdiSZU";
-	static final String EC2_URL="http://59.66.104.184:8773/services/Eucalyptus";
+	static final String EC2_URL="http://192.168.0.50:8773/services/Eucalyptus";
 	static final String SSH_HOST="root@59.66.104.184";
 	//FIXME !! howto get certs? 
 	static final String EC2_CERT="/home/eucalyptus/admin/euca2-admin-bf8e80b9-cert.pem";
 	static final String EC2_PRIVATE_KEY="/home/eucalyptus/admin/euca2-admin-bf8e80b9-pk.pem";
 	static final String EC2_USER_ID="491317658036";
 	static final String EUCALYPTUS_CERT="/home/eucalyptus/admin/cloud-cert.pem";
-	
+	static final String AWS_CREDENTIAL_FILE="/home/eucalyptus/admin/iamrc";
 	static final String IMAGE_PATH = "/home/images/";
 	
 	public static final ArrayList<SearchResultFieldDesc> CTRL_COMMON_FIELD_DESCS = Lists.newArrayList();
@@ -56,6 +56,7 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 			env.put("EC2_PRIVATE_KEY", EC2_PRIVATE_KEY);
 			env.put("EC2_USER_ID", EC2_USER_ID);
 			env.put("EUCALYPTUS_CERT", EUCALYPTUS_CERT);
+			env.put("AWS_CREDENTIAL_FILE", AWS_CREDENTIAL_FILE);
 			Process p = b.start();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String s = reader.readLine();
@@ -76,7 +77,7 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 	public String sshRun(Session session, String[] cmd) {
 	    final String[] _cmd = {"ssh", SSH_HOST, //"-p", "22220",  //TODO
 	    		"EC2_CERT=" + EC2_CERT + " EC2_ACCESS_KEY=" + EC2_ACCESS_KEY + " EC2_SECRET_KEY=" +  EC2_SECRET_KEY + " " +  " EC2_PRIVATE_KEY=" + EC2_PRIVATE_KEY +  
-	    		" EC2_USER_ID=" + EC2_USER_ID + " EUCALYPTUS_CERT=" + EUCALYPTUS_CERT + " " +   
+	    		" EC2_USER_ID=" + EC2_USER_ID + " EUCALYPTUS_CERT=" + EUCALYPTUS_CERT + " AWS_CREDENTIAL_FILE=" +  AWS_CREDENTIAL_FILE + " " + 
 	    		StringUtils.join(cmd, " ")};
 	    System.out.println("sshRun: " + _cmd[2]);
 	    return run(session, _cmd);
