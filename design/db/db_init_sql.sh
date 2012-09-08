@@ -36,27 +36,27 @@ command 'delete from account where 1=1'
 command 'delete from history where 1=1'
 
 command insert into account \(account_name, account_email, account_descrip, account_state\) \
-    values \(\"root\", \"email\", \"desc\", 0\)
+    values \(\"eucalyptus\", \"email\", \"desc\", 0\)
 
 command insert into account \(account_name, account_email, account_descrip, account_state\) \
     values \(\"abc\", \"email\", \"desc\", 0\)
 
-id=`getvalue account account_id account_name root`
+id=`getvalue account account_id account_name eucalyptus`
 
 command insert into groups \(group_name, group_descrip, group_state, account_id\) \
-    values \(\"root\", \"desc\", 0, $id\)
+    values \(\"eucalyptus\", \"desc\", 0, $id\)
 
 command insert into groups \(group_name, group_descrip, group_state, account_id\) \
     values \(\"abc\", \"desc\", 0, $id\)
 
-group=`getvalue groups group_id group_name root`
-account=`getvalue groups account_id group_name root`
+group=`getvalue groups group_id group_name eucalyptus`
+account=`getvalue account account_id account_name eucalyptus`
 
 command insert into user \(user_name, user_pwd, user_title, user_mobile, user_email, user_type, user_state, user_reg_state, group_id, account_id\) \
     values \(\"admin\", \"admin\", \"title\", \"mobile\", \"email\", 1, 1, 2, $group, $account\)
 
 group1=`getvalue groups group_id group_name abc`
-account1=`getvalue groups account_id group_name abc`
+account1=`getvalue account account_id account_name abc`
 
 command insert into user \(user_name, user_pwd, user_title, user_mobile, user_email, user_type, user_state, user_reg_state, group_id, account_id\) \
     values \(\"admin\", \"admin\", \"title\", \"mobile\", \"email\", 1, 1, 2, $group1, $account1\)

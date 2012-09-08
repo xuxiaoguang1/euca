@@ -1,0 +1,51 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p1="urn:import:com.google.gwt.user.datepicker.client">
+	<ui:style>
+		
+	</ui:style>
+	<g:HTMLPanel>
+				<g:LayoutPanel height="123px" width="782px">
+					<g:layer left="30px" width="110px" top="18px" height="16px">
+						<g:Label text="服务开始时间"/>
+					</g:layer>
+					<g:layer left="160px" width="190px" top="15px" height="25px">
+						<p1:DateBox ui:field="startingTime"/>
+					</g:layer>
+					<g:layer left="400px" width="110px" top="18px" height="16px">
+						<g:Label text="服务结束时间"/>
+					</g:layer>
+					<g:layer left="530px" width="190px" top="15px" height="20px">
+						<p1:DateBox ui:field="endingTime"/>
+					</g:layer>
+					<g:layer left="30px" width="110px" top="53px" height="16px">
+						<g:Label text="虚拟机镜像类型"/>
+					</g:layer>
+					<g:layer left="160px" width="190px" top="50px" height="25px">
+						<g:ListBox ui:field="VMImageTypeList"/>
+					</g:layer>
+					<g:layer left="30px" width="110px" top="88px" height="16px">
+						<g:Label text="Keypair"/>
+					</g:layer>
+					<g:layer left="160px" width="190px" top="85px" height="25px">
+						<g:ListBox ui:field="keyPairList"/>
+					</g:layer>
+					<g:layer left="400px" width="110px" top="88px" height="16px">
+						<g:Label text="安全组"/>
+					</g:layer>
+					<g:layer left="530px" width="190px" top="85px" height="20px">
+						<g:ListBox ui:field="securityGroupList"/>
+					</g:layer>
+		</g:LayoutPanel>
+		<g:LayoutPanel width="781px" height="291px" ui:field="tablePanel">
+		</g:LayoutPanel>
+		<g:LayoutPanel width="783px" height="55px">
+			<g:layer left="693px" width="103px" top="16px" height="25px">
+				<g:Button text="确定" ui:field="buttonOk"/>
+			</g:layer>
+			<g:layer left="625px" width="54px" top="16px" height="25px">
+				<g:Button text="取消" ui:field="buttonCancle"/>
+			</g:layer>
+		</g:LayoutPanel>
+	</g:HTMLPanel>
+</ui:UiBinder> 

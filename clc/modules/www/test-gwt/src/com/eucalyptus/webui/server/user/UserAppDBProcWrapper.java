@@ -179,6 +179,8 @@ public class UserAppDBProcWrapper {
 		append(DBTableColName.USER_APP.STATE).append(", ").
 		append(DBTableColName.USER_APP.RESULT).append(", ").
 		append(DBTableColName.USER_APP.DEL).append(", ").
+		append(DBTableColName.USER_APP.KEYPAIR).append(", ").
+		append(DBTableColName.USER_APP.SECURITY_GROUP).append(", ").
 		append(DBTableColName.USER_APP.COMMENT).append(", ").
 		append(DBTableColName.USER_APP.USER_ID).append(", ").
 		append(DBTableColName.USER_APP.TEMPLATE_ID).append(", ").
@@ -203,6 +205,22 @@ public class UserAppDBProcWrapper {
 		
 		str.append(userApp.getDelState());
 		str.append(", ");
+		
+		if (Strings.isNullOrEmpty(userApp.getKeyPair())) {
+			str.append("null, ");
+		}
+		else {
+			str.append("'").append(userApp.getKeyPair());
+			str.append("', ");
+		}
+		
+		if (Strings.isNullOrEmpty(userApp.getSecurityGroup())) {
+			str.append("null, ");
+		}
+		else {
+			str.append("'").append(userApp.getSecurityGroup());
+			str.append("', ");
+		}
 		
 		if (Strings.isNullOrEmpty(userApp.getComments())) {
 			str.append("null, ");
@@ -255,6 +273,18 @@ public class UserAppDBProcWrapper {
 		if (userApp.getSrvEndingTime() != null) {
 			str.append(DBTableColName.USER_APP.SRV_ENDINGTIME).append(" = '").
 			append(dateformat.format(userApp.getSrvEndingTime())).
+			append("', ");
+		}
+		
+		if (userApp.getKeyPair() != null) {
+			str.append(DBTableColName.USER_APP.KEYPAIR).append(" = '").
+			append(userApp.getKeyPair()).
+			append("', ");
+		}
+		
+		if (userApp.getSecurityGroup() != null) {
+			str.append(DBTableColName.USER_APP.SECURITY_GROUP).append(" = '").
+			append(userApp.getSecurityGroup()).
 			append("', ");
 		}
 		

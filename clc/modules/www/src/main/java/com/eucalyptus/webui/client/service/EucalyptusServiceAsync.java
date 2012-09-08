@@ -259,6 +259,9 @@ public interface EucalyptusServiceAsync {
 	void countUserApp(Session session, AsyncCallback<ArrayList<UserAppStateCount>> callback);
 	void queryVMImageType(Session session, AsyncCallback<ArrayList<VMImageType>> callback);
 	
+	void queryKeyPair(Session session, AsyncCallback<List<String>> callback);
+	void querySecurityGroup(Session session, AsyncCallback<List<String>> callback);
+	
 //	void listAccessKeysByUser(Session session, String userId, AsyncCallback<SearchResult> callback);
 //	void listAccessKeys(Session session, AsyncCallback<SearchResult> callback);
 //	void listCertificatesByUser(Session session, String userId, AsyncCallback<SearchResult> callback);

@@ -1,14 +1,11 @@
 package com.eucalyptus.webui.server;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import javax.servlet.ServletException;
 
 import org.apache.log4j.Logger;
 
@@ -1036,6 +1033,11 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		
 		for (UserApp app : userApps) {
 			userAppServiceProc.updateUserApp(app);
+			
+			//When sovling user application, run relative VM instance
+			if (app.getState() == EnumUserAppState.SOLVED) {
+				userAppServiceProc.runVMInstance(session, app);
+			}
 		}
 	}	
 	
@@ -1062,6 +1064,18 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		verifySession(session);
 		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
 		return historyServiceProc.lookupHistory(curUser, search, range);
+	}
+
+	@Override
+	public List<String> queryKeyPair(Session session) throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		return EucaServiceWrapper.getInstance().getKeypairs(session);
+	}
+
+	@Override
+	public List<String> querySecurityGroup(Session session) throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		return EucaServiceWrapper.getInstance().getSecurityGroups(session);
 	}
 
 	

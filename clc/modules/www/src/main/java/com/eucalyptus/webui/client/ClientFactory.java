@@ -20,7 +20,6 @@ import com.eucalyptus.webui.client.view.DeviceDiskView;
 import com.eucalyptus.webui.client.view.DeviceMemoryView;
 import com.eucalyptus.webui.client.view.DeviceServerView;
 import com.eucalyptus.webui.client.view.DeviceIPView;
-import com.eucalyptus.webui.client.view.DeviceTemplateListView;
 import com.eucalyptus.webui.client.view.DeviceTemplateView;
 import com.eucalyptus.webui.client.view.DeviceVMView;
 import com.eucalyptus.webui.client.view.DiskStatView;
@@ -53,6 +52,7 @@ import com.eucalyptus.webui.client.view.StartView;
 import com.eucalyptus.webui.client.view.StorageCtrlView;
 import com.eucalyptus.webui.client.view.UploadImageView;
 import com.eucalyptus.webui.client.view.UserAddView;
+import com.eucalyptus.webui.client.view.UserAppAddView;
 import com.eucalyptus.webui.client.view.UserAppView;
 import com.eucalyptus.webui.client.view.UserListView;
 import com.eucalyptus.webui.client.view.UserView;
@@ -208,7 +208,7 @@ public interface ClientFactory {
 	
 	DeviceTemplateView getDeviceTemplateView();
 	
-	DeviceTemplateListView getDeviceTemplateListView();
+	UserAppAddView getUserAppAddView();
 	
 	
   InstanceView getInstanceView( );

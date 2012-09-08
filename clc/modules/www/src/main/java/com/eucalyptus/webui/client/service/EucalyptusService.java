@@ -19,7 +19,6 @@ import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.eucalyptus.webui.shared.user.UserInfo;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -919,6 +918,21 @@ public interface EucalyptusService extends RemoteService {
 	 */
 	ArrayList<VMImageType> queryVMImageType(Session session) throws EucalyptusServiceException;
 	
+	/**
+	 * query key pair list.
+	 * 
+	 * @param session
+	 * @throws EucalyptusServiceException
+	 */
+	List<String> queryKeyPair(Session session) throws EucalyptusServiceException;
+	
+	/**
+	 * query security group list.
+	 * 
+	 * @param session
+	 * @throws EucalyptusServiceException
+	 */
+	List<String> querySecurityGroup(Session session) throws EucalyptusServiceException;
   
   /**
    * Acquire access keys by user id

@@ -74,7 +74,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private DeviceVMView deviceVMView;
 	private DeviceBWView deviceBWView;
 	private DeviceTemplateView deviceTemplateView;
-	private DeviceTemplateListView deviceTemplateListView;
+	private UserAppAddView UserAppAddView;
 	private KeypairView keyPairView;
 	private SecurityGroupView securityGroupView;
   private IpPermissionView ipPermissionView;
@@ -530,12 +530,12 @@ public class ClientFactoryImpl implements ClientFactory {
   }
 
 @Override
-public DeviceTemplateListView getDeviceTemplateListView() {
+public UserAppAddView getUserAppAddView() {
 	// TODO Auto-generated method stub
-	if (deviceTemplateListView == null) {
-		deviceTemplateListView = new DeviceTemplateListViewImpl();
+	if (UserAppAddView == null) {
+		UserAppAddView = new UserAppAddViewImpl();
 	}
-	return deviceTemplateListView;
+	return UserAppAddView;
 }
 
   @Override

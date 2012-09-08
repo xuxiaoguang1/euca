@@ -13,6 +13,8 @@ public class UserApp implements java.io.Serializable {
 	private EnumUserAppResult result;
 	private int del;
 	private String comment;
+	private String keyPair;
+	private String securityGroup;
 	
 	private int userId;
 	private int templateId;
@@ -96,5 +98,19 @@ public class UserApp implements java.io.Serializable {
 	}
 	public Date getSrvEndingTime() {
 		return this.srvEndingTime;
+	}
+	
+	public void setKeyPair(String keyPair) {
+		this.keyPair = keyPair;
+	}
+	public String getKeyPair() {
+		return this.keyPair;
+	}
+	
+	public void setSecurityGroup(String securityGroup) {
+		this.securityGroup = securityGroup;
+	}
+	public String getSecurityGroup() {
+		return this.securityGroup;
 	}
 }

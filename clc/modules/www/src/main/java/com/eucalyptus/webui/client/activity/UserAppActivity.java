@@ -11,7 +11,7 @@ import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.ConfirmationView;
-import com.eucalyptus.webui.client.view.DeviceTemplateListView;
+import com.eucalyptus.webui.client.view.UserAppAddView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.SearchTableCellClickHandler;
 import com.eucalyptus.webui.client.view.UserAppView;
@@ -28,7 +28,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class UserAppActivity extends AbstractSearchActivity
-    implements ConfirmationView.Presenter, UserAppView.Presenter, DeviceTemplateListView.Presenter, SearchTableCellClickHandler {
+    implements ConfirmationView.Presenter, UserAppView.Presenter, UserAppAddView.Presenter, SearchTableCellClickHandler {
 
 public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 
@@ -141,7 +141,7 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   @Override
   public void onCreateUserApp() {
   	// TODO Auto-generated method stub
-	clientFactory.getDeviceTemplateListView().setPresenter(this);
+	clientFactory.getUserAppAddView().setPresenter(this);
 	
 	final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
   	this.clientFactory.getBackendService().lookupDeviceTemplate(clientFactory.getLocalSession().getSession(), search, range, null, null, new AsyncCallback<SearchResult>() {
@@ -156,7 +156,7 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 		        @Override
 		        public void onSuccess(SearchResult result) {
 			        // TODO Auto-generated method stub;
-			        clientFactory.getDeviceTemplateListView().display(result);
+			        clientFactory.getUserAppAddView().display(result);
 		        }
 	        });
   	
@@ -172,7 +172,7 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 		@Override
 		public void onSuccess(ArrayList<VMImageType> result) {
 			// TODO Auto-generated method stub
-			clientFactory.getDeviceTemplateListView().setVMImageTypeList(result);
+			clientFactory.getUserAppAddView().setVMImageTypeList(result);
 		}
   		
   	});

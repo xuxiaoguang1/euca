@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import com.eucalyptus.webui.client.activity.DeviceCPUActivity.CPUState;
 import com.eucalyptus.webui.client.activity.DeviceDiskActivity.DiskState;
 import com.eucalyptus.webui.client.activity.DeviceMemoryActivity.MemoryState;
+import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
@@ -26,6 +27,7 @@ import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.DBTableName;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
+import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
 class DeviceTemplateDBProcWrapper {
@@ -58,6 +60,12 @@ class DeviceTemplateDBProcWrapper {
 			sb.append(" AND ");
 			sb.append(DBTableColName.TEMPLATE.STARTTIME).append(" <= ").append("\"").append(endtime).append("\"");
 		}
+		return doQuery(sb.toString());
+	}
+	
+	ResultSetWrapper lookupTemplateByID(int template_id) throws Exception {
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT * FROM ").append(DBTableName.TEMPLATE).append(" WHERE ").append(DBTableColName.TEMPLATE.ID).append(" = ").append(template_id);
 		return doQuery(sb.toString());
 	}
 
@@ -616,6 +624,41 @@ public class DeviceTemplateServiceProcImpl {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public Template lookupTemplateByID(Session session, int template_id) throws EucalyptusServiceException {
+		if (!getUser(session).isSystemAdmin()) {
+			throw new EucalyptusServiceException("权限不足 无效操作");
+		}
+		
+		ResultSetWrapper rsw = null;
+		try {
+			rsw = dbproc.lookupTemplateByID(template_id);
+			ResultSet rs = rsw.getResultSet();
+			rs.next();
+			Template template = new Template();
+			template.setCPU(rs.getString(DBTableColName.TEMPLATE.CPU));
+			template.setDisk(rs.getString(DBTableColName.TEMPLATE.DISK));
+			template.setImage(rs.getString(DBTableColName.TEMPLATE.IMAGE));
+			template.setMem(rs.getString(DBTableColName.TEMPLATE.MEM));
+			template.setMark(rs.getString(DBTableColName.TEMPLATE.MARK));
+			template.setBw(rs.getString(DBTableColName.TEMPLATE.BW));
+			return template;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new EucalyptusServiceException("获取模板失败");
+		}
+		finally {
+			if (rsw != null) {
+				try {
+					rsw.close();
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	

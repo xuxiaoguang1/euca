@@ -43,6 +43,8 @@ public class DBTableColName {
 		public final String RESULT = "ua_result";
 		public final String DEL = "ua_del";
 		public final String COMMENT = "ua_comment";
+		public final String KEYPAIR = "ua_keypair";
+		public final String SECURITY_GROUP = "ua_security_group";
 		public final String USER_ID = "user_id";
 		public final String TEMPLATE_ID = "template_id";
 		public final String VM_IMAGE_TYPE_ID = "vit_id";
@@ -176,6 +178,7 @@ public class DBTableColName {
 		public final String ID = "vit_id"; 
 		public final String OS = "vit_os";
 		public final String VER = "vit_ver";
+		public final String DEL = "vit_del";
 		public final String EUCA_ID = "euca_vit_id";
 	}
 	

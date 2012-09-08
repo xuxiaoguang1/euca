@@ -20,7 +20,11 @@ import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.user.UserAppDBProcWrapper;
 import com.eucalyptus.webui.server.user.UserSyncException;
+import com.eucalyptus.webui.server.vm.VITDBProcWrapper;
+import com.eucalyptus.webui.server.vm.VITSyncException;
+import com.eucalyptus.webui.server.vm.VmImageType;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
+import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.user.EnumUserAppResult;
 import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
@@ -103,6 +107,31 @@ public class UserAppServiceProcImpl {
 			e.printStackTrace();
 			throw new EucalyptusServiceException("Failed to update user apps");
 		}
+	  }
+	  
+	  public void runVMInstance(Session session, UserApp userApp) throws EucalyptusServiceException {
+		  int templateId = userApp.getTemplateId();
+		  int vitId = userApp.getVmIdImageTypeId();
+		  
+		  String keyPair = userApp.getKeyPair();
+		  String securityGroup = userApp.getSecurityGroup();
+		  
+		  String euca_vit_id = null;
+		  
+		  try {
+			  VmImageType vit = this.vitDBProc.lookupVIT(vitId);
+			  if (vit != null)
+				  euca_vit_id = vit.getEucaVITId();
+			  
+			  Template template = deviceTemDBProc.lookupTemplateByID(session, templateId);
+			  
+			  if (keyPair != null && securityGroup != null && euca_vit_id != null)
+				  EucaServiceWrapper.getInstance().runVM(session, template, keyPair, securityGroup);
+			  
+		  } catch (VITSyncException e) {
+			  // TODO Auto-generated catch block
+			  e.printStackTrace();
+		  }
 	  }
 	  
 	  public ArrayList<UserAppStateCount> countUserApp(LoginUserProfile curUser) throws EucalyptusServiceException {
@@ -224,6 +253,7 @@ public class UserAppServiceProcImpl {
 	  
 	  private UserAppDBProcWrapper userAppDBProc = new UserAppDBProcWrapper();
 	  private DeviceTemplateServiceProcImpl deviceTemDBProc = new DeviceTemplateServiceProcImpl();
+	  private VITDBProcWrapper vitDBProc = new VITDBProcWrapper();
 	  
 	  private static List<SearchResultRow> DATA = null;
 	

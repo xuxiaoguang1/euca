@@ -1,6 +1,7 @@
 package com.eucalyptus.webui.client.view;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,13 +26,13 @@ import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.client.ui.ListBox;
 
-public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTemplateListView {
+public class UserAppAddViewImpl extends DialogBox implements UserAppAddView {
 
-	interface DeviceTemplateListViewImplUiBinder extends
-			UiBinder<Widget, DeviceTemplateListViewImpl> {
+	interface UserAppAddViewImplUiBinder extends
+			UiBinder<Widget, UserAppAddViewImpl> {
 	}
 
-	public DeviceTemplateListViewImpl() {
+	public UserAppAddViewImpl() {
 		setWidget(uiBinder.createAndBindUi(this));
 		this.currentSelected = null;
 		
@@ -54,13 +55,29 @@ public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTempl
 			return;
 		
 		int templateId = Integer.parseInt(this.currentSelected.getField(0));
-		int vmImageTypeId = Integer.parseInt(this.VMImageTypeList.getValue(this.VMImageTypeList.getSelectedIndex()));
+		
+		int vmImageTypeId = 0;
+		int vitListSelIndex = this.VMImageTypeList.getSelectedIndex();
+		if (vitListSelIndex >= 0)
+			vmImageTypeId = Integer.parseInt(this.VMImageTypeList.getValue(vitListSelIndex));
+		
+		String keyPair = null;
+		int keyPairListSelIndex = this.keyPairList.getSelectedIndex();
+		if (keyPairListSelIndex >= 0)
+			keyPair = this.keyPairList.getValue(keyPairListSelIndex);
+		
+		String securityGroup = null;		
+		int securityGroupListSelIndex = this.securityGroupList.getSelectedIndex();
+		if (securityGroupListSelIndex >= 0)
+			securityGroup = this.securityGroupList.getValue(securityGroupListSelIndex);
 		
 		UserApp userApp = new UserApp();
 		userApp.setTemplateId(templateId);
 		userApp.setVmImageTypeId(vmImageTypeId);
 		userApp.setSrvStartingTime(this.startingTime.getValue());
 		userApp.setSrvEndingingTime(this.endingTime.getValue());
+		userApp.setKeyPair(keyPair);
+		userApp.setSecurityGroup(securityGroup);
 		
 		this.presenter.doCreateUserApp(userApp);
 		
@@ -100,7 +117,7 @@ public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTempl
 	}
 	
 	@Override
-	public void setVMImageTypeList(ArrayList<VMImageType> vmTypeList) {
+	public void setVMImageTypeList(List<VMImageType> vmTypeList) {
 		// TODO Auto-generated method stub
 		if (vmTypeList == null)
 			return;
@@ -112,13 +129,35 @@ public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTempl
 	}
 	
 	@Override
+	public void setKeyPairList(List<String> keyPairList) {
+		// TODO Auto-generated method stub
+		if (keyPairList == null)
+			return;
+		
+		for (String keyPair : keyPairList) {
+			this.keyPairList.addItem(keyPair);
+		}
+	}
+
+	@Override
+	public void setSecurityGroupList(List<String> securityGroupList) {
+		// TODO Auto-generated method stub
+		if (securityGroupList == null)
+			return;
+		
+		for (String securityGroup : securityGroupList) {
+			this.securityGroupList.addItem(securityGroup);
+		}
+	}
+	
+	@Override
 	public void display(SearchResult deviceTemplateList) {
 		// TODO Auto-generated method stub
 		this.showSearchResult(deviceTemplateList);
 		this.center();
 		this.show();
 	}
-		
+
 	private void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
 		tablePanel.clear( );
 		selectionModel = new SingleSelectionModel<SearchResultRow>( SearchResultRow.KEY_PROVIDER );
@@ -135,8 +174,8 @@ public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTempl
 		table.load( );
 	}
 	
-	private static DeviceTemplateListViewImplUiBinder uiBinder = GWT
-			.create(DeviceTemplateListViewImplUiBinder.class);
+	private static UserAppAddViewImplUiBinder uiBinder = GWT
+			.create(UserAppAddViewImplUiBinder.class);
 	
 	private static final Logger LOG = Logger.getLogger( UserViewImpl.class.getName( ) );
 	
@@ -146,6 +185,8 @@ public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTempl
 	@UiField Button buttonOk;
 	@UiField Button buttonCancle;
 	@UiField ListBox VMImageTypeList;
+	@UiField ListBox keyPairList;
+	@UiField ListBox securityGroupList;
 
 	private SingleSelectionModel<SearchResultRow> selectionModel;
 	private SearchResultTable table;
