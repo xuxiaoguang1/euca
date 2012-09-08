@@ -21,11 +21,11 @@
 					<g:layer left="30px" width="110px" top="60px" height="16px">
 						<g:Label text="虚拟机镜像类型"/>
 					</g:layer>
-					<g:layer left="160px" width="160px" top="60px" height="25px">
+					<g:layer left="160px" width="200px" top="60px" height="25px">
 						<g:ListBox ui:field="VMImageTypeList"/>
 					</g:layer>
 		</g:LayoutPanel>
-		<g:LayoutPanel width="670px" height="291px" ui:field="tablePanel">
+		<g:LayoutPanel width="669px" height="291px" ui:field="tablePanel">
 		</g:LayoutPanel>
 		<g:LayoutPanel width="670px" height="1px">
 			<g:layer left="411px" width="103px" top="12px" height="25px">
