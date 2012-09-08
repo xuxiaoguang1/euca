@@ -38,7 +38,6 @@ import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.common.base.Strings;
-import com.google.gwt.thirdparty.guava.common.collect.Maps;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 public class EucalyptusServiceImpl extends RemoteServiceServlet implements EucalyptusService {
@@ -51,6 +50,8 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	private UserKeyServiceProcImpl userKeyServiceProc = new UserKeyServiceProcImpl();
 	private CertificateServiceProcImpl certServiceProc = new CertificateServiceProcImpl();
 	private PolicyServiceProcImpl policyServiceProc = new PolicyServiceProcImpl();
+	
+	private HistoryServiceProcImpl historyServiceProc = new HistoryServiceProcImpl();
 	
 	private AccountServiceProcImpl accountServiceProc = new AccountServiceProcImpl();
 	private UserServiceProcImpl userServiceProc = new UserServiceProcImpl();
@@ -110,7 +111,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	public HashMap<String, String> getSystemProperties(Session session) throws EucalyptusServiceException {
 		verifySession(session);
 
-		HashMap<String, String> props = Maps.newHashMap();
+		HashMap<String, String> props = new HashMap<String, String>();
 		props.put("version", "Eucalyptus EEE 3.0");
 		props.put("search-result-page-size", "5");
 		return props;
@@ -1054,6 +1055,14 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		// TODO Auto-generated method stub
 		verifySession(session);
 		return deviceVMServiceProc.queryVMImageType();
+	}
+
+	@Override
+	public SearchResult lookupHistory(Session session, String search,
+			SearchRange range) throws EucalyptusServiceException {
+		verifySession(session);
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+		return historyServiceProc.lookupHistory(curUser, search, range);
 	}
 
 	

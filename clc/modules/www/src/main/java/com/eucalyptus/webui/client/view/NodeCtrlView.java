@@ -7,6 +7,8 @@ public interface NodeCtrlView extends IsWidget, CanDisplaySearchResult, Clearabl
   void setPresenter( Presenter presenter );
   
   public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize {
+    void onRegister();
+    void onDeregister();
   }
   
 }

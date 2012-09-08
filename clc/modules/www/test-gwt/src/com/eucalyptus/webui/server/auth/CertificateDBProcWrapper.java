@@ -137,14 +137,13 @@ public class CertificateDBProcWrapper {
 		  case ADMIN:
 			  break;
 		  case USER:
+		  default:
 			  sql.append(" AND ").
 			  append(DBTableName.USER).append(".").append(DBTableColName.USER.ID).
 			  append(" = '").
 			  append(userId).
 			  append("'");
 			  break;
-		  default:
-			  return null;
 		  }
 		
 		System.out.println(sql.toString());

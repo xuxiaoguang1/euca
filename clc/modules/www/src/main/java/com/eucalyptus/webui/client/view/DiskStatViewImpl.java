@@ -32,7 +32,7 @@ public class DiskStatViewImpl extends Composite implements DiskStatView {
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 	
-	private void initChart(String title, String[] label, double[] size){
+	private void initChart(String title, String[] label, int[] size){
 		PieStatChart chart = new PieStatChart(title, label, size); 
 		chartPanel.add(chart, 80, 20);
 		chart.init();
@@ -54,7 +54,7 @@ public class DiskStatViewImpl extends Composite implements DiskStatView {
 
 	@Override
 	public void showSearchResult(SearchResult result) {
-		initChart("磁盘信息", new String[]{"已使用", "未使用"}, new double[]{0.4, 0.6});
+		initChart("磁盘信息", new String[]{"已使用", "未使用"}, new int[]{3000, 5000});
 	}
 
 }

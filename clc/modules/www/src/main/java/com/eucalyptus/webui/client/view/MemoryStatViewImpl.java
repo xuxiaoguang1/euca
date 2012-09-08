@@ -32,7 +32,7 @@ public class MemoryStatViewImpl extends Composite implements MemoryStatView {
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
-	private void initChart(String title, String[] label, double[] size){
+	private void initChart(String title, String[] label, int[] size){
 		PieStatChart chart = new PieStatChart(title, label, size); 
 		chartPanel.add(chart, 80, 20);
 		chart.init();
@@ -53,7 +53,7 @@ public class MemoryStatViewImpl extends Composite implements MemoryStatView {
 
 	@Override
 	public void showSearchResult(SearchResult result) {
-		initChart("内存信息", new String[]{"已使用", "未使用"}, new double[]{0.2, 0.8});
+		initChart("内存信息", new String[]{"已使用", "未使用"}, new int[]{800, 1200});
 	}
 
 }

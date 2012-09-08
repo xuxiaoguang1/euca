@@ -30,6 +30,15 @@ public class StorageCtrlViewImpl extends Composite implements StorageCtrlView {
   @UiField
   LayoutPanel tablePanel;
   
+  @UiHandler("newButton")
+  void onNewButtonClick(ClickEvent event) {
+    this.presenter.onRegister();
+  } 
+  @UiHandler("delButton")
+  void onDelButtonClick(ClickEvent event) {
+    this.presenter.onDeregister();
+  }
+  
   private MultiSelectionModel<SearchResultRow> selectionModel;
   
   private SearchResultTable table;

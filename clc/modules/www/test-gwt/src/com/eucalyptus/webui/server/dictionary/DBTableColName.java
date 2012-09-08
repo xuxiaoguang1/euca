@@ -198,4 +198,13 @@ public class DBTableColName {
 		public final String STARTTIME = "template_starttime";
 		public final String NCPUS = "template_ncpus";
 	}
+	
+	public interface HISTORY {
+		public final String ID = "history_id";
+		public final String ACTION = "history_action";
+		public final String REASON = "history_reason";
+		public final String DATE = "history_date";
+		public final String USER_ID = "history_user_id";
+		public final String VM_ID = "history_vm_id";
+	}
 }

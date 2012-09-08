@@ -11,108 +11,7 @@ import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
 import com.eucalyptus.webui.client.session.LocalSession;
 import com.eucalyptus.webui.client.session.LocalSessionImpl;
 import com.eucalyptus.webui.client.session.SessionData;
-import com.eucalyptus.webui.client.view.AccountAddView;
-import com.eucalyptus.webui.client.view.AccountAddViewImpl;
-import com.eucalyptus.webui.client.view.AccountView;
-import com.eucalyptus.webui.client.view.AccountViewImpl;
-import com.eucalyptus.webui.client.view.ActionResultView;
-import com.eucalyptus.webui.client.view.ActionResultViewImpl;
-import com.eucalyptus.webui.client.view.AreaView;
-import com.eucalyptus.webui.client.view.AreaViewImpl;
-import com.eucalyptus.webui.client.view.CPUStatView;
-import com.eucalyptus.webui.client.view.CPUStatViewImpl;
-import com.eucalyptus.webui.client.view.CertView;
-import com.eucalyptus.webui.client.view.CertViewImpl;
-import com.eucalyptus.webui.client.view.CloudRegistrationView;
-import com.eucalyptus.webui.client.view.CloudRegistrationViewImpl;
-import com.eucalyptus.webui.client.view.ClusterCtrlView;
-import com.eucalyptus.webui.client.view.ClusterCtrlViewImpl;
-import com.eucalyptus.webui.client.view.ConfirmationView;
-import com.eucalyptus.webui.client.view.ConfirmationViewImpl;
-import com.eucalyptus.webui.client.view.DeviceBWView;
-import com.eucalyptus.webui.client.view.DeviceBWViewImpl;
-import com.eucalyptus.webui.client.view.DeviceCPUView;
-import com.eucalyptus.webui.client.view.DeviceCPUViewImpl;
-import com.eucalyptus.webui.client.view.DeviceDiskView;
-import com.eucalyptus.webui.client.view.DeviceDiskViewImpl;
-import com.eucalyptus.webui.client.view.DeviceMemoryView;
-import com.eucalyptus.webui.client.view.DeviceMemoryViewImpl;
-import com.eucalyptus.webui.client.view.DeviceServerView;
-import com.eucalyptus.webui.client.view.DeviceServerViewImpl;
-import com.eucalyptus.webui.client.view.DeviceIPView;
-import com.eucalyptus.webui.client.view.DeviceIPViewImpl;
-import com.eucalyptus.webui.client.view.DeviceTemplateListView;
-import com.eucalyptus.webui.client.view.DeviceTemplateListViewImpl;
-import com.eucalyptus.webui.client.view.DeviceTemplateView;
-import com.eucalyptus.webui.client.view.DeviceTemplateViewImpl;
-import com.eucalyptus.webui.client.view.DeviceVMView;
-import com.eucalyptus.webui.client.view.DeviceVMViewImpl;
-import com.eucalyptus.webui.client.view.DiskStatView;
-import com.eucalyptus.webui.client.view.DiskStatViewImpl;
-import com.eucalyptus.webui.client.view.ErrorSinkView;
-import com.eucalyptus.webui.client.view.ErrorSinkViewImpl;
-import com.eucalyptus.webui.client.view.GroupAddView;
-import com.eucalyptus.webui.client.view.GroupAddViewImpl;
-import com.eucalyptus.webui.client.view.GroupDetailView;
-import com.eucalyptus.webui.client.view.GroupDetailViewImpl;
-import com.eucalyptus.webui.client.view.GroupListView;
-import com.eucalyptus.webui.client.view.GroupListViewImpl;
-import com.eucalyptus.webui.client.view.GroupView;
-import com.eucalyptus.webui.client.view.GroupViewImpl;
-import com.eucalyptus.webui.client.view.ImageView;
-import com.eucalyptus.webui.client.view.ImageViewImpl;
-import com.eucalyptus.webui.client.view.IndividualView;
-import com.eucalyptus.webui.client.view.IndividualViewImpl;
-import com.eucalyptus.webui.client.view.InputView;
-import com.eucalyptus.webui.client.view.InputViewImpl;
-import com.eucalyptus.webui.client.view.InstanceView;
-import com.eucalyptus.webui.client.view.InstanceViewImpl;
-import com.eucalyptus.webui.client.view.ItemView;
-import com.eucalyptus.webui.client.view.ItemViewImpl;
-import com.eucalyptus.webui.client.view.KeyView;
-import com.eucalyptus.webui.client.view.KeyViewImpl;
-import com.eucalyptus.webui.client.view.KeypairView;
-import com.eucalyptus.webui.client.view.KeypairViewImpl;
-import com.eucalyptus.webui.client.view.LoadingAnimationView;
-import com.eucalyptus.webui.client.view.LoadingAnimationViewImpl;
-import com.eucalyptus.webui.client.view.LoadingProgressView;
-import com.eucalyptus.webui.client.view.LoadingProgressViewImpl;
-import com.eucalyptus.webui.client.view.LoginView;
-import com.eucalyptus.webui.client.view.LoginViewImpl;
-import com.eucalyptus.webui.client.view.ConfigView;
-import com.eucalyptus.webui.client.view.ConfigViewImpl;
-import com.eucalyptus.webui.client.view.MemoryStatView;
-import com.eucalyptus.webui.client.view.MemoryStatViewImpl;
-import com.eucalyptus.webui.client.view.NodeCtrlView;
-import com.eucalyptus.webui.client.view.NodeCtrlViewImpl;
-import com.eucalyptus.webui.client.view.PolicyView;
-import com.eucalyptus.webui.client.view.PolicyViewImpl;
-import com.eucalyptus.webui.client.view.ReportView;
-import com.eucalyptus.webui.client.view.ReportViewImpl;
-import com.eucalyptus.webui.client.view.RunInstanceView;
-import com.eucalyptus.webui.client.view.RunInstanceViewImpl;
-import com.eucalyptus.webui.client.view.SecurityGroupView;
-import com.eucalyptus.webui.client.view.SecurityGroupViewImpl;
-import com.eucalyptus.webui.client.view.ShellView;
-import com.eucalyptus.webui.client.view.ShellViewImpl;
-import com.eucalyptus.webui.client.view.StartView;
-import com.eucalyptus.webui.client.view.StartViewImpl;
-import com.eucalyptus.webui.client.view.StorageCtrlView;
-import com.eucalyptus.webui.client.view.StorageCtrlViewImpl;
-import com.eucalyptus.webui.client.view.UploadImageView;
-import com.eucalyptus.webui.client.view.UploadImageViewImpl;
-import com.eucalyptus.webui.client.view.UserAddView;
-import com.eucalyptus.webui.client.view.UserAddViewImpl;
-import com.eucalyptus.webui.client.view.UserAppView;
-import com.eucalyptus.webui.client.view.UserAppViewImpl;
-import com.eucalyptus.webui.client.view.UserListView;
-import com.eucalyptus.webui.client.view.UserListViewImpl;
-import com.eucalyptus.webui.client.view.UserView;
-import com.eucalyptus.webui.client.view.UserViewImpl;
-import com.eucalyptus.webui.client.view.VmTypeView;
-import com.eucalyptus.webui.client.view.VmTypeViewImpl;
-import com.eucalyptus.webui.client.view.WalrusCtrlView;
-import com.eucalyptus.webui.client.view.WalrusCtrlViewImpl;
+import com.eucalyptus.webui.client.view.*;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.core.client.GWT;
@@ -178,10 +77,13 @@ public class ClientFactoryImpl implements ClientFactory {
 	private DeviceTemplateListView deviceTemplateListView;
 	private KeypairView keyPairView;
 	private SecurityGroupView securityGroupView;
+  private IpPermissionView ipPermissionView;
 	private CPUStatView cpuStatView;
 	private MemoryStatView memoryStatView;
 	private DiskStatView diskStatView;
 
+	private HistoryView historyView;
+	
 	// Dialogs
 	private ConfirmationView confirmationView;
 	private InputView inputView;
@@ -690,4 +592,20 @@ public DeviceTemplateListView getDeviceTemplateListView() {
 		}
 		return diskStatView;
 	}
+
+	@Override
+	public HistoryView getHistoryView() {
+		if(historyView == null){
+			historyView = new HistoryViewImpl();
+		}
+		return historyView;
+	}
+
+  @Override
+  public IpPermissionView getIpPermissionView() {
+    if (ipPermissionView == null) {
+      ipPermissionView = new IpPermissionViewImpl();
+    }
+    return ipPermissionView;
+  }
 }

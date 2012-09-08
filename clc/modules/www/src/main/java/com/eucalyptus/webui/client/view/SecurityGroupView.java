@@ -7,6 +7,9 @@ public interface SecurityGroupView extends IsWidget, CanDisplaySearchResult, Cle
   void setPresenter( Presenter presenter );
   
   public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize {
+    void onCreateSecurityGroup( );
+    void onDeleteSecurityGroup( );
+    void onAddSecurityRule( );
   }
   
 }

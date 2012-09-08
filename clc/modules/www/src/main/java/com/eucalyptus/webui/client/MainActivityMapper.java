@@ -9,6 +9,7 @@ import com.eucalyptus.webui.client.activity.DeviceVMActivity;
 import com.eucalyptus.webui.client.activity.DiskStatActivity;
 import com.eucalyptus.webui.client.activity.ErrorSinkActivity;
 import com.eucalyptus.webui.client.activity.GroupActivity;
+import com.eucalyptus.webui.client.activity.HistoryActivity;
 import com.eucalyptus.webui.client.activity.ImageActivity;
 import com.eucalyptus.webui.client.activity.InstanceActivity;
 import com.eucalyptus.webui.client.activity.DeviceBWActivity;
@@ -19,6 +20,7 @@ import com.eucalyptus.webui.client.activity.DeviceServerActivity;
 import com.eucalyptus.webui.client.activity.DeviceIPActivity;
 import com.eucalyptus.webui.client.activity.DeviceTemplateActivity;
 import com.eucalyptus.webui.client.activity.IndividualActivity;
+import com.eucalyptus.webui.client.activity.IpPermissionActivity;
 import com.eucalyptus.webui.client.activity.KeyActivity;
 import com.eucalyptus.webui.client.activity.KeypairActivity;
 import com.eucalyptus.webui.client.activity.LogoutActivity;
@@ -44,6 +46,7 @@ import com.eucalyptus.webui.client.place.DeviceVMPlace;
 import com.eucalyptus.webui.client.place.DiskStatPlace;
 import com.eucalyptus.webui.client.place.ErrorSinkPlace;
 import com.eucalyptus.webui.client.place.GroupPlace;
+import com.eucalyptus.webui.client.place.HistoryPlace;
 import com.eucalyptus.webui.client.place.ImagePlace;
 import com.eucalyptus.webui.client.place.InstancePlace;
 import com.eucalyptus.webui.client.place.DeviceBWPlace;
@@ -54,6 +57,7 @@ import com.eucalyptus.webui.client.place.DeviceServerPlace;
 import com.eucalyptus.webui.client.place.DeviceIPPlace;
 import com.eucalyptus.webui.client.place.DeviceTemplatePlace;
 import com.eucalyptus.webui.client.place.IndividualPlace;
+import com.eucalyptus.webui.client.place.IpPermissionPlace;
 import com.eucalyptus.webui.client.place.KeyPlace;
 import com.eucalyptus.webui.client.place.KeypairPlace;
 import com.eucalyptus.webui.client.place.LogoutPlace;
@@ -177,6 +181,9 @@ public class MainActivityMapper implements ActivityMapper {
     else if ( place instanceof SecurityGroupPlace ) {
       return new SecurityGroupActivity( ( SecurityGroupPlace )place, this.clientFactory );
     }
+    else if ( place instanceof IpPermissionPlace ) {
+      return new IpPermissionActivity( ( IpPermissionPlace )place, this.clientFactory );
+    }
 	    else if ( place instanceof KeypairPlace ) {
 	    	return new KeypairActivity( ( KeypairPlace )place, this.clientFactory );
 	    }
@@ -188,6 +195,9 @@ public class MainActivityMapper implements ActivityMapper {
 		}
 	    else if ( place instanceof DiskStatPlace ) {
 	    	return new DiskStatActivity( ( DiskStatPlace )place, this.clientFactory );
+		}
+	    else if ( place instanceof HistoryPlace ) {
+	    	return new HistoryActivity( ( HistoryPlace )place, this.clientFactory );
 		}
 	    else{
 			return null;

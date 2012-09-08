@@ -12,6 +12,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 
 import com.eucalyptus.webui.client.service.CmdService;
+import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
@@ -24,21 +25,21 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 	static final String EC2_ACCESS_KEY="5VPWK0CGBEORB4ITOOMLL";
 	static final String EC2_SECRET_KEY="xHj6hTmtKgGzCEIOAtOc6iUCkuyFBXBQhWOdiSZU";
-	static final String EC2_URL="http://166.111.134.30:8773/services/Eucalyptus";
-	static final String SSH_HOST="root@166.111.134.30";
+	static final String EC2_URL="http://192.168.0.50:8773/services/Eucalyptus";
+	static final String SSH_HOST="root@59.66.104.184";
 	//FIXME !! howto get certs? 
-	static final String EC2_CERT="/root/admin/euca2-admin-bf8e80b9-cert.pem";
-	static final String EC2_PRIVATE_KEY="/root/admin/euca2-admin-bf8e80b9-pk.pem";
+	static final String EC2_CERT="/home/eucalyptus/admin/euca2-admin-bf8e80b9-cert.pem";
+	static final String EC2_PRIVATE_KEY="/home/eucalyptus/admin/euca2-admin-bf8e80b9-pk.pem";
 	static final String EC2_USER_ID="491317658036";
-	static final String EUCALYPTUS_CERT="/root/admin/cloud-cert.pem";
-	
+	static final String EUCALYPTUS_CERT="/home/eucalyptus/admin/cloud-cert.pem";
+	static final String AWS_CREDENTIAL_FILE="/home/eucalyptus/admin/iamrc";
 	static final String IMAGE_PATH = "/home/images/";
 	
 	public static final ArrayList<SearchResultFieldDesc> CTRL_COMMON_FIELD_DESCS = Lists.newArrayList();
 	static {
-		CTRL_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "ID", true, "10%") );
-		CTRL_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "IP", true, "10%") );
-		CTRL_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "端口号", true, "10%") );
+    CTRL_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "名称", true, "10%") );
+		CTRL_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "分区", true, "10%") );
+		CTRL_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "地址", true, "10%") );
 		CTRL_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "状态", true, "10%") );
 	}
 
@@ -51,6 +52,11 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 			env.put("EC2_URL", EC2_URL);
 			env.put("EC2_ACCESS_KEY", EC2_ACCESS_KEY);
 			env.put("EC2_SECRET_KEY", EC2_SECRET_KEY);
+			env.put("EC2_CERT", EC2_CERT);
+			env.put("EC2_PRIVATE_KEY", EC2_PRIVATE_KEY);
+			env.put("EC2_USER_ID", EC2_USER_ID);
+			env.put("EUCALYPTUS_CERT", EUCALYPTUS_CERT);
+			env.put("AWS_CREDENTIAL_FILE", AWS_CREDENTIAL_FILE);
 			Process p = b.start();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String s = reader.readLine();
@@ -69,9 +75,9 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 	
 	@Override
 	public String sshRun(Session session, String[] cmd) {
-	    final String[] _cmd = {"ssh", SSH_HOST, "-p", "22220",  //TODO
+	    final String[] _cmd = {"ssh", SSH_HOST, //"-p", "22220",  //TODO
 	    		"EC2_CERT=" + EC2_CERT + " EC2_ACCESS_KEY=" + EC2_ACCESS_KEY + " EC2_SECRET_KEY=" +  EC2_SECRET_KEY + " " +  " EC2_PRIVATE_KEY=" + EC2_PRIVATE_KEY +  
-	    		" EC2_USER_ID=" + EC2_USER_ID + " EUCALYPTUS_CERT=" + EUCALYPTUS_CERT + " " +   
+	    		" EC2_USER_ID=" + EC2_USER_ID + " EUCALYPTUS_CERT=" + EUCALYPTUS_CERT + " AWS_CREDENTIAL_FILE=" +  AWS_CREDENTIAL_FILE + " " + 
 	    		StringUtils.join(cmd, " ")};
 	    System.out.println("sshRun: " + _cmd[2]);
 	    return run(session, _cmd);
@@ -80,12 +86,16 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 	@Override
 	public SearchResult lookupNodeCtrl(Session session, String search,
 			SearchRange range) {
-		final String[] cmd = {"euca_conf --list-nodes|cut -f 2"};
+		final String[] cmd = {"euca-describe-nodes"};
 		String ret = sshRun(session, cmd);
 		List<SearchResultRow> data = new ArrayList<SearchResultRow>();
 		for (String s : ret.split("\n")) {
-			if (s != null)
-				data.add(new SearchResultRow(Arrays.asList("", s, "", "")));
+      if (s != null) {
+        String[] i = s.split("\\s+");
+        if (i.length < 3)
+          break;
+        data.add(new SearchResultRow(Arrays.asList("", i[2], i[1], "")));
+      }
 		}
 		SearchResult result = new SearchResult(data.size(), range);
 		result.setDescs(CTRL_COMMON_FIELD_DESCS);
@@ -96,13 +106,15 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 	@Override
 	public SearchResult lookupStorageCtrl(Session session, String search,
 			SearchRange range) {
-		final String[] cmd = {"euca_conf --list-scs"};
+		final String[] cmd = {"euca-describe-storage-controllers"};
 		String ret = sshRun(session, cmd);
 		List<SearchResultRow> data = new ArrayList<SearchResultRow>();
 		for (String s : ret.split("\n")) {
 			if (s != null) {
 				String[] i = s.split("\\s+");
-				data.add(new SearchResultRow(Arrays.asList(i[2], i[3], "", i[4])));
+        if (i.length < 5)
+          break;
+				data.add(new SearchResultRow(Arrays.asList(i[2], i[1], i[3], i[4])));
 			}
 		}
 		SearchResult result = new SearchResult(data.size(), range);
@@ -113,13 +125,15 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 	@Override
 	public SearchResult lookupClusterCtrl(Session session, String search,
 			SearchRange range) {
-		final String[] cmd = {"euca_conf --list-cluster"};
+		final String[] cmd = {"euca-describe-clusters"};
 		String ret = sshRun(session, cmd);
 		List<SearchResultRow> data = new ArrayList<SearchResultRow>();
 		for (String s : ret.split("\n")) {
 			if (s != null) {
 				String[] i = s.split("\\s+");
-				data.add(new SearchResultRow(Arrays.asList(i[2], i[3], "", i[4])));
+        if (i.length < 5)
+          break;
+				data.add(new SearchResultRow(Arrays.asList(i[2], i[1], i[3], i[4])));
 			}
 				
 		}
@@ -131,13 +145,15 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
 	@Override
 	public SearchResult lookupWalrusCtrl(Session session, String search,
 			SearchRange range) {
-		final String[] cmd = {"euca_conf --list-walruses"};
+		final String[] cmd = {"euca-describe-walruses"};
 		String ret = sshRun(session, cmd);
 		List<SearchResultRow> data = new ArrayList<SearchResultRow>();
 		for (String s : ret.split("\n")) {
 			if (s != null) {
 				String[] i = s.split("\\s+");
-				data.add(new SearchResultRow(Arrays.asList(i[2], i[3], "", i[4])));
+				if (i.length < 5)
+				  break;
+				data.add(new SearchResultRow(Arrays.asList(i[2], i[1], i[3], i[4])));
 			}
 		}
 		SearchResult result = new SearchResult(data.size(), range);
@@ -249,5 +265,86 @@ public class CmdServiceImpl extends RemoteServiceServlet implements CmdService {
       }    
     }
     return ret;
+  }
+
+  @Override
+  public void registerCluster(Session session, String part, String host,
+      String name) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca-register-cluster", "--partition", part, "--host", host, "--component", name);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+    
+  }
+
+  @Override
+  public void deregisterCluster(Session session, String part, String name) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca-deregister-cluster", "--partition", part, "--component", name);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+  }
+
+
+  @Override
+  public void registerStorage(Session session, String part, String host,
+      String name) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca-register-storage-controller", "--partition", part, "--host", host, "--component", name);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+  }
+
+  @Override
+  public void deregisterStorage(Session session, String part, String name) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca-deregister-storage-controller", "--partition", part, "--component", name);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+    
+  }
+
+  @Override
+  public void registerWalrus(Session session, String host,
+      String name) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca-register-walrus", "--partition", "walrus", "--host", host, "--component", name);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+  }
+
+  @Override
+  public void deregisterWalrus(Session session, String name) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca-deregister-walrus", "--partition", "walrus", "--component", name);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+    
+  }
+
+  @Override
+  public void registerNode(Session session, String host) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca_conf", "--register-nodes", host);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+    
+  }
+
+  @Override
+  public void deregisterNode(Session session, String host) throws EucalyptusServiceException {
+    List<String> cmd = Arrays.asList("euca_conf", "--deregister-nodes", host);
+    String ret = sshRun(session, cmd.toArray(new String[0]));
+    if (ret.contains("error:")) {
+      throw new EucalyptusServiceException();
+    }
+    
   }
 }

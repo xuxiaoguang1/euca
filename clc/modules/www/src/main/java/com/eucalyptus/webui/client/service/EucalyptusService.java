@@ -19,6 +19,7 @@ import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.eucalyptus.webui.shared.user.UserInfo;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -963,4 +964,6 @@ public interface EucalyptusService extends RemoteService {
   
   void modifyPolicy(Session session, String policyId, String name, String content) throws EucalyptusServiceException;
 
+  SearchResult lookupHistory(Session session, String search, SearchRange range) throws EucalyptusServiceException;
+  
 }

@@ -176,7 +176,7 @@ public class UserKeyServiceProcImpl {
 	  private static final String[] TABLE_COL_TITLE_KEY_CREATED_DATE = {"Created Date", "创建时间"};
 	  private static final String[] TABLE_COL_TITLE_ACCOUNT_NAME = {"Account", "账户"};
 	  private static final String[] TABLE_COL_TITLE_GROUP_NAME = {"Group", "组"};
-	  private static final String[] TABLE_COL_TITLE_NAME = {"ID", "用户"};
+	  private static final String[] TABLE_COL_TITLE_USER_NAME = {"ID", "用户"};
 	
 	  private static final List<SearchResultFieldDesc> FIELDS_ROOT = Arrays.asList(
 				new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "10%", false ),
@@ -185,7 +185,7 @@ public class UserKeyServiceProcImpl {
 				new SearchResultFieldDesc( TABLE_COL_TITLE_KEY_CREATED_DATE[1], true, "25%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_NAME[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_GROUP_NAME[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false )
+				new SearchResultFieldDesc( TABLE_COL_TITLE_USER_NAME[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false )
 			);
 	  
 	  private static final List<SearchResultFieldDesc> FIELDS_NONROOT = Arrays.asList(
@@ -194,6 +194,6 @@ public class UserKeyServiceProcImpl {
 				new SearchResultFieldDesc( TABLE_COL_TITLE_KEY_ACTIVE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_KEY_CREATED_DATE[1], true, "30%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_GROUP_NAME[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false )
+				new SearchResultFieldDesc( TABLE_COL_TITLE_USER_NAME[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false )
 			);
 }

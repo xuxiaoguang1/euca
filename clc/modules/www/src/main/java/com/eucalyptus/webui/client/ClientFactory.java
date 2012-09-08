@@ -29,10 +29,12 @@ import com.eucalyptus.webui.client.view.GroupAddView;
 import com.eucalyptus.webui.client.view.GroupDetailView;
 import com.eucalyptus.webui.client.view.GroupListView;
 import com.eucalyptus.webui.client.view.GroupView;
+import com.eucalyptus.webui.client.view.HistoryView;
 import com.eucalyptus.webui.client.view.ImageView;
 import com.eucalyptus.webui.client.view.IndividualView;
 import com.eucalyptus.webui.client.view.InputView;
 import com.eucalyptus.webui.client.view.InstanceView;
+import com.eucalyptus.webui.client.view.IpPermissionView;
 import com.eucalyptus.webui.client.view.ItemView;
 import com.eucalyptus.webui.client.view.KeyView;
 import com.eucalyptus.webui.client.view.KeypairView;
@@ -217,8 +219,10 @@ public interface ClientFactory {
 	StorageCtrlView getStorageCtrlView( );
 	KeypairView getKeypairView( );
   SecurityGroupView getSecurityGroupView();
+  IpPermissionView getIpPermissionView();
 	CPUStatView getCPUStatView();
 	MemoryStatView getMemoryStatView();
 	DiskStatView getDiskStatView();
+	HistoryView getHistoryView();
   
 }

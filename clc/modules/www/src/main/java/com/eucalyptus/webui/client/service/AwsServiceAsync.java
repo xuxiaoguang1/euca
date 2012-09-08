@@ -43,5 +43,18 @@ public interface AwsServiceAsync {
   void lookupSecurityGroup(Session session, String search, SearchRange range,
       AsyncCallback<SearchResult> callback);
 
+  void deleteSecurityGroups(Session session, List<String> names,
+      AsyncCallback<Void> callback);
+
+  void lookupSecurityRule(Session session, String search, SearchRange range,
+      AsyncCallback<SearchResult> callback);
+
+  void addSecurityRule(Session session, String group, String fromPort,
+      String toPort, String proto, String ipRange, AsyncCallback<Void> callback);
+
+  void delSecurityRules(Session session, List<String> groups,
+      List<String> fromPorts, List<String> toPorts, List<String> protos,
+      List<String> ipRanges, AsyncCallback<Void> callback);
+
 
 }
