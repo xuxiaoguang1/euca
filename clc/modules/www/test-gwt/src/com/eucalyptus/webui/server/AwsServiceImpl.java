@@ -268,9 +268,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     return ret.getReservation().getInstances().get(0).getInstanceId();
   }
 
-  @Override
-  public SearchResult lookupKeypair(Session session, String search,
-      SearchRange range) {
+  List<SearchResultRow> lookupKeypair(Session session) {
     AmazonEC2 ec2 = getEC2(session);
     DescribeKeyPairsResult r = ec2.describeKeyPairs();
     List<SearchResultRow> data = new ArrayList<SearchResultRow>();
@@ -279,6 +277,13 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
       String footprint = k.getKeyFingerprint();
       data.add(new SearchResultRow(Arrays.asList(name, footprint)));
     }
+    return data;
+  }
+  
+  @Override
+  public SearchResult lookupKeypair(Session session, String search,
+      SearchRange range) {
+    List<SearchResultRow> data = lookupKeypair(session);
     int resultLength = data.size();
     SearchResult result = new SearchResult(data.size(), range);
     result.setDescs(KEYPAIR_COMMON_FIELD_DESCS);
@@ -320,10 +325,8 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     //AuthorizeSecurityGroupEgressRequest req_ = new AuthorizeSecurityGroupEgressRequest();
     return ret.getGroupId();
   }
-
-  @Override
-  public SearchResult lookupSecurityGroup(Session session, String search,
-      SearchRange range) {
+  
+  List<SearchResultRow> lookupSecurityGroup(Session session) {
     AmazonEC2 ec2 = getEC2(session);
     DescribeSecurityGroupsResult r = ec2.describeSecurityGroups();
     List<SearchResultRow> data = new ArrayList<SearchResultRow>();
@@ -336,6 +339,13 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
       //data.add(new SearchResultRow(Arrays.asList(owner, id, name, desc, url)));
       data.add(new SearchResultRow(Arrays.asList(name, desc, url)));      
     }
+    return data;
+  }
+
+  @Override
+  public SearchResult lookupSecurityGroup(Session session, String search,
+      SearchRange range) {
+    List<SearchResultRow> data = lookupSecurityGroup(session);
     int resultLength = data.size();
     SearchResult result = new SearchResult(data.size(), range);
     result.setDescs(SECURITY_GROUP_COMMON_FIELD_DESCS);
