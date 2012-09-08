@@ -56,5 +56,10 @@ public interface AwsServiceAsync {
       List<String> fromPorts, List<String> toPorts, List<String> protos,
       List<String> ipRanges, AsyncCallback<Void> callback);
 
+  void bindImage(Session session, String id, String sysName, String sysVer,
+      AsyncCallback<Void> callback);
+
+  void unbindImages(Session session, List<String> ids, AsyncCallback<Void> callback);
+
 
 }

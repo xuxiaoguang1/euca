@@ -36,6 +36,17 @@ public class ImageViewImpl extends Composite implements ImageView {
     this.presenter.onUploadImage();
   }
 
+  @UiHandler( "bindButton" )
+  void handleBindButtonClick( ClickEvent e ) {
+    this.presenter.onBindImage();
+  }
+
+  @UiHandler( "unbindButton" )
+  void handleUnbindButtonClick( ClickEvent e ) {
+    this.presenter.onUnbindImage();
+  }
+
+
   
   private MultiSelectionModel<SearchResultRow> selectionModel;
   

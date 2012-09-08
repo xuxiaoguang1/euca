@@ -1,5 +1,7 @@
 package com.eucalyptus.webui.server;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -48,6 +50,10 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
+import com.eucalyptus.webui.server.db.DBProcWrapper;
+import com.eucalyptus.webui.server.db.ResultSetWrapper;
+import com.eucalyptus.webui.server.dictionary.DBTableColName;
+import com.eucalyptus.webui.server.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.query.QueryParser;
 import com.eucalyptus.webui.shared.query.QueryParsingException;
 import com.eucalyptus.webui.shared.query.QueryType;
@@ -70,6 +76,8 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 	  TYPES.add(TYPE_ROOTFS);
 	}
 	
+	DBProcWrapper wrapper = DBProcWrapper.Instance();
+	
 	public static final ArrayList<SearchResultFieldDesc> INSTANCE_COMMON_FIELD_DESCS = Lists.newArrayList();
 	static {
 		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "虚拟机ID", true, "10%") );
@@ -86,6 +94,9 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 	}
 	public static final ArrayList<SearchResultFieldDesc> IMAGE_COMMON_FIELD_DESCS = Lists.newArrayList();
 	static {
+	  IMAGE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "全选", "5%", false));
+	  IMAGE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("系统名称", true, "10%"));
+	  IMAGE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("系统版本", true, "10%"));
 		IMAGE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("镜像ID", true, "10%"));
 		IMAGE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("类型", true, "10%"));
 		IMAGE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("架构", true, "10%"));
@@ -204,6 +215,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 		AmazonEC2 ec2 = getEC2(session);
 		DescribeImagesResult r = ec2.describeImages();
 		List<SearchResultRow> data = new ArrayList<SearchResultRow>();
+		int total = 0;
 		for (Image i : r.getImages()) {
 			String id = i.getImageId();
 			String type = i.getImageType();
@@ -212,8 +224,26 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 			String kern = i.getKernelId();
 			String rd = i.getRamdiskId();
 			String state = i.getState();
+			String sysName = "";
+			String sysVer = "";
 			if (!TYPES.contains(search) || type.equals(search))
-		    data.add(new SearchResultRow(Arrays.asList(id, type, arch, loc, kern, rd, state)));
+		     if (type.equals(TYPE_ROOTFS)) {
+		        StringBuilder sb = new StringBuilder();
+		        sb.append("SELECT * FROM ");
+		        sb.append(DBTableName.VM_IMAGE_TYPE);
+		        sb.append(" WHERE ").append(DBTableColName.VM_IMAGE_TYPE.EUCA_ID);
+		        sb.append(" = '").append(id).append("'").append(" LIMIT 1");
+		          ResultSet rs;
+              try {
+                rs = wrapper.query(sb.toString()).getResultSet();
+                rs.next();
+                sysName = rs.getString(DBTableColName.VM_IMAGE_TYPE.OS);
+                sysVer = rs.getString(DBTableColName.VM_IMAGE_TYPE.VER);
+              } catch (SQLException e) {
+                //e.printStackTrace();
+              }
+		      }
+		    data.add(new SearchResultRow(Arrays.asList(String.valueOf(++ total), sysName, sysVer, id, type, arch, loc, kern, rd, state)));
 		}
 		int resultLength = data.size();
 		SearchResult result = new SearchResult(data.size(), range);
@@ -385,5 +415,48 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
       ec2.revokeSecurityGroupIngress(req);
     }
   
+  }
+
+  @Override
+  public void bindImage(Session session, String id, String sysName,
+      String sysVer) throws EucalyptusServiceException {
+    StringBuilder sb = new StringBuilder();
+    String OS = DBTableColName.VM_IMAGE_TYPE.OS;
+    String VER = DBTableColName.VM_IMAGE_TYPE.VER;
+    String EUCA_ID = DBTableColName.VM_IMAGE_TYPE.EUCA_ID;
+    sb.append("INSERT INTO ").append(DBTableName.VM_IMAGE_TYPE);
+    sb.append("(").append(OS).append(",");
+    sb.append(VER).append(",");
+    sb.append(EUCA_ID).append(")");
+    sb.append(" VALUES (");
+    sb.append("'").append(sysName).append("',");
+    sb.append("'").append(sysVer).append("',");
+    sb.append("'").append(id).append("')");
+    sb.append("ON DUPLICATE KEY UPDATE ");
+    sb.append(OS).append("=VALUES(").append(OS).append("),");
+    sb.append(VER).append("=VALUES(").append(VER).append(")");
+    try {
+      wrapper.update(sb.toString());
+    } catch (SQLException e) {
+      throw new EucalyptusServiceException(e.toString());
+    }
+  }
+
+  @Override
+  public void unbindImages(Session session, List<String> ids)
+      throws EucalyptusServiceException {
+    StringBuilder sb = new StringBuilder();
+    sb.append("DELETE FROM ").append(DBTableName.VM_IMAGE_TYPE);
+    sb.append(" WHERE ").append(DBTableColName.VM_IMAGE_TYPE.EUCA_ID);
+    sb.append(" IN (");
+    for (String id : ids) {
+      sb.append("'").append(id).append("',");
+    }
+    sb.replace(sb.length() - 1, sb.length(), ")");
+    try {
+      wrapper.update(sb.toString());
+    } catch (SQLException e) {
+      throw new EucalyptusServiceException(e.toString());
+    }
   }
 }

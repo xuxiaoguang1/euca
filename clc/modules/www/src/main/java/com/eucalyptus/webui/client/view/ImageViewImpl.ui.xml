@@ -32,22 +32,16 @@
                                 </g:Anchor>                            
                             </td>
                             <td>
-                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="delButton">
-                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>注册镜像
-                                </g:Anchor>
-                            </td>
-                            <td>&nbsp;</td>
-                            <td>
-                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="addUsersButton">
-                                    <span class="{global.buttonCss.user} {global.buttonCss.icon}"/>绑定镜像
+                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="bindButton">
+                                    <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>绑定镜像
                                 </g:Anchor>
                             </td>
                             <td>
-                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="addGroupsButton">
-                                    <span class="{global.buttonCss.group} {global.buttonCss.icon}"/>删除镜像
-                                </g:Anchor>                            
+                                <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="unbindButton">
+                                    <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>取消绑定
+                                </g:Anchor>
                             </td>
-                            <td>&nbsp;</td>
+                            
                         </tr>
                     </tbody>
                 </table>

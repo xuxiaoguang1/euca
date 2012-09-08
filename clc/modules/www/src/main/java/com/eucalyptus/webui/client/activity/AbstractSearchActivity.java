@@ -123,7 +123,10 @@ public abstract class AbstractSearchActivity extends AbstractActivity implements
   protected void reloadCurrentRange( ) {
     if ( this.range != null ) {
       cache.clear( );
-      doSearch( this.search, range );      
+      doSearch( this.search, range );
+      if ( this.view != null && this.view instanceof SelectionController ) {
+        ( ( SelectionController )this.view ).clearSelection( );
+      }
     }
   }
   

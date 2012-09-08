@@ -8,6 +8,8 @@ public interface ImageView extends IsWidget, CanDisplaySearchResult, Clearable, 
   
   public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize {
 	  void onUploadImage();
+	  void onBindImage();
+	  void onUnbindImage();
   }
   
 }

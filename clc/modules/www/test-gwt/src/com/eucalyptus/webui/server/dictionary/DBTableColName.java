@@ -176,6 +176,7 @@ public class DBTableColName {
 		public final String ID = "vit_id"; 
 		public final String OS = "vit_os";
 		public final String VER = "vit_ver";
+		public final String EUCA_ID = "euca_vit_id";
 	}
 	
 	public interface BW_SERVICE {

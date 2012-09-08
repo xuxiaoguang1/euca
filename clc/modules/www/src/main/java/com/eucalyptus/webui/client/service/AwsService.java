@@ -29,5 +29,8 @@ public interface AwsService extends RemoteService {
 	public void addSecurityRule(Session session, String group, String fromPort, String toPort, String proto, String ipRange);
 	public void delSecurityRules(Session session, List<String> groups, List<String> fromPorts, List<String> toPorts, List<String> protos, List<String> ipRanges);
 	
+	public void bindImage(Session session, String id, String sysName, String sysVer) throws EucalyptusServiceException;
+	public void unbindImages(Session session, List<String> ids) throws EucalyptusServiceException;
+	
 
 }
