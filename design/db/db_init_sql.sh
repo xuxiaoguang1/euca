@@ -53,13 +53,13 @@ group=`getvalue groups group_id group_name root`
 account=`getvalue groups account_id group_name root`
 
 command insert into user \(user_name, user_pwd, user_title, user_mobile, user_email, user_type, user_state, user_reg_state, group_id, account_id\) \
-    values \(\"admin\", \"admin\", \"title\", \"mobile\", \"email\", 1, 1, 1, $group, $account\)
+    values \(\"admin\", \"admin\", \"title\", \"mobile\", \"email\", 1, 1, 2, $group, $account\)
 
 group1=`getvalue groups group_id group_name abc`
 account1=`getvalue groups account_id group_name abc`
 
 command insert into user \(user_name, user_pwd, user_title, user_mobile, user_email, user_type, user_state, user_reg_state, group_id, account_id\) \
-    values \(\"admin\", \"admin\", \"title\", \"mobile\", \"email\", 1, 1, 1, $group1, $account1\)
+    values \(\"admin\", \"admin\", \"title\", \"mobile\", \"email\", 1, 1, 2, $group1, $account1\)
 
 for ((i=0;i<5;i++)) do
     command insert into account \(account_name, account_email, account_descrip, account_state\) \

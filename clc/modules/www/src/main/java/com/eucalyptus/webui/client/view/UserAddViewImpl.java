@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
+import com.eucalyptus.webui.shared.user.EnumUserRegStatus;
 import com.eucalyptus.webui.shared.user.EnumUserType;
 import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.common.base.Strings;
@@ -243,6 +244,9 @@ public class UserAddViewImpl extends DialogBox implements UserAddView {
 	    user.setEmail(email);
 	    user.setType(userType);
 	    user.setState(userState);
+	    
+	    //when creating user by root admin, the default reg-status is APPROVED
+	    user.setRegStatus(EnumUserRegStatus.APPROVED);
 	    
 	    if (accountId != null)
 	    	user.setAccountId(Integer.valueOf(accountId));

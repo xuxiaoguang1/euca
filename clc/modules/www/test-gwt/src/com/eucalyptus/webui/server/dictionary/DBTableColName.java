@@ -10,7 +10,7 @@ public class DBTableColName {
 		public final String EMAIL = "user_email";
 		public final String TYPE = "user_type";
 		public final String STATE = "user_state";
-		public final String REG_STATE = "user_reg_state";
+		public final String REG_STATUS = "user_reg_state";
 		public final String GROUP_ID = "group_id";
 		public final String ACCOUNT_ID = "account_id";
 	}

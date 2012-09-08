@@ -10,6 +10,7 @@ import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.user.EnumState;
+import com.eucalyptus.webui.shared.user.EnumUserRegStatus;
 import com.eucalyptus.webui.shared.user.EnumUserType;
 import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.common.base.Strings;
@@ -68,6 +69,8 @@ public class UserDBProcWrapper {
 					EnumState accountState = EnumState.NONE;
 					
 					EnumUserType userType = EnumUserType.NONE;
+					EnumUserRegStatus userRegStatus = EnumUserRegStatus.NONE;
+					
 					int groupId = 0;
 					int accountId = 0;
 
@@ -87,6 +90,10 @@ public class UserDBProcWrapper {
 					if (!Strings.isNullOrEmpty(userTypeStr))
 						userType = EnumUserType.values()[Integer.valueOf(userTypeStr)];
 					
+					String userRegStatusStr = rs.getString(DBTableColName.USER.REG_STATUS);
+					if (!Strings.isNullOrEmpty(userRegStatusStr))
+						userRegStatus = EnumUserRegStatus.values()[Integer.valueOf(userRegStatusStr)];
+					
 					String groupIdStr = rs.getString(DBTableColName.USER.GROUP_ID);
 					if (!Strings.isNullOrEmpty(groupIdStr))
 						groupId = Integer.valueOf(groupIdStr);
@@ -95,7 +102,7 @@ public class UserDBProcWrapper {
 					if (!Strings.isNullOrEmpty(accountIdStr))
 						accountId = Integer.valueOf(accountIdStr);
 						
-					UserInfo userInfo = new UserInfo(userId, userName, userPwd, title, mobile, email, userState, userType, groupId, accountId);
+					UserInfo userInfo = new UserInfo(userId, userName, userPwd, title, mobile, email, userState, userType, userRegStatus, groupId, accountId);
 					
 					UserInfoAndState userAndState = new UserInfoAndState();
 					userAndState.setUserInfo(userInfo);
@@ -539,7 +546,7 @@ public class UserDBProcWrapper {
 		append(DBTableColName.USER.EMAIL).append(", ").
 		append(DBTableColName.USER.TYPE).append(", ").
 		append(DBTableColName.USER.STATE).append(", ").
-		append(DBTableColName.USER.REG_STATE).append(", ").
+		append(DBTableColName.USER.REG_STATUS).append(", ").
 		append(DBTableColName.USER.GROUP_ID).append(", ").
 		append(DBTableColName.USER.ACCOUNT_ID).append(") VALUES (null, ");
 		

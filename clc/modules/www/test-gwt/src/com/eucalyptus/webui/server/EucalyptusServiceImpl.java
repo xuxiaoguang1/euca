@@ -88,7 +88,6 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		if (Strings.isNullOrEmpty(accountName) || Strings.isNullOrEmpty(userName) || Strings.isNullOrEmpty(password)) {
 			throw new EucalyptusServiceException("Empty login or password");
 		}
-
 		return authenticateUserLogin.checkPwdAndUserState(accountName, userName, password);
 	}
 

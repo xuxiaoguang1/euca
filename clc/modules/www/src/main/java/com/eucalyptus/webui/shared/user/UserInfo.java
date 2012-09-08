@@ -8,7 +8,7 @@ public class UserInfo implements java.io.Serializable {
 	public UserInfo () {
 		
 	}
-	public UserInfo(int id, String name, String pwd, String title, String mobile, String email, EnumState state, EnumUserType type, int groupId, int accountId) {
+	public UserInfo(int id, String name, String pwd, String title, String mobile, String email, EnumState state, EnumUserType type, EnumUserRegStatus regStatus, int groupId, int accountId) {
 		this.setId(id);
 		this.setName(name);
 		this.setPwd(pwd);
@@ -17,6 +17,7 @@ public class UserInfo implements java.io.Serializable {
 		this.setEmail(email);
 		this.setState(state);
 		this.setType(type);
+		this.setRegStatus(regStatus);
 		this.setGroupId(groupId);
 		this.setAccountId(accountId);
 	}
