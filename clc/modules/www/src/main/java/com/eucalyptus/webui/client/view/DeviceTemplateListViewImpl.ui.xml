@@ -5,29 +5,29 @@
 		
 	</ui:style>
 	<g:HTMLPanel>
-				<g:LayoutPanel height="99px" width="629px">
-					<g:layer left="33px" width="77px" top="17px" height="16px">
+				<g:LayoutPanel height="99px" width="670px">
+					<g:layer left="30px" width="110px" top="17px" height="16px">
 						<g:Label text="服务开始时间"/>
 					</g:layer>
-					<g:layer left="115px" width="160px" top="15px" height="25px">
+					<g:layer left="160px" width="160px" top="15px" height="25px">
 						<p1:DateBox ui:field="startingTime"/>
 					</g:layer>
-					<g:layer left="343px" width="77px" top="17px" height="16px">
+					<g:layer left="350px" width="110px" top="17px" height="16px">
 						<g:Label text="服务结束时间"/>
 					</g:layer>
-					<g:layer left="425px" width="160px" top="15px" height="20px">
+					<g:layer left="480px" width="160px" top="15px" height="20px">
 						<p1:DateBox ui:field="endingTime"/>
 					</g:layer>
-					<g:layer left="33px" width="77px" top="60px" height="16px">
-						<g:Label text="服务开始时间"/>
+					<g:layer left="30px" width="110px" top="60px" height="16px">
+						<g:Label text="虚拟机镜像类型"/>
 					</g:layer>
-					<g:layer left="115px" width="161px" top="60px" height="25px">
+					<g:layer left="160px" width="160px" top="60px" height="25px">
 						<g:ListBox ui:field="VMImageTypeList"/>
 					</g:layer>
 		</g:LayoutPanel>
-		<g:LayoutPanel width="629px" height="291px" ui:field="tablePanel">
+		<g:LayoutPanel width="670px" height="291px" ui:field="tablePanel">
 		</g:LayoutPanel>
-		<g:LayoutPanel width="629px" height="1px">
+		<g:LayoutPanel width="670px" height="1px">
 			<g:layer left="411px" width="103px" top="12px" height="25px">
 				<g:Button text="确定" ui:field="buttonOk"/>
 			</g:layer>
