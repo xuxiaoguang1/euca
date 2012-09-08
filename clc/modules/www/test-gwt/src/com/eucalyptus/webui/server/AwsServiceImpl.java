@@ -74,7 +74,8 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 	static {
 		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "虚拟机ID", true, "10%") );
 		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "镜像ID", true, "10%") );
-		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "IP地址", true, "10%") );
+		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "公共IP", true, "10%") );
+		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "私有IP", true, "10%") );
 		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "密钥", true, "10%") );
 		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "所属安全组", true, "10%") );
 		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "使用用户", true, "10%") );
@@ -160,11 +161,12 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 			String id = ins.getInstanceId();
 			String image = ins.getImageId();
 			String priIp = ins.getPrivateIpAddress();
+			String pubIp = ins.getPublicIpAddress();
 			String state = ins.getState().getName();
 			String seGroup = res.getGroups().size() > 0 ? res.getGroups().get(0).getGroupName() : "";
 			String date = ins.getLaunchTime().toString();
 			String key = ins.getKeyName();
-			data.add(new SearchResultRow(Arrays.asList(id, image, priIp, key, seGroup, owner, date, "", "", state)));
+			data.add(new SearchResultRow(Arrays.asList(id, image, pubIp, priIp, key, seGroup, owner, date, "", "", state)));
 		}
 		
 		int resultLength = data.size();
