@@ -13,7 +13,7 @@ import com.eucalyptus.webui.shared.user.EnumUserAppState;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.google.common.base.Strings;
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import com.google.common.collect.Lists;
 
 public class UserAppDBProcWrapper {
 	public void addUserApp(UserApp userApp) throws UserSyncException {
