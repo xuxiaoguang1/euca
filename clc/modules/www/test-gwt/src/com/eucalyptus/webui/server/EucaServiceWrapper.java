@@ -32,9 +32,10 @@ public class EucaServiceWrapper {
    * @param image DB vm_image_type euca_vit_id
    * @param keypair string
    * @param group string
+   * @return euca id of vm
    */
-  public void runVM(Session session, Template template, String keypair, String group) {
-    
+  public String runVM(Session session, Template template, String keypair, String group) {
+    return null;
   }
   
   /**
