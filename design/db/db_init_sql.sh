@@ -240,3 +240,10 @@ for ((i=0;i<10;i++)) do
         \"1\" \
         \)
 done
+
+# insert into vm image type
+command INSERT INTO vm_image_type \( vit_id, vit_os, vit_ver, euca_vit_id \) VALUES \( \
+                                     null, \"Ubuntu 32Bit\", \"12.04\", null \)
+
+command INSERT INTO vm_image_type \( vit_id, vit_os, vit_ver, euca_vit_id \) VALUES \( \
+                                     null, \"Windows7 32Bit\", \"Home\", null \)
