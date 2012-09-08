@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.SearchPlace;
+import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
@@ -109,7 +110,7 @@ public class GroupActivity extends AbstractSearchActivity
 		
 		this.groupDetailActivity.setGroupId(Integer.valueOf(groupId));
 
-		//clientFactory.getGroupDetailView().setTitle(GROUP_VIEW_DETAIL[1]);
+		//clientFactory.getGroupDetailView().setTitle(GROUP_VIEW_DETAIL[lan]);
 		clientFactory.getGroupDetailView().setPresenter(this.groupDetailActivity);
 		clientFactory.getGroupDetailView().setAccountId(Integer.valueOf(accountId));
 		clientFactory.getGroupDetailView().setGroupId(Integer.valueOf(groupId));
@@ -168,7 +169,8 @@ public class GroupActivity extends AbstractSearchActivity
 
   @Override
   protected String getTitle( ) {
-    return TITLE[1];
+	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+	  return TITLE[lan];
   }
 
   @Override
@@ -243,7 +245,9 @@ public class GroupActivity extends AbstractSearchActivity
   		}
   		ConfirmationView dialog = this.clientFactory.getConfirmationView( );
   		dialog.setPresenter( this );
-  		dialog.display( DELETE_GROUPS_CAPTION[1], DELETE_GROUPS_SUBJECT[1], currentSelected, new ArrayList<Integer>( Arrays.asList( 0, 1 ) ) );
+  		
+  		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+  		dialog.display( DELETE_GROUPS_CAPTION[lan], DELETE_GROUPS_SUBJECT[lan], currentSelected, new ArrayList<Integer>( Arrays.asList( 0, 1 ) ) );
   	}
   	
   	@Override
@@ -268,7 +272,8 @@ public class GroupActivity extends AbstractSearchActivity
 		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
 		confirmView.setPresenter(this);
 	  
-		confirmView.display(RESUME_GROUPS_CAPTION[1], RESUME_GROUPS_SUBJECT[1]);
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		confirmView.display(RESUME_GROUPS_CAPTION[lan], RESUME_GROUPS_SUBJECT[lan]);
 	} 	
 	@Override
 	public void onPauseGroup() {
@@ -279,7 +284,8 @@ public class GroupActivity extends AbstractSearchActivity
 		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
 		confirmView.setPresenter(this);
 	  
-		confirmView.display(PAUSE_GROUPS_CAPTION[1], PAUSE_GROUPS_SUBJECT[1]);
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		confirmView.display(PAUSE_GROUPS_CAPTION[lan], PAUSE_GROUPS_SUBJECT[lan]);
 	}
 	@Override
 	public void onBanGroup() {
@@ -290,28 +296,31 @@ public class GroupActivity extends AbstractSearchActivity
 		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
 		confirmView.setPresenter(this);
 	  
-		confirmView.display(BAN_GROUPS_CAPTION[1], BAN_GROUPS_SUBJECT[1]);
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		confirmView.display(BAN_GROUPS_CAPTION[lan], BAN_GROUPS_SUBJECT[lan]);
 	}
 	
  	@Override
   	public void confirm( String subject ) {
-	  if ( DELETE_GROUPS_SUBJECT[1].equals( subject ) ) {
+ 		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+	  if ( DELETE_GROUPS_SUBJECT[lan].equals( subject ) ) {
 		  doDeleteGroups( );
 	  }
-	  else if ( RESUME_GROUPS_SUBJECT[1].equals( subject ) ) {
+	  else if ( RESUME_GROUPS_SUBJECT[lan].equals( subject ) ) {
 		  updateUserStateByGroup(EnumState.NORMAL);
 	  }
-	  else if ( PAUSE_GROUPS_SUBJECT[1].equals( subject ) ) {
+	  else if ( PAUSE_GROUPS_SUBJECT[lan].equals( subject ) ) {
 		  updateUserStateByGroup(EnumState.PAUSE);
 	  }
-	  else if ( BAN_GROUPS_SUBJECT[1].equals( subject ) ) {
+	  else if ( BAN_GROUPS_SUBJECT[lan].equals( subject ) ) {
 		  updateUserStateByGroup(EnumState.BAN);
 	  }
   	}
   	
  	private boolean selectionIsValid() {
 		if ( currentSelected == null || currentSelected.size( ) < 1 ) {
-			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, GROUP_ACTIVITY_No_SELECTION[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+			int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, GROUP_ACTIVITY_No_SELECTION[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 			return false;
 		}
 	  
@@ -333,23 +342,26 @@ public class GroupActivity extends AbstractSearchActivity
   		for ( SearchResultRow row : currentSelected ) {
   			ids.add( row.getField( 0 ) );
   		}
+  		
+  		final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
     
-  		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, FOOTERVIEW_GROUP_DELETING[1], 0 );
+  		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, FOOTERVIEW_GROUP_DELETING[lan], 0 );
     
   		clientFactory.getBackendService( ).deleteGroups( clientFactory.getLocalSession( ).getSession( ), ids, new AsyncCallback<Void>( ) {
 
 	      @Override
 	      public void onFailure( Throwable caught ) {
 	        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-	        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_GROUP_DELET_FAIL[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+	        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_GROUP_DELET_FAIL[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 	        clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to delete groups " + ids + ": " + caught.getMessage( ) );
 	      }
 
 	      @Override
 	      public void onSuccess( Void arg0 ) {
-	        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_GROUP_DELET_SUCCEED[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-	        clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Groups " + ids + " deleted" );
-	        reloadCurrentRange( );
+	    	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+	    	  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_GROUP_DELET_SUCCEED[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+	    	  clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Groups " + ids + " deleted" );
+	    	  reloadCurrentRange( );
 	      }
       
   		} );
@@ -366,16 +378,18 @@ public class GroupActivity extends AbstractSearchActivity
 		      @Override
 		      public void onFailure( Throwable caught ) {
 		        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-		        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_GROUP_ACTIVITY_UPDATE_USERSTATE_FAIL[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		        int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_GROUP_ACTIVITY_UPDATE_USERSTATE_FAIL[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 		        clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to update user state in groups " + ids + ": " + caught.getMessage( ) );
 		      }
 	
 		      @Override
 		      public void onSuccess( Void arg0 ) {
-		        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_GROUP_ACTIVITY_UPDATE_USERSTATE_SUCCEED[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-		        clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Groups " + ids + " user state updated" );
+		    	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		    	  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_GROUP_ACTIVITY_UPDATE_USERSTATE_SUCCEED[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		    	  clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Groups " + ids + " user state updated" );
 		        
-		        reloadCurrentRange();
+		    	  reloadCurrentRange();
 		      }
   			}
   		);
@@ -383,9 +397,10 @@ public class GroupActivity extends AbstractSearchActivity
 	
   @Override
   public void process( String subject, ArrayList<String> values ) {
-    if ( ADD_USERS_SUBJECT[1].equals( subject ) ) {
+	int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+    if ( ADD_USERS_SUBJECT[lan].equals( subject ) ) {
       doAddUsers( values.get( 0 ) );
-    } else if ( ADD_POLICY_SUBJECT[1].equals( subject ) ) {
+    } else if ( ADD_POLICY_SUBJECT[lan].equals( subject ) ) {
       doAddPolicy( values.get( 0 ), values.get( 1 ) );
     }
   }

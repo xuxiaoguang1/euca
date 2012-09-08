@@ -6,6 +6,7 @@ import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.ApplyPlace;
 import com.eucalyptus.webui.client.place.LoginPlace;
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
+import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.view.ActionResultView;
 import com.eucalyptus.webui.client.view.InputField;
 import com.eucalyptus.webui.client.view.InputView;
@@ -71,11 +72,12 @@ public class ApplyActivity extends AbstractActivity implements InputView.Present
   private void showPasswordResetDialog( ) {
     InputView dialog = this.clientFactory.getInputView( );
     dialog.setPresenter( this );
-    dialog.display( PASSWORD_RESET_CAPTION[1], PASSWORD_RESET_SUBJECT[1], new ArrayList<InputField>( Arrays.asList( 
+    final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+    dialog.display( PASSWORD_RESET_CAPTION[lan], PASSWORD_RESET_SUBJECT[lan], new ArrayList<InputField>( Arrays.asList( 
     		new InputField( ) {
 			      @Override
 			      public String getTitle( ) {
-			        return RESET_USER_ACCOUNT_INPUT_TITLE[1];
+			        return RESET_USER_ACCOUNT_INPUT_TITLE[lan];
 			      }
 		
 			      @Override
@@ -93,7 +95,7 @@ public class ApplyActivity extends AbstractActivity implements InputView.Present
 		    new InputField( ) {
 			      @Override
 			      public String getTitle( ) {
-			        return RESET_USER_INPUT_TITLE[1];
+			        return RESET_USER_INPUT_TITLE[lan];
 			      }
 			
 			      @Override
@@ -110,7 +112,7 @@ public class ApplyActivity extends AbstractActivity implements InputView.Present
 
 			      @Override
 			      public String getTitle( ) {
-			        return EMAIL_INPUT_TITLE[1];
+			        return EMAIL_INPUT_TITLE[lan];
 			      }
 			
 			      @Override
@@ -129,11 +131,12 @@ public class ApplyActivity extends AbstractActivity implements InputView.Present
   private void showApplyAccountDialog( ) {
 	  InputView dialog = this.clientFactory.getInputView( );
 	  dialog.setPresenter( this );
-	  dialog.display( APPLY_ACCOUNT_CAPTION[1], APPLY_ACCOUNT_SUBJECT[1], new ArrayList<InputField>( Arrays.asList( new InputField( ) {
+	  final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+	  dialog.display( APPLY_ACCOUNT_CAPTION[lan], APPLY_ACCOUNT_SUBJECT[lan], new ArrayList<InputField>( Arrays.asList( new InputField( ) {
 	  
 	    @Override
 	    public String getTitle( ) {
-	      return ACCOUNT_NAME_INPUT_TITLE[1];
+	      return ACCOUNT_NAME_INPUT_TITLE[lan];
 	    }
 	  
 	    @Override
@@ -150,7 +153,7 @@ public class ApplyActivity extends AbstractActivity implements InputView.Present
 	  
 	    @Override
 	    public String getTitle( ) {
-	      return EMAIL_INPUT_TITLE[1];
+	      return EMAIL_INPUT_TITLE[lan];
 	    }
 	  
 	    @Override
@@ -167,7 +170,7 @@ public class ApplyActivity extends AbstractActivity implements InputView.Present
 	  
 	    @Override
 	    public String getTitle( ) {
-	      return PASSWORD_INPUT_TITLE[1];
+	      return PASSWORD_INPUT_TITLE[lan];
 	    }
 	  
 	    @Override
@@ -184,7 +187,7 @@ public class ApplyActivity extends AbstractActivity implements InputView.Present
 	  
 	    @Override
 	    public String getTitle( ) {
-	      return PASSWORD2_INPUT_TITLE[1];
+	      return PASSWORD2_INPUT_TITLE[lan];
 	    }
 	  
 	    @Override
@@ -202,9 +205,10 @@ public class ApplyActivity extends AbstractActivity implements InputView.Present
 
   @Override
   public void process( String subject, ArrayList<String> values ) {
-	  if ( APPLY_ACCOUNT_SUBJECT.equals( subject ) ) {
+	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+	  if ( APPLY_ACCOUNT_SUBJECT[lan].equals( subject ) ) {
 		  doApplyAccount( values.get( 0 ), values.get( 1 ), values.get( 2 ) );
-	  } else if ( PASSWORD_RESET_SUBJECT[1].equals( subject ) ) {
+	  } else if ( PASSWORD_RESET_SUBJECT[lan].equals( subject ) ) {
 		  doResetPassword( values.get( 0 ), values.get( 1 ), values.get( 2 ) );
 	  }
   }
@@ -212,18 +216,18 @@ public class ApplyActivity extends AbstractActivity implements InputView.Present
 	  clientFactory.getActionResultView( ).loading( );
 	  
 	  clientFactory.getBackendService( ).signupAccount( accountName, password, email, new AsyncCallback<Void>( ) {
-	  
+		  
+		final  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 	    @Override
 	    public void onFailure( Throwable caught ) {
-	    	clientFactory.getActionResultView( ).display( ResultType.ERROR, APPLY_ACCOUNT_FAILURE_MESSAGE[1], true );
+	    	clientFactory.getActionResultView( ).display( ResultType.ERROR, APPLY_ACCOUNT_FAILURE_MESSAGE[lan], true );
 	      	EucalyptusServiceException exception = (EucalyptusServiceException)caught;
 	        clientFactory.getActionResultView( ).display( ResultType.ERROR, exception.getMessage(), true );
 	    }
 	   
 	   @Override
 	   public void onSuccess( Void arg0 ) {
-		   clientFactory.getActionResultView( ).display( ResultType.INFO, APPLY_ACCOUNT_SUCCESS_MESSAGE[1], true );
-	       clientFactory.getActionResultView( ).display( ResultType.INFO, PASSWORD_RESET_SUCCESS_MESSAGE[1], true );
+		   clientFactory.getActionResultView( ).display( ResultType.INFO, APPLY_ACCOUNT_SUCCESS_MESSAGE[lan], true );
 	   }
 	   
 	} );
@@ -231,7 +235,7 @@ public class ApplyActivity extends AbstractActivity implements InputView.Present
   
   private void doResetPassword( String userName, String accountName, String email ) {
     clientFactory.getActionResultView( ).loading( );
-    
+    final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
     clientFactory.getBackendService( ).requestPasswordRecovery( userName, accountName, email, new AsyncCallback<Void>( ) {
 
       @Override
@@ -242,7 +246,7 @@ public class ApplyActivity extends AbstractActivity implements InputView.Present
 
       @Override
       public void onSuccess( Void arg0 ) {
-        clientFactory.getActionResultView( ).display( ResultType.INFO, PASSWORD_RESET_SUCCESS_MESSAGE[1], true );
+        clientFactory.getActionResultView( ).display( ResultType.INFO, PASSWORD_RESET_SUCCESS_MESSAGE[lan], true );
       }
       
     } );

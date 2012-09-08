@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.SearchPlace;
+import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
@@ -149,7 +150,8 @@ public class UserActivity extends AbstractSearchActivity
 
   @Override
   protected String getTitle( ) {
-    return TITLE[1];
+	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+	  return TITLE[lan];
   }
 
   @Override
@@ -238,7 +240,8 @@ public class UserActivity extends AbstractSearchActivity
     
 		ConfirmationView dialog = this.clientFactory.getConfirmationView( );
 		dialog.setPresenter( this );
-		dialog.display( DELETE_USERS_CAPTION[1], DELETE_USERS_SUBJECT[1]);
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		dialog.display( DELETE_USERS_CAPTION[lan], DELETE_USERS_SUBJECT[lan]);
 	}
 	
 	 @Override
@@ -275,7 +278,8 @@ public class UserActivity extends AbstractSearchActivity
 		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
 		confirmView.setPresenter(this);
 	  
-		confirmView.display(REMOVE_FROM_GROUPS_CAPTION[1], REMOVE_FROM_GROUPS_SUBJECT[1]);
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		confirmView.display(REMOVE_FROM_GROUPS_CAPTION[lan], REMOVE_FROM_GROUPS_SUBJECT[lan]);
 	}
 	
 	@Override
@@ -286,13 +290,14 @@ public class UserActivity extends AbstractSearchActivity
 
 		InputView dialog = this.clientFactory.getInputView();
 		dialog.setPresenter(this);
-		dialog.display(ADD_POLICY_CAPTION[1], ADD_POLICY_SUBJECT[1],
+		final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		dialog.display(ADD_POLICY_CAPTION[lan], ADD_POLICY_SUBJECT[lan],
 				new ArrayList<InputField>(Arrays.asList(
 					new InputField() {
 	
 						@Override
 						public String getTitle() {
-							return POLICY_NAME_INPUT_TITLE[1];
+							return POLICY_NAME_INPUT_TITLE[lan];
 						}
 	
 						@Override
@@ -310,7 +315,7 @@ public class UserActivity extends AbstractSearchActivity
 	
 						@Override
 						public String getTitle() {
-							return POLICY_CONTENT_INPUT_TITLE[1];
+							return POLICY_CONTENT_INPUT_TITLE[lan];
 						}
 	
 						@Override
@@ -335,7 +340,8 @@ public class UserActivity extends AbstractSearchActivity
 		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
 		confirmView.setPresenter(this);
 	  
-		confirmView.display(ADD_KEY_CAPTION[1], ADD_KEY_SUBJECT[1]);
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		confirmView.display(ADD_KEY_CAPTION[lan], ADD_KEY_SUBJECT[lan]);
 	}
 	
 	@Override
@@ -346,11 +352,12 @@ public class UserActivity extends AbstractSearchActivity
 		    }
 		    InputView dialog = this.clientFactory.getInputView( );
 		    dialog.setPresenter( this );
-		    dialog.display( ADD_CERT_CAPTION[1], ADD_CERT_SUBJECT[1], new ArrayList<InputField>( Arrays.asList( new InputField( ) {
+		    final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		    dialog.display( ADD_CERT_CAPTION[lan], ADD_CERT_SUBJECT[lan], new ArrayList<InputField>( Arrays.asList( new InputField( ) {
 
 		      @Override
 		      public String getTitle( ) {
-		        return CERT_PEM_INPUT_TITLE[1];
+		        return CERT_PEM_INPUT_TITLE[lan];
 		      }
 
 		      @Override
@@ -377,7 +384,8 @@ public class UserActivity extends AbstractSearchActivity
 		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
 		confirmView.setPresenter(this);
 	  
-		confirmView.display(RESUME_USERS_CAPTION[1], RESUME_USERS_SUBJECT[1]);
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		confirmView.display(RESUME_USERS_CAPTION[lan], RESUME_USERS_SUBJECT[lan]);
 	}
   
 	@Override
@@ -388,7 +396,8 @@ public class UserActivity extends AbstractSearchActivity
 		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
 		confirmView.setPresenter(this);
 	  
-		confirmView.display(PAUSE_USERS_CAPTION[1], PAUSE_USERS_SUBJECT[1]);
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		confirmView.display(PAUSE_USERS_CAPTION[lan], PAUSE_USERS_SUBJECT[lan]);
 	}
 
 	@Override
@@ -400,13 +409,15 @@ public class UserActivity extends AbstractSearchActivity
 		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
 		confirmView.setPresenter(this);
 	  
-		confirmView.display(BAN_USERS_CAPTION[1], BAN_USERS_SUBJECT[1]);
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		confirmView.display(BAN_USERS_CAPTION[lan], BAN_USERS_SUBJECT[lan]);
 	}
 	
 	
 	private boolean selectionIsValid() {
 		if ( currentSelected == null || currentSelected.size( ) < 1 ) {
-			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_USER_NO_SELECTION[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+			int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_USER_NO_SELECTION[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 			return false;
 		}
 	  
@@ -415,7 +426,8 @@ public class UserActivity extends AbstractSearchActivity
 	
 	private boolean oneSelectionIsValid() {
 		if ( currentSelected == null || currentSelected.size( ) != 1 ) {
-			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_USER_ONE_SELECTION[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+			int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_USER_ONE_SELECTION[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 			return false;
 		}
 	  
@@ -424,21 +436,22 @@ public class UserActivity extends AbstractSearchActivity
   
   @Override
   public void confirm( String subject ) {
-    if ( DELETE_USERS_SUBJECT[1].equals( subject ) ) {
+	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+    if ( DELETE_USERS_SUBJECT[lan].equals( subject ) ) {
     	doDeleteUsers( );
-    } else if ( RESUME_USERS_SUBJECT[1].equals( subject ) ) {
+    } else if ( RESUME_USERS_SUBJECT[lan].equals( subject ) ) {
     	doUpdateUserState(EnumState.NORMAL);
-    } else if ( PAUSE_USERS_SUBJECT[1].equals( subject ) ) {
+    } else if ( PAUSE_USERS_SUBJECT[lan].equals( subject ) ) {
     	doUpdateUserState(EnumState.PAUSE);
-    } else if ( BAN_USERS_SUBJECT[1].equals( subject ) ) {
+    } else if ( BAN_USERS_SUBJECT[lan].equals( subject ) ) {
     	doUpdateUserState(EnumState.BAN);
-    } else if ( REMOVE_FROM_GROUPS_SUBJECT[1].equals( subject ) ) {
+    } else if ( REMOVE_FROM_GROUPS_SUBJECT[lan].equals( subject ) ) {
     	doRemoveUserFromGroup();
-    } else if ( ADD_POLICY_SUBJECT[1].equals( subject ) ) {
+    } else if ( ADD_POLICY_SUBJECT[lan].equals( subject ) ) {
     	//doAddPolicy();
-    } else if ( ADD_KEY_SUBJECT[1].equals( subject ) ) {
+    } else if ( ADD_KEY_SUBJECT[lan].equals( subject ) ) {
     	doAddKey();
-    } else if ( ADD_CERT_SUBJECT[1].equals( subject ) ) {
+    } else if ( ADD_CERT_SUBJECT[lan].equals( subject ) ) {
     	//doAddCert();
     }
   }
@@ -453,20 +466,22 @@ public class UserActivity extends AbstractSearchActivity
 	      ids.add( row.getField( 0 ) );
 	    }
 	    
-	    clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, FOOTERVIEW_DELETE_USERS[1], 0 );
+	    final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+	    
+	    clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, FOOTERVIEW_DELETE_USERS[lan], 0 );
 	    
 	    clientFactory.getBackendService( ).deleteUsers( clientFactory.getLocalSession( ).getSession( ), ids, new AsyncCallback<Void>( ) {
 
 	    	@Override
 	    	public void onFailure( Throwable caught ) {
 	    		ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-	    		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_DELETE_USERS[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+	    		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_DELETE_USERS[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 	    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to delete users " + ids + ": " + caught.getMessage( ) );
 	    	}
 
 	    	@Override
 	    	public void onSuccess( Void arg0 ) {
-	    		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_USERS_DELETED[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+	    		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_USERS_DELETED[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 	    		clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Users " + ids + " deleted" );
 	    		reloadCurrentRange( );
 	    		currentSelected = null;
@@ -578,19 +593,21 @@ public class UserActivity extends AbstractSearchActivity
 				ids.add(row.getField(0));
 			}
 			
+			final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+			
 			this.clientFactory.getBackendService().updateUserState(clientFactory.getLocalSession( ).getSession( ), ids, userState, new AsyncCallback<Void>( )
 					{
 
 						@Override
 						public void onFailure(Throwable caught) {
 							// TODO Auto-generated method stub
-							clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_UPDATE_USER_FAILS[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+							clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_UPDATE_USER_FAILS[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 						}
 
 						@Override
 						public void onSuccess(Void result) {
 							// TODO Auto-generated method stub
-							clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_UPDATE_USER_STATE[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+							clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_UPDATE_USER_STATE[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 							reloadCurrentRange();
 						}
 						
@@ -608,6 +625,7 @@ public class UserActivity extends AbstractSearchActivity
 		for (SearchResultRow row : currentSelected) {
 			userIds.add(row.getField(0));
 		}
+		final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 		
 		clientFactory.getBackendService().addUsersToGroupsById(clientFactory.getLocalSession().getSession(), 
 																userIds, 0, 
@@ -618,14 +636,14 @@ public class UserActivity extends AbstractSearchActivity
 																	public void onFailure(Throwable caught) {
 																		// TODO Auto-generated method stub
 																		final String[] FOOTERVIEW_REMOVE_USER_TO_GROUP_FAIL = {"Remove user from group fails", "用户删除组失败"};
-																		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_REMOVE_USER_TO_GROUP_FAIL[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+																		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_REMOVE_USER_TO_GROUP_FAIL[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 																	}
 
 																	@Override
 																	public void onSuccess(Void result) {
 																		// TODO Auto-generated method stub
 																		final String[] FOOTERVIEW_REMOVE_USER_FROM_GROUP_SUCCEED = {"Remove user from group succeed", "用户删除组成功"};
-																		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_REMOVE_USER_FROM_GROUP_SUCCEED[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+																		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_REMOVE_USER_FROM_GROUP_SUCCEED[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 																		reloadCurrentRange();
 																	}
 																}
@@ -640,6 +658,8 @@ public class UserActivity extends AbstractSearchActivity
 			userIds.add(row.getField(0));
 		}
 		
+		final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		
 		clientFactory.getBackendService().addUsersToGroupsById(clientFactory.getLocalSession().getSession(), 
 																userIds, groupId, 
 																new AsyncCallback<Void> () 
@@ -649,14 +669,14 @@ public class UserActivity extends AbstractSearchActivity
 																	public void onFailure(Throwable caught) {
 																		// TODO Auto-generated method stub
 																		final String[] FOOTERVIEW_ADD_USER_TO_GROUP_FAIL = {"Add user to group fails", "用户加入组失败"};
-																		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_ADD_USER_TO_GROUP_FAIL[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+																		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_ADD_USER_TO_GROUP_FAIL[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 																	}
 
 																	@Override
 																	public void onSuccess(Void result) {
 																		// TODO Auto-generated method stub
 																		final String[] FOOTERVIEW_ADD_USER_TO_GROUP_SUCCEED = {"Add user to group succeed", "用户加入组成功"};
-																		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_ADD_USER_TO_GROUP_SUCCEED[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+																		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_ADD_USER_TO_GROUP_SUCCEED[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 																		clientFactory.getUserView().clearSelection();
 																		reloadCurrentRange();
 																	}
@@ -721,9 +741,10 @@ public class UserActivity extends AbstractSearchActivity
 
 	@Override
 	public void process(String subject, ArrayList<String> values) {
-		if (ADD_CERT_SUBJECT[1].equals(subject)) {
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		if (ADD_CERT_SUBJECT[lan].equals(subject)) {
 			doAddCert(values.get(0));
-		}else if (ADD_POLICY_SUBJECT[1].equals(subject)) {
+		}else if (ADD_POLICY_SUBJECT[lan].equals(subject)) {
 			doAddPolicy(values.get(0), values.get(1));
 		}
 	}

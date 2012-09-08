@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.SearchPlace;
+import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
@@ -102,15 +103,16 @@ public class CertActivity extends AbstractSearchActivity implements CertView.Pre
 
 	@Override
 	public void confirm(String subject) {
-		if(DELETE_CERT_SUBJECT[1].equals(subject)){
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		if(DELETE_CERT_SUBJECT[lan].equals(subject)){
 			doDeleteCert();
-		}else if(ACTIVATE_CERT_SUBJECT[1].equals(subject)){
+		}else if(ACTIVATE_CERT_SUBJECT[lan].equals(subject)){
 			doActivateCert();
-		}else if(DEACTIVATE_CERT_SUBJECT[1].equals(subject)){
+		}else if(DEACTIVATE_CERT_SUBJECT[lan].equals(subject)){
 			doDeactivateCert();
-		}else if(REVOKE_CERT_SUBJECT[1].equals(subject)){
+		}else if(REVOKE_CERT_SUBJECT[lan].equals(subject)){
 			doRevokeCert();
-		}else if(AUTHORIZE_CERT_SUBJECT[1].equals(subject)){
+		}else if(AUTHORIZE_CERT_SUBJECT[lan].equals(subject)){
 			doAuthorizeCert();
 		}
 	}
@@ -333,7 +335,9 @@ public class CertActivity extends AbstractSearchActivity implements CertView.Pre
 		}
 		ConfirmationView dialog = this.clientFactory.getConfirmationView();
 		dialog.setPresenter(this);
-		dialog.display(DELETE_CERT_CAPTION[1], DELETE_CERT_SUBJECT[1]);
+		
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		dialog.display(DELETE_CERT_CAPTION[lan], DELETE_CERT_SUBJECT[lan]);
 	}
 
 	@Override
@@ -347,7 +351,9 @@ public class CertActivity extends AbstractSearchActivity implements CertView.Pre
 		}
 		ConfirmationView dialog = this.clientFactory.getConfirmationView();
 		dialog.setPresenter(this);
-		dialog.display(ACTIVATE_CERT_CAPTION[1], ACTIVATE_CERT_SUBJECT[1]);
+		
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		dialog.display(ACTIVATE_CERT_CAPTION[lan], ACTIVATE_CERT_SUBJECT[lan]);
 	}
 
 	@Override
@@ -361,7 +367,9 @@ public class CertActivity extends AbstractSearchActivity implements CertView.Pre
 		}
 		ConfirmationView dialog = this.clientFactory.getConfirmationView();
 		dialog.setPresenter(this);
-		dialog.display(DEACTIVATE_CERT_CAPTION[1], DEACTIVATE_CERT_SUBJECT[1]);
+		
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		dialog.display(DEACTIVATE_CERT_CAPTION[lan], DEACTIVATE_CERT_SUBJECT[lan]);
 	}
 
 	@Override
@@ -375,7 +383,9 @@ public class CertActivity extends AbstractSearchActivity implements CertView.Pre
 		}
 		ConfirmationView dialog = this.clientFactory.getConfirmationView();
 		dialog.setPresenter(this);
-		dialog.display(REVOKE_CERT_CAPTION[1], REVOKE_CERT_SUBJECT[1]);
+		
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		dialog.display(REVOKE_CERT_CAPTION[lan], REVOKE_CERT_SUBJECT[lan]);
 	}
 
 	@Override
@@ -389,7 +399,9 @@ public class CertActivity extends AbstractSearchActivity implements CertView.Pre
 		}
 		ConfirmationView dialog = this.clientFactory.getConfirmationView();
 		dialog.setPresenter(this);
-		dialog.display(AUTHORIZE_CERT_CAPTION[1], AUTHORIZE_CERT_SUBJECT[1]);
+		
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		dialog.display(AUTHORIZE_CERT_CAPTION[lan], AUTHORIZE_CERT_SUBJECT[lan]);
 	}
 
 }

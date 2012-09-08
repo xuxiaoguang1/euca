@@ -19,6 +19,8 @@ public class ActionResultViewImpl extends Composite implements ActionResultView 
   
   interface ActionResultViewImplUiBinder extends UiBinder<Widget, ActionResultViewImpl> {}
   
+  private final String[] BUTTON_TEXT = {"Return to login", "返回登录界面"};
+  
   public interface IconStyle extends CssResource {
     String red( );
     String green( );
@@ -71,6 +73,7 @@ public class ActionResultViewImpl extends Composite implements ActionResultView 
         break;
     }
     this.message.setText( message );
+    this.button.setText(this.BUTTON_TEXT[1]);
     this.button.setVisible( needsConfirmation );
   }
 

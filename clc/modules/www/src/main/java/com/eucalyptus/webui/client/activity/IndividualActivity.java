@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.IndividualPlace;
+import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.IndividualView;
@@ -69,6 +70,7 @@ public class IndividualActivity extends AbstractActivity implements IndividualVi
 	@Override
 	public void onUpdateInfo(String title, String mobile, String email) {
 		// TODO Auto-generated method stub
+		final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 		this.clientFactory.getBackendService().modifyIndividual(this.clientFactory.getLocalSession().getSession(), 
 																title, mobile, email, 
 																new AsyncCallback<LoginUserProfile> () 
@@ -78,7 +80,7 @@ public class IndividualActivity extends AbstractActivity implements IndividualVi
 																	public void onFailure(Throwable caught) {
 																		// TODO Auto-generated method stub
 																		clientFactory.getShellView().getFooterView().showStatus(StatusType.NONE, 
-																																INDIVIDUAL_ACTIVITY_FOOTERVIEW_MODIFY_USER_FAIL[1], 
+																																INDIVIDUAL_ACTIVITY_FOOTERVIEW_MODIFY_USER_FAIL[lan], 
 																																FooterView.DEFAULT_STATUS_CLEAR_DELAY);
 																	}
 
@@ -86,7 +88,7 @@ public class IndividualActivity extends AbstractActivity implements IndividualVi
 																	public void onSuccess(LoginUserProfile profile) {
 																		// TODO Auto-generated method stub
 																		clientFactory.getShellView().getFooterView().showStatus(StatusType.NONE, 
-																																INDIVIDUAL_ACTIVITY_FOOTERVIEW_MODIFY_USER_SUCCEED[1], 
+																																INDIVIDUAL_ACTIVITY_FOOTERVIEW_MODIFY_USER_SUCCEED[lan], 
 																																FooterView.DEFAULT_STATUS_CLEAR_DELAY);
 																	}
 																});
@@ -100,14 +102,15 @@ public class IndividualActivity extends AbstractActivity implements IndividualVi
 	@Override
 	public void onChangePwd(String oldPwd, String newPwd, String newPwdAgain) {
 		// TODO Auto-generated method stub
+		final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 		if (oldPwd.length() ==0  || newPwd.length() == 0) {
 			clientFactory.getShellView().getFooterView().showStatus(StatusType.NONE, 
-																	INDIVIDUAL_ACTIVITY_FOOTERVIEW_NEW_PWD_EMPTY_WARNING[1], 
+																	INDIVIDUAL_ACTIVITY_FOOTERVIEW_NEW_PWD_EMPTY_WARNING[lan], 
 																	FooterView.DEFAULT_STATUS_CLEAR_DELAY);
 		}
 		else if (!newPwd.equals(newPwdAgain)) {
 			clientFactory.getShellView().getFooterView().showStatus(StatusType.NONE, 
-																	INDIVIDUAL_ACTIVITY_FOOTERVIEW_NEW_PWD_NOT_EQUAL_WARNING[1], 
+																	INDIVIDUAL_ACTIVITY_FOOTERVIEW_NEW_PWD_NOT_EQUAL_WARNING[lan], 
 																	FooterView.DEFAULT_STATUS_CLEAR_DELAY);
 		}
 		else {
@@ -118,14 +121,14 @@ public class IndividualActivity extends AbstractActivity implements IndividualVi
 																public void onFailure(Throwable caught) {
 																	// TODO Auto-generated method stub
 																	clientFactory.getShellView().getFooterView().showStatus(StatusType.ERROR, 
-																															INDIVIDUAL_ACTIVITY_FOOTERVIEW_MODIFY_PWD_FAIL[1], 
+																															INDIVIDUAL_ACTIVITY_FOOTERVIEW_MODIFY_PWD_FAIL[lan], 
 																															FooterView.DEFAULT_STATUS_CLEAR_DELAY);
 																}
 																@Override
 																public void onSuccess(Void result) {
 																	// TODO Auto-generated method stub
 																	clientFactory.getShellView().getFooterView().showStatus(StatusType.NONE, 
-																															INDIVIDUAL_ACTIVITY_FOOTERVIEW_MODIFY_PWD_SUCCEED[1], 
+																															INDIVIDUAL_ACTIVITY_FOOTERVIEW_MODIFY_PWD_SUCCEED[lan], 
 																															FooterView.DEFAULT_STATUS_CLEAR_DELAY);
 																	clientFactory.getIndividualView().clearPwd();
 																}

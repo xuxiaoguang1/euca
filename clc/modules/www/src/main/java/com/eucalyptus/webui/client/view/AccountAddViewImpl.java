@@ -1,6 +1,7 @@
 package com.eucalyptus.webui.client.view;
 
 import com.eucalyptus.webui.client.ClientFactory;
+import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.shared.checker.InvalidValueException;
 import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
@@ -54,8 +55,6 @@ public class AccountAddViewImpl extends DialogBox implements AccountAddView {
 		
 		this.accountStateNormalRadio.setValue(true);
 		
-		setText(ACCOUNT_ADD_VIEW_CAPTION[1]);
-		
 		setGlassEnabled( true );
 	}
 
@@ -73,6 +72,10 @@ public class AccountAddViewImpl extends DialogBox implements AccountAddView {
 	public void display(ClientFactory clientFactory) {
 		// TODO Auto-generated method stub
 		this.clientFactory = clientFactory;
+		
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		
+		setText(ACCOUNT_ADD_VIEW_CAPTION[lan]);
 		
 		clearInputField();
 		center();

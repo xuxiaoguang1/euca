@@ -1,11 +1,15 @@
 package com.eucalyptus.webui.server;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import javax.servlet.ServletException;
+
 import org.apache.log4j.Logger;
 
 import com.eucalyptus.webui.client.service.CloudInfo;
@@ -19,9 +23,11 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.DeviceCPUDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
+import com.eucalyptus.webui.server.mail.MailSenderInfo;
 import com.eucalyptus.webui.server.user.AuthenticateUserLogin;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.server.user.PwdResetProc;
+import com.eucalyptus.webui.shared.query.QueryType;
 import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
@@ -204,7 +210,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		}
 		
 		if (account.getId() == 0)
-			this.accountServiceProc.createAccount(account);
+			this.accountServiceProc.createAccount(account, true);
 		else
 			this.accountServiceProc.modifyAccount(account);
 	}
@@ -537,14 +543,51 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 
 	@Override
 	public void signupAccount(String accountName, String password, String email) throws EucalyptusServiceException {
-		try {
-			Thread.sleep(2000);
-		}
-		catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		randomDelay( );
+		AccountInfo account = new AccountInfo();
+		account.setName(accountName);
+		account.setEmail(email);
+		account.setState(EnumState.NORMAL);
+		this.accountServiceProc.createAccount(account, false);
+		
+		notifyAccountRegisteration( account, ServletUtils.getRequestUrl( getThreadLocalRequest( ) ) );
 	}
+	
+	public static final String ACCOUNT = "account";
+	  public static final String USER = "user";
+	  public static final String GROUP = "group";
+	  public static final String PASSWORD = "password";
+	  
+	  private void notifyAccountRegisteration(AccountInfo account, String backendUrl) {
+		try {  
+		  String from = MailSenderInfo.instance().getUser();
+		  String to = account.getEmail();
+		  
+		  String accountName = account.getName();
+		  String email = account.getEmail();
+		  String userName = "admin";
+		  
+		  String subject = WebProperties.getProperty( WebProperties.ACCOUNT_SIGNUP_SUBJECT, WebProperties.ACCOUNT_SIGNUP_SUBJECT_DEFAULT );
+	      String approveUrl = QueryBuilder.get( ).start( QueryType.approve ).add( ACCOUNT, accountName ).url( backendUrl );
+	      String rejectUrl = QueryBuilder.get( ).start( QueryType.reject ).add( ACCOUNT, accountName ).url( backendUrl );
+	      String emailMessage =
+	    		  userName + " has requested an account on the Eucalyptus system\n" +
+	        "\n   Account name:  " + accountName +
+	        "\n   Email address: " + email +
+	        "\n\n" +
+	        "To APPROVE this request, click on the following link:\n\n   " +
+	        approveUrl +
+	        "\n\n" +
+	        "To REJECT this request, click on the following link:\n\n   " +
+	        rejectUrl +
+	        "\n\n";
+	      ServletUtils.sendMail( from, to, subject + " (" + accountName + ", " + email + ")", emailMessage);
+	      
+	  } catch ( Exception e ) {
+	      LOG.error( "Failed to send account signup email", e );
+	      LOG.debug( e, e );
+	    }
+	  }
 
 	@Override
 	public void signupUser(String userName, String accountName, String password, String email)

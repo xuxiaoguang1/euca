@@ -58,11 +58,11 @@ public class LoginViewImpl extends Composite implements LoginView {
     //userSignup.setVisible( false );
   }
 
-//  @UiHandler( "accountSignup" )
-//  void handleAccountSignupButtonClick( ClickEvent e ) {
-//    this.presenter.onAccountSignup( );
-//  }
-//
+  @UiHandler( "accountSignup" )
+  void handleAccountSignupButtonClick( ClickEvent e ) {
+    this.presenter.onAccountSignup( );
+  }
+
 //  @UiHandler( "userSignup" )
 //  void handleUserSignupButtonClick( ClickEvent e ) {
 //    this.presenter.onUserSignup( );

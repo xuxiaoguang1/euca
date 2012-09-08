@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.SearchPlace;
+import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
@@ -109,7 +110,8 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
 		confirmView.setPresenter(this);
 	  
-		confirmView.display(GROUP_ACTIVITY_REMOVE_USERS_CAPTION[1], GROUP_ACTIVITY_REMOVE_USERS_SUBJECT[1]);
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		confirmView.display(GROUP_ACTIVITY_REMOVE_USERS_CAPTION[lan], GROUP_ACTIVITY_REMOVE_USERS_SUBJECT[lan]);
 	}
 	
 	@Override
@@ -161,7 +163,8 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 	@Override
 	public void confirm(String subject) {
 		// TODO Auto-generated method stub
-		if ( GROUP_ACTIVITY_REMOVE_USERS_SUBJECT[1].equals( subject ) ) {
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		if ( GROUP_ACTIVITY_REMOVE_USERS_SUBJECT[lan].equals( subject ) ) {
 			doRemoveUsers( );
 		  }
 	}
@@ -172,9 +175,11 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 		for (SearchResultRow row : currentSelected) {
 			ids.add(row.getField(0));
 		}
+		
+		final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 
 		clientFactory.getShellView().getFooterView()
-		        .showStatus(StatusType.LOADING, GROUP_ACTIVITY_REMOVE_USERS_STATUS[1], 0);
+		        .showStatus(StatusType.LOADING, GROUP_ACTIVITY_REMOVE_USERS_STATUS[lan], 0);
 
 		clientFactory.getBackendService().removeUsersFromGroup(clientFactory.getLocalSession().getSession(), ids,
 		        new AsyncCallback<Void>() {
@@ -185,7 +190,7 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 				        clientFactory
 				                .getShellView()
 				                .getFooterView()
-				                .showStatus(StatusType.ERROR, GROUP_ACTIVITY_REMOVE_USERS_FAIL[1],
+				                .showStatus(StatusType.ERROR, GROUP_ACTIVITY_REMOVE_USERS_FAIL[lan],
 				                        FooterView.DEFAULT_STATUS_CLEAR_DELAY);
 				        clientFactory
 				                .getShellView()
@@ -197,10 +202,11 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 
 			        @Override
 			        public void onSuccess(Void arg0) {
+			        	int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 				        clientFactory
 				                .getShellView()
 				                .getFooterView()
-				                .showStatus(StatusType.NONE, GROUP_ACTIVITY_REMOVE_USERS_SUCCEED[1],
+				                .showStatus(StatusType.NONE, GROUP_ACTIVITY_REMOVE_USERS_SUCCEED[lan],
 				                        FooterView.DEFAULT_STATUS_CLEAR_DELAY);
 				        clientFactory.getShellView().getLogView()
 				                .log(LogType.INFO, "Users " + ids + " are removed from groups ");

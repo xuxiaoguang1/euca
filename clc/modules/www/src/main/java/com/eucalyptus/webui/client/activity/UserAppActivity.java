@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.SearchPlace;
+import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
@@ -91,7 +92,8 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 
   @Override
   protected String getTitle( ) {
-    return TITLE[1];
+	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+	  return TITLE[lan];
   }
 
   @Override
@@ -118,7 +120,9 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   
 	  ConfirmationView dialog = this.clientFactory.getConfirmationView( );
 	  dialog.setPresenter( this );
-	  dialog.display( APPROVE_USER_APP_CAPTION[1], APPROVE_USER_APP_SUBJECT[1]);
+	  
+	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+	  dialog.display( APPROVE_USER_APP_CAPTION[lan], APPROVE_USER_APP_SUBJECT[lan]);
   }
 
   @Override
@@ -129,7 +133,9 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   
 	  ConfirmationView dialog = this.clientFactory.getConfirmationView( );
 	  dialog.setPresenter( this );
-	  dialog.display( REJECT_USER_APP_CAPTION[1], REJECT_USER_APP_SUBJECT[1]);
+	  
+	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+	  dialog.display( REJECT_USER_APP_CAPTION[lan], REJECT_USER_APP_SUBJECT[lan]);
   }
 
   @Override
@@ -137,13 +143,14 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   	// TODO Auto-generated method stub
 	clientFactory.getDeviceTemplateListView().setPresenter(this);
 	
+	final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
   	this.clientFactory.getBackendService().lookupDeviceTemplate(clientFactory.getLocalSession().getSession(), search, range, null, null, new AsyncCallback<SearchResult>() {
 
 		        @Override
 		        public void onFailure(Throwable caught) {
 			        // TODO Auto-generated method stub
-		        	clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-		    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES[1] + ":" + caught.getMessage( ) );
+		        	clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES[lan] + ":" + caught.getMessage( ) );
 		        }
 
 		        @Override
@@ -158,8 +165,8 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 		@Override
 		public void onFailure(Throwable caught) {
 			// TODO Auto-generated method stub
-			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_VM_IMAGE_TYPE[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_VM_IMAGE_TYPE[1] + ":" + caught.getMessage( ) );
+			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_VM_IMAGE_TYPE[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_VM_IMAGE_TYPE[lan] + ":" + caught.getMessage( ) );
 		}
 
 		@Override
@@ -179,7 +186,9 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   
 	  ConfirmationView dialog = this.clientFactory.getConfirmationView( );
 	  dialog.setPresenter( this );
-	  dialog.display( DEL_USER_APP_CAPTION[1], DEL_USER_APP_SUBJECT[1]);
+	  
+	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+	  dialog.display( DEL_USER_APP_CAPTION[lan], DEL_USER_APP_SUBJECT[lan]);
   }
  
   @Override
@@ -232,7 +241,8 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 
   private boolean selectionIsValid() {
 	  if ( currentSelected == null || currentSelected.size( ) < 1 ) {
-		  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_USER_NO_SELECTION[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_USER_NO_SELECTION[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 		  return false;
 	  }
 	  
@@ -241,11 +251,12 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   
   @Override
   public void confirm( String subject ) {
-    if ( APPROVE_USER_APP_SUBJECT[1].equals( subject ) ) {
+	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+    if ( APPROVE_USER_APP_SUBJECT[lan].equals( subject ) ) {
     	doApproveUserApp();
-    } else if ( REJECT_USER_APP_SUBJECT[1].equals( subject ) ) {
+    } else if ( REJECT_USER_APP_SUBJECT[lan].equals( subject ) ) {
     	doRejectUserApp();
-    } else if ( DEL_USER_APP_SUBJECT[1].equals( subject ) ) {
+    } else if ( DEL_USER_APP_SUBJECT[lan].equals( subject ) ) {
     	doDelUserApp();
     } 
   }
@@ -261,19 +272,20 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 	    	apps.add(app);
 	    }
 
+	    final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 	    this.clientFactory.getBackendService().modifyUserApp(clientFactory.getLocalSession().getSession(), apps, 
 					new AsyncCallback<Void>() {
 						@Override
 						public void onFailure(Throwable caught) {
 						// TODO Auto-generated method stub
-						clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_APPROVE_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-						clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_APPROVE_USERAPP[1] + ":" + caught.getMessage( ) );
+						clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_APPROVE_USERAPP[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+						clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_APPROVE_USERAPP[lan] + ":" + caught.getMessage( ) );
 						}
 						@Override
 						public void onSuccess(Void result) {
 						// TODO Auto-generated method stub
-						clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_APPROVE_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-						clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_APPROVE_USERAPP[1]);
+						clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_APPROVE_USERAPP[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+						clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_APPROVE_USERAPP[lan]);
 
 						reloadCurrentRange();
 						updateUserAppCountInfo();
@@ -293,20 +305,20 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 	    	
 	    	apps.add(app);
 	    }
-	    
+	    final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 	    this.clientFactory.getBackendService().modifyUserApp(clientFactory.getLocalSession().getSession(), apps, 
 					new AsyncCallback<Void>() {
 						@Override
 						public void onFailure(Throwable caught) {
 						// TODO Auto-generated method stub
-						clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_REJECT_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-						clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_REJECT_USERAPP[1] + ":" + caught.getMessage( ) );
+						clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_REJECT_USERAPP[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+						clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_REJECT_USERAPP[lan] + ":" + caught.getMessage( ) );
 						}
 						@Override
 						public void onSuccess(Void result) {
 						// TODO Auto-generated method stub
-						clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_REJECT_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-						clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_REJECT_USERAPP[1]);
+						clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_REJECT_USERAPP[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+						clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_REJECT_USERAPP[lan]);
 						
 						reloadCurrentRange();
 						updateUserAppCountInfo();
@@ -322,6 +334,7 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 	  int userId = this.clientFactory.getSessionData().getLoginUser().getUserId();
 	  userApp.setUserId(userId);
 	  
+	  final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 	  this.clientFactory.getBackendService().addUserApp(clientFactory.getLocalSession().getSession(), 
 			  											userApp,
 			  											new AsyncCallback<Void>() {
@@ -329,14 +342,14 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 	        @Override
 	        public void onFailure(Throwable caught) {
 		        // TODO Auto-generated method stub
-	        	clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_ADD_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-	    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_ADD_USERAPP[1] + ":" + caught.getMessage( ) );
+	        	clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_ADD_USERAPP[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+	    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_ADD_USERAPP[lan] + ":" + caught.getMessage( ) );
 	        }
 			@Override
 			public void onSuccess(Void result) {
 				// TODO Auto-generated method stub
-				clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_ADD_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-	    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_ADD_USERAPP[1]);
+				clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_ADD_USERAPP[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+	    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_ADD_USERAPP[lan]);
 	    		
 	    		reloadCurrentRange();
 	    		updateUserAppCountInfo();
@@ -354,20 +367,21 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 	  for ( SearchResultRow row : currentSelected ) {
 	      ids.add( row.getField( 0 ) );
 	  }
-	    
+	  
+	  final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 	  clientFactory.getBackendService().deleteUserApp(clientFactory.getLocalSession().getSession(), ids,
 								new AsyncCallback<Void>() {
 									@Override
 									public void onFailure(Throwable caught) {
 									// TODO Auto-generated method stub
-										clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_DEL_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-										clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_DEL_USERAPP[1] + ":" + caught.getMessage( ) );
+										clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_DEL_USERAPP[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+										clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_DEL_USERAPP[lan] + ":" + caught.getMessage( ) );
 									}
 									@Override
 									public void onSuccess(Void result) {
 									// TODO Auto-generated method stub
-										clientFactory.getShellView( ).getFooterView().showStatus( StatusType.NONE, FOOTERVIEW_DEL_USERAPP[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-										clientFactory.getShellView( ).getLogView().log( LogType.ERROR, FOOTERVIEW_DEL_USERAPP[1]);
+										clientFactory.getShellView( ).getFooterView().showStatus( StatusType.NONE, FOOTERVIEW_DEL_USERAPP[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+										clientFactory.getShellView( ).getLogView().log( LogType.ERROR, FOOTERVIEW_DEL_USERAPP[lan]);
 										
 										reloadCurrentRange();
 										updateUserAppCountInfo();

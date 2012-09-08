@@ -542,6 +542,7 @@ public class UserDBProcWrapper {
 		append(DBTableColName.USER.EMAIL).append(", ").
 		append(DBTableColName.USER.TYPE).append(", ").
 		append(DBTableColName.USER.STATE).append(", ").
+		append(DBTableColName.USER.REG_STATE).append(", ").
 		append(DBTableColName.USER.GROUP_ID).append(", ").
 		append(DBTableColName.USER.ACCOUNT_ID).append(") VALUES (null, ");
 		
@@ -559,13 +560,16 @@ public class UserDBProcWrapper {
 		str.append("', '");
 		
 		str.append(user.getEmail());
-		str.append("', '");
+		str.append("', ");
 		
 		str.append(user.getType().ordinal());
-		str.append("', '");
+		str.append(", ");
 		
 		str.append(user.getState().ordinal());
-		str.append("', ");
+		str.append(", ");
+		
+		str.append(user.getRegStatus().ordinal());
+		str.append(", ");
 		
 		int groupId = user.getGroupId();
 		
@@ -603,9 +607,13 @@ public class UserDBProcWrapper {
 		append(user.getEmail()).
 		append("', ").
 		
-		append(DBTableColName.USER.TYPE).append(" = '").
+		append(DBTableColName.USER.TYPE).append(" = ").
 		append(user.getType().ordinal()).
-		append("', ").
+		append(", ").
+		
+		append(DBTableColName.USER.STATE).append(" = ").
+		append(user.getType().ordinal()).
+		append(", ").
 		
 		append(DBTableColName.USER.ACCOUNT_ID).append(" = '").
 		append(user.getAccountId()).

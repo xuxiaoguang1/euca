@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.AccountPlace;
+import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.SearchResult;
@@ -105,7 +106,8 @@ public class AccountActivity extends AbstractSearchActivity
 
   @Override
   protected String getTitle( ) {
-    return TITLE[1];
+	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+	  return TITLE[lan];
   }
 
   @Override
@@ -149,7 +151,8 @@ public class AccountActivity extends AbstractSearchActivity
     
   		ConfirmationView dialog = this.clientFactory.getConfirmationView( );
   		dialog.setPresenter( this );
-  		dialog.display( DELETE_ACCOUNTS_CAPTION[1], DELETE_ACCOUNTS_SUBJECT[1], currentSelected, new ArrayList<Integer>( Arrays.asList( 0, 1 ) ) );
+  		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+  		dialog.display( DELETE_ACCOUNTS_CAPTION[lan], DELETE_ACCOUNTS_SUBJECT[lan], currentSelected, new ArrayList<Integer>( Arrays.asList( 0, 1 ) ) );
   }
   
 	@Override
@@ -161,7 +164,8 @@ public class AccountActivity extends AbstractSearchActivity
 		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
 		confirmView.setPresenter(this);
 	  
-		confirmView.display(RESUME_ACCOUNTS_CAPTION[1], RESUME_ACCOUNTS_SUBJECT[1]);
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		confirmView.display(RESUME_ACCOUNTS_CAPTION[lan], RESUME_ACCOUNTS_SUBJECT[lan]);
   }
   
 	@Override
@@ -173,7 +177,8 @@ public class AccountActivity extends AbstractSearchActivity
 		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
 		confirmView.setPresenter(this);
 	  
-		confirmView.display(PAUSE_ACCOUNTS_CAPTION[1], PAUSE_ACCOUNTS_SUBJECT[1]);
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		confirmView.display(PAUSE_ACCOUNTS_CAPTION[lan], PAUSE_ACCOUNTS_SUBJECT[lan]);
 	}
   
 	@Override
@@ -185,23 +190,26 @@ public class AccountActivity extends AbstractSearchActivity
 		ConfirmationView confirmView = this.clientFactory.getConfirmationView();
 		confirmView.setPresenter(this);
 	  
-		confirmView.display(BAN_ACCOUNTS_CAPTION[1], BAN_ACCOUNTS_SUBJECT[1]);
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		confirmView.display(BAN_ACCOUNTS_CAPTION[lan], BAN_ACCOUNTS_SUBJECT[lan]);
 	}
   
 
 	@Override
 	public void confirm( String subject ) {
-		if ( DELETE_ACCOUNTS_SUBJECT[1].equals( subject ) ) {
+		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		
+		if ( DELETE_ACCOUNTS_SUBJECT[lan].equals( subject ) ) {
 			doDeleteAccounts( );
 		}
-		else if (RESUME_ACCOUNTS_SUBJECT[1].equals(subject)) {
-			doUpdateUserStateByAccounts(ACCOUNT_ACTIVITY_FOOTVIEW_RESUME_ACCOUNT[1], EnumState.NORMAL);
+		else if (RESUME_ACCOUNTS_SUBJECT[lan].equals(subject)) {
+			doUpdateUserStateByAccounts(ACCOUNT_ACTIVITY_FOOTVIEW_RESUME_ACCOUNT[lan], EnumState.NORMAL);
 		}
-		else if (PAUSE_ACCOUNTS_SUBJECT[1].equals(subject)) {
-			doUpdateUserStateByAccounts(ACCOUNT_ACTIVITY_FOOTVIEW_PAUSE_ACCOUNT[1], EnumState.PAUSE);
+		else if (PAUSE_ACCOUNTS_SUBJECT[lan].equals(subject)) {
+			doUpdateUserStateByAccounts(ACCOUNT_ACTIVITY_FOOTVIEW_PAUSE_ACCOUNT[lan], EnumState.PAUSE);
 		}
-		else if (BAN_ACCOUNTS_SUBJECT[1].equals(subject)) {
-			doUpdateUserStateByAccounts(ACCOUNT_ACTIVITY_FOOTVIEW_BAN_ACCOUNT[1], EnumState.BAN);
+		else if (BAN_ACCOUNTS_SUBJECT[lan].equals(subject)) {
+			doUpdateUserStateByAccounts(ACCOUNT_ACTIVITY_FOOTVIEW_BAN_ACCOUNT[lan], EnumState.BAN);
 		}
 	}
   
@@ -240,6 +248,8 @@ public class AccountActivity extends AbstractSearchActivity
 		for ( SearchResultRow row : currentSelected ) {
 			ids.add( row.getField(0) );
 		}
+		
+		final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 	  
 		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, footerViewMsg + "...", 0 );
 		clientFactory.getBackendService( ).updateAccountState( clientFactory.getLocalSession( ).getSession( ), 
@@ -266,7 +276,8 @@ public class AccountActivity extends AbstractSearchActivity
  
 	private boolean selectionIsValid() {
 		if ( currentSelected == null || currentSelected.size( ) < 1 ) {
-			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, ACCOUNT_ACTIVITY_NO_SELECTION[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+			int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, ACCOUNT_ACTIVITY_NO_SELECTION[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 			return false;
 		}
 	  
@@ -275,7 +286,8 @@ public class AccountActivity extends AbstractSearchActivity
 	
 	private boolean oneSelectionIsValid() {
 		if ( currentSelected == null || currentSelected.size( ) != 1 ) {
-			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, ACCOUNT_ACTIVITY_ONE_SELECTION[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+			int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, ACCOUNT_ACTIVITY_ONE_SELECTION[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 			return false;
 		}
 	  
@@ -326,13 +338,13 @@ public class AccountActivity extends AbstractSearchActivity
 		      @Override
 		      public void onFailure( Throwable caught ) {
 		    	  ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-		        
+		    	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 		    	  if (account.getId() == 0) {
 		    		  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Failed to create account", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 		    		  clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Creating account " + account.getName() + " failed: " + caught.getMessage( ) );
 		    	  }
 		    	  else {
-		    		  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, ACCOUNT_ACTIVITY_FOOTERVIEW_MODIFY_GROUP_FAIL[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		    		  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, ACCOUNT_ACTIVITY_FOOTERVIEW_MODIFY_GROUP_FAIL[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 		    		  clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to modify account " + account.getName()  + ": " + caught.getMessage( ) );
 			      }
 		      }
@@ -344,7 +356,8 @@ public class AccountActivity extends AbstractSearchActivity
 		    		  clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "New account " + account.getName() + " created" );
 		    	  }
 		    	  else {
-		    		  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, ACCOUNT_ACTIVITY_FOOTERVIEW_MODIFY_GROUP_SUCCEED[1], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		    		  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		    		  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, ACCOUNT_ACTIVITY_FOOTERVIEW_MODIFY_GROUP_SUCCEED[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
 		    		  clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "Modified account " + account.getName());
 		    	  }
 		    	  

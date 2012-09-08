@@ -5,6 +5,7 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.server.WebSessionManager;
 import com.eucalyptus.webui.server.dictionary.EucalyptusServiceExceptionMsg;
 import com.eucalyptus.webui.shared.user.EnumState;
+import com.eucalyptus.webui.shared.user.EnumUserRegStatus;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserInfo;
 
@@ -16,6 +17,9 @@ public class AuthenticateUserLogin {
 				
 				if (!userInfo.getPwd().equals(pwd))
 					throw new EucalyptusServiceException(EucalyptusServiceExceptionMsg.PWD_ERROR[1]); 
+				
+				if (userInfo.getRegStatus() != EnumUserRegStatus.APPROVED)
+					throw new EucalyptusServiceException(EucalyptusServiceExceptionMsg.USER_NOT_ACTIVE[1]);
 				
 				if (!userCanLogin(userAndState))
 					throw new EucalyptusServiceException(EucalyptusServiceExceptionMsg.USER_STATE_ERROR[1]);

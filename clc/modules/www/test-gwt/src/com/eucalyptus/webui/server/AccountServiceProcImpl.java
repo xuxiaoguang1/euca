@@ -1,10 +1,13 @@
 package com.eucalyptus.webui.server;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.servlet.ServletException;
 
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
@@ -15,17 +18,20 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
+import com.eucalyptus.webui.server.mail.MailSenderInfo;
 import com.eucalyptus.webui.server.user.AccountDBProcWrapper;
 import com.eucalyptus.webui.server.user.AccountSyncException;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
+import com.eucalyptus.webui.shared.query.QueryType;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
+import com.eucalyptus.webui.shared.user.EnumUserRegStatus;
 import com.eucalyptus.webui.shared.user.EnumUserType;
 import com.eucalyptus.webui.shared.user.UserInfo;
 
 public class AccountServiceProcImpl {
 	
-	public void createAccount(AccountInfo account)
+	public void createAccount(AccountInfo account, boolean skipRegistration)
 	  		throws EucalyptusServiceException {
 		
 		if ( account == null ) {
@@ -47,10 +53,15 @@ public class AccountServiceProcImpl {
 				user.setState(EnumState.NORMAL);
 				user.setType(EnumUserType.ADMIN);
 				
+				if (skipRegistration)
+					user.setRegStatus(EnumUserRegStatus.APPROVED);
+				else
+					user.setRegStatus(EnumUserRegStatus.REGISTERED);
+				
 				userServiceProc.createUser(newAccountId, user);
 			}
 		} catch (AccountSyncException e) {
-			// TODO Auto-generated catch block
+			// TODO Auto-generated catch blockion
 			e.printStackTrace();
 			throw new EucalyptusServiceException("Failed to create account");
 		}
@@ -112,7 +123,6 @@ public class AccountServiceProcImpl {
 	  public void updateAccountState( ArrayList<String> ids, EnumState state ) throws EucalyptusServiceException {
 		  try {
 			accountDBProc.updateAccountState(ids, state);
-			
 		} catch (AccountSyncException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -213,6 +223,8 @@ public class AccountServiceProcImpl {
 	  }		
 	  
 	  private AccountDBProcWrapper accountDBProc = new AccountDBProcWrapper();
+	  
+	  ServletUtils servletUtils = new ServletUtils();
 	  
 	  private static List<SearchResultRow> DATA = null;
 	

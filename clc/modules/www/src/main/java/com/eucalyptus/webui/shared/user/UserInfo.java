@@ -77,6 +77,13 @@ public class UserInfo implements java.io.Serializable {
 		this.state = state;
 	}
 	
+	public EnumUserRegStatus getRegStatus() {
+		return regStatus;
+	}
+	public void setRegStatus(EnumUserRegStatus regStatus) {
+		this.regStatus = regStatus;
+	}
+	
 	public int getGroupId() {
 		return groupId;
 	}
@@ -102,6 +109,8 @@ public class UserInfo implements java.io.Serializable {
 	private EnumUserType type;
 	
 	private EnumState state;
+	
+	private EnumUserRegStatus regStatus;
 	
 	private int groupId;
 	private int accountId;
