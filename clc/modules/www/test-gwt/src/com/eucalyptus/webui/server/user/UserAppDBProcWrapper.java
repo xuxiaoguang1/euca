@@ -2,21 +2,23 @@ package com.eucalyptus.webui.server.user;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.DBTableName;
-import com.eucalyptus.webui.shared.user.EnumUserAppResult;
-import com.eucalyptus.webui.shared.user.EnumUserAppState;
+import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class UserAppDBProcWrapper {
-	public void addUserApp(UserApp userApp) throws UserSyncException {
+	public void addUserApp(UserApp userApp) throws UserAppSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		String sql = addUserAppSql(userApp);
 		
@@ -25,11 +27,11 @@ public class UserAppDBProcWrapper {
 		try {
 			dbProc.update(sql);
 		} catch (SQLException e) {
-			throw new UserSyncException ("Database fails");
+			throw new UserAppSyncException ("Database fails");
 		}
 	}
 	
-	public void updateUserApp(UserApp userApp) throws UserSyncException {
+	public void updateUserApp(UserApp userApp) throws UserAppSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		String sql = updateUserAppSql(userApp);
 		
@@ -38,21 +40,123 @@ public class UserAppDBProcWrapper {
 		try {
 			dbProc.update(sql);
 		} catch (SQLException e) {
-			throw new UserSyncException ("Database fails");
+			throw new UserAppSyncException ("Database fails");
 		}
 	}
 	
-	public ResultSetWrapper queryUserApp(int accountId, int userId, EnumUserAppState state) throws UserSyncException {
+	public UserApp lookupUserApp(int userAppId) throws UserAppSyncException {
+		DBProcWrapper dbProc = DBProcWrapper.Instance();
+		
+		StringBuilder sql = lookupUserAppSql(userAppId);
+				
+		//EnumUserAppStatus.DEFAULT means that query all the user applications
+		System.out.println(sql.toString());
+		
+		ResultSetWrapper rsw = null;
+		try {
+			rsw = dbProc.query(sql.toString());
+			ResultSet rs = rsw.getResultSet();
+			
+			if (!rs.wasNull()) {
+				rs.last();
+				
+				assert(rs.getRow() <= 1);
+				
+				if (rs.getRow() ==0) {
+					rsw.close();
+					throw new UserAppSyncException("User app not existed");
+				}
+				else
+				{	
+					int id = Integer.valueOf(rs.getString(DBTableColName.USER_APP.ID));
+					String appTimeStr = rs.getString(DBTableColName.USER_APP.APP_TIME);
+					String startingTimeStr = rs.getString(DBTableColName.USER_APP.SRV_STARTINGTIME);
+					String endingTimeStr = rs.getString(DBTableColName.USER_APP.SRV_ENDINGTIME);
+					String state = rs.getString(DBTableColName.USER_APP.STATUS);
+					String delStr = rs.getString(DBTableColName.USER_APP.DEL);
+					String keyPair = rs.getString(DBTableColName.USER_APP.KEYPAIR);
+					String securityGroup = rs.getString(DBTableColName.USER_APP.SECURITY_GROUP);
+					String comment = rs.getString(DBTableColName.USER_APP.COMMENT);
+					String userIdStr = rs.getString(DBTableColName.USER_APP.USER_ID);
+					String tempelateIdStr = rs.getString(DBTableColName.USER_APP.TEMPLATE_ID);
+					String vitIdStr = rs.getString(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID);
+					String euca_vi_key = rs.getString(DBTableColName.USER_APP.EUCA_VI_KEY);
+					
+					int del = 0;
+					int userId = 0;
+					int templateId = 0;
+					int vitId = 0;
+					
+					EnumUserAppStatus userAppRegStatus = EnumUserAppStatus.NONE;
+					
+					Date appTime = null;
+					Date srvStartingTime = null;
+					Date srvEndingTime = null;
+					try {
+						if (!Strings.isNullOrEmpty(appTimeStr))
+								appTime = this.dateformat.parse(appTimeStr);
+						
+						if (!Strings.isNullOrEmpty(startingTimeStr))
+							srvStartingTime = this.dateformat.parse(startingTimeStr);
+						
+						if (!Strings.isNullOrEmpty(endingTimeStr))
+							srvEndingTime = this.dateformat.parse(endingTimeStr);
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					if (!Strings.isNullOrEmpty(state))
+						userAppRegStatus = EnumUserAppStatus.values()[Integer.valueOf(state)];
+					
+					if (!Strings.isNullOrEmpty(delStr))
+						del = Integer.valueOf(delStr);
+					
+					if (!Strings.isNullOrEmpty(userIdStr))
+						userId = Integer.valueOf(userIdStr);
+					
+					if (!Strings.isNullOrEmpty(tempelateIdStr))
+						templateId = Integer.valueOf(tempelateIdStr);
+					
+					if (!Strings.isNullOrEmpty(vitIdStr))
+						vitId = Integer.valueOf(vitIdStr);
+					
+					rsw.close();
+					
+					UserApp userApp = new UserApp(id, appTime, userAppRegStatus, del, comment, 
+							keyPair, securityGroup, userId, templateId, vitId, srvStartingTime, srvEndingTime, euca_vi_key);
+					
+					return userApp; 
+				}
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new UserAppSyncException("Fail to query user apps");
+		}
+		finally {
+			try {
+				rsw.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	public ResultSetWrapper queryUserApp(int accountId, int userId, EnumUserAppStatus state) throws UserAppSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
 		StringBuilder sql = userAppAccountUserViewSql();
 				
-		//EnumUserAppState.DEFAULT means that query all the user applications
-		if (state != EnumUserAppState.NONE) {
+		//EnumUserAppStatus.DEFAULT means that query all the user applications
+		if (state != EnumUserAppStatus.NONE) {
 			sql.append(" AND ").
 			append(DBTableName.USER_APP).
 			append(".").
-			append(DBTableColName.USER_APP.STATE).
+			append(DBTableColName.USER_APP.STATUS).
 			append(" = ").
 			append(state.ordinal());
 		}
@@ -84,11 +188,11 @@ public class UserAppDBProcWrapper {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new UserSyncException("Fail to query user apps");
+			throw new UserAppSyncException("Fail to query user apps");
 		}
 	}
 	
-	public void delUserApps(ArrayList<String> ids) throws UserSyncException {
+	public void delUserApps(ArrayList<String> ids) throws UserAppSyncException {
 		if (ids == null || ids.size() == 0)
 			return;
 		
@@ -101,11 +205,11 @@ public class UserAppDBProcWrapper {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new UserSyncException("Database fails");
+			throw new UserAppSyncException("Database fails");
 		}
 	}
 	
-	public void updateUserState(ArrayList<String> ids, EnumUserAppState state) throws UserSyncException {
+	public void updateUserState(ArrayList<String> ids, EnumUserAppStatus state) throws UserAppSyncException {
 		if (ids == null || ids.size() == 0)
 			return;
 		
@@ -118,11 +222,11 @@ public class UserAppDBProcWrapper {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new UserSyncException("Database fails");
+			throw new UserAppSyncException("Database fails");
 		}
 	}
 	
-	public ArrayList<UserAppStateCount> countUserAppByState(int accountId, int userId) throws UserSyncException {
+	public ArrayList<UserAppStateCount> countUserAppByState(int accountId, int userId) throws UserAppSyncException {
 		String sql = countUserAppByStateSql(accountId, userId);
 		
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
@@ -136,11 +240,11 @@ public class UserAppDBProcWrapper {
             	
             	while (rs.next()) { 
             		
-            		EnumUserAppState appState = EnumUserAppState.NONE;
+            		EnumUserAppStatus appState = EnumUserAppStatus.NONE;
 					
-					String appStateStr = rs.getString(DBTableColName.USER_APP.STATE);
+					String appStateStr = rs.getString(DBTableColName.USER_APP.STATUS);
 					if (!Strings.isNullOrEmpty(appStateStr))
-						appState = EnumUserAppState.values()[Integer.valueOf(appStateStr)];
+						appState = EnumUserAppStatus.values()[Integer.valueOf(appStateStr)];
 					
 					int count = 0;
 					String countStr = rs.getString("count");
@@ -164,7 +268,7 @@ public class UserAppDBProcWrapper {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			throw new UserSyncException("Database fails");
+			throw new UserAppSyncException("Database fails");
 		}
 	}
 	
@@ -176,8 +280,7 @@ public class UserAppDBProcWrapper {
 		append(DBTableColName.USER_APP.APP_TIME).append(", ").
 		append(DBTableColName.USER_APP.SRV_STARTINGTIME).append(", ").
 		append(DBTableColName.USER_APP.SRV_ENDINGTIME).append(", ").
-		append(DBTableColName.USER_APP.STATE).append(", ").
-		append(DBTableColName.USER_APP.RESULT).append(", ").
+		append(DBTableColName.USER_APP.STATUS).append(", ").
 		append(DBTableColName.USER_APP.DEL).append(", ").
 		append(DBTableColName.USER_APP.KEYPAIR).append(", ").
 		append(DBTableColName.USER_APP.SECURITY_GROUP).append(", ").
@@ -197,10 +300,7 @@ public class UserAppDBProcWrapper {
 		str.append(dateformat.format(userApp.getSrvEndingTime()).toString());
 		str.append("', ");
 		
-		str.append(userApp.getState().ordinal());
-		str.append(", ");
-		
-		str.append(userApp.getResult().ordinal());
+		str.append(userApp.getStatus().ordinal());
 		str.append(", ");
 		
 		str.append(userApp.getDelState());
@@ -246,15 +346,9 @@ public class UserAppDBProcWrapper {
 	private String updateUserAppSql(UserApp userApp) {
 		StringBuilder str = new StringBuilder("UPDATE ").append(DBTableName.USER_APP).append(" SET ");
 		
-		if (userApp.getState() != EnumUserAppState.NONE) {
-			str.append(DBTableColName.USER_APP.STATE).append(" = '").
-			append(userApp.getState().ordinal()).
-			append("', ");
-		}
-		
-		if (userApp.getResult() != EnumUserAppResult.NONE) {
-			str.append(DBTableColName.USER_APP.RESULT).append(" = '").
-			append(userApp.getResult().ordinal()).
+		if (userApp.getStatus() != EnumUserAppStatus.NONE) {
+			str.append(DBTableColName.USER_APP.STATUS).append(" = '").
+			append(userApp.getStatus().ordinal()).
 			append("', ");
 		}
 		
@@ -306,6 +400,12 @@ public class UserAppDBProcWrapper {
 			append(", ");
 		}
 		
+		if (userApp.getEucaVMInstanceKey() != null) {
+			str.append(DBTableColName.USER_APP.EUCA_VI_KEY).append(" = '").
+			append(userApp.getEucaVMInstanceKey()).
+			append("', ");
+		}
+		
 		if (str.length() > 2)
 			str.delete(str.length() -2, str.length());
 		
@@ -313,6 +413,23 @@ public class UserAppDBProcWrapper {
 		append(userApp.getUAId());
 		
 		return str.toString();
+	}
+	
+	private StringBuilder lookupUserAppSql(int userAppId) {
+		StringBuilder sql = new StringBuilder("SELECT * ").
+				
+				append(" FROM ").
+				append(DBTableName.USER_APP).
+				
+				append(" WHERE ").
+				append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.DEL).
+				append(" = 0 ").
+				append(" AND ").
+				append(DBTableColName.USER_APP.ID).
+				append(" = ").
+				append(userAppId);
+		
+		return sql;
 	}
 	
 	private StringBuilder userAppAccountUserViewSql() {
@@ -387,12 +504,12 @@ public class UserAppDBProcWrapper {
 		return sql.toString();
 	}
 	
-	private String updateUserAppStateSql(ArrayList<String> ids, EnumUserAppState state) {
+	private String updateUserAppStateSql(ArrayList<String> ids, EnumUserAppStatus state) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("UPDATE ").
 		append(DBTableName.USER_APP).
 		append(" SET ").
-		append(DBTableColName.USER_APP.STATE).
+		append(DBTableColName.USER_APP.STATUS).
 		append(" = ").
 		append(state.ordinal()).
 		append(" WHERE ");
@@ -414,7 +531,7 @@ public class UserAppDBProcWrapper {
 	private String countUserAppByStateSql(int accountId, int userId) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT ").
-		append(DBTableColName.USER_APP.STATE).append(", ").
+		append(DBTableColName.USER_APP.STATUS).append(", ").
 		append(" COUNT(*) AS count").
 		append(" FROM ").
 		append("( ").
@@ -442,7 +559,7 @@ public class UserAppDBProcWrapper {
 			sql.append(" AND ").append(DBTableName.USER).append(".").append(DBTableColName.USER_APP.USER_ID).append(" = ").append(userId);
 		
 		sql.append(" GROUP BY ").
-		append(DBTableColName.USER_APP.STATE);
+		append(DBTableColName.USER_APP.STATUS);
 				
 		System.out.println(sql);
 		

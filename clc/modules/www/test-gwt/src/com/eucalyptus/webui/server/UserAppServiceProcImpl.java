@@ -19,14 +19,11 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.user.UserAppDBProcWrapper;
-import com.eucalyptus.webui.server.user.UserSyncException;
+import com.eucalyptus.webui.server.user.UserAppSyncException;
 import com.eucalyptus.webui.server.vm.VITDBProcWrapper;
-import com.eucalyptus.webui.server.vm.VITSyncException;
-import com.eucalyptus.webui.server.vm.VmImageType;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.resource.Template;
-import com.eucalyptus.webui.shared.user.EnumUserAppResult;
-import com.eucalyptus.webui.shared.user.EnumUserAppState;
+import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
@@ -35,8 +32,7 @@ public class UserAppServiceProcImpl {
 	  
 	  public void addUserApp(Session session, UserApp userApp) throws EucalyptusServiceException {
 		  
-		  userApp.setState(EnumUserAppState.TOSOLVE);
-		  userApp.setResult(EnumUserAppResult.NONE);
+		  userApp.setStatus(EnumUserAppStatus.APPLYING);
 		  userApp.setDelState(0);
 		  
 		  Calendar cal = Calendar.getInstance();
@@ -50,7 +46,7 @@ public class UserAppServiceProcImpl {
 			  
 			  userAppDBProc.addUserApp(userApp);
 		  }
-		  catch (UserSyncException e) {
+		  catch (UserAppSyncException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				throw new EucalyptusServiceException("Failed to add user app");
@@ -65,9 +61,9 @@ public class UserAppServiceProcImpl {
 	   * @param range
 	   * @return
 	   * @throws EucalyptusServiceException
-	 * @throws UserSyncException 
+	 * @throws UserAppSyncException 
 	   */
-	  public SearchResult lookupUserApp( LoginUserProfile curUser, String search, SearchRange range, EnumUserAppState state ) throws EucalyptusServiceException {
+	  public SearchResult lookupUserApp( LoginUserProfile curUser, String search, SearchRange range, EnumUserAppStatus state ) throws EucalyptusServiceException {
 		  boolean isRootAdmin = curUser.isSystemAdmin();
 		  
 		  ResultSetWrapper rs;
@@ -78,7 +74,7 @@ public class UserAppServiceProcImpl {
 			  else {		  
 				  rs = userAppDBProc.queryUserApp(curUser.getAccountId(), curUser.getUserId(), state);
 			  }
-		  } catch (UserSyncException e) {
+		  } catch (UserAppSyncException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				throw new EucalyptusServiceException("Fail to query user apps");
@@ -92,7 +88,7 @@ public class UserAppServiceProcImpl {
 	  public void deleteUserApps(ArrayList<String> ids ) throws EucalyptusServiceException {
 		  try {
 			  userAppDBProc.delUserApps(ids);
-		} catch (UserSyncException e) {
+		} catch (UserAppSyncException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new EucalyptusServiceException("Failed to delete user apps");
@@ -102,35 +98,50 @@ public class UserAppServiceProcImpl {
 	  public void updateUserApp(UserApp userApp) throws EucalyptusServiceException {
 		  try {
 			  userAppDBProc.updateUserApp(userApp);
-		} catch (UserSyncException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new EucalyptusServiceException("Failed to update user apps");
-		}
+		  } catch (UserAppSyncException e) {
+			  // TODO Auto-generated catch block
+			  e.printStackTrace();
+			  throw new EucalyptusServiceException("Failed to update user apps");
+		  }
 	  }
-	  
-	  public void runVMInstance(Session session, UserApp userApp) throws EucalyptusServiceException {
-		  int templateId = userApp.getTemplateId();
-		  int vitId = userApp.getVmIdImageTypeId();
-		  
-		  String keyPair = userApp.getKeyPair();
-		  String securityGroup = userApp.getSecurityGroup();
-		  
-		  String euca_vit_id = null;
-		  
+	  /**
+	   * @param session
+	   * @param userAppId
+	   * @return eucalyptus vm instance key
+	   * @throws EucalyptusServiceException
+	   */
+	  public String runVMInstance(Session session, int userAppId) throws EucalyptusServiceException {
 		  try {
-			  VmImageType vit = this.vitDBProc.lookupVIT(vitId);
-			  if (vit != null)
-				  euca_vit_id = vit.getEucaVITId();
+			  UserApp userApp = this.userAppDBProc.lookupUserApp(userAppId);
+			  
+			  int templateId = userApp.getTemplateId();
+			  
+			  String keyPair = userApp.getKeyPair();
+			  String securityGroup = userApp.getSecurityGroup();
+			  
+//			  String euca_vit_id = null;	  
+//			  VmImageType vit = this.vitDBProc.lookupVIT(vitId);
+//			  if (vit != null)
+//				  euca_vit_id = vit.getEucaVITId();
 			  
 			  Template template = deviceTemDBProc.lookupTemplateByID(session, templateId);
 			  
-			  if (keyPair != null && securityGroup != null && euca_vit_id != null)
-				  EucaServiceWrapper.getInstance().runVM(session, template, keyPair, securityGroup);
+			  if (keyPair != null && securityGroup != null) {
+				  String euca_vi_key = EucaServiceWrapper.getInstance().runVM(session, template, keyPair, securityGroup);
+				  
+				  if (euca_vi_key != null) {
+					  return euca_vi_key;
+				  }
+				  else
+					  throw new EucalyptusServiceException("Failed to get eucalyptus vm instance key");
+			  }
+			  else
+				  throw new EucalyptusServiceException("User's key_pair or security group para error");
 			  
-		  } catch (VITSyncException e) {
-			  // TODO Auto-generated catch block
-			  e.printStackTrace();
+		  } catch (UserAppSyncException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new EucalyptusServiceException("Failed to query user app");
 		  }
 	  }
 	  
@@ -143,7 +154,7 @@ public class UserAppServiceProcImpl {
 			  else
 				  return userAppDBProc.countUserAppByState(curUser.getAccountId(), curUser.getUserId());
 			  
-		} catch (UserSyncException e) {
+		} catch (UserAppSyncException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new EucalyptusServiceException("Failed to update user apps");
@@ -191,8 +202,7 @@ public class UserAppServiceProcImpl {
 					  String appTime = rs.getString(DBTableColName.USER_APP.APP_TIME);
 					  String srvStatingTime = rs.getString(DBTableColName.USER_APP.SRV_STARTINGTIME);
 					  String srvEndingTime = rs.getString(DBTableColName.USER_APP.SRV_ENDINGTIME);
-					  String state = Enum2String.getInstance().getUserAppStateName(rs.getString(DBTableColName.USER_APP.STATE));
-					  String appResult = Enum2String.getInstance().getUserAppResultName(rs.getString(DBTableColName.USER_APP.RESULT));
+					  String state = Enum2String.getInstance().getUserAppStateName(rs.getString(DBTableColName.USER_APP.STATUS));
 					  String comment = rs.getString(DBTableColName.USER_APP.COMMENT);
 					  
 					  String cpu = rs.getString(DBTableColName.TEMPLATE.CPU);
@@ -210,7 +220,7 @@ public class UserAppServiceProcImpl {
 							  										accountName, userName,
 							  										SearchResultFieldDesc.LINK_VALUE[1], SearchResultFieldDesc.LINK_VALUE[1],
 							  										appTime, srvStatingTime, srvEndingTime, 
-							  										state, appResult, comment != null ? comment : "");
+							  										state, comment != null ? comment : "");
 					  
 					  List<String> links = Arrays.asList(null, null, null, null, template, vmImageInfo,	null, null, null, null, null, null);
 					  
@@ -267,7 +277,6 @@ public class UserAppServiceProcImpl {
 	  private static final String[] TABLE_COL_TITLE_SRV_STARTINGTIME = {"Staring Time", "起始时间"};
 	  private static final String[] TABLE_COL_TITLE_SRV_ENDINGTIME = {"Ending Time", "结束时间"};
 	  private static final String[] TABLE_COL_TITLE_STATE = {"Application State", "申请状态"};
-	  private static final String[] TABLE_COL_TITLE_RESULT = {"Examination Result", "审批结果"};
 	  private static final String[] TABLE_COL_TITLE_COMMENT = {"Comment", "备注"};
 	
 	  private static final List<SearchResultFieldDesc> FIELDS_ROOT = Arrays.asList(
@@ -281,7 +290,6 @@ public class UserAppServiceProcImpl {
 				new SearchResultFieldDesc( TABLE_COL_TITLE_SRV_STARTINGTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_SRV_ENDINGTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_RESULT[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_COMMENT[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false )
 				
 			);
@@ -297,7 +305,6 @@ public class UserAppServiceProcImpl {
 				new SearchResultFieldDesc( TABLE_COL_TITLE_SRV_STARTINGTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_SRV_ENDINGTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_RESULT[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_COMMENT[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false )
 			);
 }

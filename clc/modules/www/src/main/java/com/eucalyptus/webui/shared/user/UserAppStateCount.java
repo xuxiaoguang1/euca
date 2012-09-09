@@ -7,15 +7,15 @@ public class UserAppStateCount implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private EnumUserAppState state;
+	private EnumUserAppStatus state;
 	private int count;
 	
-	public void setCountValue(EnumUserAppState state, int count) {
+	public void setCountValue(EnumUserAppStatus state, int count) {
 		this.state = state;
 		this.count = count;
 	}
 	
-	public EnumUserAppState getAppState() {
+	public EnumUserAppStatus getAppState() {
 		return this.state;
 	}
 	public int getCount() {

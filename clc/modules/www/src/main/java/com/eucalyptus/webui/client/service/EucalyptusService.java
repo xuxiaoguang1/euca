@@ -13,7 +13,7 @@ import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
 import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
-import com.eucalyptus.webui.shared.user.EnumUserAppState;
+import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserApp;
@@ -164,7 +164,7 @@ public interface EucalyptusService extends RemoteService {
 	 * @throws EucalyptusServiceException
 	 */
 	SearchResult lookupUserApp(Session session, String search,
-			SearchRange range, EnumUserAppState state)
+			SearchRange range, EnumUserAppStatus state)
 			throws EucalyptusServiceException;
 
 	/**
@@ -900,7 +900,7 @@ public interface EucalyptusService extends RemoteService {
 	 * @param ids
 	 * @throws EucalyptusServiceException
 	 */
-	void modifyUserApp(Session session, ArrayList<UserApp> userApps) throws EucalyptusServiceException;
+	void confirmUserApp(Session session, List<String> userAppId, EnumUserAppStatus userAppState) throws EucalyptusServiceException;
 	
 	/**
 	 * Count user applications.

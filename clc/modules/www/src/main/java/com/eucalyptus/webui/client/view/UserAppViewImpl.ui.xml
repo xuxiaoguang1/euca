@@ -66,18 +66,18 @@
 									</td>
 									<td width="5%">&nbsp;</td>
 									<td width="30%">
-										<g:Anchor styleName="{style.topLinks}" ui:field="labelToSolve" height="35px">待解决申请数量：0</g:Anchor>
+										<g:Anchor styleName="{style.topLinks}" ui:field="labelApplying" height="35px">待解决申请数量：0</g:Anchor>
 									</td>
 									<td width="20%">&nbsp;</td>
 								</tr>
 								<tr>
 									<td width="5%">&nbsp;</td>
 									<td width="30%">
-										<g:Anchor styleName="{style.topLinks}" ui:field="labelSolved" height="35px">已处理申请数量：0</g:Anchor>
+										<g:Anchor styleName="{style.topLinks}" ui:field="labelApproved" height="35px">已批准申请数量：0</g:Anchor>
 									</td>
 									<td width="5%">&nbsp;</td>
 									<td width="30%">
-										<g:Anchor styleName="{style.topLinks}" ui:field="labelSolving" height="35px"><font color="blue">正处理申请数量：0</font>></g:Anchor>
+										<g:Anchor styleName="{style.topLinks}" ui:field="labelRejected" height="35px"><font color="blue">已拒绝申请数量：0</font>></g:Anchor>
 									</td>
 									<td width="20%">&nbsp;</td>
 								</tr>

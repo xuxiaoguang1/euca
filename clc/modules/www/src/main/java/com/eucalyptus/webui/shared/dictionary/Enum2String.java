@@ -2,8 +2,7 @@ package com.eucalyptus.webui.shared.dictionary;
 
 import java.util.ArrayList;
 import com.eucalyptus.webui.shared.user.EnumState;
-import com.eucalyptus.webui.shared.user.EnumUserAppResult;
-import com.eucalyptus.webui.shared.user.EnumUserAppState;
+import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.EnumUserType;
 
 public class Enum2String {
@@ -39,13 +38,8 @@ public class Enum2String {
 	}
 	
 	public String getUserAppStateName(String integerStr) {
-		EnumUserAppState userAppState = EnumUserAppState.values()[Integer.valueOf(integerStr)];
+		EnumUserAppStatus userAppState = EnumUserAppStatus.values()[Integer.valueOf(integerStr)];
 		return getName(userAppState);
-	}
-	
-	public String getUserAppResultName(String integerStr) {
-		EnumUserAppResult userAppResult = EnumUserAppResult.values()[Integer.valueOf(integerStr)];
-		return getName(userAppResult);
 	}
 	
 	public String getActiveState(boolean active) {
@@ -85,17 +79,9 @@ public class Enum2String {
 		return null;
 	}
 	
-	private String getName(EnumUserAppState userAppState) {
-		for (Pair<EnumUserAppState, String> ele : this.enumUserAppState2String) {
+	private String getName(EnumUserAppStatus userAppState) {
+		for (Pair<EnumUserAppStatus, String> ele : this.EnumUserAppStatus2String) {
 			if (ele.first == userAppState)
-				return ele.second;
-		}
-		return null;
-	}
-	
-	private String getName(EnumUserAppResult userAppResult) {
-		for (Pair<EnumUserAppResult, String> ele : this.enumUserAppResult2String) {
-			if (ele.first == userAppResult)
 				return ele.second;
 		}
 		return null;
@@ -111,21 +97,16 @@ public class Enum2String {
 		enumState2String.add(new Pair(EnumState.PAUSE, STATE_PAUSE_NAME[1]));
 		enumState2String.add(new Pair(EnumState.BAN, STATE_BAN_NAME[1]));
 		
-		enumUserAppState2String.add(new Pair(EnumUserAppState.NONE, USER_APP_STATE_NONE[1]));
-		enumUserAppState2String.add(new Pair(EnumUserAppState.SOLVING, USER_APP_STATE_SOLVING[1]));
-		enumUserAppState2String.add(new Pair(EnumUserAppState.SOLVED, USER_APP_STATE_SOLVED[1]));
-		enumUserAppState2String.add(new Pair(EnumUserAppState.TOSOLVE, USER_APP_STATE_TOSOLVE[1]));
-		
-		enumUserAppResult2String.add(new Pair(EnumUserAppResult.NONE, USER_APP_RESULT_NONE[1]));
-		enumUserAppResult2String.add(new Pair(EnumUserAppResult.APPROVED, USER_APP_RESULT_APPROVED[1]));
-		enumUserAppResult2String.add(new Pair(EnumUserAppResult.REJECTED, USER_APP_RESULT_REJECTED[1]));
+		EnumUserAppStatus2String.add(new Pair(EnumUserAppStatus.NONE, USER_APP_STATE_NONE[1]));
+		EnumUserAppStatus2String.add(new Pair(EnumUserAppStatus.APPLYING, USER_APP_STATE_SOLVING[1]));
+		EnumUserAppStatus2String.add(new Pair(EnumUserAppStatus.APPROVED, USER_APP_STATE_SOLVED[1]));
+		EnumUserAppStatus2String.add(new Pair(EnumUserAppStatus.REJECTED, USER_APP_STATE_TOSOLVE[1]));
 	}
 	
 	private final ArrayList<Pair<EnumUserType, String>> enumUserType2String = new ArrayList<Pair<EnumUserType, String>>();
 	private final ArrayList<Pair<EnumState, String>> enumState2String = new ArrayList<Pair<EnumState, String>>();
 	
-	private final ArrayList<Pair<EnumUserAppState, String>> enumUserAppState2String = new ArrayList<Pair<EnumUserAppState, String>>();
-	private final ArrayList<Pair<EnumUserAppResult, String>> enumUserAppResult2String = new ArrayList<Pair<EnumUserAppResult, String>>();
+	private final ArrayList<Pair<EnumUserAppStatus, String>> EnumUserAppStatus2String = new ArrayList<Pair<EnumUserAppStatus, String>>();
 	
 	private static Enum2String enum2String= null;
 	
@@ -148,13 +129,9 @@ public class Enum2String {
 	private final String[] USER_KEY_NON_REVOKED = {"false", "否"};
 	
 	private final String[] USER_APP_STATE_NONE = {"None", "未初始化"};
-	private final String[] USER_APP_STATE_SOLVING = {"Solving", "处理中"};
-	private final String[] USER_APP_STATE_SOLVED = {"Solved", "处理完毕"};
-	private final String[] USER_APP_STATE_TOSOLVE = {"ToSolve", "待处理"};
-	
-	private final String[] USER_APP_RESULT_NONE = {"None", "未定义"};
-	private final String[] USER_APP_RESULT_APPROVED = {"Approved", "批准"};
-	private final String[] USER_APP_RESULT_REJECTED = {"Rejected", "拒绝"};
+	private final String[] USER_APP_STATE_SOLVING = {"Applying", "处理中"};
+	private final String[] USER_APP_STATE_SOLVED = {"Approved", "批准"};
+	private final String[] USER_APP_STATE_TOSOLVE = {"Rejected", "拒绝"};
 	
 	private class Pair<A, B> implements java.io.Serializable {
 		

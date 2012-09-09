@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.shared.user.EnumUserAppState;
+import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.google.gwt.core.client.GWT;
@@ -49,11 +49,11 @@ public class UserAppViewImpl extends Composite implements UserAppView {
 	@UiField 
 	Anchor labelAll;
 	@UiField 
-	Anchor labelToSolve;
+	Anchor labelApplying;
 	@UiField 
-	Anchor labelSolved;
+	Anchor labelApproved;
 	@UiField 
-	Anchor labelSolving;
+	Anchor labelRejected;
 
 	interface UserAppViewImplUiBinder extends
 		UiBinder<Widget, UserAppViewImpl> {
@@ -89,17 +89,17 @@ public class UserAppViewImpl extends Composite implements UserAppView {
 	void onLabelAllClick(ClickEvent event) {
 		this.presenter.onShowAllApps();
 	}
-	@UiHandler("labelSolved")
+	@UiHandler("labelApproved")
 	void onLabelSolvedClick(ClickEvent event) {
-		this.presenter.onSolvedApps();
+		this.presenter.onApprovedApps();
 	}
-	@UiHandler("labelToSolve")
+	@UiHandler("labelApplying")
 	void onLabelToSolveClick(ClickEvent event) {
-		this.presenter.onToSolveApps();
+		this.presenter.onApplyingApps();
 	}
-	@UiHandler("labelSolving")
+	@UiHandler("labelRejected")
 	void onLabelSolvingClick(ClickEvent event) {
-		this.presenter.onSolvingApps();
+		this.presenter.onRejectedApps();
 	}
 	
 	@Override
@@ -177,22 +177,22 @@ public class UserAppViewImpl extends Composite implements UserAppView {
 		int noneCount = 0, toSolveCount = 0, solvingCount = 0, solvedCount = 0;
 		
 		for (UserAppStateCount i : countInfo) {
-			if (i.getAppState() == EnumUserAppState.NONE)
+			if (i.getAppState() == EnumUserAppStatus.NONE)
 				noneCount = i.getCount();
-			else if (i.getAppState() == EnumUserAppState.SOLVED)
-				solvedCount = i.getCount();
-			if (i.getAppState() == EnumUserAppState.SOLVING)
-				solvingCount = i.getCount();
-			if (i.getAppState() == EnumUserAppState.TOSOLVE)
+			else if (i.getAppState() == EnumUserAppStatus.APPLYING)
 				toSolveCount = i.getCount();
+			else if (i.getAppState() == EnumUserAppStatus.APPROVED)
+				solvedCount = i.getCount();
+			else if (i.getAppState() == EnumUserAppStatus.REJECTED)
+				solvedCount = i.getCount();
 		}
 		
 		int count = noneCount + toSolveCount + solvingCount + solvedCount;
 		
 		this.labelAll.setText("总申请数量: " + count);
-		this.labelToSolve.setText("待解决申请数量: " + toSolveCount);
-		this.labelSolved.setText("已处理申请数量: " + solvedCount);
-		this.labelSolving.setText("正处理申请数量: " + solvingCount);
+		this.labelApplying.setText("待解决申请数量: " + toSolveCount);
+		this.labelApproved.setText("已批准申请数量: " + solvedCount);
+		this.labelRejected.setText("已拒绝申请数量: " + solvingCount);
 	}
 
 	@Override

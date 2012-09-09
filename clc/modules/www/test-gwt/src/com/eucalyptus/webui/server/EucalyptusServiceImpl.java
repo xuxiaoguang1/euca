@@ -28,7 +28,7 @@ import com.eucalyptus.webui.shared.query.QueryType;
 import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
-import com.eucalyptus.webui.shared.user.EnumUserAppState;
+import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserApp;
@@ -313,7 +313,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	
 	@Override
 	public SearchResult lookupUserApp(Session session, String search,
-			SearchRange range, EnumUserAppState state)
+			SearchRange range, EnumUserAppStatus state)
 			throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
@@ -1027,17 +1027,24 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	
 	@Override
 	//public void modifyUserApp(Session session, ArrayList<UserApp> userApps)	throws EucalyptusServiceException {
-	public void modifyUserApp(Session session, ArrayList<UserApp> userApps)	throws EucalyptusServiceException {
+	public void confirmUserApp(Session session, List<String> userAppIdList, EnumUserAppStatus userAppStatus) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
 		
-		for (UserApp app : userApps) {
-			userAppServiceProc.updateUserApp(app);
-			
-			//When sovling user application, run relative VM instance
-			if (app.getState() == EnumUserAppState.SOLVED) {
-				userAppServiceProc.runVMInstance(session, app);
+		for (String userAppId : userAppIdList) {
+			String euca_vi_key = null;
+			//When approving user application, run relative VM instance
+			//we must do it firstly, becuase we need obtain vm instance key by runVMInstance function 
+			if (userAppStatus == EnumUserAppStatus.APPROVED) {
+				euca_vi_key = userAppServiceProc.runVMInstance(session, Integer.parseInt(userAppId));
 			}
+			
+			UserApp userApp = new UserApp();	
+			userApp.setUAId(Integer.parseInt(userAppId));
+			userApp.setStatus(userAppStatus);
+			userApp.setEucaVMInstanceKey(euca_vi_key);
+			  
+			userAppServiceProc.updateUserApp(userApp);
 		}
 	}	
 	

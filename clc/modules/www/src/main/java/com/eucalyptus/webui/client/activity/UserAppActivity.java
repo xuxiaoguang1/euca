@@ -19,8 +19,7 @@ import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.resource.VMImageType;
-import com.eucalyptus.webui.shared.user.EnumUserAppResult;
-import com.eucalyptus.webui.shared.user.EnumUserAppState;
+import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.google.common.collect.Lists;
@@ -61,7 +60,7 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   
   private Set<SearchResultRow> currentSelected;
   
-  private EnumUserAppState appState = EnumUserAppState.NONE;
+  private EnumUserAppStatus appState = EnumUserAppStatus.NONE;
   
   public UserAppActivity( SearchPlace place, ClientFactory clientFactory ) {
     super( place, clientFactory );
@@ -194,32 +193,32 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   @Override
   public void onShowAllApps() {
 	  // TODO Auto-generated method stub
-	  this.appState = EnumUserAppState.NONE;
+	  this.appState = EnumUserAppStatus.NONE;
 	  showUserAppByState(appState);
   }
 
   @Override
-  public void onSolvedApps() {
+  public void onApprovedApps() {
 	  // TODO Auto-generated method stub
-	  this.appState = EnumUserAppState.SOLVED;
+	  this.appState = EnumUserAppStatus.APPROVED;
 	  showUserAppByState(appState);
   }
 
   @Override
-  public void onSolvingApps() {
+  public void onRejectedApps() {
 	  // TODO Auto-generated method stub
-	  this.appState = EnumUserAppState.SOLVING;
+	  this.appState = EnumUserAppStatus.REJECTED;
 	  showUserAppByState(appState);
   }
 
   @Override
-  public void onToSolveApps() {
+  public void onApplyingApps() {
 	  // TODO Auto-generated method stub
-	  this.appState = EnumUserAppState.TOSOLVE;
+	  this.appState = EnumUserAppStatus.APPLYING;
 	  showUserAppByState(appState);
   }
   
-  private void showUserAppByState(EnumUserAppState state) {
+  private void showUserAppByState(EnumUserAppStatus state) {
 	  this.clientFactory.getBackendService( ).lookupUserApp(this.clientFactory.getLocalSession( ).getSession( ), search, range, state, 
               new AsyncCallback<SearchResult>( ) {
 
@@ -262,18 +261,13 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   }
 
   private void doApproveUserApp( ) {
-	    final ArrayList<UserApp> apps = Lists.newArrayList( ); 
+	  	final ArrayList<String> appIds = Lists.newArrayList( ); 
 	    for ( SearchResultRow row : currentSelected ) {
-	    	UserApp app = new UserApp();
-	    	app.setUAId(Integer.valueOf(row.getField(0)));
-	    	app.setState(EnumUserAppState.SOLVED);
-	    	app.setResult(EnumUserAppResult.APPROVED);
-	    	
-	    	apps.add(app);
+	    	appIds.add(row.getField(0));
 	    }
 
 	    final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
-	    this.clientFactory.getBackendService().modifyUserApp(clientFactory.getLocalSession().getSession(), apps, 
+	    this.clientFactory.getBackendService().confirmUserApp(clientFactory.getLocalSession().getSession(), appIds, EnumUserAppStatus.APPROVED,
 					new AsyncCallback<Void>() {
 						@Override
 						public void onFailure(Throwable caught) {
@@ -296,17 +290,12 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 	}
 
   private void doRejectUserApp( ) {
-	  	final ArrayList<UserApp> apps = Lists.newArrayList( ); 
+	  	final ArrayList<String> appIds = Lists.newArrayList( ); 
 	    for ( SearchResultRow row : currentSelected ) {
-	    	UserApp app = new UserApp();
-	    	app.setUAId(Integer.valueOf(row.getField(0)));
-	    	app.setState(EnumUserAppState.SOLVED);
-	    	app.setResult(EnumUserAppResult.REJECTED);
-	    	
-	    	apps.add(app);
+	    	appIds.add(row.getField(0));
 	    }
 	    final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
-	    this.clientFactory.getBackendService().modifyUserApp(clientFactory.getLocalSession().getSession(), apps, 
+	    this.clientFactory.getBackendService().confirmUserApp(clientFactory.getLocalSession().getSession(), appIds, EnumUserAppStatus.REJECTED,
 					new AsyncCallback<Void>() {
 						@Override
 						public void onFailure(Throwable caught) {

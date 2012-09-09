@@ -2,15 +2,13 @@ package com.eucalyptus.webui.shared.user;
 
 import java.util.Date;
 
-
 public class UserApp implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
 	private int id;
 	private Date apptime;
-	private EnumUserAppState state;
-	private EnumUserAppResult result;
+	private EnumUserAppStatus status;
 	private int del;
 	private String comment;
 	private String keyPair;
@@ -22,6 +20,28 @@ public class UserApp implements java.io.Serializable {
 	
 	private Date srvStartingTime;
 	private Date srvEndingTime;
+	
+	private String euca_vm_instance_key;
+	
+	public UserApp() {
+		
+	}
+	
+	public UserApp(int id, Date apptime, EnumUserAppStatus status, int del, String comment, 
+					String keyPair, String securityGroup, int userId, int templateId, int vmImageTypeId, Date srvStartingTime, Date srvEndingTime, String euca_vm_instance_key) {
+		this.setUAId(id);
+		this.setAppTime(apptime);
+		this.setSrvStartingTime(srvStartingTime);
+		this.setSrvEndingingTime(srvEndingTime);
+		this.setDelState(del);
+		this.setComment(comment);
+		this.setKeyPair(keyPair);
+		this.setSecurityGroup(securityGroup);
+		this.setUserId(userId);
+		this.setTemplateId(templateId);
+		this.setVmImageTypeId(vmImageTypeId);
+		this.setEucaVMInstanceKey(euca_vm_instance_key);
+	}
 	
 	public void setUAId(int ua_id) {
 		this.id = ua_id;
@@ -37,18 +57,11 @@ public class UserApp implements java.io.Serializable {
 		return this.apptime;
 	}
 	
-	public void setState(EnumUserAppState state) {
-		this.state = state;
+	public void setStatus(EnumUserAppStatus status) {
+		this.status = status;
 	}
-	public EnumUserAppState getState() {
-		return this.state;
-	}
-	
-	public void setResult(EnumUserAppResult result) {
-		this.result = result;
-	}
-	public EnumUserAppResult getResult() {
-		return this.result;
+	public EnumUserAppStatus getStatus() {
+		return this.status;
 	}
 	
 	public void setDelState(int del) {
@@ -112,5 +125,12 @@ public class UserApp implements java.io.Serializable {
 	}
 	public String getSecurityGroup() {
 		return this.securityGroup;
+	}
+	
+	public void setEucaVMInstanceKey(String euca_vm_instance_key) {
+		this.euca_vm_instance_key = euca_vm_instance_key;
+	}
+	public String getEucaVMInstanceKey() {
+		return this.euca_vm_instance_key;
 	}
 }

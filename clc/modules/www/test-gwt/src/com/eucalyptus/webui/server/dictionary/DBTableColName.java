@@ -39,8 +39,7 @@ public class DBTableColName {
 		public final String APP_TIME = "ua_apptime";
 		public final String SRV_STARTINGTIME = "ua_srv_startingtime";
 		public final String SRV_ENDINGTIME = "ua_srv_endingtime";
-		public final String STATE = "ua_state";
-		public final String RESULT = "ua_result";
+		public final String STATUS = "ua_status";
 		public final String DEL = "ua_del";
 		public final String COMMENT = "ua_comment";
 		public final String KEYPAIR = "ua_keypair";
@@ -48,6 +47,7 @@ public class DBTableColName {
 		public final String USER_ID = "user_id";
 		public final String TEMPLATE_ID = "template_id";
 		public final String VM_IMAGE_TYPE_ID = "vit_id";
+		public final String EUCA_VI_KEY = "euca_vi_key";
 	}	
 
 	public interface USER_POLICY {
