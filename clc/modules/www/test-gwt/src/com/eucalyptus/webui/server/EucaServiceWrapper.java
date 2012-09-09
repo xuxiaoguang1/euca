@@ -34,8 +34,9 @@ public class EucaServiceWrapper {
    * @param group string
    * @return euca id of vm
    */
-  public String runVM(Session session, Template template, String keypair, String group) {
-    return null;
+  public String runVM(Session session, Template template, String keypair, String group, String image) {
+    //real code about template won't be in old repo
+    return cmd.runInstance(session, image, keypair, "m1.small", group);
   }
   
   /**
