@@ -1,6 +1,7 @@
 package com.eucalyptus.webui.client.activity;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,6 +44,8 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
   private final String[] FOOTERVIEW_USER_NO_SELECTION = {"Must select users", "必须选择至少一个用户"};
   private final String[] FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES = {"Failed to query templates", "查询模板库失败"};
   private final String[] FOOTERVIEW_FAILED_TO_QUERY_VM_IMAGE_TYPE = {"Failed to query VM image type", "查询虚拟机镜像类型失败"};
+  private final String[] FOOTERVIEW_FAILED_TO_QUERY_KEYPAIR = {"Failed to query key pair list", "查询key pair失败"};
+  private final String[] FOOTERVIEW_FAILED_TO_QUERY_SECURITY_GROUP = {"Failed to query security group list", "查询安全组失败"};
   
   private final String[] FOOTERVIEW_FAILED_TO_ADD_USERAPP = {"Failed to add user app", "增加申请失败"};
   private final String[] FOOTERVIEW_ADD_USERAPP = {"Successfully add user apps", "增加申请成功"};
@@ -175,6 +178,37 @@ public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 		}
   		
   	});
+  	
+  	this.clientFactory.getBackendService().queryKeyPair(clientFactory.getLocalSession().getSession(), new AsyncCallback<List<String>>(){
+
+		@Override
+		public void onFailure(Throwable caught) {
+			// TODO Auto-generated method stub
+			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_KEYPAIR[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_KEYPAIR[lan] + ":" + caught.getMessage( ) );
+		}
+
+		@Override
+		public void onSuccess(List<String> result) {
+			// TODO Auto-generated method stub
+			clientFactory.getUserAppAddView().setKeyPairList(result);
+		}
+	});
+  	
+  this.clientFactory.getBackendService().querySecurityGroup(clientFactory.getLocalSession().getSession(), new AsyncCallback<List<String>>() {
+		@Override
+		public void onFailure(Throwable caught) {
+			// TODO Auto-generated method stub
+			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_SECURITY_GROUP[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_SECURITY_GROUP[lan] + ":" + caught.getMessage( ) );
+		}
+	
+		@Override
+		public void onSuccess(List<String> result) {
+			// TODO Auto-generated method stub
+			clientFactory.getUserAppAddView().setSecurityGroupList(result);
+		}
+	});
   }
   	
   @Override

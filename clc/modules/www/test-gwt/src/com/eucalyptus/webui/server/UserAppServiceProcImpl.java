@@ -21,6 +21,8 @@ import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.user.UserAppDBProcWrapper;
 import com.eucalyptus.webui.server.user.UserAppSyncException;
 import com.eucalyptus.webui.server.vm.VITDBProcWrapper;
+import com.eucalyptus.webui.server.vm.VITSyncException;
+import com.eucalyptus.webui.server.vm.VmImageType;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
@@ -119,15 +121,15 @@ public class UserAppServiceProcImpl {
 			  String keyPair = userApp.getKeyPair();
 			  String securityGroup = userApp.getSecurityGroup();
 			  
-//			  String euca_vit_id = null;	  
-//			  VmImageType vit = this.vitDBProc.lookupVIT(vitId);
-//			  if (vit != null)
-//				  euca_vit_id = vit.getEucaVITId();
+			  String euca_vit_id = null;	  
+			  VmImageType vit = this.vitDBProc.lookupVIT(userApp.getVmIdImageTypeId());
+			  if (vit != null)
+				  euca_vit_id = vit.getEucaVITId();
 			  
 			  Template template = deviceTemDBProc.lookupTemplateByID(session, templateId);
 			  
-			  if (keyPair != null && securityGroup != null) {
-				  String euca_vi_key = EucaServiceWrapper.getInstance().runVM(session, template, keyPair, securityGroup);
+			  if (keyPair != null && securityGroup != null && euca_vit_id != null) {
+				  String euca_vi_key = EucaServiceWrapper.getInstance().runVM(session, template, keyPair, securityGroup, euca_vit_id);
 				  
 				  if (euca_vi_key != null) {
 					  return euca_vi_key;
@@ -142,7 +144,11 @@ public class UserAppServiceProcImpl {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new EucalyptusServiceException("Failed to query user app");
-		  }
+		  } catch (VITSyncException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new EucalyptusServiceException("Failed to query eucalyptus vm image type id");
+		}
 	  }
 	  
 	  public ArrayList<UserAppStateCount> countUserApp(LoginUserProfile curUser) throws EucalyptusServiceException {
