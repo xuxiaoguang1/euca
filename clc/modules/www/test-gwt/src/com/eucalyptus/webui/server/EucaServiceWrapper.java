@@ -6,6 +6,7 @@ import java.util.List;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.shared.resource.Template;
+import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 
 public class EucaServiceWrapper {
 
@@ -34,7 +35,7 @@ public class EucaServiceWrapper {
    * @param group string
    * @return euca id of vm
    */
-  public String runVM(Session session, Template template, String keypair, String group, String image) {
+  public String runVM(Session session, Template template, String keypair, String group, String image) throws EucalyptusServiceException {
     //real code about template won't be in old repo
     return cmd.runInstance(session, image, keypair, "m1.small", group);
   }
