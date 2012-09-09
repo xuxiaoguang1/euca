@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
@@ -12,6 +13,7 @@ import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.uibinder.client.UiField;
@@ -25,6 +27,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.client.ui.ListBox;
+import com.sun.java.swing.plaf.windows.resources.windows;
 
 public class UserAppAddViewImpl extends DialogBox implements UserAppAddView {
 
@@ -71,19 +74,26 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView {
 		if (securityGroupListSelIndex >= 0)
 			securityGroup = this.securityGroupList.getValue(securityGroupListSelIndex);
 		
-		UserApp userApp = new UserApp();
-		userApp.setTemplateId(templateId);
-		userApp.setVmImageTypeId(vmImageTypeId);
-		userApp.setSrvStartingTime(this.startingTime.getValue());
-		userApp.setSrvEndingingTime(this.endingTime.getValue());
-		userApp.setKeyPair(keyPair);
-		userApp.setSecurityGroup(securityGroup);
-		
-		this.presenter.doCreateUserApp(userApp);
-		
-		clearSelection();
-		
-		this.hide();
+		if (vmImageTypeId != 0 && keyPair != null && securityGroup != null) {
+			
+			UserApp userApp = new UserApp();
+			userApp.setTemplateId(templateId);
+			userApp.setVmImageTypeId(vmImageTypeId);
+			userApp.setSrvStartingTime(this.startingTime.getValue());
+			userApp.setSrvEndingingTime(this.endingTime.getValue());
+			userApp.setKeyPair(keyPair);
+			userApp.setSecurityGroup(securityGroup);
+			
+			this.presenter.doCreateUserApp(userApp);
+			
+			clearSelection();
+			
+			this.hide();
+		}
+		else {
+			int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+			Window.alert(USER_APP_PARA_ERROR[lan]);
+		}
 	}
 	
 	@UiHandler("buttonCancle")
@@ -108,6 +118,8 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView {
 		this.tablePanel.clear( );
 		this.table = null;
 		this.VMImageTypeList.clear();
+		this.keyPairList.clear();
+		this.securityGroupList.clear();
 	}
 
 	@Override
@@ -194,4 +206,6 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView {
 	private SearchResultRow currentSelected;
 	
 	private Presenter presenter;
+	
+	private static String[] USER_APP_PARA_ERROR = {"Creating user application para error", "创建用户申请参数错误"};
 }
