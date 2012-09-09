@@ -27,7 +27,6 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.client.ui.ListBox;
-import com.sun.java.swing.plaf.windows.resources.windows;
 
 public class UserAppAddViewImpl extends DialogBox implements UserAppAddView {
 
