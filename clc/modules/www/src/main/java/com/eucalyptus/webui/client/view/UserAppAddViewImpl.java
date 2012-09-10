@@ -109,6 +109,9 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView {
 		}
     
 		table.setData( result );
+		
+		this.center();
+		this.show();
 	}
 
 	@Override
@@ -161,14 +164,6 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView {
 		}
 	}
 	
-	@Override
-	public void display(SearchResult deviceTemplateList) {
-		// TODO Auto-generated method stub
-		this.showSearchResult(deviceTemplateList);
-		this.center();
-		this.show();
-	}
-
 	private void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
 		tablePanel.clear( );
 		selectionModel = new SingleSelectionModel<SearchResultRow>( SearchResultRow.KEY_PROVIDER );

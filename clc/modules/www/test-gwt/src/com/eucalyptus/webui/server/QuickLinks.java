@@ -51,7 +51,7 @@ public class QuickLinks {
   
 	private static QuickLink allQuickLinks[] = {
 			getQuickLink("用户管理", "user", QueryType.user),
-			getQuickLink("用户申请管理", "user_req", QueryType.user_req),
+			getQuickLink("用户申请管理", "user_app", QueryType.user_app),
 			getQuickLink("组管理", "group", QueryType.group),
 			getQuickLink("账户管理", "accout", QueryType.account),
 			getQuickLink("策略管理", "policy", QueryType.policy),

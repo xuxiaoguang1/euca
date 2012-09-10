@@ -9,7 +9,7 @@ public class UserAppPlace extends SearchPlace {
     super( search );
   }
 
-  @Prefix( "user_req" )
+  @Prefix( "user_app" )
   public static class Tokenizer implements PlaceTokenizer<UserAppPlace> {
 
     @Override
