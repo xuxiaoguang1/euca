@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
@@ -76,6 +77,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 	  TYPES.add(TYPE_ROOTFS);
 	}
 	
+	private static final Logger LOG = Logger.getLogger(AwsServiceImpl.class);
 	DBProcWrapper wrapper = DBProcWrapper.Instance();
 	
 	public static final ArrayList<SearchResultFieldDesc> INSTANCE_COMMON_FIELD_DESCS = Lists.newArrayList();
@@ -448,6 +450,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     try {
       wrapper.update(sb.toString());
     } catch (SQLException e) {
+      LOG.error("bind image failed: " + e.toString());
       throw new EucalyptusServiceException(e.toString());
     }
   }
