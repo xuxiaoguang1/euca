@@ -18,13 +18,13 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.client.view.DeviceAreaAddView;
+import com.eucalyptus.webui.client.view.DeviceAreaAddViewImpl;
+import com.eucalyptus.webui.client.view.DeviceAreaModifyView;
+import com.eucalyptus.webui.client.view.DeviceAreaModifyViewImpl;
+import com.eucalyptus.webui.client.view.DeviceAreaView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.LogView;
-import com.eucalyptus.webui.client.view.device.DeviceAreaAddView;
-import com.eucalyptus.webui.client.view.device.DeviceAreaAddViewImpl;
-import com.eucalyptus.webui.client.view.device.DeviceAreaModifyView;
-import com.eucalyptus.webui.client.view.device.DeviceAreaModifyViewImpl;
-import com.eucalyptus.webui.client.view.device.DeviceAreaView;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

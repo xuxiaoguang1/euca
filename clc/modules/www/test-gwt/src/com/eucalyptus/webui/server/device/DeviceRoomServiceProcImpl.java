@@ -152,7 +152,7 @@ public class DeviceRoomServiceProcImpl {
 		}
 	}
 	
-	public synchronized Collection<String> lookupRoomNamesByAreaName(Session session, String area_name) throws EucalyptusServiceException {
+	public synchronized List<String> lookupRoomNamesByAreaName(Session session, String area_name) throws EucalyptusServiceException {
 		if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
         }

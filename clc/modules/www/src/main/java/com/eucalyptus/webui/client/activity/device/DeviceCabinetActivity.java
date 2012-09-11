@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.client.activity.device;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,13 +18,13 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.client.view.DeviceCabinetAddView;
+import com.eucalyptus.webui.client.view.DeviceCabinetAddViewImpl;
+import com.eucalyptus.webui.client.view.DeviceCabinetModifyView;
+import com.eucalyptus.webui.client.view.DeviceCabinetModifyViewImpl;
+import com.eucalyptus.webui.client.view.DeviceCabinetView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.LogView;
-import com.eucalyptus.webui.client.view.device.DeviceCabinetAddView;
-import com.eucalyptus.webui.client.view.device.DeviceCabinetAddViewImpl;
-import com.eucalyptus.webui.client.view.device.DeviceCabinetModifyView;
-import com.eucalyptus.webui.client.view.device.DeviceCabinetModifyViewImpl;
-import com.eucalyptus.webui.client.view.device.DeviceCabinetView;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -206,7 +205,7 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 
 						@Override
 						public void lookupAreaNames() {
-							getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<Collection<String>>() {
+							getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<List<String>>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
@@ -216,7 +215,7 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 								}
 
 								@Override
-								public void onSuccess(Collection<String> area_name_list) {
+								public void onSuccess(List<String> area_name_list) {
 									showStatus(new ClientMessage("", "获取区域列表成功"));
 									cabinetAddView.setAreaNameList(area_name_list);
 								}
@@ -232,7 +231,7 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 								Window.alert(sb.toString());
 							}
 							else {
-								getBackendService().lookupDeviceRoomNamesByAreaName(getSession(), area_name, new AsyncCallback<Collection<String>>() {
+								getBackendService().lookupDeviceRoomNamesByAreaName(getSession(), area_name, new AsyncCallback<List<String>>() {
 
 									@Override
 									public void onFailure(Throwable caught) {
@@ -242,7 +241,7 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 									}
 
 									@Override
-									public void onSuccess(Collection<String> room_name_list) {
+									public void onSuccess(List<String> room_name_list) {
 										showStatus(new ClientMessage("", "获取机房列表成功"));
 										cabinetAddView.setRoomNameList(area_name, room_name_list);
 									}

@@ -14,8 +14,8 @@ import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
+import com.eucalyptus.webui.client.view.DeviceVMView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
-import com.eucalyptus.webui.client.view.device.DeviceVMView;
 import com.eucalyptus.webui.shared.checker.InvalidValueException;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

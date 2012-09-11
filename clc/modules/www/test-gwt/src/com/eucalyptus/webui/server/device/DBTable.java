@@ -101,8 +101,10 @@ class DBTableServer extends DBTable {
 	}
 	
 	public final DBTableColumn SERVER_ID = new DBTableColumn(this, "server_id");
+	public final DBTableColumn SERVER_MARK = new DBTableColumn(this, "server_mark");
 	public final DBTableColumn SERVER_NAME = new DBTableColumn(this, "server_name");
 	public final DBTableColumn SERVER_DESC = new DBTableColumn(this, "server_desc");
+	public final DBTableColumn SERVER_CONF = new DBTableColumn(this, "server_conf");
 	public final DBTableColumn SERVER_IP = new DBTableColumn(this, "server_ip");
 	public final DBTableColumn SERVER_BW = new DBTableColumn(this, "server_bw");
 	public final DBTableColumn SERVER_STATE = new DBTableColumn(this, "server_state");

@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.client.view.device.DeviceCPUDeviceAddView;
-import com.eucalyptus.webui.client.view.device.DeviceMemoryDeviceAddView;
-import com.eucalyptus.webui.client.view.device.DeviceDiskDeviceAddView;
+import com.eucalyptus.webui.client.view.DeviceCPUDeviceAddView;
+import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
+import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
 import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.user.AccountInfo;
@@ -726,24 +726,25 @@ public interface EucalyptusService extends RemoteService {
 	void modifyDeviceArea(Session session, int area_id, String area_desc) throws EucalyptusServiceException;
 	void deleteDeviceArea(Session session, Collection<Integer> area_ids) throws EucalyptusServiceException;
 	void addDeviceArea(Session session, String area_name, String area_desc) throws EucalyptusServiceException;
-	Collection<String> lookupDeviceAreaNames(Session session) throws EucalyptusServiceException;
+	List<String> lookupDeviceAreaNames(Session session) throws EucalyptusServiceException;
 	
 	SearchResult lookupDeviceRoomByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException;
 	void addDeviceRoom(Session session, String room_name, String room_desc, String area_name) throws EucalyptusServiceException;
 	void modifyDeviceRoom(Session session, int room_id, String room_desc) throws EucalyptusServiceException;
 	void deleteDeviceRoom(Session session, Collection<Integer> room_ids) throws EucalyptusServiceException;
-	Collection<String> lookupDeviceRoomNamesByAreaName(Session session, String area_name) throws EucalyptusServiceException;
+	List<String> lookupDeviceRoomNamesByAreaName(Session session, String area_name) throws EucalyptusServiceException;
 	
 	SearchResult lookupDeviceCabinetByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException;
 	void addDeviceCabinet(Session session, String cabinet_name, String cabinet_desc, String room_name) throws EucalyptusServiceException;
 	void modifyDeviceCabinet(Session session, int cabinet_id, String cabinet_desc) throws EucalyptusServiceException;
 	void deleteDeviceCabinet(Session session, Collection<Integer> cabinet_ids) throws EucalyptusServiceException;
+	List<String> lookupCabinetNamesByRoomName(Session session, String room_name) throws EucalyptusServiceException;
 	
 	SearchResult lookupDeviceCPUPriceByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException;
 	void addDeviceCPUPrice(Session session, String cpu_name, String cpu_price_desc, double cpu_price) throws EucalyptusServiceException;
 	void modifyDeviceCPUPrice(Session session, int cpu_price_id, String cpu_price_desc, double cpu_price) throws EucalyptusServiceException;
 	void deleteDeviceCPUPrice(Session session, Collection<Integer> cpu_price_ids) throws EucalyptusServiceException;
-	Collection<String> lookupDeviceCPUNamesUnpriced(Session session) throws EucalyptusServiceException;
+	List<String> lookupDeviceCPUNamesUnpriced(Session session) throws EucalyptusServiceException;
 	
 	SearchResultRow lookupDeviceMemoryPrice(Session session) throws EucalyptusServiceException;
 	SearchResultRow lookupDeviceDiskPrice(Session session) throws EucalyptusServiceException;

@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.eucalyptus.webui.client.activity.device.ClientMessage;
 import com.eucalyptus.webui.client.activity.device.DeviceServerActivity.ServerState;
+import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
@@ -123,6 +125,33 @@ class DeviceServerDBProcWrapper {
 		sb.append("\"").append(room).append("\", ");
 		sb.append("\"").append(starttime).append("\")");
 		doUpdate(sb.toString());
+	}
+	
+	public void createServer(String mark, String name, String conf, String ip, int bw, int state, String cabinet_name) throws Exception {
+	    DBTableCabinet CABINET = DBTable.CABINET;
+	    DBTableServer SERVER = DBTable.SERVER;
+	    DBStringBuilder sb = new DBStringBuilder();
+	    sb.append("INSERT INTO ").append(DBTableName.SERVER);
+        sb.append(" (");
+        sb.append(SERVER.SERVER_MARK).append(", ");
+        sb.append(SERVER.SERVER_NAME).append(", ");
+        sb.append(SERVER.SERVER_CONF).append(", ");
+        sb.append(SERVER.SERVER_IP).append(", ");
+        sb.append(SERVER.SERVER_BW).append(", ");
+        sb.append(SERVER.SERVER_STATE).append(", ");
+        sb.append(SERVER.SERVER_STARTTIME).append(", ");
+        sb.append(SERVER.CABINET_ID);
+        sb.append(") VALUES (");
+        sb.appendString(mark).append(", ");
+        sb.appendString(name).append(", ");
+        sb.appendString(conf).append(", ");
+        sb.appendString(ip).append(", ");
+        sb.append(bw).append(", ");
+        sb.append(state).append(", ");
+        sb.appendString(DBData.format(new Date())).append(", ");
+        sb.append("(SELECT ").append(CABINET.CABINET_ID).append(" FROM ").append(CABINET).append(" WHERE ").append(CABINET.CABINET_NAME).append(" = ").appendString(cabinet_name).append(")");
+        sb.append(")");
+        doUpdate(sb.toString());
 	}
 	
 }
@@ -267,6 +296,25 @@ public class DeviceServerServiceProcImpl {
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	public void createServer(Session session, String mark, String name, String conf, String ip, int bw, int state, String cabinet_name) throws EucalyptusServiceException {
+	    if (!getUser(session).isSystemAdmin()) {
+            throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
+        }
+	    if (isEmpty(mark) || isEmpty(name)) {
+	        throw new EucalyptusServiceException(new ClientMessage("", "无效的服务器名称")); 
+	    }
+	    if (isEmpty(cabinet_name)) {
+	        throw new EucalyptusServiceException(new ClientMessage("", "无效的机柜名称"));
+	    }
+	    try {
+	        dbproc.createServer(mark, name, conf, ip, bw, state, cabinet_name);
+	    }
+	    catch (Exception e) {
+	        e.printStackTrace();
+	        throw new EucalyptusServiceException(new ClientMessage("", "创建服务器失败"));
+	    }
 	}
 	
 	private void modifyServerState(int server_id, int state) throws Exception {

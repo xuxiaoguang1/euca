@@ -18,9 +18,9 @@ import com.eucalyptus.webui.client.service.EucalyptusService;
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.client.view.device.DeviceCPUDeviceAddView;
-import com.eucalyptus.webui.client.view.device.DeviceDiskDeviceAddView;
-import com.eucalyptus.webui.client.view.device.DeviceMemoryDeviceAddView;
+import com.eucalyptus.webui.client.view.DeviceCPUDeviceAddView;
+import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
+import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
 import com.eucalyptus.webui.server.device.DeviceAreaServiceProcImpl;
 import com.eucalyptus.webui.server.device.DeviceBWServiceProcImpl;
 import com.eucalyptus.webui.server.device.DeviceCPUPriceServiceProcImpl;
@@ -717,7 +717,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 	
 	@Override
-	public Collection<String> lookupDeviceAreaNames(Session session) throws EucalyptusServiceException {
+	public List<String> lookupDeviceAreaNames(Session session) throws EucalyptusServiceException {
 		return deviceAreaServiceProc.lookupAreaNames(session);
 	}
 	
@@ -743,7 +743,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 	
 	@Override
-	public Collection<String> lookupDeviceRoomNamesByAreaName(Session session, String area_name) throws EucalyptusServiceException {
+	public List<String> lookupDeviceRoomNamesByAreaName(Session session, String area_name) throws EucalyptusServiceException {
 		return deviceRoomServiceProc.lookupRoomNamesByAreaName(session, area_name);
 	}
 	
@@ -766,6 +766,11 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	@Override
 	public void deleteDeviceCabinet(Session session, Collection<Integer> cabinet_ids) throws EucalyptusServiceException {
 		deviceCabinetServiceProc.deleteCabinet(session, cabinet_ids);
+	}
+	
+	@Override
+	public List<String> lookupCabinetNamesByRoomName(Session session, String room_name) throws EucalyptusServiceException {
+	    return deviceCabinetServiceProc.lookupCabinetNamesByRoomName(session, room_name);
 	}
 	
 	@Override
@@ -828,7 +833,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 	
 	@Override
-	public Collection<String> lookupDeviceCPUNamesUnpriced(Session session) throws EucalyptusServiceException {
+	public List<String> lookupDeviceCPUNamesUnpriced(Session session) throws EucalyptusServiceException {
 	    return deviceCPUPriceServiceProc.lookupCPUNamesUnpriced(session);
 	}
 	

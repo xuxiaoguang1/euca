@@ -20,6 +20,7 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
+import com.eucalyptus.webui.shared.resource.device.AreaInfo;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
 public class DeviceAreaServiceProcImpl {
@@ -51,11 +52,11 @@ public class DeviceAreaServiceProcImpl {
 	public synchronized SearchResult lookupAreaByDate(Session session, SearchRange range,
 			Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd)
 					throws EucalyptusServiceException {
+		if (!getUser(session).isSystemAdmin()) {
+            throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
+        }
 		ResultSetWrapper rsw = null;
 		try {
-			if (!getUser(session).isSystemAdmin()) {
-				throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
-			}
 			rsw = dbproc.lookupAreaByDate(creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
 			ResultSet rs = rsw.getResultSet();
 			List<SearchResultRow> rows = new LinkedList<SearchResultRow>();
@@ -64,10 +65,10 @@ public class DeviceAreaServiceProcImpl {
 				int area_id = DBData.getInt(rs, AREA.AREA_ID);
 				String area_name = DBData.getString(rs, AREA.AREA_NAME);
 				String area_desc = DBData.getString(rs, AREA.AREA_DESC);
-				Date area_creation = DBData.getDate(rs, AREA.AREA_CREATIONTIME);
-				Date area_modified = DBData.getDate(rs, AREA.AREA_MODIFIEDTIME);
+				Date area_creationtime = DBData.getDate(rs, AREA.AREA_CREATIONTIME);
+				Date area_modifiedtime = DBData.getDate(rs, AREA.AREA_MODIFIEDTIME);
 				List<String> list = Arrays.asList(Integer.toString(area_id), "", Integer.toString(index),
-						area_name, area_desc, DBData.format(area_creation), DBData.format(area_modified));
+						area_name, area_desc, DBData.format(area_creationtime), DBData.format(area_modifiedtime));
 				rows.add(new SearchResultRow(list));
 			}
 			SearchResult result = new SearchResult(rows.size(), range, FIELDS_DESC);
@@ -149,12 +150,44 @@ public class DeviceAreaServiceProcImpl {
 		}
 	}
 	
-	public synchronized Collection<String> lookupAreaNames(Session session) throws EucalyptusServiceException {
+	public synchronized AreaInfo lookupAreaByID(Session session, int area_id) throws EucalyptusServiceException {
+	    if (!getUser(session).isSystemAdmin()) {
+	        throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
+	    }
+	    ResultSetWrapper rsw = null;
+	    try {
+	        rsw = dbproc.lookupAreaByID(area_id);
+	        ResultSet rs = rsw.getResultSet();
+	        rs.next();
+            DBTableArea AREA = DBTable.AREA;
+            String area_name = DBData.getString(rs, AREA.AREA_NAME);
+            String area_desc = DBData.getString(rs, AREA.AREA_DESC);
+            Date area_creationtime = DBData.getDate(rs, AREA.AREA_CREATIONTIME);
+            Date area_modifiedtime = DBData.getDate(rs, AREA.AREA_MODIFIEDTIME);
+            return new AreaInfo(area_id, area_name, area_desc, area_creationtime, area_modifiedtime);
+	    }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EucalyptusServiceException();
+        }
+        finally {
+            if (rsw != null) {
+                try {
+                    rsw.close();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+	}
+	
+	public synchronized List<String> lookupAreaNames(Session session) throws EucalyptusServiceException {
+	    if (!getUser(session).isSystemAdmin()) {
+            throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
+        }
 		ResultSetWrapper rsw = null;
 		try {
-			if (!getUser(session).isSystemAdmin()) {
-				throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
-			}
 			rsw = dbproc.lookupAreaNames();
 			ResultSet rs = rsw.getResultSet();
 			List<String> area_name_list = new LinkedList<String>();
@@ -197,6 +230,13 @@ class DeviceAreaDBProcWrapper {
 	private void doUpdate(String request) throws Exception {
 		LOG.info(request);
 		wrapper.update(request);
+	}
+	
+	public ResultSetWrapper lookupAreaByID(int area_id) throws Exception {
+	    DBTableArea AREA = DBTable.AREA;
+	    DBStringBuilder sb = new DBStringBuilder();
+	    sb.append("SELECT * FROM ").append(AREA).append(" WHERE ").append(AREA.AREA_ID).append(" = ").append(area_id);
+	    return doQuery(sb.toString());
 	}
 	
 	public ResultSetWrapper lookupAreaByDate(Date creationtimeBegin, Date creationtimeEnd,

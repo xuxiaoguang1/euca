@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.client.activity.device;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,13 +18,13 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.client.view.DeviceCPUPriceAddView;
+import com.eucalyptus.webui.client.view.DeviceCPUPriceAddViewImpl;
+import com.eucalyptus.webui.client.view.DeviceCPUPriceModifyView;
+import com.eucalyptus.webui.client.view.DeviceCPUPriceModifyViewImpl;
+import com.eucalyptus.webui.client.view.DeviceCPUPriceView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.LogView;
-import com.eucalyptus.webui.client.view.device.DeviceCPUPriceAddView;
-import com.eucalyptus.webui.client.view.device.DeviceCPUPriceAddViewImpl;
-import com.eucalyptus.webui.client.view.device.DeviceCPUPriceModifyView;
-import com.eucalyptus.webui.client.view.device.DeviceCPUPriceModifyViewImpl;
-import com.eucalyptus.webui.client.view.device.DeviceCPUPriceView;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -213,7 +212,7 @@ public class DeviceCPUPriceActivity extends AbstractSearchActivity implements De
 
 						@Override
 						public void lookupCPUNames() {
-							getBackendService().lookupDeviceCPUNamesUnpriced(getSession(), new AsyncCallback<Collection<String>>() {
+							getBackendService().lookupDeviceCPUNamesUnpriced(getSession(), new AsyncCallback<List<String>>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
@@ -223,7 +222,7 @@ public class DeviceCPUPriceActivity extends AbstractSearchActivity implements De
 								}
 
 								@Override
-								public void onSuccess(Collection<String> result) {
+								public void onSuccess(List<String> result) {
 									showStatus(new ClientMessage("", "获取CPU列表成功"));
 									cpuPriceAddView.setCPUNameList(result);
 								}

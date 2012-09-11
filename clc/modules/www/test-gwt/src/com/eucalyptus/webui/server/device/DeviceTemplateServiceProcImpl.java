@@ -933,17 +933,13 @@ public class DeviceTemplateServiceProcImpl {
 
 	private static final int LAN_SELECT = 1;
 	
-	public static final int TABLE_COL_INDEX_TEMPLATE_ID = 0;
-	
-	public static final int TABLE_COL_INDEX_CHECKBOX = 1;
-	public static final int TABLE_COL_INDEX_NO = 2;
-	public static final int TABLE_COL_INDEX_MARK = 3;
-	public static final int TABLE_COL_INDEX_CPU = 4;
-	public static final int TABLE_COL_INDEX_NCPUS = 5;
-	public static final int TABLE_COL_INDEX_MEM = 6;
-	public static final int TABLE_COL_INDEX_DISK = 7;
-	public static final int TABLE_COL_INDEX_BW = 8;
-	public static final int TABLE_COL_INDEX_IMAGE = 9;
+	private static final int TABLE_COL_INDEX_TEMPLATE_ID = 0;
+	private static final int TABLE_COL_INDEX_CPU = 4;
+	private static final int TABLE_COL_INDEX_NCPUS = 5;
+	private static final int TABLE_COL_INDEX_MEM = 6;
+	private static final int TABLE_COL_INDEX_DISK = 7;
+	private static final int TABLE_COL_INDEX_BW = 8;
+	private static final int TABLE_COL_INDEX_IMAGE = 9;
 
 	private static final String[] TABLE_COL_TITLE_CHECKBOX = {"", ""};
 	private static final String[] TABLE_COL_TITLE_NO = {"", "序号"};

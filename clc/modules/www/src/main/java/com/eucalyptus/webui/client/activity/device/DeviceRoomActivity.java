@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.client.activity.device;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,13 +18,13 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.client.view.DeviceRoomAddView;
+import com.eucalyptus.webui.client.view.DeviceRoomAddViewImpl;
+import com.eucalyptus.webui.client.view.DeviceRoomModifyView;
+import com.eucalyptus.webui.client.view.DeviceRoomModifyViewImpl;
+import com.eucalyptus.webui.client.view.DeviceRoomView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.LogView;
-import com.eucalyptus.webui.client.view.device.DeviceRoomAddView;
-import com.eucalyptus.webui.client.view.device.DeviceRoomAddViewImpl;
-import com.eucalyptus.webui.client.view.device.DeviceRoomModifyView;
-import com.eucalyptus.webui.client.view.device.DeviceRoomModifyViewImpl;
-import com.eucalyptus.webui.client.view.device.DeviceRoomView;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -206,7 +205,7 @@ public class DeviceRoomActivity extends AbstractSearchActivity implements Device
 
 						@Override
 						public void lookupAreaNames() {
-							getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<Collection<String>>() {
+							getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<List<String>>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
@@ -216,7 +215,7 @@ public class DeviceRoomActivity extends AbstractSearchActivity implements Device
 								}
 
 								@Override
-								public void onSuccess(Collection<String> area_name_list) {
+								public void onSuccess(List<String> area_name_list) {
 									showStatus(new ClientMessage("", "获取区域列表成功"));
 									roomAddView.setAreaNameList(area_name_list);
 								}

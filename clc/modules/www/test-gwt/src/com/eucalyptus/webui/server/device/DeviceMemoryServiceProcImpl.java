@@ -23,7 +23,7 @@ import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.client.view.device.DeviceMemoryDeviceAddView.DataCache;
+import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView.DataCache;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
@@ -999,21 +999,13 @@ public class DeviceMemoryServiceProcImpl {
 
 	private static final int LAN_SELECT = 1;
 	
-	public static final long DIV_UNIT = 1024;
-
-	public static final int TABLE_COL_INDEX_MS_ID = 0;
-	public static final int TABLE_COL_INDEX_MEM_ID = 1;
-	public static final int TABLE_COL_INDEX_CHECKBOX = 2;
-	public static final int TABLE_COL_INDEX_NO = 3;
-	public static final int TABLE_COL_INDEX_TOTAL = 5;
-	public static final int TABLE_COL_INDEX_USED = 6;
-	public static final int TABLE_COL_INDEX_ACCOUNT = 7;
-	public static final int TABLE_COL_INDEX_USER = 8;
-	public static final int TABLE_COL_INDEX_STARTTIME = 9;
-	public static final int TABLE_COL_INDEX_LIFE = 10;
-	public static final int TABLE_COL_INDEX_REMAINS = 11;
-	public static final int TABLE_COL_INDEX_STATE = 12;
-	
+	private static final int TABLE_COL_INDEX_MS_ID = 0;
+	private static final int TABLE_COL_INDEX_MEM_ID = 1;
+	private static final int TABLE_COL_INDEX_USED = 6;
+	private static final int TABLE_COL_INDEX_STARTTIME = 9;
+	private static final int TABLE_COL_INDEX_LIFE = 10;
+	private static final int TABLE_COL_INDEX_REMAINS = 11;
+	private static final int TABLE_COL_INDEX_STATE = 12;
 	
 	private static final String[] TABLE_COL_TITLE_CHECKBOX = {"", ""};
 	private static final String[] TABLE_COL_TITLE_NO = {"", "序号"};

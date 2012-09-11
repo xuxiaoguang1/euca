@@ -16,19 +16,18 @@ import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
+import com.eucalyptus.webui.client.view.DeviceTemplateAddView;
+import com.eucalyptus.webui.client.view.DeviceTemplateAddViewImpl;
+import com.eucalyptus.webui.client.view.DeviceTemplateModifyView;
+import com.eucalyptus.webui.client.view.DeviceTemplateModifyViewImpl;
+import com.eucalyptus.webui.client.view.DeviceTemplateView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.LogView;
+import com.eucalyptus.webui.client.view.DeviceMirrorSearchResultTable.SearchResultRowMatcher;
+import com.eucalyptus.webui.client.view.DeviceTemplateView.MirrorModeType;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
-import com.eucalyptus.webui.client.view.device.DeviceTemplateAddView;
-import com.eucalyptus.webui.client.view.device.DeviceTemplateAddViewImpl;
-import com.eucalyptus.webui.client.view.device.DeviceTemplateModifyView;
-import com.eucalyptus.webui.client.view.device.DeviceTemplateModifyViewImpl;
-import com.eucalyptus.webui.client.view.device.DeviceTemplateView;
-import com.eucalyptus.webui.client.view.device.DeviceMirrorSearchResultTable.SearchResultRowMatcher;
-import com.eucalyptus.webui.client.view.device.DeviceTemplateView.MirrorModeType;
-import com.eucalyptus.webui.server.device.DeviceTemplateServiceProcImpl;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -288,6 +287,10 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 			return;
 		}
 	}
+	
+	private static final int TABLE_COL_INDEX_TEMPLATE_ID = 0;
+	private static final int TABLE_COL_INDEX_CHECKBOX = 1;
+	private static final int TABLE_COL_INDEX_NO = 2;
 
 	private void handleModifyService(SearchResultRow row, String cpu, int ncpus, String mem, String disk, String bw, String image) {
 		assert (row != null && getView().getMirrorModeType() == MirrorModeType.MODIFY_TEMPLATE);
@@ -305,8 +308,8 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 				        if (result != null) {
 					        showStatus(UPDATE_TEMPLATE_SUCCESS[LAN_SELECT]);
 					        if (getView().isMirrorMode()) {
-						        final int col = DeviceTemplateServiceProcImpl.TABLE_COL_INDEX_TEMPLATE_ID;
-						        result.setField(DeviceTemplateServiceProcImpl.TABLE_COL_INDEX_CHECKBOX, "+");
+						        final int col = TABLE_COL_INDEX_TEMPLATE_ID;
+						        result.setField(TABLE_COL_INDEX_CHECKBOX, "+");
 						        final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
 
 							        @Override
@@ -343,7 +346,7 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 				if (result != null) {
 					showStatus(DELETE_TEMPLATE_SUCCESS[LAN_SELECT]);
 					if (getView().isMirrorMode()) {
-						final int col = DeviceTemplateServiceProcImpl.TABLE_COL_INDEX_TEMPLATE_ID;
+						final int col = TABLE_COL_INDEX_TEMPLATE_ID;
 						final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
 
 							@Override
@@ -368,7 +371,7 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 
 	private SearchResultRow copyRow(SearchResultRow row) {
 		SearchResultRow tmp = row.copy();
-		tmp.setField(DeviceTemplateServiceProcImpl.TABLE_COL_INDEX_CHECKBOX, "");
+		tmp.setField(TABLE_COL_INDEX_CHECKBOX, "");
 		return tmp;
 	}
 
@@ -437,8 +440,8 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 
 			@Override
 			public int compare(SearchResultRow arg0, SearchResultRow arg1) {
-				String v0 = arg0.getField(DeviceTemplateServiceProcImpl.TABLE_COL_INDEX_NO);
-				String v1 = arg1.getField(DeviceTemplateServiceProcImpl.TABLE_COL_INDEX_NO);
+				String v0 = arg0.getField(TABLE_COL_INDEX_NO);
+				String v1 = arg1.getField(TABLE_COL_INDEX_NO);
 				if (v0 == null) {
 					return v1 == null ? 0 : 1;
 				}
