@@ -3,6 +3,8 @@ package com.eucalyptus.webui.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.shared.resource.Template;
@@ -11,6 +13,7 @@ import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 public class EucaServiceWrapper {
 
   static private EucaServiceWrapper instance = null;
+  private static final Logger LOG = Logger.getLogger(EucaServiceWrapper.class);
   
   private AwsServiceImpl aws = null;
   private CmdServiceImpl cmd = null;
