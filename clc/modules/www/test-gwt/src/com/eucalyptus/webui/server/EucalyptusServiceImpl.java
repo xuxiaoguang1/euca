@@ -888,9 +888,9 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 	
 	@Override
-	public boolean addDeviceServer(Session session, String mark, String name, String conf, String ip,
-			int bw, int state, String room) {
-		return deviceServerServiceProc.addDevice(session, mark, name, conf, ip, bw, state, room);
+	public void createDeviceServer(Session session, String mark, String name, String conf, String ip,
+			int bw, int state, String cabinet_name) throws EucalyptusServiceException {
+		deviceServerServiceProc.createServer(session, mark, name, conf, ip, bw, state, cabinet_name);
 	}
 
 	@Override

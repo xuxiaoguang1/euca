@@ -35,7 +35,7 @@ public class DeviceServerViewImpl extends Composite implements DeviceServerView 
 	Anchor labelInuse;
 	@UiField
 	Anchor labelStop;
-
+	
 	private String getLabel(boolean highlight, String msg) {
 		StringBuilder sb = new StringBuilder();
 		String color = isMirrorMode() ? "#AAAAAA" : highlight ? "red" : "darkblue";

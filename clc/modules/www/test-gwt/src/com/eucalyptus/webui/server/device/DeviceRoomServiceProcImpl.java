@@ -43,6 +43,8 @@ public class DeviceRoomServiceProcImpl {
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
 			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "描述"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
+			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "所在区域"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
 			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "创建时间"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
 			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "修改时间"),
@@ -59,6 +61,7 @@ public class DeviceRoomServiceProcImpl {
 			rsw = dbproc.lookupRoomByDate(creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
 			ResultSet rs = rsw.getResultSet();
 			List<SearchResultRow> rows = new LinkedList<SearchResultRow>();
+			DBTableArea AREA = DBTable.AREA;
 			DBTableRoom ROOM = DBTable.ROOM;
 			for (int index = 1; rs.next(); index ++) {
 				int room_id = DBData.getInt(rs, ROOM.ROOM_ID);
@@ -66,8 +69,9 @@ public class DeviceRoomServiceProcImpl {
 				String room_desc = DBData.getString(rs, ROOM.ROOM_DESC);
 				Date room_creation = DBData.getDate(rs, ROOM.ROOM_CREATIONTIME);
 				Date room_modified = DBData.getDate(rs, ROOM.ROOM_MODIFIEDTIME);
+				String area_name = DBData.getString(rs, AREA.AREA_NAME);
 				List<String> list = Arrays.asList(Integer.toString(room_id), "", Integer.toString(index),
-						room_name, room_desc, DBData.format(room_creation), DBData.format(room_modified));
+						room_name, room_desc, area_name, DBData.format(room_creation), DBData.format(room_modified));
 				rows.add(new SearchResultRow(list));
 			}
 			SearchResult result = new SearchResult(rows.size(), range, FIELDS_DESC);
@@ -207,9 +211,12 @@ class DeviceRoomDBProcWrapper {
 	
 	public ResultSetWrapper lookupRoomByDate(Date creationtimeBegin, Date creationtimeEnd,
 			Date modifiedtimeBegin, Date modifiedtimeEnd) throws Exception {
+	    DBTableArea AREA = DBTable.AREA;
 		DBTableRoom ROOM = DBTable.ROOM;
 		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT * FROM ").append(ROOM).append(" WHERE 1=1");
+		sb.append("SELECT * FROM ").append(ROOM).append(" LEFT JOIN ").append(AREA);
+		sb.append(" ON ").append(ROOM.AREA_ID).append(" = ").append(AREA.AREA_ID);
+		sb.append(" WHERE 1=1");
 		if (creationtimeBegin != null) {
 			sb.append(" AND ").append(ROOM.ROOM_CREATIONTIME.getName()).append(" >= ").appendDate(creationtimeBegin);
 		}

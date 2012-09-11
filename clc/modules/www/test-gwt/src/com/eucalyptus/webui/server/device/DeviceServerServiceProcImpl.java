@@ -58,9 +58,10 @@ class DeviceServerDBProcWrapper {
 	}
 	
 	ResultSetWrapper queryAllServers(int queryState) throws Exception {
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT * FROM ");
-		sb.append(DBTableName.SERVER);
+	    DBTableCabinet CABINET = DBTable.CABINET;
+	    DBTableServer SERVER = DBTable.SERVER;
+	    DBStringBuilder sb = new DBStringBuilder();
+		sb.append("SELECT * FROM ").append(SERVER).append(" LEFT JOIN ").append(CABINET).append(" ON ").append(SERVER.CABINET_ID).append(" = ").append(CABINET.CABINET_ID);
 		sb.append(" WHERE 1=1");
 		
 		if (queryState >= 0) {
@@ -98,32 +99,6 @@ class DeviceServerDBProcWrapper {
 		sb.append(" FROM ").append(DBTableName.SERVER);
 		sb.append(" WHERE ");
 		sb.append(DBTableColName.SERVER.ID).append(" = ").append(server_id);
-		doUpdate(sb.toString());
-	}
-	
-	void addDevice(String mark, String name, String conf, String ip, int bw, int state, String room, String starttime)
-			throws Exception {
-		StringBuilder sb = new StringBuilder();
-		sb.append("INSERT INTO ").append(DBTableName.SERVER);
-		sb.append(" (");
-		sb.append(DBTableColName.SERVER.MARK).append(", ");
-		sb.append(DBTableColName.SERVER.NAME).append(", ");
-		sb.append(DBTableColName.SERVER.CONF).append(", ");
-		sb.append(DBTableColName.SERVER.IP).append(", ");
-		sb.append(DBTableColName.SERVER.BW).append(", ");
-		sb.append(DBTableColName.SERVER.STATE).append(", ");
-		sb.append(DBTableColName.SERVER.ROOM).append(", ");
-		sb.append(DBTableColName.SERVER.STARTTIME).append(") ");
-		sb.append(" VALUES ");
-		sb.append("(");
-		sb.append("\"").append(mark).append("\", ");
-		sb.append("\"").append(name).append("\", ");
-		sb.append("\"").append(conf).append("\", ");
-		sb.append("\"").append(ip).append("\", ");
-		sb.append(bw).append(", ");
-		sb.append(state).append(", ");
-		sb.append("\"").append(room).append("\", ");
-		sb.append("\"").append(starttime).append("\")");
 		doUpdate(sb.toString());
 	}
 	
@@ -284,20 +259,6 @@ public class DeviceServerServiceProcImpl {
 		return s == null || s.length() == 0;
 	}
 	
-	public boolean addDevice(Session session, String mark, String name, String conf, String ip, int bw, int state, String room) {
-		try {
-			if (!getUser(session).isSystemAdmin() || isEmpty(name)) {
-				return false;
-			}
-			addDevice(mark, name, conf, ip, bw, state, room);
-			return true;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
 	public void createServer(Session session, String mark, String name, String conf, String ip, int bw, int state, String cabinet_name) throws EucalyptusServiceException {
 	    if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
@@ -307,6 +268,12 @@ public class DeviceServerServiceProcImpl {
 	    }
 	    if (isEmpty(cabinet_name)) {
 	        throw new EucalyptusServiceException(new ClientMessage("", "无效的机柜名称"));
+	    }
+	    if (conf == null) {
+	        conf = "";
+	    }
+	    if (ip == null) {
+	        ip = "";
 	    }
 	    try {
 	        dbproc.createServer(mark, name, conf, ip, bw, state, cabinet_name);
@@ -330,10 +297,6 @@ public class DeviceServerServiceProcImpl {
 			e.printStackTrace();
 			return false;
 		}
-	}
-	
-	private void addDevice(String mark, String name, String conf, String ip, int bw, int state, String room) throws Exception {
-		dbproc.addDevice(mark, name, conf, ip, bw, state, room, formatter.format(new Date()));
 	}
 	
 	private List<SearchResultRow> convertResults(ResultSetWrapper rsw) {
@@ -369,12 +332,13 @@ public class DeviceServerServiceProcImpl {
 		try {
 			state = ServerState.getServerState(rs.getInt(DBTableColName.SERVER.STATE)).toString();
 		}
-		catch (Exception e) {
+		catch (Exception e) {		    
 		}
+		DBTableCabinet CABINET = DBTable.CABINET;
 		return new SearchResultRow(Arrays.asList(rs.getString(DBTableColName.SERVER.ID), "", Integer.toString(index),
 				rs.getString(DBTableColName.SERVER.NAME), rs.getString(DBTableColName.SERVER.MARK),
 				rs.getString(DBTableColName.SERVER.CONF), rs.getString(DBTableColName.SERVER.IP),
-				rs.getString(DBTableColName.SERVER.BW), rs.getString(DBTableColName.SERVER.ROOM),
+				rs.getString(DBTableColName.SERVER.BW), DBData.getString(rs, CABINET.CABINET_NAME),
 				rs.getString(DBTableColName.SERVER.STARTTIME), state));
 	}
 	

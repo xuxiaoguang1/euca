@@ -94,7 +94,6 @@ public class DBTableColName {
 		public final String IP = "server_ip";
 		public final String BW = "server_bw";
 		public final String STATE = "server_state";
-		public final String ROOM = "server_room";
 		public final String STARTTIME = "server_starttime";
 	}
 

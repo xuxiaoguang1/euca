@@ -1,10 +1,6 @@
 package com.eucalyptus.webui.client.view;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -31,8 +27,6 @@ public class DeviceCabinetAddViewImpl extends DialogBox implements DeviceCabinet
 	@UiField ListBox areaNameList;
 	@UiField ListBox roomNameList;
 	
-	private Map<String, List<String>> map;
-	
 	public DeviceCabinetAddViewImpl() {
 		super(false);
 		setWidget(uiBinder.createAndBindUi(this));
@@ -42,9 +36,7 @@ public class DeviceCabinetAddViewImpl extends DialogBox implements DeviceCabinet
 			public void onChange(ChangeEvent event) {
 				String area_name = getAreaName();
 				if (!isEmpty(area_name)) {
-					if (map.get(area_name) == null) {
-						presenter.lookupRoomNamesByAreaName(area_name);
-					}
+					presenter.lookupRoomNamesByAreaName(area_name);
 				}
 			}
 			
@@ -70,7 +62,6 @@ public class DeviceCabinetAddViewImpl extends DialogBox implements DeviceCabinet
 		cabinetDesc.setValue("");
 		areaNameList.clear();
 		roomNameList.clear();
-		map = new HashMap<String, List<String>>();
 		presenter.lookupAreaNames();
 		show();
 	}
@@ -78,7 +69,6 @@ public class DeviceCabinetAddViewImpl extends DialogBox implements DeviceCabinet
 	public void setAreaNameList(Collection<String> area_name_list) {
 		areaNameList.clear();
 		roomNameList.clear();
-		map = new HashMap<String, List<String>>();
 		if (area_name_list != null && !area_name_list.isEmpty()) {
 			for (String area_name : area_name_list) {
 				areaNameList.addItem(area_name);
@@ -93,10 +83,9 @@ public class DeviceCabinetAddViewImpl extends DialogBox implements DeviceCabinet
 	
 	@Override
 	public void setRoomNameList(String area_name, Collection<String> room_name_list) {
-		if (room_name_list != null) {
-			map.put(area_name, new LinkedList<String>(room_name_list));
-			if (area_name.equals(getAreaName())) {
-				roomNameList.clear();
+		if (getAreaName().equals(area_name)) {
+			roomNameList.clear();
+			if (room_name_list != null && !room_name_list.isEmpty()) {
 				if (!room_name_list.isEmpty()) {
 					for (String room_name : room_name_list) {
 						roomNameList.addItem(room_name);

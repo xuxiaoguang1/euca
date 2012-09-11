@@ -207,8 +207,8 @@ public interface EucalyptusServiceAsync {
 	        AsyncCallback<SearchResult> callback);
 	void getDeviceServerCounts(Session session, AsyncCallback<Map<Integer, Integer>> callback);
 	void modifyDeviceServerState(Session session, SearchResultRow row, int state, AsyncCallback<SearchResultRow> callback);
-	void addDeviceServer(Session session, String mark, String name, String conf, String ip, int bw, int state,
-            String room, AsyncCallback<Boolean> callback);
+    void createDeviceServer(Session session, String mark, String name, String conf, String ip, int bw, int state,
+            String cabinet_name, AsyncCallback<Void> callback);
 	void deleteDeviceServer(Session session, List<SearchResultRow> list, AsyncCallback<List<SearchResultRow>> callback);
 	
 	void lookupDeviceCPU(Session session, String search, SearchRange range, int queryState,
@@ -318,4 +318,5 @@ public interface EucalyptusServiceAsync {
 	void modifyPolicy(Session session, String policyId, String name, String content, AsyncCallback<Void> callback);
 	
 	void lookupHistory(Session session, String search, SearchRange range, AsyncCallback<SearchResult> callback);
+
 }

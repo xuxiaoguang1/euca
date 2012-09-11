@@ -1,5 +1,7 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -23,6 +25,56 @@ public class DeviceServerDeviceAddViewImpl extends DialogBox implements DeviceSe
 	public DeviceServerDeviceAddViewImpl() {
 		super(false);
 		setWidget(uiBinder.createAndBindUi(this));
+        serverBW.addChangeHandler(new IntegerBoxChangeHandler(serverBW));
+        serverState.clear();
+ 
+        areaNameList.addChangeHandler(new ChangeHandler() {
+
+            @Override
+            public void onChange(ChangeEvent event) {
+                String area_name = getAreaName();
+                if (!isEmpty(area_name)) {
+                    presenter.lookupRoomNamesByAreaName(area_name);
+                }
+            }
+            
+        });
+        
+        roomNameList.addChangeHandler(new ChangeHandler() {
+
+            @Override
+            public void onChange(ChangeEvent event) {
+                String room_name = getRoomName();
+                if (!isEmpty(room_name)) {
+                    presenter.lookupCabinetNamesByRoomName(room_name);
+                }
+            }
+            
+        });
+	}
+	
+	private String getAreaName() {
+	    return getSelectedText(areaNameList);
+	}
+	
+	private String getRoomName() {
+	    return getSelectedText(roomNameList);
+	}
+	
+	private String getCabinetName() {
+	    return getSelectedText(cabinetNameList);
+	}
+	
+	private String getSelectedText(ListBox listbox) {
+	    int index = listbox.getSelectedIndex();
+        if (index != -1) {
+            return listbox.getItemText(index);
+        }
+        return "";
+	}
+	
+	private boolean isEmpty(String s) {
+	    return s == null || s.length() == 0;
 	}
 	
 	private DeviceServerDeviceAddView.Presenter presenter;
@@ -51,26 +103,23 @@ public class DeviceServerDeviceAddViewImpl extends DialogBox implements DeviceSe
 		
 	}
 	
-	private boolean initialized = false;
-
 	@Override
     public void popup(String[] stateValueList) {
-		if (!initialized) {
-			initialized = true;
-			serverBW.addChangeHandler(new IntegerBoxChangeHandler(serverBW));
-			serverState.clear();
-			if (stateValueList != null && stateValueList.length != 0) {
-				for (String s : stateValueList) {
-					serverState.addItem(s);
-				}
-				serverState.setSelectedIndex(0);
-			}
-		}
+	    serverState.clear();
+	    if (stateValueList != null && stateValueList.length != 0) {
+	        for (String s : stateValueList) {
+	            serverState.addItem(s);
+            }   
+            serverState.setSelectedIndex(0);
+        }
 		serverMark.setText("");
 		serverName.setText("");
 		serverConf.setText("");
 		serverIP.setText("");
-		serverRoom.setText("");
+		areaNameList.clear();
+		roomNameList.clear();
+		cabinetNameList.clear();
+		presenter.lookupAreaNames();
 	    show();
     }
 	
@@ -79,8 +128,11 @@ public class DeviceServerDeviceAddViewImpl extends DialogBox implements DeviceSe
 	@UiField TextBox serverConf;
 	@UiField TextBox serverIP;
 	@UiField IntegerBox serverBW;
-	@UiField TextBox serverRoom;
 	@UiField ListBox serverState;
+	
+	@UiField ListBox areaNameList;
+    @UiField ListBox roomNameList;
+    @UiField ListBox cabinetNameList;
 
 	private int intValue(String v) {
 		try {
@@ -102,10 +154,9 @@ public class DeviceServerDeviceAddViewImpl extends DialogBox implements DeviceSe
 		String name = serverName.getText();
 		String conf = serverConf.getText();
 		String ip = serverIP.getText();
-		String room = serverRoom.getText();
 		String state = getValue(serverState);
 		int bw = intValue(serverBW.getText());
-		if (presenter.onOK(mark, name,conf, ip, bw, state, room)) {
+		if (presenter.onOK(mark, name,conf, ip, bw, state, getCabinetName())) {
 			this.hide();
 		}
 	}
@@ -114,5 +165,54 @@ public class DeviceServerDeviceAddViewImpl extends DialogBox implements DeviceSe
 	void handleButtonCancel(ClickEvent event) {
 		this.hide();
 	}
+
+    @Override
+    public void setAreaNameList(List<String> area_name_list) {
+        areaNameList.clear();
+        roomNameList.clear();
+        cabinetNameList.clear();
+        if (area_name_list != null && !area_name_list.isEmpty()) {
+            for (String area_name : area_name_list) {
+                areaNameList.addItem(area_name);
+            }
+            areaNameList.setSelectedIndex(0);
+            String area_name = getAreaName();
+            if (!isEmpty(area_name)) {
+                presenter.lookupRoomNamesByAreaName(area_name);
+            }
+        }
+    }
+
+    @Override
+    public void setRoomNameList(String area_name, List<String> room_name_list) {
+        if (getAreaName().equals(area_name)) {
+            roomNameList.clear();
+            cabinetNameList.clear();
+            if (room_name_list != null && !room_name_list.isEmpty()) {
+                for (String room_name : room_name_list) {
+                    roomNameList.addItem(room_name);
+                }
+                roomNameList.setSelectedIndex(0);
+                String room_name = getRoomName();
+                if (!isEmpty(room_name)) {
+                    presenter.lookupCabinetNamesByRoomName(room_name);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setCabinetNameList(String room_name, List<String> cabinet_name_list) {
+        System.out.println("set cabinet name list");
+        if (getRoomName().equals(room_name)) {
+            cabinetNameList.clear();
+            if (cabinet_name_list != null && !cabinet_name_list.isEmpty()) {
+                for (String cabinet_name : cabinet_name_list) {
+                    cabinetNameList.addItem(cabinet_name);
+                }
+                cabinetNameList.setSelectedIndex(0);
+            }
+        }
+    }
 
 }

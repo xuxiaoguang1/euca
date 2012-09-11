@@ -43,6 +43,8 @@ public class DeviceCabinetServiceProcImpl {
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
 			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "描述"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
+			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "所在机房"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
 			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "创建时间"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
 			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "修改时间"),
@@ -59,6 +61,7 @@ public class DeviceCabinetServiceProcImpl {
 			rsw = dbproc.lookupCabinetByDate(creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
 			ResultSet rs = rsw.getResultSet();
 			List<SearchResultRow> rows = new LinkedList<SearchResultRow>();
+			DBTableRoom ROOM = DBTable.ROOM;
 			DBTableCabinet CABINET = DBTable.CABINET;
 			for (int index = 1; rs.next(); index ++) {
 				int cabinet_id = DBData.getInt(rs, CABINET.CABINET_ID);
@@ -66,8 +69,9 @@ public class DeviceCabinetServiceProcImpl {
 				String cabinet_desc = DBData.getString(rs, CABINET.CABINET_DESC);
 				Date cabinet_creation = DBData.getDate(rs, CABINET.CABINET_CREATIONTIME);
 				Date cabinet_modified = DBData.getDate(rs, CABINET.CABINET_MODIFIEDTIME);
+				String room_name = DBData.getString(rs, ROOM.ROOM_NAME);
 				List<String> list = Arrays.asList(Integer.toString(cabinet_id), "", Integer.toString(index),
-						cabinet_name, cabinet_desc, DBData.format(cabinet_creation), DBData.format(cabinet_modified));
+						cabinet_name, cabinet_desc, room_name, DBData.format(cabinet_creation), DBData.format(cabinet_modified));
 				rows.add(new SearchResultRow(list));
 			}
 			SearchResult result = new SearchResult(rows.size(), range, FIELDS_DESC);
@@ -207,9 +211,12 @@ class DeviceCabinetDBProcWrapper {
 	
 	public ResultSetWrapper lookupCabinetByDate(Date creationtimeBegin, Date creationtimeEnd,
 			Date modifiedtimeBegin, Date modifiedtimeEnd) throws Exception {
+	    DBTableRoom ROOM = DBTable.ROOM;
 		DBTableCabinet CABINET = DBTable.CABINET;
 		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT * FROM ").append(CABINET).append(" WHERE 1=1");
+		sb.append("SELECT * FROM ").append(CABINET).append(" LEFT JOIN ").append(ROOM);
+		sb.append(" ON ").append(CABINET.ROOM_ID).append(" = ").append(ROOM.ROOM_ID);
+		sb.append(" WHERE 1=1");
 		if (creationtimeBegin != null) {
 			sb.append(" AND ").append(CABINET.CABINET_CREATIONTIME.getName()).append(" >= ").appendDate(creationtimeBegin);
 		}

@@ -12,6 +12,7 @@ import com.eucalyptus.webui.client.activity.AbstractSearchActivity;
 import com.eucalyptus.webui.client.activity.ActivityUtil;
 import com.eucalyptus.webui.client.place.SearchPlace;
 import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
+import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
@@ -40,6 +41,31 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 
 	private DeviceServerModifyView serverModifyView;
 	private DeviceServerDeviceAddView deviceAddView;
+	
+    private void showStatus(ClientMessage msg) {
+        getFooterView().showStatus(StatusType.NONE, msg.toString(), FooterView.CLEAR_DELAY_SECOND * 3);
+        getLogView().log(LogType.INFO, msg.toString());
+    }
+    
+    private void onFrontendServiceFailure(Throwable caught) {
+        Window.alert(new ClientMessage("", "前端服务运行错误").toString());
+        getLogView().log(LogType.ERROR, caught.toString());
+    }
+    
+    private void onBackendServiceFailure(Throwable caught) {
+        if (caught instanceof EucalyptusServiceException) {
+            EucalyptusServiceException exception = (EucalyptusServiceException)caught;
+            ClientMessage msg = exception.getFrontendMessage();
+            if (msg == null) {
+                msg = new ClientMessage("Backend Service Failure", "后代服务运行错误");
+            }
+            Window.alert(msg.toString());
+            getLogView().log(LogType.ERROR, msg.toString() + " : " + caught.toString());
+        }
+        else {
+            getLogView().log(LogType.ERROR, caught.toString());
+        }
+    }
     
     public static final int TABLE_COL_INDEX_SERVER_ID = 0;
     public static final int TABLE_COL_INDEX_CHECKBOX = 1;
@@ -68,7 +94,7 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 		deviceAddView.setPresenter(new DeviceServerDeviceAddView.Presenter() {
 
 			@Override
-			public boolean onOK(String mark, String name, String conf, String ip, int bw, String sstate, String room) {
+			public boolean onOK(String mark, String name, String conf, String ip, int bw, String sstate, String cabinet_name) {
 				if (isEmpty(mark) || isEmpty(name)) {
 					StringBuilder sb = new StringBuilder();
 					sb.append(ADD_DEVICE_FAILURE_INVALID_ARGS[LAN_SELECT]).append("\n");
@@ -78,7 +104,7 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 					sb.append("ip='").append(ip).append("', ");
 					sb.append("bw='").append(bw).append("', ");
 					sb.append("state='").append(sstate).append("', ");
-					sb.append("room='").append(room).append("'>");
+					sb.append("cabinet_name='").append(cabinet_name).append("'>");
 					Window.alert(sb.toString());
 					return false;
 				}
@@ -88,9 +114,83 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 				}
 				catch (Exception e) {
 				}
-				handleAddDevice(mark, name, conf, ip, bw, state, room);
+				handleAddDevice(mark, name, conf, ip, bw, state, cabinet_name);
 				return true;
 			}
+
+            @Override
+            public void lookupAreaNames() {
+                getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<List<String>>() {
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        if (caught instanceof EucalyptusServiceException) {
+                            onBackendServiceFailure((EucalyptusServiceException)caught);
+                        }
+                    }
+
+                    @Override
+                    public void onSuccess(List<String> area_name_list) {
+                        showStatus(new ClientMessage("", "获取区域列表成功"));
+                        deviceAddView.setAreaNameList(area_name_list);
+                    }
+                    
+                });
+            }
+
+            @Override
+            public void lookupRoomNamesByAreaName(final String area_name) {
+                if (isEmpty(area_name)) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(new ClientMessage("", "区域名称非法")).append(" = '").append(area_name).append("'");
+                    Window.alert(sb.toString());
+                }
+                else {
+                    getBackendService().lookupDeviceRoomNamesByAreaName(getSession(), area_name, new AsyncCallback<List<String>>() {
+
+                        @Override
+                        public void onFailure(Throwable caught) {
+                            if (caught instanceof EucalyptusServiceException) {
+                                onBackendServiceFailure((EucalyptusServiceException)caught);
+                            }
+                        }
+
+                        @Override
+                        public void onSuccess(List<String> room_name_list) {
+                            showStatus(new ClientMessage("", "获取机房列表成功"));
+                            deviceAddView.setRoomNameList(area_name, room_name_list);
+                        }
+                        
+                    });
+                }
+            }
+
+            @Override
+            public void lookupCabinetNamesByRoomName(final String room_name) {
+                if (isEmpty(room_name)) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(new ClientMessage("", "机房名称非法")).append(" = '").append(room_name).append("'");
+                    Window.alert(sb.toString());
+                }
+                else {
+                    getBackendService().lookupCabinetNamesByRoomName(getSession(), room_name, new AsyncCallback<List<String>>() {
+
+                        @Override
+                        public void onFailure(Throwable caught) {
+                            if (caught instanceof EucalyptusServiceException) {
+                                onBackendServiceFailure((EucalyptusServiceException)caught);
+                            }
+                        }
+
+                        @Override
+                        public void onSuccess(List<String> cabinet_name_list) {
+                            showStatus(new ClientMessage("", "获取机柜列表成功"));
+                            deviceAddView.setCabinetNameList(room_name, cabinet_name_list);
+                        }
+                        
+                    });
+                }
+            }
 
 		});
 	}
@@ -328,8 +428,6 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 	private static final String[] QUERY_TABLE_FAILURE = {"", "获取列表失败"};
 	private static final String[] UPDATE_SERVER_FAILURE = {"", "更新服务失败"};
 	private static final String[] UPDATE_SERVER_SUCCESS = {"", "更新服务成功"};
-	private static final String[] ADD_DEVICE_SUCCESS = {"", "添加设备成功"};
-	private static final String[] ADD_DEVICE_FAILURE = {"", "添加设备失败"};
 	private static final String[] ADD_DEVICE_FAILURE_INVALID_ARGS = {"", "添加设备失败：无效的参数"};
 	private static final String[] MODIFY_STATE_CONFIRM = {"", "确认对所选择服务器进行操作？"};
 	private static final String[] ACTION_SELECTED_FAILURE = {"", "请选择操作对象"};
@@ -379,25 +477,23 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 		}
 	}
 
-	private void handleAddDevice(String mark, String name, String conf, String ip, int bw, int state, String room) {
-		getBackendService().addDeviceServer(getSession(), mark, name, conf, ip, bw, state, room,
-		        new AsyncCallback<Boolean>() {
+	private void handleAddDevice(String mark, String name, String conf, String ip, int bw, int state, String cabinet_name) {
+		getBackendService().createDeviceServer(getSession(), mark, name, conf, ip, bw, state, cabinet_name,
+		        new AsyncCallback<Void>() {
 
 			        @Override
 			        public void onFailure(Throwable caught) {
-				        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-				        log(ADD_DEVICE_FAILURE[LAN_SELECT], caught);
+                        if (caught instanceof EucalyptusServiceException) {
+                            onBackendServiceFailure((EucalyptusServiceException)caught);
+                        }
+                        getView().clearSelection();
 			        }
 
 			        @Override
-			        public void onSuccess(Boolean result) {
-				        if (!result) {
-					        showStatus(ADD_DEVICE_FAILURE[LAN_SELECT]);
-				        }
-				        else {
-					        showStatus(ADD_DEVICE_SUCCESS[LAN_SELECT]);
-				        }
-				        reloadCurrentRange();
+			        public void onSuccess(Void result) {
+                        showStatus(new ClientMessage("", "添加服务器成功"));
+                        reloadCurrentRange();
+                        getView().clearSelection();
 			        }
 
 		        });

@@ -773,8 +773,8 @@ public interface EucalyptusService extends RemoteService {
 	SearchResultRow modifyDeviceServerState(Session session,
 			SearchResultRow row, int state);
 
-	boolean addDeviceServer(Session session, String mark, String name,
-			String conf, String ip, int bw, int state, String room);
+	void createDeviceServer(Session session, String mark, String name, String conf, String ip, int bw, int state,
+	        String cabinet_name) throws EucalyptusServiceException;
 
 	List<SearchResultRow> deleteDeviceServer(Session session,
 			List<SearchResultRow> list);

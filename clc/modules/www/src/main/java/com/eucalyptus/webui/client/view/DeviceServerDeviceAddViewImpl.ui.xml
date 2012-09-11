@@ -93,8 +93,13 @@
 											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="80px">标识符</g:Anchor>
 										</g:at>
 										<g:at left="70" top="0">
-											<g:TextBox ui:field="serverMark" maxLength="40"
-												width="100px" />
+											<g:TextBox ui:field="serverMark" maxLength="40" width="100px" />
+										</g:at>
+										<g:at left="220" top="2">
+											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="80px">名称</g:Anchor>
+										</g:at>
+										<g:at left="270" top="0">
+											<g:TextBox ui:field="serverName" maxLength="40" width="100px" />
 										</g:at>
 									</g:AbsolutePanel>
 								</td>
@@ -109,47 +114,55 @@
 						<tbody class="{style.content1}">
 							<tr>
 								<td>
-									<g:AbsolutePanel height="70px" width="700px">
-										<g:at left="10" top="0">
-											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="80px">名称</g:Anchor>
+									<g:AbsolutePanel height="100px" width="700px">
+										<g:at left="10" top="5">
+											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">所属区域</g:Anchor>
 										</g:at>
-										<g:at left="0" top="20">
-											<g:TextBox ui:field="serverName" maxLength="40"
-												width="99px" />
+										<g:at left="100" top="2">
+											<g:ListBox ui:field="areaNameList" height="1.8EM"
+												width="10.5EM" />
 										</g:at>
-										<g:at left="130" top="0">
+										<g:at left="10" top="35">
+											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">所属机房</g:Anchor>
+										</g:at>
+										<g:at left="100" top="32">
+											<g:ListBox ui:field="roomNameList" height="1.8EM"
+												width="10.5EM" />
+										</g:at>
+										<g:at left="10" top="65">
+											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">所属机柜</g:Anchor>
+										</g:at>
+										<g:at left="100" top="62">
+											<g:ListBox ui:field="cabinetNameList" height="1.8EM"
+												width="10.5EM" />
+										</g:at>
+		
+										<g:at left="300" top="0">
 											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="80px">配置</g:Anchor>
 										</g:at>
-										<g:at left="120" top="20">
+										<g:at left="260" top="20">
 											<g:TextBox ui:field="serverConf" maxLength="40"
-												width="99px" />
+												width="119px" />
 										</g:at>
-										<g:at left="250" top="0">
+										<g:at left="300" top="45">
 											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="80px">IP地址</g:Anchor>
 										</g:at>
-										<g:at left="240" top="20">
+										<g:at left="260" top="65">
 											<g:TextBox ui:field="serverIP" maxLength="40"
-												width="99px" />
+												width="119px" />
 										</g:at>
-										<g:at left="370" top="0">
+										<g:at left="450" top="0">
 											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="80px">带宽(KB)</g:Anchor>
 										</g:at>
-										<g:at left="360" top="20">
-										<g:IntegerBox ui:field="serverBW" maxLength="40"
-												width="99px" />
+										<g:at left="415" top="20">
+											<g:IntegerBox ui:field="serverBW" maxLength="40"
+												width="119px" />
 										</g:at>
-										<g:at left="490" top="0">
-											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="80px">机房</g:Anchor>
-										</g:at>
-										<g:at left="480" top="20">
-										<g:TextBox ui:field="serverRoom" maxLength="40"
-												width="99px" />
-										</g:at>
-										<g:at left="610" top="0">
+										<g:at left="590" top="0">
 											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="80px">状态</g:Anchor>
 										</g:at>
-										<g:at left="600" top="20">
-											<g:ListBox ui:field="serverState" width="70px" />
+										<g:at left="565" top="20">
+											<g:ListBox ui:field="serverState" width="120px" />
 										</g:at>
 									</g:AbsolutePanel>
 								</td>
@@ -158,7 +171,7 @@
 					</table>
 				</g:HTMLPanel>
 			</g:at>
-			<g:at left="560" top="90">
+			<g:at left="520" top="100">
 				<g:HTMLPanel>
 					<table>
 						<tbody class="{style.content2}">
