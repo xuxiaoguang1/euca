@@ -23,6 +23,7 @@ import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.checker.ValueChecker;
 import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
+import com.eucalyptus.webui.shared.dictionary.ConfDef;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
@@ -33,6 +34,7 @@ import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class UserActivity extends AbstractSearchActivity
@@ -75,6 +77,8 @@ public class UserActivity extends AbstractSearchActivity
   
   private final String[] FOOTERVIEW_USER_NO_SELECTION = {"Must select users", "必须选择至少一个用户"};
   private final String[] FOOTERVIEW_USER_ONE_SELECTION = {"Must select one user", "必须选择一个用户"};
+  
+  private final String[] ALERT_NOT_DEL_ADMIN = {"Can not delete default account administrator", "账户默认管理员不能删除"};
 
   private static final Logger LOG = Logger.getLogger( UserActivity.class.getName( ) );
   
@@ -165,13 +169,6 @@ public class UserActivity extends AbstractSearchActivity
     }
     ( ( UserView ) this.view ).showSearchResult( result );    
   }
-
-  public static final String USER_NAME_INPUT_TITLE[] = {"User ID", "ID"};
-  public static final String USER_PWD_INPUT_TITLE[] = {"User PWD", "密码"};
-  public static final String USER_TITLE_INPUT_TITLE[] = {"User name", "姓名"};
-  public static final String USER_MOBILE_INPUT_TITLE[] = {"User mobile", "手机"};
-  public static final String USER_EMAIL_INPUT_TITLE[] = {"User emial", "邮箱"};
-  public static final String USER_TYPE_INPUT_TITLE[] = {"User type", "类型"};
   
   @Override
   public void process(UserInfo user) {
@@ -460,13 +457,18 @@ public class UserActivity extends AbstractSearchActivity
 	    if ( currentSelected == null || currentSelected.size( ) < 1 ) {
 	      return;
 	    }
+	    final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
   
 	    final ArrayList<String> ids = Lists.newArrayList( ); 
 	    for ( SearchResultRow row : currentSelected ) {
 	      ids.add( row.getField( 0 ) );
+	      
+	      String userName = row.getField(4);
+	      if (userName.equals(ConfDef.ACCOUNT_ADMIN_NAME)) {
+	    	  Window.alert(ALERT_NOT_DEL_ADMIN[lan]);
+	    	  return;
+	      }
 	    }
-	    
-	    final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 	    
 	    clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, FOOTERVIEW_DELETE_USERS[lan], 0 );
 	    

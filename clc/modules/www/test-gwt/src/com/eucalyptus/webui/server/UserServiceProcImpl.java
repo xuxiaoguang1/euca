@@ -14,11 +14,11 @@ import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
-import com.eucalyptus.webui.server.dictionary.ConfDef;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.user.RandomPwdCreator;
 import com.eucalyptus.webui.server.user.UserDBProcWrapper;
 import com.eucalyptus.webui.server.user.UserSyncException;
+import com.eucalyptus.webui.shared.dictionary.ConfDef;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
@@ -89,12 +89,10 @@ public class UserServiceProcImpl {
 		  if (rs == null)
 			  return null;
 		  
-		  return getSearchResult(isRootAdmin, rs, range);
+		  return getSearchResult(rs, range);
 	  }
 	  
 	  public SearchResult lookupUserByGroupId(LoginUserProfile curUser, int groupId, SearchRange range ) throws EucalyptusServiceException {
-		  boolean isRootAdmin = curUser.isSystemAdmin();
-		  
 		  ResultSetWrapper rs;
 		  
 		  try {
@@ -108,7 +106,7 @@ public class UserServiceProcImpl {
 		  if (rs == null)
 			  return null;
 		  
-		  return getSearchResult(isRootAdmin, rs, range);
+		  return getSearchResult(rs, range);
 	  }
 	  
 	  public SearchResult lookupUserByAccountId(int accountId, SearchRange range ) throws EucalyptusServiceException {
@@ -126,7 +124,7 @@ public class UserServiceProcImpl {
 		  if (rs == null)
 			  return null;
 		  
-		  return getSearchResult(false, rs, range);
+		  return getSearchResult(rs, range);
 	  }
 	  
 	  public SearchResult lookupUserExcludeGroupId(LoginUserProfile curUser, int accountId, int groupId, SearchRange range ) throws EucalyptusServiceException {
@@ -144,23 +142,20 @@ public class UserServiceProcImpl {
 		  if (rs == null)
 			  return null;
 		  
-		  return getSearchResult(curUser.isSystemAdmin(), rs, range);
+		  return getSearchResult(rs, range);
 	  }
 	  
-	  private SearchResult getSearchResult(boolean isRootAdmin, ResultSetWrapper rs, SearchRange range) {
+	  private SearchResult getSearchResult(ResultSetWrapper rs, SearchRange range) {
 		  
 		  assert (range != null);
 		  
 		  List<SearchResultFieldDesc> FIELDS;
 		  
-		  if (isRootAdmin) 
-			  FIELDS = FIELDS_ROOT;
-		  else
-			  FIELDS = FIELDS_NONROOT;
+		  FIELDS = FIELDS_ROOT;
 		  
 		  final int sortField = range.getSortField( );
 		  
-		  List<SearchResultRow> DATA = resultSet2List(isRootAdmin, rs);
+		  List<SearchResultRow> DATA = resultSet2List(rs);
 		  
 		  int resultLength = Math.min( range.getLength( ), DATA.size( ) - range.getStart( ) );
 		  SearchResult result = new SearchResult(DATA.size(), range );
@@ -254,7 +249,7 @@ public class UserServiceProcImpl {
 			}
 	  }
 	  
-	  private List<SearchResultRow> resultSet2List(boolean isRootView, ResultSetWrapper rsWrapper) {
+	  private List<SearchResultRow> resultSet2List(ResultSetWrapper rsWrapper) {
 		  ResultSet rs = rsWrapper.getResultSet();
 		  int index = 1;
 		  List<SearchResultRow> result = null;
@@ -263,25 +258,23 @@ public class UserServiceProcImpl {
 				  result = new ArrayList<SearchResultRow>();
 				  
 				  while (rs.next()) {
-					  if (isRootView) {
 						  result.add( new SearchResultRow(
-									  			Arrays.asList(rs.getString(DBTableColName.USER.ID),
-									  							Integer.toString(index++),
-									  							rs.getString(DBTableColName.ACCOUNT.NAME),
-									  							rs.getString(DBTableColName.GROUP.NAME),
-									  							rs.getString(DBTableColName.USER.NAME),
-									  							rs.getString(DBTableColName.USER.TITLE),
-																rs.getString(DBTableColName.USER.EMAIL),
-																rs.getString(DBTableColName.USER.MOBILE),
-																Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.USER.STATE)),
-																Enum2String.getInstance().getEnumUserTypeName(rs.getString(DBTableColName.USER.TYPE)),
-																rs.getString(DBTableColName.ACCOUNT.ID),
-											  					rs.getString(DBTableColName.GROUP.ID),
-											  					rs.getString(DBTableColName.USER.PWD)
-															)
-								  						)
+							  			Arrays.asList(rs.getString(DBTableColName.USER.ID),
+							  							Integer.toString(index++),
+							  							rs.getString(DBTableColName.ACCOUNT.NAME),
+							  							rs.getString(DBTableColName.GROUP.NAME),
+							  							rs.getString(DBTableColName.USER.NAME),
+							  							rs.getString(DBTableColName.USER.TITLE),
+														rs.getString(DBTableColName.USER.EMAIL),
+														rs.getString(DBTableColName.USER.MOBILE),
+														Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.USER.STATE)),
+														Enum2String.getInstance().getEnumUserTypeName(rs.getString(DBTableColName.USER.TYPE)),
+														rs.getString(DBTableColName.ACCOUNT.ID),
+									  					rs.getString(DBTableColName.GROUP.ID),
+									  					rs.getString(DBTableColName.USER.PWD)
+													)
+						  						)
 								  	);
-					  }
 				}
 				rsWrapper.close();
 			}
@@ -320,21 +313,6 @@ public class UserServiceProcImpl {
 				new SearchResultFieldDesc( TABLE_COL_TITLE_MOBILE[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_TYPE[1], true, "9%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_ACCOUNT_ID[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true ),
-				new SearchResultFieldDesc( TABLE_COL_GROUP_ID[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true ),
-				new SearchResultFieldDesc( TABLE_COL_USER_PWD[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true )
-			);
-	  
-	  private static final List<SearchResultFieldDesc> FIELDS_NONROOT = Arrays.asList(
-				new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "5%", false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_GROUP_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_TITLE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_EMAIL[1], true, "25%", TableDisplay.MANDATORY, Type.LINK, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_MOBILE[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_TYPE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_ACCOUNT_ID[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true ),
 				new SearchResultFieldDesc( TABLE_COL_GROUP_ID[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true ),
 				new SearchResultFieldDesc( TABLE_COL_USER_PWD[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true )

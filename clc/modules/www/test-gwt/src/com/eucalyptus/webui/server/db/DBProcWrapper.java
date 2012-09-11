@@ -35,7 +35,7 @@ package com.eucalyptus.webui.server.db;
 
 import java.sql.*;
 
-import com.eucalyptus.webui.server.dictionary.ConfDef;
+import com.eucalyptus.webui.shared.dictionary.ConfDef;
 
 public class DBProcWrapper {
 	private final static DBProcWrapper dbProc = new DBProcWrapper();
