@@ -129,7 +129,7 @@ public class UserServiceProcImpl {
 		  return getSearchResult(false, rs, range);
 	  }
 	  
-	  public SearchResult lookupUserExcludeGroupId(int accountId, int groupId, SearchRange range ) throws EucalyptusServiceException {
+	  public SearchResult lookupUserExcludeGroupId(LoginUserProfile curUser, int accountId, int groupId, SearchRange range ) throws EucalyptusServiceException {
 		  
 		  ResultSetWrapper rs;
 		  
@@ -144,7 +144,7 @@ public class UserServiceProcImpl {
 		  if (rs == null)
 			  return null;
 		  
-		  return getSearchResult(false, rs, range);
+		  return getSearchResult(curUser.isSystemAdmin(), rs, range);
 	  }
 	  
 	  private SearchResult getSearchResult(boolean isRootAdmin, ResultSetWrapper rs, SearchRange range) {
@@ -328,7 +328,6 @@ public class UserServiceProcImpl {
 	  private static final List<SearchResultFieldDesc> FIELDS_NONROOT = Arrays.asList(
 				new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "5%", false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_ACCOUNT_NAME[1], true, "8%", TableDisplay.MANDATORY, Type.TEXT, false, true ),
 				new SearchResultFieldDesc( TABLE_COL_GROUP_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
 				new SearchResultFieldDesc( TABLE_COL_TITLE_TITLE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),

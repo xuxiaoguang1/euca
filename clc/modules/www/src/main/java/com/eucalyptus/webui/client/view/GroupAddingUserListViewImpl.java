@@ -21,13 +21,13 @@ import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.LayoutPanel;
 
-public class UserListViewImpl extends DialogBox implements UserListView {
+public class GroupAddingUserListViewImpl extends DialogBox implements GroupAddingUserListView {
 
-	interface UserListViewImplUiBinder extends
-			UiBinder<Widget, UserListViewImpl> {
+	interface GroupAddingUserListViewImplUiBinder extends
+			UiBinder<Widget, GroupAddingUserListViewImpl> {
 	}
 
-	public UserListViewImpl() {
+	public GroupAddingUserListViewImpl() {
 		setWidget(uiBinder.createAndBindUi(this));
 		this.currentSelected = null;
 		
@@ -64,6 +64,9 @@ public class UserListViewImpl extends DialogBox implements UserListView {
 		}
     
 		table.setData( result );
+		
+		this.center();
+		this.show();
 	}
 
 	@Override
@@ -77,13 +80,6 @@ public class UserListViewImpl extends DialogBox implements UserListView {
 	public void setPresenter(Presenter presenter) {
 		// TODO Auto-generated method stub
 		this.presenter = presenter;
-	}
-	
-	@Override
-	public void display() {
-		// TODO Auto-generated method stub
-		this.center();
-		this.show();
 	}
 		
 	private void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
@@ -105,8 +101,8 @@ public class UserListViewImpl extends DialogBox implements UserListView {
 		table.load( );
 	}
 	
-	private static UserListViewImplUiBinder uiBinder = GWT
-			.create(UserListViewImplUiBinder.class);
+	private static GroupAddingUserListViewImplUiBinder uiBinder = GWT
+			.create(GroupAddingUserListViewImplUiBinder.class);
 	
 	private static final Logger LOG = Logger.getLogger( UserViewImpl.class.getName( ) );
 	

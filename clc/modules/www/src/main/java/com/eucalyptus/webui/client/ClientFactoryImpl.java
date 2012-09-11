@@ -92,7 +92,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private AccountAddView accountAddView;
 	private GroupListView groupListView;
 	private GroupDetailView groupDetailView;
-	private UserListView userListView;
+	private GroupAddingUserListView groupAddingUserListView;
 	private UploadImageView uploadImageView;
 	private RunInstanceView runInstanceView;
 	private AreaView areaView;
@@ -383,12 +383,12 @@ public class ClientFactoryImpl implements ClientFactory {
 	}
 
 	@Override
-	public UserListView getUserListView() {
+	public GroupAddingUserListView getGroupAddingUserListView() {
 		// TODO Auto-generated method stub
-		if (userListView == null) {
-			userListView = new UserListViewImpl();
+		if (groupAddingUserListView == null) {
+			groupAddingUserListView = new GroupAddingUserListViewImpl();
 		}
-		return userListView;
+		return groupAddingUserListView;
 	}
 
 	@Override

@@ -341,7 +341,8 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	public SearchResult lookupUserExcludeGroupId(Session session, int accountId, int groupId, SearchRange range)
 	        throws EucalyptusServiceException {
 		verifySession(session);
-		return userServiceProc.lookupUserExcludeGroupId(accountId, groupId, range);
+		LoginUserProfile curUser = LoginUserProfileStorer.instance().get(session.getId());
+		return userServiceProc.lookupUserExcludeGroupId(curUser, accountId, groupId, range);
 	}
 
 	@Override
