@@ -7,6 +7,7 @@ import java.util.Date;
 
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
+import com.eucalyptus.webui.server.dictionary.ConfDef;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.user.EnumState;
@@ -273,7 +274,9 @@ public class UserDBProcWrapper {
 				append(DBTableName.USER).append(".").append(DBTableColName.USER.GROUP_ID).
 				append(" = ").
 				append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.ID).
-				append(" WHERE 1=1 ");
+				append(" WHERE ").
+				append(DBTableName.USER).append(".").append(DBTableColName.USER.DEL).append(" = ").append(ConfDef.DB_DEL_FIELD_VALID_STATE).
+				append(" ");
 		
 		return sql;
 	}
@@ -547,6 +550,7 @@ public class UserDBProcWrapper {
 		append(DBTableColName.USER.TYPE).append(", ").
 		append(DBTableColName.USER.STATE).append(", ").
 		append(DBTableColName.USER.REG_STATUS).append(", ").
+		append(DBTableColName.USER.DEL).append(", ").
 		append(DBTableColName.USER.GROUP_ID).append(", ").
 		append(DBTableColName.USER.ACCOUNT_ID).append(") VALUES (null, ");
 		
@@ -573,6 +577,9 @@ public class UserDBProcWrapper {
 		str.append(", ");
 		
 		str.append(user.getRegStatus().ordinal());
+		str.append(", ");
+		
+		str.append(ConfDef.DB_DEL_FIELD_VALID_STATE);
 		str.append(", ");
 		
 		int groupId = user.getGroupId();
@@ -666,7 +673,8 @@ public class UserDBProcWrapper {
 							append(DBTableName.USER).append(".").append(DBTableColName.USER.GROUP_ID).
 							append(" = ").
 							append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.ID).
-							append(" WHERE 1=1 ");
+							append(" WHERE ").
+							append(DBTableName.USER).append(".").append(DBTableColName.USER.DEL).append(" = ").append(ConfDef.DB_DEL_FIELD_VALID_STATE);
 		
 		sql.append(" AND ").
 			append(DBTableName.ACCOUNT).
@@ -686,10 +694,11 @@ public class UserDBProcWrapper {
 	}
 	
 	private String delUserSql(ArrayList<String> ids) {
-		StringBuilder sql = new StringBuilder();
-		sql.append("DELETE FROM ").
-		append(DBTableName.USER).
-		append(" WHERE ");
+		StringBuilder sql = new StringBuilder("UPDATE ").
+								append(DBTableName.USER).
+								append(" SET ").
+								append(DBTableColName.USER.DEL).append(" = ").append(ConfDef.DB_DEL_FIELD_INVALID_STATE).
+								append(" WHERE ");
 		
 		for (String str : ids) {
 			sql.append(" ").append(DBTableColName.USER.ID).
@@ -942,7 +951,8 @@ public class UserDBProcWrapper {
 				append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
 				append(" = ").
 				append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).
-				append(" WHERE 1=1 ");
+				append(" WHERE ").
+				append(DBTableName.USER).append(".").append(DBTableColName.USER.DEL).append(" = ").append(ConfDef.DB_DEL_FIELD_VALID_STATE);
 		
 		return sql;
 	}

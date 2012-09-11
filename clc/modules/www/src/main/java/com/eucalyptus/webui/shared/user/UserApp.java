@@ -9,7 +9,6 @@ public class UserApp implements java.io.Serializable {
 	private int id;
 	private Date apptime;
 	private EnumUserAppStatus status;
-	private int del;
 	private String comment;
 	private String keyPair;
 	private String securityGroup;
@@ -33,7 +32,6 @@ public class UserApp implements java.io.Serializable {
 		this.setAppTime(apptime);
 		this.setSrvStartingTime(srvStartingTime);
 		this.setSrvEndingingTime(srvEndingTime);
-		this.setDelState(del);
 		this.setComment(comment);
 		this.setKeyPair(keyPair);
 		this.setSecurityGroup(securityGroup);
@@ -62,13 +60,6 @@ public class UserApp implements java.io.Serializable {
 	}
 	public EnumUserAppStatus getStatus() {
 		return this.status;
-	}
-	
-	public void setDelState(int del) {
-		this.del = del;
-	}
-	public int getDelState() {
-		return this.del;
 	}
 	
 	public void setComment(String comment) {

@@ -1,13 +1,10 @@
 package com.eucalyptus.webui.server;
 
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.servlet.ServletException;
 
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
@@ -18,11 +15,9 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
-import com.eucalyptus.webui.server.mail.MailSenderInfo;
 import com.eucalyptus.webui.server.user.AccountDBProcWrapper;
 import com.eucalyptus.webui.server.user.AccountSyncException;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
-import com.eucalyptus.webui.shared.query.QueryType;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserRegStatus;
@@ -177,12 +172,13 @@ public class AccountServiceProcImpl {
 		  
 		  final int sortField = range.getSortField( );
 		  
-		  DATA = resultSet2List(rs);
-		  
+		  List<SearchResultRow> DATA = resultSet2List(rs);
 		  int resultLength = Math.min( range.getLength( ), DATA.size( ) - range.getStart( ) );
 		  SearchResult result = new SearchResult( DATA.size( ), range );
 		  result.setDescs( FIELDS );
-		  result.setRows( DATA.subList( range.getStart( ), range.getStart( ) + resultLength ) );
+		  
+		  if (DATA.size() > 0)
+			  result.setRows( DATA.subList( range.getStart( ), range.getStart( ) + resultLength ) );
 		
 		  for ( SearchResultRow row : result.getRows( ) ) {
 			  System.out.println( "Row: " + row );
@@ -226,8 +222,6 @@ public class AccountServiceProcImpl {
 	  
 	  ServletUtils servletUtils = new ServletUtils();
 	  
-	  private static List<SearchResultRow> DATA = null;
-	
 	  private static final String[] TABLE_COL_TITLE_CHECKALL = {"Check All", "全选"};
 	  private static final String[] TABLE_COL_TITLE_NO = {"No.", "序号"};
 	  private static final String[] TABLE_COL_ACCOUNT_NAME = {"Account", "账户"};

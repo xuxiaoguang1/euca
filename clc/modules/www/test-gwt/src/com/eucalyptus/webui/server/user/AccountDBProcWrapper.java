@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
+import com.eucalyptus.webui.server.dictionary.ConfDef;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.user.AccountInfo;
@@ -18,6 +19,7 @@ public class AccountDBProcWrapper {
 		
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		String sql = addAccountSql(account);
+		System.out.println(sql);
 		
 		try {
 			return dbProc.insertAndGetInsertId(sql);
@@ -150,7 +152,8 @@ public class AccountDBProcWrapper {
 	private StringBuilder queryAccountSql() {
 		StringBuilder sql = new StringBuilder("SELECT * FROM ").
 				append(DBTableName.ACCOUNT).
-				append(" WHERE 1=1 ");
+				append(" WHERE ").
+				append(DBTableColName.ACCOUNT.DEL).append(" = ").append(ConfDef.DB_DEL_FIELD_VALID_STATE).append(" ");
 		
 		return sql;
 	}
@@ -164,7 +167,8 @@ public class AccountDBProcWrapper {
 		append(DBTableColName.ACCOUNT.NAME).append(", ").
 		append(DBTableColName.ACCOUNT.EMAIL).append(", ").
 		append(DBTableColName.ACCOUNT.DES).append(", ").
-		append(DBTableColName.ACCOUNT.STATE).
+		append(DBTableColName.ACCOUNT.STATE).append(", ").
+		append(DBTableColName.ACCOUNT.DEL).
 		append(" ) VALUES (null, ");
 		
 		str.append("'");
@@ -175,6 +179,8 @@ public class AccountDBProcWrapper {
 		str.append(account.getDescription());
 		str.append("', ");
 		str.append(account.getState().ordinal());
+		str.append(", ");
+		str.append(ConfDef.DB_DEL_FIELD_VALID_STATE);
 		str.append(")");
 		
 		return str.toString();
@@ -206,12 +212,33 @@ public class AccountDBProcWrapper {
 	
 	private String delAccountsSql(ArrayList<String> ids) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("DELETE FROM ").
+		sql.append("UPDATE ").
+		append("( (").
 		append(DBTableName.ACCOUNT).
+		append(" LEFT JOIN ").
+		append(DBTableName.GROUP).
+		append(" ON ").
+		append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).
+		append(" = ").
+		append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.ACCOUNT_ID).
+		append(")").
+		append(" LEFT JOIN ").
+		append(DBTableName.USER).
+		append(" ON ").
+		append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).
+		append(" = ").
+		append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
+		append(" ) ").
+		append(" SET ").
+		append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.DEL).append(" = ").append(ConfDef.DB_DEL_FIELD_INVALID_STATE).
+		append(", ").
+		append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.DEL).append(" = ").append(ConfDef.DB_DEL_FIELD_INVALID_STATE).
+		append(", ").
+		append(DBTableName.USER).append(".").append(DBTableColName.USER.DEL).append(" = ").append(ConfDef.DB_DEL_FIELD_INVALID_STATE).
 		append(" WHERE ");
 		
 		for (String str : ids) {
-			sql.append(" ").append(DBTableColName.ACCOUNT.ID).
+			sql.append(" ").append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).
 			append(" = '").
 			append(str).
 			append("' OR ");

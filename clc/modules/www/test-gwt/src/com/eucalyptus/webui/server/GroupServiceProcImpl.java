@@ -108,12 +108,14 @@ public class GroupServiceProcImpl {
 		
 		final int sortField = range.getSortField( );
 		  
-		DATA = resultSet2List(isRootAdmin, rs);
+		List<SearchResultRow> DATA = resultSet2List(isRootAdmin, rs);
 		  
 		int resultLength = Math.min( range.getLength( ), DATA.size( ) - range.getStart( ) );
-		SearchResult result = new SearchResult( DATA.size( ), range );
+		SearchResult result = new SearchResult(DATA.size(), range );
 		result.setDescs( FIELDS );
-		result.setRows( DATA.subList( range.getStart( ), range.getStart( ) + resultLength ) );
+	  
+		if (DATA.size() > 0)
+			result.setRows( DATA.subList( range.getStart( ), range.getStart( ) + resultLength ) );
 		
 		for ( SearchResultRow row : result.getRows( ) ) {
 			System.out.println( "Row: " + row );
@@ -211,8 +213,6 @@ public class GroupServiceProcImpl {
 		  
 		  return result;
 	  }
-				
-	  private static List<SearchResultRow> DATA = null;
 	
 	  private static final String[] TABLE_COL_TITLE_CHECKALL = {"Check All", "全选"};
 	  private static final String[] TABLE_COL_TITLE_NO = {"No.", "序号"};

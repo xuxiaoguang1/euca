@@ -35,7 +35,6 @@ public class UserAppServiceProcImpl {
 	  public void addUserApp(Session session, UserApp userApp) throws EucalyptusServiceException {
 		  
 		  userApp.setStatus(EnumUserAppStatus.APPLYING);
-		  userApp.setDelState(0);
 		  
 		  Calendar cal = Calendar.getInstance();
 		  Date date = cal.getTime();

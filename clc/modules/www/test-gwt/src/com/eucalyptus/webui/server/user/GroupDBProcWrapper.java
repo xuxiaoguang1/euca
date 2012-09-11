@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
+import com.eucalyptus.webui.server.dictionary.ConfDef;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.user.EnumState;
@@ -205,7 +206,10 @@ public class GroupDBProcWrapper {
 									append(DBTableName.ACCOUNT).
 									append(".").
 									append(DBTableColName.ACCOUNT.ID).
-									append(" WHERE 1=1 ");
+									append(" WHERE ").
+									append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.DEL).
+									append(" = ").
+									append(ConfDef.DB_DEL_FIELD_VALID_STATE);
 		
 		if (accountId > 0) {
 			sql.append(" AND ").
@@ -235,9 +239,15 @@ public class GroupDBProcWrapper {
 		
 		StringBuilder sql = new StringBuilder("SELECT * FROM ").
 									append(DBTableName.GROUP).
-									append(" WHERE ").append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.ACCOUNT_ID).
+									append(" WHERE ").
+									append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.DEL).
+									append(" = ").
+									append(ConfDef.DB_DEL_FIELD_VALID_STATE).
+									append(" AND ").
+									append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.ACCOUNT_ID).
 									append(" = '").append(accountId).append("'").
-									append(" AND ").append(DBTableColName.GROUP.NAME).append(" = '").append(groupName).append("'");
+									append(" AND ").
+									append(DBTableColName.GROUP.NAME).append(" = '").append(groupName).append("'");
 		
 		System.out.println(sql.toString());
 		
@@ -261,7 +271,9 @@ public class GroupDBProcWrapper {
 		append(DBTableColName.GROUP.NAME).append(", ").
 		append(DBTableColName.GROUP.DESCRIPTION).append(", ").
 		append(DBTableColName.GROUP.STATE).append(", ").
-		append(DBTableColName.GROUP.ACCOUNT_ID).append(") VALUES (null, ");
+		append(DBTableColName.GROUP.DEL).append(", ").
+		append(DBTableColName.GROUP.ACCOUNT_ID).
+		append(") VALUES (null, ");
 		
 		str.append("'");
 		str.append(group.getName());
@@ -272,6 +284,9 @@ public class GroupDBProcWrapper {
 		
 		str.append(group.getState().ordinal());
 		str.append("', ");
+		
+		str.append(ConfDef.DB_DEL_FIELD_VALID_STATE);
+		str.append(", ");
 		
 		int accountId = group.getAccountId();
 		
@@ -309,9 +324,8 @@ public class GroupDBProcWrapper {
 			append("' ");
 		}
 		
-		str.append("WHERE ").append(DBTableColName.GROUP.ID).append(" = '").
-		append(group.getId()).
-		append("'");
+		str.append("WHERE ").append(DBTableColName.GROUP.ID).append(" = ").
+		append(group.getId());
 		
 		System.out.println(str.toString());
 		
@@ -320,12 +334,22 @@ public class GroupDBProcWrapper {
 	
 	private String delGroupSql(ArrayList<String> ids) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("DELETE FROM ").
+		sql.append("UPDATE ").
 		append(DBTableName.GROUP).
+		append(" LEFT JOIN ").
+		append(DBTableName.USER).
+		append(" ON ").
+		append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.ACCOUNT_ID).
+		append(" = ").
+		append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
+		append(" SET ").
+		append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.DEL).append(" = ").append(ConfDef.DB_DEL_FIELD_INVALID_STATE).
+		append(", ").
+		append(DBTableName.USER).append(".").append(DBTableColName.USER.DEL).append(" = ").append(ConfDef.DB_DEL_FIELD_INVALID_STATE).
 		append(" WHERE ");
 		
 		for (String str : ids) {
-			sql.append(" ").append(DBTableColName.GROUP.ID).
+			sql.append(" ").append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.ID).
 			append(" = '").
 			append(str).
 			append("' OR ");
@@ -341,7 +365,8 @@ public class GroupDBProcWrapper {
 	private String listGroupsSql(int accountId) {
 		StringBuilder sql = new StringBuilder("SELECT * FROM ").
 		append(DBTableName.GROUP).
-		append(" WHERE 1=1");
+		append(" WHERE ").
+		append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.DEL).append(" = ").append(ConfDef.DB_DEL_FIELD_VALID_STATE);
 		
 		// account id is valid
 		if (accountId > 0) {
@@ -380,6 +405,8 @@ public class GroupDBProcWrapper {
 		StringBuilder sql = new StringBuilder("SELECT * FROM ").
 							append(DBTableName.GROUP).
 							append(" WHERE ").
+							append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.DEL).append(" = ").append(ConfDef.DB_DEL_FIELD_VALID_STATE).
+							append(" AND ").
 							append(DBTableName.GROUP).
 							append(".").
 							append(DBTableColName.GROUP.ID).

@@ -8,4 +8,7 @@ public class ConfDef {
 	public static String DB_PWD = "root";
 	
 	public static int DEFAULT_PWD_LEN = 6;
+	
+	public static int DB_DEL_FIELD_VALID_STATE = 0;
+	public static int DB_DEL_FIELD_INVALID_STATE = 1;
 }
