@@ -28,7 +28,6 @@ import com.eucalyptus.webui.client.view.device.DeviceServerModifyViewImpl;
 import com.eucalyptus.webui.client.view.device.DeviceServerView;
 import com.eucalyptus.webui.client.view.device.DeviceMirrorSearchResultTable.SearchResultRowMatcher;
 import com.eucalyptus.webui.client.view.device.DeviceServerView.MirrorModeType;
-import com.eucalyptus.webui.server.device.DeviceServerServiceProcImpl;
 import com.eucalyptus.webui.shared.checker.InvalidValueException;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -41,6 +40,11 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 
 	private DeviceServerModifyView serverModifyView;
 	private DeviceServerDeviceAddView deviceAddView;
+    
+    public static final int TABLE_COL_INDEX_SERVER_ID = 0;
+    public static final int TABLE_COL_INDEX_CHECKBOX = 1;
+    public static final int TABLE_COL_INDEX_NO = 2;
+    public static final int TABLE_COL_INDEX_STATE = 10;
 
 	public DeviceServerActivity(SearchPlace place, ClientFactory clientFactory) {
 		super(place, clientFactory);
@@ -341,7 +345,7 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 		}
 		int state = -1;
 		try {
-			state = ServerState.getValue(row.getField(DeviceServerServiceProcImpl.TABLE_COL_INDEX_STATE));
+			state = ServerState.getValue(row.getField(TABLE_COL_INDEX_STATE));
 		}
 		catch (Exception e) {
 		}
@@ -414,8 +418,8 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 				if (result != null) {
 					showStatus(UPDATE_SERVER_SUCCESS[LAN_SELECT]);
 					if (getView().isMirrorMode()) {
-						final int col = DeviceServerServiceProcImpl.TABLE_COL_INDEX_SERVER_ID;
-						result.setField(DeviceServerServiceProcImpl.TABLE_COL_INDEX_CHECKBOX, "+");
+						final int col = TABLE_COL_INDEX_SERVER_ID;
+						result.setField(TABLE_COL_INDEX_CHECKBOX, "+");
 						final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
 
 							@Override
@@ -452,7 +456,7 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 				if (result != null) {
 					showStatus(DELETE_DEVICE_SUCCESS[LAN_SELECT]);
 					if (getView().isMirrorMode()) {
-						final int col = DeviceServerServiceProcImpl.TABLE_COL_INDEX_SERVER_ID;
+						final int col = TABLE_COL_INDEX_SERVER_ID;
 						final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
 
 							@Override
@@ -477,7 +481,7 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 
 	private SearchResultRow copyRow(SearchResultRow row) {
 		SearchResultRow tmp = row.copy();
-		tmp.setField(DeviceServerServiceProcImpl.TABLE_COL_INDEX_CHECKBOX, "");
+		tmp.setField(TABLE_COL_INDEX_CHECKBOX, "");
 		return tmp;
 	}
 
@@ -548,8 +552,8 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 
 			@Override
 			public int compare(SearchResultRow arg0, SearchResultRow arg1) {
-				String v0 = arg0.getField(DeviceServerServiceProcImpl.TABLE_COL_INDEX_NO);
-				String v1 = arg1.getField(DeviceServerServiceProcImpl.TABLE_COL_INDEX_NO);
+				String v0 = arg0.getField(TABLE_COL_INDEX_NO);
+				String v1 = arg1.getField(TABLE_COL_INDEX_NO);
 				if (v0 == null) {
 					return v1 == null ? 0 : 1;
 				}
