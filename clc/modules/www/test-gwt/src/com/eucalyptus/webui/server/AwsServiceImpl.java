@@ -239,8 +239,10 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
               try {
                 rs = wrapper.query(sb.toString()).getResultSet();
                 rs.next();
-                sysName = rs.getString(DBTableColName.VM_IMAGE_TYPE.OS);
-                sysVer = rs.getString(DBTableColName.VM_IMAGE_TYPE.VER);
+                if (!rs.getString(DBTableColName.VM_IMAGE_TYPE.DEL).equals("1")) {
+                  sysName = rs.getString(DBTableColName.VM_IMAGE_TYPE.OS);
+                  sysVer = rs.getString(DBTableColName.VM_IMAGE_TYPE.VER);
+                }
               } catch (SQLException e) {
                 //e.printStackTrace();
               }
@@ -435,17 +437,21 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     StringBuilder sb = new StringBuilder();
     String OS = DBTableColName.VM_IMAGE_TYPE.OS;
     String VER = DBTableColName.VM_IMAGE_TYPE.VER;
+    String DEL = DBTableColName.VM_IMAGE_TYPE.DEL;
     String EUCA_ID = DBTableColName.VM_IMAGE_TYPE.EUCA_ID;
     sb.append("INSERT INTO ").append(DBTableName.VM_IMAGE_TYPE);
     sb.append("(").append(OS).append(",");
     sb.append(VER).append(",");
+    sb.append(DEL).append(",");
     sb.append(EUCA_ID).append(")");
     sb.append(" VALUES (");
     sb.append("'").append(sysName).append("',");
     sb.append("'").append(sysVer).append("',");
+    sb.append("'").append(0).append("',");
     sb.append("'").append(id).append("')");
     sb.append("ON DUPLICATE KEY UPDATE ");
     sb.append(OS).append("=VALUES(").append(OS).append("),");
+    sb.append(OS).append("=VALUES(").append(DEL).append("),");
     sb.append(VER).append("=VALUES(").append(VER).append(")");
     try {
       wrapper.update(sb.toString());
@@ -459,7 +465,12 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
   public void unbindImages(Session session, List<String> ids)
       throws EucalyptusServiceException {
     StringBuilder sb = new StringBuilder();
+    /*
     sb.append("DELETE FROM ").append(DBTableName.VM_IMAGE_TYPE);
+    */
+    sb.append("UPDATE ").append(DBTableName.VM_IMAGE_TYPE);
+    sb.append(" SET ").append(DBTableColName.VM_IMAGE_TYPE.DEL);
+    sb.append("= '1'");
     sb.append(" WHERE ").append(DBTableColName.VM_IMAGE_TYPE.EUCA_ID);
     sb.append(" IN (");
     for (String id : ids) {
@@ -469,6 +480,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     try {
       wrapper.update(sb.toString());
     } catch (SQLException e) {
+      LOG.error("unbind image failed: " + e.toString());
       throw new EucalyptusServiceException(e.toString());
     }
   }
