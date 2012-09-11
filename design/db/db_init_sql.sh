@@ -4,6 +4,9 @@ command() {
     cmd=$@
     # echo $cmd
     mysql -u root --password=root -D eucalyptus -e "$cmd"
+    if [ $? -ne 0 ]; then
+        echo $cmd
+    fi
 }
 
 getvalue() {
@@ -17,6 +20,7 @@ getvalue() {
     echo $id
 }
 
+command 'delete from template_price where 1=1'
 command 'delete from template where 1=1'
 command 'delete from bw_service where 1=1'
 command 'delete from ip_service where 1=1'
@@ -29,7 +33,12 @@ command 'delete from mem_service where 1=1'
 command 'delete from memory where 1=1'
 command 'delete from cpu_service where 1=1'
 command 'delete from cpu where 1=1'
+command 'delete from cpu_price where 1=1'
 command 'delete from server where 1=1'
+command 'delete from others_price where 1=1'
+command 'delete from cabinet where 1=1'
+command 'delete from room where 1=1'
+command 'delete from area where 1=1'
 command 'delete from user where 1=1'
 command 'delete from groups where 1=1'
 command 'delete from account where 1=1'
@@ -75,10 +84,53 @@ for ((i=0;i<5;i++)) do
     done
 done
 
+for ((i=0;i<25;i++)) do
+    let mod="i%2";
+    if [ $mod -ne 0 ]; then
+        command insert into area \(area_name, area_desc, area_creationtime, area_modifiedtime\) \
+            values \(\"area$i\", \"area_desc$i\", \"2012-07-07\", \"2012-07-08\"\)
+    else
+        command insert into area \(area_name, area_desc, area_creationtime\) \
+            values \(\"area$i\", \"area_desc$i\", \"2012-07-07\"\)
+    fi
+done
+
+id=`getvalue area area_id area_name area0`
+
+for ((i=0;i<5;i++)) do
+    let mod="i%2";
+    if [ $mod -ne 0 ]; then
+        command insert into room \(room_name, room_desc, room_creationtime, room_modifiedtime, area_id\) \
+            values \(\"room$i\", \"room_desc$i\", \"2012-07-07\", \"2012-07-08\", \"$id\"\)
+    else
+        command insert into room \(room_name, room_desc, room_creationtime, area_id\) \
+            values \(\"room$i\", \"room_desc$i\", \"2012-07-07\", \"$id\"\)
+    fi
+done
+
+command insert into others_price \(others_price_name, others_price, others_price_desc\) values \(\"memory\", \"12.3\", \"\"\)
+command insert into others_price \(others_price_name, others_price, others_price_desc\) values \(\"disk\", \"23.4\", \"\"\)
+command insert into others_price \(others_price_name, others_price, others_price_desc\) values \(\"bandwidth\", \"34.5\", \"\"\)
+
+id=`getvalue room room_id room_name room0`
+
+for ((i=0;i<5;i++)) do
+    let mod="i%2";
+    if [ $mod -ne 0 ]; then
+        command insert into cabinet \(cabinet_name, cabinet_desc, cabinet_creationtime, cabinet_modifiedtime, room_id\) \
+            values \(\"cabinet$i\", \"cabinet_desc$i\", \"2012-07-07\", \"2012-07-08\", \"$id\"\)
+    else
+        command insert into cabinet \(cabinet_name, cabinet_desc, cabinet_creationtime, room_id\) \
+            values \(\"cabinet$i\", \"cabinet_desc$i\", \"2012-07-07\", \"$id\"\)
+    fi
+done
+
+id=`getvalue cabinet cabinet_id cabinet_name cabinet0`
+
 for ((i=0;i<20;i++)) do
     let x="$i%3";
-    command insert into server \(server_name, server_mark, server_conf, server_ip, server_bw, server_state, server_starttime\) \
-        values \(\"name$x\", \"mark$i\", \"conf$i\", \"192.168.134.$i\", \"$i\", \"$x\", \"2012-07-07\"\)
+    command insert into server \(server_name, server_mark, server_conf, server_ip, server_bw, server_state, server_starttime, cabinet_id\) \
+        values \(\"name$x\", \"mark$i\", \"conf$i\", \"192.168.134.$i\", \"$i\", \"$x\", \"2012-07-07\", \"$id\"\)
 done
 
 # insert cpu
@@ -203,7 +255,7 @@ done
 for ((i=0;i<10;i++)) do
     let d="10+$i%10";
     command insert into template \( \
-        template_mark, \
+        template_name, \
         template_cpu, \
         template_mem, \
         template_disk, \
@@ -212,14 +264,36 @@ for ((i=0;i<10;i++)) do
         template_starttime, \
         template_ncpus\) \
         values \( \
-        \"mark$i\", \
+        \"name$i\", \
         \"cpu0\", \
-        \"2$i""000\", \
-        \"3$i""000\", \
-        \"4$i\", \
+        \"2$i""000000\", \
+        \"3$i""000000\", \
+        \"4$i""000\", \
         \"image$i\", \
         \"2012-07-$d\", \
         \"1\" \
+        \)
+done
+
+for ((i=0;i<5;i++)) do
+    let d="10+$i%10";
+    id=`getvalue template template_id template_name name$i`
+    command insert into template_price \( \
+        template_price_desc, \
+        template_price_cpu, \
+        template_price_mem, \
+        template_price_disk, \
+        template_price_bw, \
+        template_price_creationtime, \
+        template_id\) \
+        values \( \
+        \"desc$i\", \
+        \"12.$i\", \
+        \"23.$i\", \
+        \"34.$i\", \
+        \"45.$i\", \
+        \"2012-07-$d\", \
+        \"$id\" \
         \)
 done
 
