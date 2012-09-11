@@ -233,7 +233,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 		        StringBuilder sb = new StringBuilder();
 		        sb.append("SELECT * FROM ");
 		        sb.append(DBTableName.VM_IMAGE_TYPE);
-		        sb.append(" WHERE ").append(DBTableColName.VM_IMAGE_TYPE.EUCA_ID);
+		        sb.append(" WHERE ").append(DBTableColName.VM_IMAGE_TYPE.EUCA_VIT_ID);
 		        sb.append(" = '").append(id).append("'").append(" LIMIT 1");
 		          ResultSet rs;
               try {
@@ -438,7 +438,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     String OS = DBTableColName.VM_IMAGE_TYPE.OS;
     String VER = DBTableColName.VM_IMAGE_TYPE.VER;
     String DEL = DBTableColName.VM_IMAGE_TYPE.DEL;
-    String EUCA_ID = DBTableColName.VM_IMAGE_TYPE.EUCA_ID;
+    String EUCA_ID = DBTableColName.VM_IMAGE_TYPE.EUCA_VIT_ID;
     sb.append("INSERT INTO ").append(DBTableName.VM_IMAGE_TYPE);
     sb.append("(").append(OS).append(",");
     sb.append(VER).append(",");
@@ -471,7 +471,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     sb.append("UPDATE ").append(DBTableName.VM_IMAGE_TYPE);
     sb.append(" SET ").append(DBTableColName.VM_IMAGE_TYPE.DEL);
     sb.append("= '1'");
-    sb.append(" WHERE ").append(DBTableColName.VM_IMAGE_TYPE.EUCA_ID);
+    sb.append(" WHERE ").append(DBTableColName.VM_IMAGE_TYPE.EUCA_VIT_ID);
     sb.append(" IN (");
     for (String id : ids) {
       sb.append("'").append(id).append("',");

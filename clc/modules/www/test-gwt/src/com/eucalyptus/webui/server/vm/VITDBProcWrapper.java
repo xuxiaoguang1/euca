@@ -73,7 +73,7 @@ public class VITDBProcWrapper {
 					int id = Integer.valueOf(rs.getString(DBTableColName.VM_IMAGE_TYPE.ID));
 					String os = rs.getString(DBTableColName.VM_IMAGE_TYPE.OS);
 					String ver = rs.getString(DBTableColName.VM_IMAGE_TYPE.VER);
-					String euca_vit_id = rs.getString(DBTableColName.USER.MOBILE);
+					String euca_vit_id = rs.getString(DBTableColName.VM_IMAGE_TYPE.EUCA_VIT_ID);
 											
 					VmImageType vit = new VmImageType(id, os, ver, euca_vit_id);
 					rsWrapper.close();
@@ -100,7 +100,7 @@ public class VITDBProcWrapper {
 		append(DBTableColName.VM_IMAGE_TYPE.OS).append(", ").
 		append(DBTableColName.VM_IMAGE_TYPE.VER).append(", ").
 		append(DBTableColName.VM_IMAGE_TYPE.DEL).append(", ").
-		append(DBTableColName.VM_IMAGE_TYPE.EUCA_ID).
+		append(DBTableColName.VM_IMAGE_TYPE.EUCA_VIT_ID).
 		append(") VALUES (null, ");
 		
 		str.append("'");
@@ -135,7 +135,7 @@ public class VITDBProcWrapper {
 		}
 		
 		if (vit.getEucaVITId() != null) {
-			str.append(DBTableColName.VM_IMAGE_TYPE.EUCA_ID).append(" = '").
+			str.append(DBTableColName.VM_IMAGE_TYPE.EUCA_VIT_ID).append(" = '").
 			append(vit.getEucaVITId()).
 			append("', ");
 		}
