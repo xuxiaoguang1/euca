@@ -13,6 +13,7 @@ public class DBTableColName {
 		public final String REG_STATUS = "user_reg_state";
 		public final String GROUP_ID = "group_id";
 		public final String ACCOUNT_ID = "account_id";
+		public final String DEL = "user_del";
 	}
 
 	public interface USER_KEY {
@@ -66,6 +67,7 @@ public class DBTableColName {
 		public final String EMAIL = "account_email";
 		public final String DES = "account_descrip";
 		public final String STATE = "account_state";
+		public final String DEL = "account_del";
 	}
 
 	public interface GROUP {
@@ -74,6 +76,7 @@ public class DBTableColName {
 		public final String DESCRIPTION = "group_descrip";
 		public final String STATE = "group_state";
 		public final String ACCOUNT_ID = "account_id";
+		public final String DEL = "group_del";
 	}
 
 	public interface USER_RESET_PWD {

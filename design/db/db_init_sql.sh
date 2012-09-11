@@ -35,43 +35,43 @@ command 'delete from groups where 1=1'
 command 'delete from account where 1=1'
 command 'delete from history where 1=1'
 
-command insert into account \(account_name, account_email, account_descrip, account_state\) \
-    values \(\"eucalyptus\", \"email\", \"desc\", 0\)
+command insert into account \(account_name, account_email, account_descrip, account_state, account_del\) \
+    values \(\"eucalyptus\", \"email\", \"desc\", 0, 0\)
 
-command insert into account \(account_name, account_email, account_descrip, account_state\) \
-    values \(\"abc\", \"email\", \"desc\", 0\)
+command insert into account \(account_name, account_email, account_descrip, account_state, account_del\) \
+    values \(\"abc\", \"email\", \"desc\", 0, 0\)
 
 id=`getvalue account account_id account_name eucalyptus`
 
-command insert into groups \(group_name, group_descrip, group_state, account_id\) \
-    values \(\"eucalyptus\", \"desc\", 0, $id\)
+command insert into groups \(group_name, group_descrip, group_state, account_id, group_del\) \
+    values \(\"eucalyptus\", \"desc\", 0, $id, 0\)
 
-command insert into groups \(group_name, group_descrip, group_state, account_id\) \
-    values \(\"abc\", \"desc\", 0, $id\)
+command insert into groups \(group_name, group_descrip, group_state, account_id, group_del\) \
+    values \(\"abc\", \"desc\", 0, $id, 0\)
 
 group=`getvalue groups group_id group_name eucalyptus`
 account=`getvalue account account_id account_name eucalyptus`
 
-command insert into user \(user_name, user_pwd, user_title, user_mobile, user_email, user_type, user_state, user_reg_state, group_id, account_id\) \
-    values \(\"admin\", \"admin\", \"title\", \"mobile\", \"email\", 1, 1, 2, $group, $account\)
+command insert into user \(user_name, user_pwd, user_title, user_mobile, user_email, user_type, user_state, user_reg_state, group_id, account_id, user_del\) \
+    values \(\"admin\", \"admin\", \"title\", \"mobile\", \"email\", 1, 1, 2, $group, $account, 0\)
 
 group1=`getvalue groups group_id group_name abc`
 account1=`getvalue account account_id account_name abc`
 
-command insert into user \(user_name, user_pwd, user_title, user_mobile, user_email, user_type, user_state, user_reg_state, group_id, account_id\) \
-    values \(\"admin\", \"admin\", \"title\", \"mobile\", \"email\", 1, 1, 2, $group1, $account1\)
+command insert into user \(user_name, user_pwd, user_title, user_mobile, user_email, user_type, user_state, user_reg_state, group_id, account_id, user_del\) \
+    values \(\"admin\", \"admin\", \"title\", \"mobile\", \"email\", 1, 1, 2, $group1, $account1, 0\)
 
 for ((i=0;i<5;i++)) do
-    command insert into account \(account_name, account_email, account_descrip, account_state\) \
-        values \(\"account$i\", \"email$i\", \"desc$i\", 0\)
+    command insert into account \(account_name, account_email, account_descrip, account_state, account_del\) \
+        values \(\"account$i\", \"email$i\", \"desc$i\", 0, 0\)
     account=`getvalue account account_id account_name account$i`
-    command insert into groups \(group_name, group_descrip, group_state, account_id\) \
-        values \(\"group$i\", \"desc$i\", 0, $account\)
+    command insert into groups \(group_name, group_descrip, group_state, account_id, group_del\) \
+        values \(\"group$i\", \"desc$i\", 0, $account, 0\)
     group=`getvalue groups group_id group_name group$i`
     for ((j=0;j<10;j++)) do
         id="user$i$j"
-        command insert into user \(user_name, user_pwd, user_title, user_mobile, user_email, user_type, user_state, group_id, account_id\) \
-            values \(\"$id\", \"$id\", \"title\", \"mobile\", \"email\", 0, 0, $group, $account\)
+        command insert into user \(user_name, user_pwd, user_title, user_mobile, user_email, user_type, user_state, group_id, account_id, user_del\) \
+            values \(\"$id\", \"$id\", \"title\", \"mobile\", \"email\", 0, 0, $group, $account, 0\)
     done
 done
 
