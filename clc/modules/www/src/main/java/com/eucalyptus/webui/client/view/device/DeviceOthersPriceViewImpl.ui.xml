@@ -1,0 +1,162 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:euca="urn:import:com.eucalyptus.webui.client.view"
+	xmlns:d="urn:import:com.eucalyptus.webui.client.view.device">
+
+	<ui:style>
+		.top {
+			font-size: 120%;
+		}
+
+		.topContent {
+			color: gray;
+			font-size: 95%;
+			border-top: 1px solid #AAAAAA;
+			border-bottom: 1px solid #AAAAAA;
+			border-left: 1px solid #AAAAAA;
+			border-right: 1px solid #AAAAAA;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		.box1 {
+			font-size:100%;
+			position:relative;
+			top:0.15EM;
+		}
+
+		.box2 {
+			font-size:100%;
+			width:6EM;
+			color: gray;
+			text-align:center;
+		}
+		
+		.textArea {
+			resize:none;
+			font-size:100%;
+			position:relative;
+			border-top: 1px solid #AAAAAA;
+			border-bottom: 1px solid #AAAAAA;
+			border-left: 1px solid #AAAAAA;
+			border-right: 1px solid #AAAAAA;
+			top:0.15EM;
+		}
+	</ui:style>
+
+	<ui:with field="global"
+		type="com.eucalyptus.webui.client.view.GlobalResources" />
+		
+	<g:DockLayoutPanel unit="EM">
+		<g:north size="3.6">
+			<g:DockLayoutPanel unit="EM">
+				<g:north size="3">
+					<g:DockLayoutPanel unit="EM">
+						<g:west size="2">
+							<g:HTMLPanel>
+								<table/>
+							</g:HTMLPanel>
+						</g:west>
+						<g:center>
+							<g:HTMLPanel>
+								<table>
+									<tr class="{style.top}">
+										<td>其他定价管理</td>
+									</tr>
+								</table>
+							</g:HTMLPanel>
+						</g:center>
+					</g:DockLayoutPanel>
+				</g:north>
+				<g:center>
+					<g:HTMLPanel styleName="border-top:1px solid #AAAAAA;">
+						<table>
+							<tbody>
+								<tr>
+									<td width="820px"/>
+								</tr>
+							</tbody>
+						</table>
+					</g:HTMLPanel>
+				</g:center>
+			</g:DockLayoutPanel>
+		</g:north>
+		<g:west size="4">
+			<g:HTMLPanel>
+				<table/>
+			</g:HTMLPanel>
+		</g:west>
+		<g:center>
+			<g:HTMLPanel>
+				<table class="border-top: 1px solid #AAAAAA;">
+					<tr height="15px">
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td/>
+						<td width="20px">&nbsp;</td>
+						<td align="center"><g:Label text="定 价"/></td>
+						<td width="8px">&nbsp;</td>
+						<td/>
+						<td width="30px">&nbsp;</td>
+						<td align="center"><g:Label text="描 述"/></td>
+						<td width="40EM">&nbsp;</td>
+						<td align="center"><g:Label text="修改日期"/></td>
+						<td width="50EM">&nbsp;</td>
+						<td/>
+					</tr>
+					<tr height="15px">
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td><g:Anchor horizontalAlignment="ALIGN_CENTER" text="内 存"/></td>
+						<td/>
+						<td><g:DoubleBox alignment="RIGHT" width="8EM" height="1.4EM" readOnly="true" styleName="{style.box1}" ui:field="memoryPrice"/></td>
+						<td/>
+						<td><g:Anchor horizontalAlignment="ALIGN_LEFT" text=" 元/MB/天"/></td>
+						<td/>
+						<td rowspan="2"><g:TextArea alignment="LEFT" width="24EM" height="4.4EM" readOnly="true" styleName="{style.textArea}" ui:field="memoryPriceDesc"/></td>
+						<td/>
+						<td><g:Label styleName="{style.box2}" ui:field="memoryPriceModifiedtime"/></td>
+						<td/>
+						<td><d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="5EM" text="编 辑" ui:field="memoryPriceModify"/></td>
+					</tr>
+					<tr height="15px">
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td><g:Anchor horizontalAlignment="ALIGN_CENTER" text="硬 盘"/></td>
+						<td/>
+						<td><g:DoubleBox alignment="RIGHT" width="8EM" height="1.4EM" readOnly="true" styleName="{style.box1}" ui:field="diskPrice"/></td>
+						<td/>
+						<td><g:Anchor horizontalAlignment="ALIGN_LEFT" text=" 元/MB/天"/></td>
+						<td/>
+						<td rowspan="2"><g:TextArea alignment="LEFT" width="24EM" height="4.4EM" readOnly="true" styleName="{style.textArea}" ui:field="diskPriceDesc"/></td>
+						<td/>
+						<td><g:Label styleName="{style.box2}" ui:field="diskPriceModifiedtime"/></td>
+						<td/>
+						<td><d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="5EM" text="编 辑" ui:field="diskPriceModify"/></td>
+					</tr>
+					<tr height="15px">
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td><g:Anchor horizontalAlignment="ALIGN_CENTER" text="带 宽"/></td>
+						<td/>
+						<td><g:DoubleBox alignment="RIGHT" width="8EM" height="1.4EM" readOnly="true" styleName="{style.box1}" ui:field="bandwidthPrice"/></td>
+						<td/>
+						<td><g:Anchor horizontalAlignment="ALIGN_LEFT" text=" 元/KB/天"/></td>
+						<td/>
+						<td rowspan="2"><g:TextArea alignment="LEFT" width="24EM" height="4.4EM" readOnly="true" styleName="{style.textArea}" ui:field="bandwidthPriceDesc"/></td>
+						<td/>
+						<td><g:Label styleName="{style.box2}" ui:field="bandwidthPriceModifiedtime"/></td>
+						<td/>
+						<td><d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="5EM" text="编 辑" ui:field="bandwidthPriceModify"/></td>
+					</tr>
+				</table>
+			</g:HTMLPanel>
+		</g:center>
+	</g:DockLayoutPanel>
+
+</ui:UiBinder> 

@@ -1,7 +1,13 @@
 package com.eucalyptus.webui.shared.resource;
 
-public class Template {
-	private String mark;
+import java.io.Serializable;
+
+public class Template implements Serializable {
+	
+	private static final long serialVersionUID = 1118015847500947726L;
+	
+	private String ID;
+	private String name;
 	private String cpu;
 	private String mem;
 	private String disk;
@@ -9,23 +15,34 @@ public class Template {
 	private String image;
 	private String ncpus;
 	
-	public String getNcpus() {
-    return ncpus;
-  }
-  public void setNcpus(String ncpus) {
-    this.ncpus = ncpus;
-  }
-  
-  public void setMark(String mark) {
-		this.mark = mark;
+	public String getNCPUs() {
+		return ncpus;
 	}
-	public String getMark() {
-		return this.mark;
+	
+	public void setNCPUs(String ncpus) {
+		this.ncpus = ncpus;
+	}
+	
+	public void setID(String ID) {
+		this.ID = ID;
+	}
+	
+	public String getID() {
+		return ID;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 	
 	public void setCPU(String cpu) {
 		this.cpu = cpu;
 	}
+	
 	public String getCPU() {
 		return this.cpu;
 	}
@@ -33,6 +50,7 @@ public class Template {
 	public void setMem(String mem) {
 		this.mem = mem;
 	}
+	
 	public String getMem() {
 		return this.mem;
 	}
@@ -40,6 +58,7 @@ public class Template {
 	public void setDisk(String disk) {
 		this.disk = disk;
 	}
+	
 	public String getDisk() {
 		return this.disk;
 	}
@@ -47,6 +66,7 @@ public class Template {
 	public void setBw(String bw) {
 		this.bw = bw;
 	}
+	
 	public String getBw() {
 		return this.bw;
 	}
@@ -54,7 +74,9 @@ public class Template {
 	public void setImage(String image) {
 		this.image = image;
 	}
+	
 	public String getImage() {
 		return this.image;
 	}
+	
 }

@@ -1,0 +1,39 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p1="urn:import:com.google.gwt.user.datepicker.client">
+	<ui:style>
+		
+	</ui:style>
+	<g:HTMLPanel>
+				<g:LayoutPanel height="99px" width="629px">
+					<g:layer left="33px" width="77px" top="17px" height="16px">
+						<g:Label text="服务开始时间"/>
+					</g:layer>
+					<g:layer left="115px" width="160px" top="15px" height="20px">
+						<p1:DateBox ui:field="startingTime"/>
+					</g:layer>
+					<g:layer left="343px" width="77px" top="17px" height="16px">
+						<g:Label text="服务结束时间"/>
+					</g:layer>
+					<g:layer left="425px" width="160px" top="15px" height="20px">
+						<p1:DateBox ui:field="endingTime"/>
+					</g:layer>
+					<g:layer left="33px" width="77px" top="60px" height="16px">
+						<g:Label text="服务开始时间"/>
+					</g:layer>
+					<g:layer left="115px" width="169px" top="60px" height="25px">
+						<g:ListBox ui:field="VMImageTypeList"/>
+					</g:layer>
+		</g:LayoutPanel>
+		<g:LayoutPanel width="629px" height="291px" ui:field="tablePanel">
+		</g:LayoutPanel>
+		<g:LayoutPanel width="629px" height="1px">
+			<g:layer left="411px" width="103px" top="12px" height="25px">
+				<g:Button text="确定" ui:field="buttonOk"/>
+			</g:layer>
+			<g:layer left="524px" width="54px" top="12px" height="25px">
+				<g:Button text="取消" ui:field="buttonCancle"/>
+			</g:layer>
+		</g:LayoutPanel>
+	</g:HTMLPanel>
+</ui:UiBinder> 

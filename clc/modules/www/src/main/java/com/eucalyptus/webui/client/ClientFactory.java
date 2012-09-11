@@ -14,14 +14,6 @@ import com.eucalyptus.webui.client.view.CertView;
 import com.eucalyptus.webui.client.view.CloudRegistrationView;
 import com.eucalyptus.webui.client.view.ClusterCtrlView;
 import com.eucalyptus.webui.client.view.ConfirmationView;
-import com.eucalyptus.webui.client.view.DeviceBWView;
-import com.eucalyptus.webui.client.view.DeviceCPUView;
-import com.eucalyptus.webui.client.view.DeviceDiskView;
-import com.eucalyptus.webui.client.view.DeviceMemoryView;
-import com.eucalyptus.webui.client.view.DeviceServerView;
-import com.eucalyptus.webui.client.view.DeviceIPView;
-import com.eucalyptus.webui.client.view.DeviceTemplateView;
-import com.eucalyptus.webui.client.view.DeviceVMView;
 import com.eucalyptus.webui.client.view.DiskStatView;
 import com.eucalyptus.webui.client.view.ErrorSinkView;
 import com.eucalyptus.webui.client.view.GroupAddView;
@@ -58,6 +50,20 @@ import com.eucalyptus.webui.client.view.UserAppView;
 import com.eucalyptus.webui.client.view.UserView;
 import com.eucalyptus.webui.client.view.VmTypeView;
 import com.eucalyptus.webui.client.view.WalrusCtrlView;
+import com.eucalyptus.webui.client.view.device.DeviceAreaView;
+import com.eucalyptus.webui.client.view.device.DeviceBWView;
+import com.eucalyptus.webui.client.view.device.DeviceCPUPriceView;
+import com.eucalyptus.webui.client.view.device.DeviceCPUView;
+import com.eucalyptus.webui.client.view.device.DeviceCabinetView;
+import com.eucalyptus.webui.client.view.device.DeviceDiskView;
+import com.eucalyptus.webui.client.view.device.DeviceIPView;
+import com.eucalyptus.webui.client.view.device.DeviceMemoryView;
+import com.eucalyptus.webui.client.view.device.DeviceOthersPriceView;
+import com.eucalyptus.webui.client.view.device.DeviceRoomView;
+import com.eucalyptus.webui.client.view.device.DeviceServerView;
+import com.eucalyptus.webui.client.view.device.DeviceTemplatePriceView;
+import com.eucalyptus.webui.client.view.device.DeviceTemplateView;
+import com.eucalyptus.webui.client.view.device.DeviceVMView;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.place.shared.Place;
@@ -209,6 +215,18 @@ public interface ClientFactory {
 	DeviceTemplateView getDeviceTemplateView();
 	
 	UserAppAddView getUserAppAddView();
+	
+	DeviceAreaView getDeviceAreaView();
+	
+	DeviceRoomView getDeviceRoomView();
+	
+	DeviceCabinetView getDeviceCabinetView();
+	
+	DeviceCPUPriceView getDeviceCPUPriceView();
+	
+	DeviceOthersPriceView getDeviceOthersPriceView();
+	
+	DeviceTemplatePriceView getDeviceTemplatePriceView();
 	
 	
   InstanceView getInstanceView( );

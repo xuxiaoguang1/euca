@@ -196,7 +196,7 @@ public class DBTableColName {
 	
 	public interface TEMPLATE {
 		public final String ID = "template_id";
-		public final String MARK = "template_mark";
+		public final String NAME = "template_name";
 		public final String CPU = "template_cpu";
 		public final String MEM = "template_mem";
 		public final String DISK = "template_disk";

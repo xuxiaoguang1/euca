@@ -5,20 +5,12 @@ import com.eucalyptus.webui.client.activity.ApproveActivity;
 import com.eucalyptus.webui.client.activity.CPUStatActivity;
 import com.eucalyptus.webui.client.activity.CertActivity;
 import com.eucalyptus.webui.client.activity.ClusterCtrlActivity;
-import com.eucalyptus.webui.client.activity.DeviceVMActivity;
 import com.eucalyptus.webui.client.activity.DiskStatActivity;
 import com.eucalyptus.webui.client.activity.ErrorSinkActivity;
 import com.eucalyptus.webui.client.activity.GroupActivity;
 import com.eucalyptus.webui.client.activity.HistoryActivity;
 import com.eucalyptus.webui.client.activity.ImageActivity;
 import com.eucalyptus.webui.client.activity.InstanceActivity;
-import com.eucalyptus.webui.client.activity.DeviceBWActivity;
-import com.eucalyptus.webui.client.activity.DeviceCPUActivity;
-import com.eucalyptus.webui.client.activity.DeviceDiskActivity;
-import com.eucalyptus.webui.client.activity.DeviceMemoryActivity;
-import com.eucalyptus.webui.client.activity.DeviceServerActivity;
-import com.eucalyptus.webui.client.activity.DeviceIPActivity;
-import com.eucalyptus.webui.client.activity.DeviceTemplateActivity;
 import com.eucalyptus.webui.client.activity.IndividualActivity;
 import com.eucalyptus.webui.client.activity.IpPermissionActivity;
 import com.eucalyptus.webui.client.activity.KeyActivity;
@@ -37,25 +29,31 @@ import com.eucalyptus.webui.client.activity.UserActivity;
 import com.eucalyptus.webui.client.activity.UserAppActivity;
 import com.eucalyptus.webui.client.activity.VmTypeActivity;
 import com.eucalyptus.webui.client.activity.WalrusCtrlActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceAreaActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceBWActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceCPUActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceCPUPriceActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceCabinetActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceDiskActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceIPActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceMemoryActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceOthersPriceActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceRoomActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceServerActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceTemplateActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceTemplatePriceActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceVMActivity;
 import com.eucalyptus.webui.client.place.AccountPlace;
 import com.eucalyptus.webui.client.place.ApprovePlace;
 import com.eucalyptus.webui.client.place.CPUStatPlace;
 import com.eucalyptus.webui.client.place.CertPlace;
 import com.eucalyptus.webui.client.place.ClusterCtrlPlace;
-import com.eucalyptus.webui.client.place.DeviceVMPlace;
 import com.eucalyptus.webui.client.place.DiskStatPlace;
 import com.eucalyptus.webui.client.place.ErrorSinkPlace;
 import com.eucalyptus.webui.client.place.GroupPlace;
 import com.eucalyptus.webui.client.place.HistoryPlace;
 import com.eucalyptus.webui.client.place.ImagePlace;
 import com.eucalyptus.webui.client.place.InstancePlace;
-import com.eucalyptus.webui.client.place.DeviceBWPlace;
-import com.eucalyptus.webui.client.place.DeviceCPUPlace;
-import com.eucalyptus.webui.client.place.DeviceDiskPlace;
-import com.eucalyptus.webui.client.place.DeviceMemoryPlace;
-import com.eucalyptus.webui.client.place.DeviceServerPlace;
-import com.eucalyptus.webui.client.place.DeviceIPPlace;
-import com.eucalyptus.webui.client.place.DeviceTemplatePlace;
 import com.eucalyptus.webui.client.place.IndividualPlace;
 import com.eucalyptus.webui.client.place.IpPermissionPlace;
 import com.eucalyptus.webui.client.place.KeyPlace;
@@ -74,18 +72,33 @@ import com.eucalyptus.webui.client.place.UserAppPlace;
 import com.eucalyptus.webui.client.place.UserPlace;
 import com.eucalyptus.webui.client.place.VmTypePlace;
 import com.eucalyptus.webui.client.place.WalrusCtrlPlace;
+import com.eucalyptus.webui.client.place.device.DeviceAreaPlace;
+import com.eucalyptus.webui.client.place.device.DeviceBWPlace;
+import com.eucalyptus.webui.client.place.device.DeviceCPUPlace;
+import com.eucalyptus.webui.client.place.device.DeviceCPUPricePlace;
+import com.eucalyptus.webui.client.place.device.DeviceCabinetPlace;
+import com.eucalyptus.webui.client.place.device.DeviceDiskPlace;
+import com.eucalyptus.webui.client.place.device.DeviceIPPlace;
+import com.eucalyptus.webui.client.place.device.DeviceMemoryPlace;
+import com.eucalyptus.webui.client.place.device.DeviceOthersPricePlace;
+import com.eucalyptus.webui.client.place.device.DeviceRoomPlace;
+import com.eucalyptus.webui.client.place.device.DeviceServerPlace;
+import com.eucalyptus.webui.client.place.device.DeviceTemplatePlace;
+import com.eucalyptus.webui.client.place.device.DeviceTemplatePricePlace;
+import com.eucalyptus.webui.client.place.device.DeviceVMPlace;
 import com.google.gwt.activity.shared.Activity;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.place.shared.Place;
 
 public class MainActivityMapper implements ActivityMapper {
+	
 	private ClientFactory clientFactory;
-
+	
 	public MainActivityMapper(ClientFactory clientFactory) {
 		super();
 		this.clientFactory = clientFactory;
 	}
-
+	
 	@Override
 	public Activity getActivity(Place place) {
 		if (place instanceof StartPlace) {
@@ -138,6 +151,24 @@ public class MainActivityMapper implements ActivityMapper {
 		}
 		else if (place instanceof RejectPlace) {
 			return new RejectActivity((RejectPlace)place, this.clientFactory);
+		}
+		else if (place instanceof DeviceAreaPlace) {
+			return new DeviceAreaActivity((DeviceAreaPlace)place, this.clientFactory);
+		}
+		else if (place instanceof DeviceRoomPlace) {
+			return new DeviceRoomActivity((DeviceRoomPlace)place, this.clientFactory);
+		}
+		else if (place instanceof DeviceCabinetPlace) {
+			return new DeviceCabinetActivity((DeviceCabinetPlace)place, this.clientFactory);
+		}
+		else if (place instanceof DeviceCPUPricePlace) {
+			return new DeviceCPUPriceActivity((DeviceCPUPricePlace)place, this.clientFactory);
+		}
+		else if (place instanceof DeviceOthersPricePlace) {
+		    return new DeviceOthersPriceActivity((DeviceOthersPricePlace)place, this.clientFactory);
+		}
+		else if (place instanceof DeviceTemplatePricePlace) {
+		    return new DeviceTemplatePriceActivity((DeviceTemplatePricePlace)place, this.clientFactory);
 		}
 		else if (place instanceof DeviceServerPlace) {
 			return new DeviceServerActivity((DeviceServerPlace)place, this.clientFactory);

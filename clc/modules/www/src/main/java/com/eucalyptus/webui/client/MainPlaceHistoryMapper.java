@@ -5,14 +5,20 @@ import com.eucalyptus.webui.client.place.ApprovePlace;
 import com.eucalyptus.webui.client.place.CPUStatPlace;
 import com.eucalyptus.webui.client.place.CertPlace;
 import com.eucalyptus.webui.client.place.ClusterCtrlPlace;
-import com.eucalyptus.webui.client.place.DeviceBWPlace;
-import com.eucalyptus.webui.client.place.DeviceCPUPlace;
-import com.eucalyptus.webui.client.place.DeviceDiskPlace;
-import com.eucalyptus.webui.client.place.DeviceMemoryPlace;
-import com.eucalyptus.webui.client.place.DeviceServerPlace;
-import com.eucalyptus.webui.client.place.DeviceIPPlace;
-import com.eucalyptus.webui.client.place.DeviceTemplatePlace;
-import com.eucalyptus.webui.client.place.DeviceVMPlace;
+import com.eucalyptus.webui.client.place.device.DeviceAreaPlace;
+import com.eucalyptus.webui.client.place.device.DeviceBWPlace;
+import com.eucalyptus.webui.client.place.device.DeviceCPUPlace;
+import com.eucalyptus.webui.client.place.device.DeviceCPUPricePlace;
+import com.eucalyptus.webui.client.place.device.DeviceCabinetPlace;
+import com.eucalyptus.webui.client.place.device.DeviceDiskPlace;
+import com.eucalyptus.webui.client.place.device.DeviceMemoryPlace;
+import com.eucalyptus.webui.client.place.device.DeviceOthersPricePlace;
+import com.eucalyptus.webui.client.place.device.DeviceRoomPlace;
+import com.eucalyptus.webui.client.place.device.DeviceServerPlace;
+import com.eucalyptus.webui.client.place.device.DeviceIPPlace;
+import com.eucalyptus.webui.client.place.device.DeviceTemplatePlace;
+import com.eucalyptus.webui.client.place.device.DeviceTemplatePricePlace;
+import com.eucalyptus.webui.client.place.device.DeviceVMPlace;
 import com.eucalyptus.webui.client.place.DiskStatPlace;
 import com.eucalyptus.webui.client.place.ErrorSinkPlace;
 import com.eucalyptus.webui.client.place.ConfigPlace;
@@ -60,6 +66,12 @@ import com.google.gwt.place.shared.WithTokenizers;
   ClusterCtrlPlace.Tokenizer.class,
   WalrusCtrlPlace.Tokenizer.class,
   StorageCtrlPlace.Tokenizer.class,
+  DeviceAreaPlace.Tokenizer.class,
+  DeviceRoomPlace.Tokenizer.class,
+  DeviceCabinetPlace.Tokenizer.class,
+  DeviceCPUPricePlace.Tokenizer.class,
+  DeviceOthersPricePlace.Tokenizer.class,
+  DeviceTemplatePricePlace.Tokenizer.class,
   DeviceServerPlace.Tokenizer.class,
   DeviceCPUPlace.Tokenizer.class,
   DeviceMemoryPlace.Tokenizer.class,
@@ -68,6 +80,7 @@ import com.google.gwt.place.shared.WithTokenizers;
   DeviceBWPlace.Tokenizer.class,
   DeviceTemplatePlace.Tokenizer.class,
   DeviceVMPlace.Tokenizer.class,
+  DeviceCPUPlace.Tokenizer.class,
   UserAppPlace.Tokenizer.class,
   SecurityGroupPlace.Tokenizer.class,
   IpPermissionPlace.Tokenizer.class,

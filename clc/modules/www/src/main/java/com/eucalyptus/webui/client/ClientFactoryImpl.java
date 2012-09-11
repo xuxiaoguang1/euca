@@ -12,6 +12,34 @@ import com.eucalyptus.webui.client.session.LocalSession;
 import com.eucalyptus.webui.client.session.LocalSessionImpl;
 import com.eucalyptus.webui.client.session.SessionData;
 import com.eucalyptus.webui.client.view.*;
+import com.eucalyptus.webui.client.view.device.DeviceAreaView;
+import com.eucalyptus.webui.client.view.device.DeviceAreaViewImpl;
+import com.eucalyptus.webui.client.view.device.DeviceBWView;
+import com.eucalyptus.webui.client.view.device.DeviceBWViewImpl;
+import com.eucalyptus.webui.client.view.device.DeviceCPUPriceView;
+import com.eucalyptus.webui.client.view.device.DeviceCPUPriceViewImpl;
+import com.eucalyptus.webui.client.view.device.DeviceCPUView;
+import com.eucalyptus.webui.client.view.device.DeviceCPUViewImpl;
+import com.eucalyptus.webui.client.view.device.DeviceCabinetView;
+import com.eucalyptus.webui.client.view.device.DeviceCabinetViewImpl;
+import com.eucalyptus.webui.client.view.device.DeviceDiskView;
+import com.eucalyptus.webui.client.view.device.DeviceDiskViewImpl;
+import com.eucalyptus.webui.client.view.device.DeviceIPView;
+import com.eucalyptus.webui.client.view.device.DeviceIPViewImpl;
+import com.eucalyptus.webui.client.view.device.DeviceMemoryView;
+import com.eucalyptus.webui.client.view.device.DeviceMemoryViewImpl;
+import com.eucalyptus.webui.client.view.device.DeviceOthersPriceView;
+import com.eucalyptus.webui.client.view.device.DeviceOthersPriceViewImpl;
+import com.eucalyptus.webui.client.view.device.DeviceRoomView;
+import com.eucalyptus.webui.client.view.device.DeviceRoomViewImpl;
+import com.eucalyptus.webui.client.view.device.DeviceServerView;
+import com.eucalyptus.webui.client.view.device.DeviceServerViewImpl;
+import com.eucalyptus.webui.client.view.device.DeviceTemplatePriceView;
+import com.eucalyptus.webui.client.view.device.DeviceTemplatePriceViewImpl;
+import com.eucalyptus.webui.client.view.device.DeviceTemplateView;
+import com.eucalyptus.webui.client.view.device.DeviceTemplateViewImpl;
+import com.eucalyptus.webui.client.view.device.DeviceVMView;
+import com.eucalyptus.webui.client.view.device.DeviceVMViewImpl;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.core.client.GWT;
@@ -66,6 +94,12 @@ public class ClientFactoryImpl implements ClientFactory {
 	private WalrusCtrlView walrusCtrlView;
 	private StorageCtrlView storageCtrlView;
 	private IndividualView individualView;
+	private DeviceAreaView deviceAreaView;
+	private DeviceRoomView deviceRoomView;
+	private DeviceCabinetView deviceCabinetView;
+	private DeviceCPUPriceView deviceCPUPriceView;
+	private DeviceOthersPriceView deviceOthersPriceView;
+	private DeviceTemplatePriceView deviceTemplatePriceView;
 	private DeviceServerView deviceServerView;
 	private DeviceCPUView deviceCPUView;
 	private DeviceMemoryView deviceMemoryView;
@@ -77,7 +111,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private UserAppAddView UserAppAddView;
 	private KeypairView keyPairView;
 	private SecurityGroupView securityGroupView;
-  private IpPermissionView ipPermissionView;
+	private IpPermissionView ipPermissionView;
 	private CPUStatView cpuStatView;
 	private MemoryStatView memoryStatView;
 	private DiskStatView diskStatView;
@@ -96,7 +130,6 @@ public class ClientFactoryImpl implements ClientFactory {
 	private UploadImageView uploadImageView;
 	private RunInstanceView runInstanceView;
 	private AreaView areaView;
-	
 
 	// Snippets
 	private CloudRegistrationView cloudRegView;
@@ -399,7 +432,55 @@ public class ClientFactoryImpl implements ClientFactory {
 		}
 		return individualView;
 	}
-
+	
+	@Override
+	public DeviceAreaView getDeviceAreaView() {
+		if (deviceAreaView == null) {
+			deviceAreaView = new DeviceAreaViewImpl();
+		}
+		return deviceAreaView;
+	}
+	
+	@Override
+	public DeviceRoomView getDeviceRoomView() {
+		if (deviceRoomView == null) {
+			deviceRoomView = new DeviceRoomViewImpl();
+		}
+		return deviceRoomView;
+	}
+	
+	@Override
+	public DeviceCabinetView getDeviceCabinetView() {
+		if (deviceCabinetView == null) {
+			deviceCabinetView = new DeviceCabinetViewImpl();
+		}
+		return deviceCabinetView;
+	}
+	
+	@Override
+	public DeviceCPUPriceView getDeviceCPUPriceView() {
+		if (deviceCPUPriceView == null) {
+			deviceCPUPriceView = new DeviceCPUPriceViewImpl();
+		}
+		return deviceCPUPriceView;
+	}
+	
+	@Override
+	public DeviceTemplatePriceView getDeviceTemplatePriceView() {
+	    if (deviceTemplatePriceView == null) {
+	        deviceTemplatePriceView = new DeviceTemplatePriceViewImpl();
+	    }
+	    return deviceTemplatePriceView;
+	}
+	
+	@Override
+	public DeviceOthersPriceView getDeviceOthersPriceView() {
+	    if (deviceOthersPriceView == null) {
+	        deviceOthersPriceView = new DeviceOthersPriceViewImpl();
+	    }
+	    return deviceOthersPriceView;
+	}
+	
 	@Override
 	public DeviceServerView getDeviceServerView() {
 		if (deviceServerView == null) {

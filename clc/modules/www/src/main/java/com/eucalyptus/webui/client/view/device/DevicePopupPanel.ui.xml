@@ -1,0 +1,19 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:euca="urn:import:com.eucalyptus.webui.client.view">
+    
+    <ui:style>
+        .boundingBox {
+        	border-top:1px solid #AAAAAA;
+        	border-bottom:1px solid #AAAAAA;
+            border-left:1px solid #AAAAAA;
+            border-right:1px solid #AAAAAA;
+            background-color:#F5F5F5;
+            font-size:80%;
+        }
+    </ui:style>
+    
+    <g:LayoutPanel styleName="{style.boundingBox}" ui:field="panel"/>
+    
+</ui:UiBinder> 
