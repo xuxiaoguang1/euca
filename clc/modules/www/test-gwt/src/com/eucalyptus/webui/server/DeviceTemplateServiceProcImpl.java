@@ -644,6 +644,7 @@ public class DeviceTemplateServiceProcImpl {
 			template.setMem(rs.getString(DBTableColName.TEMPLATE.MEM));
 			template.setMark(rs.getString(DBTableColName.TEMPLATE.MARK));
 			template.setBw(rs.getString(DBTableColName.TEMPLATE.BW));
+			template.setNcpus(rs.getString(DBTableColName.TEMPLATE.NCPUS));
 			return template;
 		}
 		catch (Exception e) {

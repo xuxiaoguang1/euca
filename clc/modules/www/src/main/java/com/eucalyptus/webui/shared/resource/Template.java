@@ -7,8 +7,16 @@ public class Template {
 	private String disk;
 	private String bw;
 	private String image;
+	private String ncpus;
 	
-	public void setMark(String mark) {
+	public String getNcpus() {
+    return ncpus;
+  }
+  public void setNcpus(String ncpus) {
+    this.ncpus = ncpus;
+  }
+  
+  public void setMark(String mark) {
 		this.mark = mark;
 	}
 	public String getMark() {
