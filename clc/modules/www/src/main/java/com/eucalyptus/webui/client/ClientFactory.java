@@ -25,6 +25,7 @@ import com.eucalyptus.webui.client.view.DeviceVMView;
 import com.eucalyptus.webui.client.view.DiskStatView;
 import com.eucalyptus.webui.client.view.ErrorSinkView;
 import com.eucalyptus.webui.client.view.GroupAddView;
+import com.eucalyptus.webui.client.view.GroupAddingUserListView;
 import com.eucalyptus.webui.client.view.GroupDetailView;
 import com.eucalyptus.webui.client.view.GroupListView;
 import com.eucalyptus.webui.client.view.GroupView;
@@ -54,7 +55,6 @@ import com.eucalyptus.webui.client.view.UploadImageView;
 import com.eucalyptus.webui.client.view.UserAddView;
 import com.eucalyptus.webui.client.view.UserAppAddView;
 import com.eucalyptus.webui.client.view.UserAppView;
-import com.eucalyptus.webui.client.view.UserListView;
 import com.eucalyptus.webui.client.view.UserView;
 import com.eucalyptus.webui.client.view.VmTypeView;
 import com.eucalyptus.webui.client.view.WalrusCtrlView;
@@ -188,7 +188,7 @@ public interface ClientFactory {
 
 	GroupDetailView getGroupDetailView();
 
-	UserListView getUserListView();
+	GroupAddingUserListView getGroupAddingUserListView();
 
 	IndividualView getIndividualView();
 

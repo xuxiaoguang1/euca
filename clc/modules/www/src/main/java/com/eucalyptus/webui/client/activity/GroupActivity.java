@@ -106,7 +106,7 @@ public class GroupActivity extends AbstractSearchActivity
 	
 	protected void showSingleSelectedDetails( SearchResultRow selected ) {
 		String groupId = selected.getField(0);
-		String accountId = selected.getField(1);
+		String accountId = selected.getField(6);
 		
 		this.groupDetailActivity.setGroupId(Integer.valueOf(groupId));
 
@@ -117,7 +117,7 @@ public class GroupActivity extends AbstractSearchActivity
 	  
 		this.clientFactory.getBackendService().lookupUserByGroupId(this.clientFactory.getLocalSession().getSession(), 
 			  														Integer.valueOf(groupId), 
-			  														range, 
+			  														groupDetailActivity.getRange(), 
 			  														new AsyncCallback<SearchResult>  () {
 
 																		@Override

@@ -99,7 +99,6 @@ public class GroupDetailViewImpl extends DialogBox implements GroupDetailView {
 		this.groupId = groupId;
 	}
 
-
 	private static final Logger LOG = Logger.getLogger( GroupDetailViewImpl.class.getName( ) );
 	
 	private static GroupDetailViewImplUiBinder uiBinder = GWT.create( GroupDetailViewImplUiBinder.class );

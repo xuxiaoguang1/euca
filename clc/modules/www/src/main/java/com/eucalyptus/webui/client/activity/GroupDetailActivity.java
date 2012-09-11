@@ -12,17 +12,21 @@ import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
+import com.eucalyptus.webui.client.view.GroupAddingUserListView;
 import com.eucalyptus.webui.client.view.GroupDetailView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
-import com.eucalyptus.webui.client.view.UserListView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class GroupDetailActivity extends AbstractSearchActivity implements GroupDetailView.Presenter, UserListView.Presenter, ConfirmationView.Presenter {
+public class GroupDetailActivity extends AbstractSearchActivity implements GroupDetailView.Presenter, GroupAddingUserListView.Presenter, ConfirmationView.Presenter {
 
+	private GroupAddingUserActivity groupAddingUserActivity;
+	
 	public GroupDetailActivity(SearchPlace place, ClientFactory clientFactory) {
 		super(place, clientFactory);
+		this.groupAddingUserActivity = new GroupAddingUserActivity(place, clientFactory);
+		
 		// TODO Auto-generated constructor stub
 		this.range = new SearchRange( 0, pageSize, -1/*sortField*/, true );
 	}
@@ -33,33 +37,15 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 	public int getGroupId() {
 		return this.groupId;
 	}
+	
+	public SearchRange getRange() {
+		return this.range;
+	}
 
 	@Override
 	public void onSelectionChange(Set<SearchResultRow> selections) {
 		// TODO Auto-generated method stub
 		this.currentSelected = selections;
-	}
-
-	@Override
-	public void process(ArrayList<String> ids) {
-		// TODO Auto-generated method stub
-		System.out.println(ids);
-
-		this.clientFactory.getBackendService().addUsersToGroupsById(this.clientFactory.getLocalSession().getSession(),
-		        ids, this.getGroupId(), new AsyncCallback<Void>() {
-
-			        @Override
-			        public void onFailure(Throwable caught) {
-				        // TODO Auto-generated method stub
-
-			        }
-
-			        @Override
-			        public void onSuccess(Void result) {
-				        // TODO Auto-generated method stub
-				        reloadCurrentRange();
-			        }
-		        });
 	}
 
 	/**
@@ -69,26 +55,21 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 	@Override
 	public void onAddUsers(int accountId, int groupId) {
 		// TODO Auto-generated method stub
-		this.clientFactory.getUserListView().setPresenter(this);
+		this.groupAddingUserActivity.setAccountAndGroupId(accountId, groupId);
+		this.clientFactory.getGroupAddingUserListView().setPresenter(this);
 
 		this.clientFactory.getBackendService().lookupUserExcludeGroupId(
-		        this.clientFactory.getLocalSession().getSession(), accountId, groupId, range,
-		        new AsyncCallback<SearchResult>() {
-
-			        @Override
-			        public void onFailure(Throwable caught) {
-				        // TODO Auto-generated method stub
-
-			        }
-
-			        @Override
-			        public void onSuccess(SearchResult result) {
-				        // TODO Auto-generated method stub
-				        // remove the row with the same group id
-
-				        clientFactory.getUserListView().showSearchResult(result);
-				        clientFactory.getUserListView().display();
-			        }
+		        this.clientFactory.getLocalSession().getSession(), accountId, groupId, this.groupAddingUserActivity.getRange(),
+			        new AsyncCallback<SearchResult>() {
+				        @Override
+				        public void onFailure(Throwable caught) {
+					        // TODO Auto-generated method stub
+				        }
+				        @Override
+				        public void onSuccess(SearchResult result) {
+					        // TODO Auto-generated method stub
+					        clientFactory.getGroupAddingUserListView().showSearchResult(result);
+				        }
 		        });
 	}
 
@@ -144,7 +125,6 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 	@Override
 	protected void showView(SearchResult result) {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	private static final Logger LOG = Logger.getLogger( GroupActivity.class.getName( ) );
@@ -216,5 +196,24 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 
 		        });
 	}
+	
+	@Override
+	public void process(ArrayList<String> userIds) {
+		// TODO Auto-generated method stub
+		this.clientFactory.getBackendService().addUsersToGroupsById(this.clientFactory.getLocalSession().getSession(),
+		        userIds, this.groupId, new AsyncCallback<Void>() {
+			        @Override
+			        public void onFailure(Throwable caught) {
+				        // TODO Auto-generated method stub
+			        }
+
+			        @Override
+			        public void onSuccess(Void result) {
+				        // TODO Auto-generated method stub
+			        	reloadCurrentRange();
+			        }
+		        });
+	}
+	
 
 }
