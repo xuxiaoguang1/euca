@@ -1,23 +1,19 @@
 package com.eucalyptus.webui.client.activity;
 
 import java.util.ArrayList;
-import java.util.Set;
-
 import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.SearchPlace;
 import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
-import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.UserAppAddView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
-import com.eucalyptus.webui.shared.user.UserApp;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class UserAppAddActivity extends AbstractSearchActivity implements UserAppAddView.Presenter {
+public class UserAppAddActivity extends AbstractSearchActivity {
 
 	public static final String[] TITLE = {"User application adding acitity", "用户申请"};
 
@@ -69,43 +65,4 @@ public class UserAppAddActivity extends AbstractSearchActivity implements UserAp
 		// TODO Auto-generated method stub
 		
 	}
-	
-	@Override
-	public void onSelectionChange(Set<SearchResultRow> selections) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-
-	  @Override
-	  public void doCreateUserApp(UserApp userApp) {
-		  // TODO Auto-generated method stub
-		  int userId = this.clientFactory.getSessionData().getLoginUser().getUserId();
-		  userApp.setUserId(userId);
-		  
-		  final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
-		  this.clientFactory.getBackendService().addUserApp(clientFactory.getLocalSession().getSession(), 
-				  											userApp,
-				  											new AsyncCallback<Void>() {
-
-		        @Override
-		        public void onFailure(Throwable caught) {
-			        // TODO Auto-generated method stub
-		        	clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_ADD_USERAPP[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-		    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_ADD_USERAPP[lan] + ":" + caught.getMessage( ) );
-		        }
-				@Override
-				public void onSuccess(Void result) {
-					// TODO Auto-generated method stub
-					clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_ADD_USERAPP[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-		    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_ADD_USERAPP[lan]);
-		    		
-		    		reloadCurrentRange();
-		    		//updateUserAppCountInfo();
-				}
-	      });
-	  }
-	  
-	  private final String[] FOOTERVIEW_FAILED_TO_ADD_USERAPP = {"Failed to add user app", "增加申请失败"};
-	  private final String[] FOOTERVIEW_ADD_USERAPP = {"Successfully add user apps", "增加申请成功"};
 }

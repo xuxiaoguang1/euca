@@ -14,19 +14,21 @@ import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.SearchTableCellClickHandler;
+import com.eucalyptus.webui.client.view.UserAppAddView;
 import com.eucalyptus.webui.client.view.UserAppView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
+import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class UserAppActivity extends AbstractSearchActivity
-    implements ConfirmationView.Presenter, UserAppView.Presenter, SearchTableCellClickHandler {
+    implements ConfirmationView.Presenter, UserAppView.Presenter, UserAppAddView.Presenter, SearchTableCellClickHandler {
 
 	public static final String[] TITLE = {"USER APPLICATION", "用户申请"};
 
@@ -46,6 +48,8 @@ public class UserAppActivity extends AbstractSearchActivity
 	private final String[] FOOTERVIEW_FAILED_TO_QUERY_KEYPAIR = {"Failed to query key pair list", "查询key pair失败"};
 	private final String[] FOOTERVIEW_FAILED_TO_QUERY_SECURITY_GROUP = {"Failed to query security group list", "查询安全组失败"};
 	
+	private final String[] FOOTERVIEW_FAILED_TO_ADD_USERAPP = {"Failed to add user app", "增加申请失败"};
+	private final String[] FOOTERVIEW_ADD_USERAPP = {"Successfully add user apps", "增加申请成功"};
 	private final String[] FOOTERVIEW_FAILED_TO_DEL_USERAPP = {"Failed to del user app", "删除申请失败"};
 	private final String[] FOOTERVIEW_DEL_USERAPP = {"Successfully del user apps", "删除申请成功"};
 	
@@ -142,7 +146,7 @@ public class UserAppActivity extends AbstractSearchActivity
   @Override
   public void onCreateUserApp() {
   	// TODO Auto-generated method stub
-	clientFactory.getUserAppAddView().setPresenter(this.userAppAddActivity);
+	clientFactory.getUserAppAddView().setPresenter(this);
 	
 	final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
   	this.clientFactory.getBackendService().lookupDeviceTemplate(clientFactory.getLocalSession().getSession(), search, range, null, null, new AsyncCallback<SearchResult>() {
@@ -403,5 +407,34 @@ public class UserAppActivity extends AbstractSearchActivity
   public void onClick(int rowIndex, int colIndex, SearchResultRow row) {
   	// TODO Auto-generated method stub
   	Window.alert(row.getLink(colIndex));
+  }
+  
+  @Override
+  public void doCreateUserApp(UserApp userApp) {
+	  // TODO Auto-generated method stub
+	  int userId = this.clientFactory.getSessionData().getLoginUser().getUserId();
+	  userApp.setUserId(userId);
+	  
+	  final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+	  this.clientFactory.getBackendService().addUserApp(clientFactory.getLocalSession().getSession(), 
+			  											userApp,
+			  											new AsyncCallback<Void>() {
+
+	        @Override
+	        public void onFailure(Throwable caught) {
+		        // TODO Auto-generated method stub
+	        	clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_ADD_USERAPP[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+	    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_ADD_USERAPP[lan] + ":" + caught.getMessage( ) );
+	        }
+			@Override
+			public void onSuccess(Void result) {
+				// TODO Auto-generated method stub
+				clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, FOOTERVIEW_ADD_USERAPP[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+	    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_ADD_USERAPP[lan]);
+	    		
+	    		reloadCurrentRange();
+	    		//updateUserAppCountInfo();
+			}
+      });
   }
 }
