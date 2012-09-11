@@ -15,8 +15,8 @@
 	<classpathentry kind="lib" path="lib/gwtupload-0.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-1.4.jar"/>
-	<classpathentry kind="lib" path="/home/elisa/test/eucalyptus/clc/modules/www/test-gwt/lib/guava-r09.jar"/>
-	<classpathentry kind="lib" path="/home/elisa/test/eucalyptus/clc/modules/www/test-gwt/lib/guava-r09-gwt.jar"/>
-	<classpathentry kind="lib" path="/home/elisa/test/eucalyptus/clc/modules/www/test-gwt/lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/guava-r09-gwt.jar"/>
+	<classpathentry kind="lib" path="lib/guava-r09.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
