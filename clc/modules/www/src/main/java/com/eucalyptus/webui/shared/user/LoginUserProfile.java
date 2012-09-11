@@ -2,7 +2,7 @@ package com.eucalyptus.webui.shared.user;
 
 import java.io.Serializable;
 
-import com.eucalyptus.webui.shared.dictionary.RootAccount;
+import com.eucalyptus.webui.shared.dictionary.ConfDef;
 
 //import com.eucalyptus.auth.principal.Account;
 
@@ -45,11 +45,15 @@ public class LoginUserProfile implements Serializable {
   }
   
   public boolean isSystemAdmin( ) {
-    return RootAccount.NAME.equals( accountName );
+    return ConfDef.ROOT_ACCOUNT.equals( accountName );
   }
   
   public boolean isAccountAdmin( ) {
 	    return EnumUserType.ADMIN == this.userType;
+  }
+  
+  public boolean isAccountRootAdmin() {
+	  return isAccountAdmin() && ConfDef.ACCOUNT_ADMIN_NAME.equals(userName);
   }
 
   public void setUserId(int userId ) {

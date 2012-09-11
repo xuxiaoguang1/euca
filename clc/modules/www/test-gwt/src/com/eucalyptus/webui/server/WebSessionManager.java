@@ -2,7 +2,7 @@ package com.eucalyptus.webui.server;
 
 import java.util.Map;
 
-import com.eucalyptus.webui.server.dictionary.ConfDef;
+import com.eucalyptus.webui.shared.dictionary.ConfDef;
 import com.google.common.collect.Maps;
 
 /**
