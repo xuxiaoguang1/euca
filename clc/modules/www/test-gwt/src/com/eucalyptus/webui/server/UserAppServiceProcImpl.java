@@ -129,7 +129,8 @@ public class UserAppServiceProcImpl {
 			  Template template = deviceTemDBProc.lookupTemplateByID(session, templateId);
 			  
 			  if (keyPair != null && securityGroup != null && euca_vit_id != null) {
-				  String euca_vi_key = EucaServiceWrapper.getInstance().runVM(session, template, keyPair, securityGroup, euca_vit_id);
+			    //FIXME userID
+				  String euca_vi_key = EucaServiceWrapper.getInstance().runVM(session, 0, template, keyPair, securityGroup, euca_vit_id);
 				  
 				  if (euca_vi_key != null) {
 					  return euca_vi_key;

@@ -65,7 +65,7 @@ public class IpPermissionActivity extends AbstractSearchActivity implements IpPe
 
   @Override
   protected void doSearch( String query, SearchRange range ) {
-    this.clientFactory.getBackendAwsService( ).lookupSecurityRule( this.clientFactory.getLocalSession( ).getSession( ), search, range,
+    this.clientFactory.getBackendAwsService( ).lookupSecurityRule( this.clientFactory.getLocalSession( ).getSession( ), 0, search, range,
                                                            new AsyncCallback<SearchResult>( ) {
       
       @Override
@@ -249,7 +249,7 @@ public class IpPermissionActivity extends AbstractSearchActivity implements IpPe
     
     clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "删除安全规则中...", 0 );
     
-    clientFactory.getBackendAwsService( ).delSecurityRules( clientFactory.getLocalSession( ).getSession( ), groups, fromPorts, toPorts, protos, ipRanges, new AsyncCallback<Void>( ) {
+    clientFactory.getBackendAwsService( ).delSecurityRules( clientFactory.getLocalSession( ).getSession( ), 0, groups, fromPorts, toPorts, protos, ipRanges, new AsyncCallback<Void>( ) {
 
       @Override
       public void onFailure( Throwable caught ) {
@@ -281,7 +281,7 @@ public class IpPermissionActivity extends AbstractSearchActivity implements IpPe
   private void doCreateSecurityRule(String group, String fromPort,
       String toPort, String proto, String ipRange) {
     this.clientFactory.getShellView().getFooterView().showStatus(StatusType.LOADING, "新建安全规则...", 0);
-    this.clientFactory.getBackendAwsService().addSecurityRule(this.clientFactory.getLocalSession().getSession(), group, fromPort, toPort, proto, ipRange,  
+    this.clientFactory.getBackendAwsService().addSecurityRule(this.clientFactory.getLocalSession().getSession(), 0, group, fromPort, toPort, proto, ipRange,  
         new AsyncCallback<Void>( ) {
           @Override
           public void onFailure( Throwable caught ) {

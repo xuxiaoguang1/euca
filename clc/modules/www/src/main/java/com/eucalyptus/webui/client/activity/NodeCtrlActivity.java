@@ -44,7 +44,7 @@ public class NodeCtrlActivity extends AbstractSearchActivity implements NodeCtrl
 
   @Override
   protected void doSearch( String query, SearchRange range ) {
-    this.clientFactory.getBackendCmdService().lookupNodeCtrl(this.clientFactory.getLocalSession( ).getSession( ), search, range,
+    this.clientFactory.getBackendAwsService().lookupNodeCtrl(this.clientFactory.getLocalSession( ).getSession( ), search, range,
                                                            new AsyncCallback<SearchResult>( ) {
       
       @Override
@@ -156,7 +156,7 @@ public class NodeCtrlActivity extends AbstractSearchActivity implements NodeCtrl
     
     clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "注销节点控制器中...", 0 );
     
-    clientFactory.getBackendCmdService( ).deregisterNode(clientFactory.getLocalSession( ).getSession( ), host, new AsyncCallback<Void>( ) {
+    clientFactory.getBackendAwsService( ).deregisterNode(clientFactory.getLocalSession( ).getSession( ), host, new AsyncCallback<Void>( ) {
 
       @Override
       public void onFailure( Throwable caught ) {
@@ -186,7 +186,7 @@ public class NodeCtrlActivity extends AbstractSearchActivity implements NodeCtrl
 
   private void doRegisterNode(String host) {
     this.clientFactory.getShellView().getFooterView().showStatus(StatusType.LOADING, "注册节点控制器...", 0);
-    this.clientFactory.getBackendCmdService().registerNode(this.clientFactory.getLocalSession().getSession(), host,  
+    this.clientFactory.getBackendAwsService().registerNode(this.clientFactory.getLocalSession().getSession(), host,  
         new AsyncCallback<Void>( ) {
           @Override
           public void onFailure( Throwable caught ) {

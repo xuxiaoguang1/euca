@@ -45,7 +45,7 @@ public class InstanceActivity extends AbstractSearchActivity
 
   protected void doSearch( final String search, SearchRange range ) {
 	
-    this.clientFactory.getBackendAwsService( ).lookupInstance( this.clientFactory.getLocalSession( ).getSession( ), search, range,
+    this.clientFactory.getBackendAwsService( ).lookupInstance( this.clientFactory.getLocalSession( ).getSession( ), 0, search, range,
                                                            new AsyncCallback<SearchResult>( ) {
       
       @Override
@@ -121,7 +121,7 @@ public void onStartInstances() {
         ids.add(row.getField(0));
     }
     
-	this.clientFactory.getBackendAwsService().startInstances(clientFactory.getLocalSession( ).getSession( ), ids, new AsyncCallback<ArrayList<String>>( ) {
+	this.clientFactory.getBackendAwsService().startInstances(clientFactory.getLocalSession( ).getSession( ), 0, ids, new AsyncCallback<ArrayList<String>>( ) {
 	      @Override
 	      public void onFailure( Throwable caught ) {
 	        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
@@ -142,7 +142,7 @@ public void onStopInstances() {
     for ( SearchResultRow row : currentSelected ) {
         ids.add(row.getField(0));
     }
-	this.clientFactory.getBackendAwsService().stopInstances(clientFactory.getLocalSession( ).getSession( ), ids, new AsyncCallback<ArrayList<String>>( ) {
+	this.clientFactory.getBackendAwsService().stopInstances(clientFactory.getLocalSession( ).getSession( ), 0, ids, new AsyncCallback<ArrayList<String>>( ) {
 	      @Override
 	      public void onFailure( Throwable caught ) {
 	        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
@@ -163,7 +163,7 @@ public void onTerminateInstances() {
     for ( SearchResultRow row : currentSelected ) {
         ids.add(row.getField(0));
     }
-	this.clientFactory.getBackendAwsService().terminateInstances(clientFactory.getLocalSession( ).getSession( ), ids, new AsyncCallback<ArrayList<String>>( ) {
+	this.clientFactory.getBackendAwsService().terminateInstances(clientFactory.getLocalSession( ).getSession( ), 0, ids, new AsyncCallback<ArrayList<String>>( ) {
 	      @Override
 	      public void onFailure( Throwable caught ) {
 	        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
@@ -184,7 +184,7 @@ public void onRunInstance() {
   this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "获取信息中...", 0 );
   mImages = new ArrayList<String>();
   mKeypairs = new ArrayList<String>();
-  this.clientFactory.getBackendAwsService().lookupKeypair(clientFactory.getLocalSession( ).getSession( ), "", new SearchRange(), new AsyncCallback<SearchResult> () {
+  this.clientFactory.getBackendAwsService().lookupKeypair(clientFactory.getLocalSession( ).getSession( ), 0, "", new SearchRange(), new AsyncCallback<SearchResult> () {
 
     @Override
     public void onFailure(Throwable caught) {
@@ -196,7 +196,7 @@ public void onRunInstance() {
     public void onSuccess(SearchResult result) {
       for (SearchResultRow r : result.getRows()) 
         mKeypairs.add(r.getField(0));
-      InstanceActivity.this.clientFactory.getBackendAwsService().lookupImage(clientFactory.getLocalSession( ).getSession( ), "machine", new SearchRange(), new AsyncCallback<SearchResult>() {
+      InstanceActivity.this.clientFactory.getBackendAwsService().lookupImage(clientFactory.getLocalSession( ).getSession( ), 0, "machine", new SearchRange(), new AsyncCallback<SearchResult>() {
 
         @Override
         public void onFailure(Throwable caught) {
@@ -227,7 +227,7 @@ private void _onRunInstance() {
 @Override
 public void processRun(String image, String keypair, String vmtype, String group) {
   this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "虚拟机创建中...", 0 );
-  this.clientFactory.getBackendCmdService().runInstance(clientFactory.getLocalSession( ).getSession( ), image, keypair, vmtype, group, new AsyncCallback<String>() {
+  this.clientFactory.getBackendAwsService().runInstance(clientFactory.getLocalSession( ).getSession( ), 0, image, keypair, vmtype, group, new AsyncCallback<String>() {
   //this.clientFactory.getBackendAwsService().runInstance(clientFactory.getLocalSession( ).getSession( ), image, keypair, new AsyncCallback<String>() {
 
     @Override

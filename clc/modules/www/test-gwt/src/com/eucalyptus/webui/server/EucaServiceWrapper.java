@@ -16,11 +16,9 @@ public class EucaServiceWrapper {
   private static final Logger LOG = Logger.getLogger(EucaServiceWrapper.class);
   
   private AwsServiceImpl aws = null;
-  private CmdServiceImpl cmd = null;
   
   private EucaServiceWrapper() {
     aws = new AwsServiceImpl();
-    cmd = new CmdServiceImpl();
   }
   
   static public EucaServiceWrapper getInstance() {
@@ -38,9 +36,9 @@ public class EucaServiceWrapper {
    * @param group string
    * @return euca id of vm
    */
-  public String runVM(Session session, Template template, String keypair, String group, String image) throws EucalyptusServiceException {
+  public String runVM(Session session, int userID, Template template, String keypair, String group, String image) throws EucalyptusServiceException {
     //real code about template won't be in old repo
-    return cmd.runInstance(session, image, keypair, "m1.small", group);
+    return aws.runInstance(session, userID, image, keypair, "m1.small", group);
   }
   
   /**
@@ -48,8 +46,8 @@ public class EucaServiceWrapper {
    * @param session
    * @return
    */
-  public List<String> getKeypairs(Session session) {
-    List<SearchResultRow> data = aws.lookupKeypair(session);
+  public List<String> getKeypairs(Session session, int userID) throws EucalyptusServiceException {
+    List<SearchResultRow> data = aws.lookupKeypair(session, userID);
     List<String> ret = new ArrayList<String>();
     for (SearchResultRow d: data) {
       ret.add(d.getField(0));
@@ -62,8 +60,8 @@ public class EucaServiceWrapper {
    * @param session
    * @return
    */
-  public List<String> getSecurityGroups(Session session) {
-    List<SearchResultRow> data = aws.lookupSecurityGroup(session);
+  public List<String> getSecurityGroups(Session session, int userID) throws EucalyptusServiceException {
+    List<SearchResultRow> data = aws.lookupSecurityGroup(session, userID);
     List<String> ret = new ArrayList<String>();
     for (SearchResultRow d: data) {
       ret.add(d.getField(0));

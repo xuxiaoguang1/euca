@@ -45,7 +45,7 @@ public class ClusterCtrlActivity extends AbstractSearchActivity implements Clust
 
   @Override
   protected void doSearch( String query, SearchRange range ) {
-    this.clientFactory.getBackendCmdService().lookupClusterCtrl( this.clientFactory.getLocalSession( ).getSession( ), search, range,
+    this.clientFactory.getBackendAwsService().lookupClusterCtrl( this.clientFactory.getLocalSession( ).getSession( ), search, range,
                                                            new AsyncCallback<SearchResult>( ) {
       @Override
       public void onFailure( Throwable caught ) {
@@ -189,7 +189,7 @@ public class ClusterCtrlActivity extends AbstractSearchActivity implements Clust
     
     clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "注销集群控制器中...", 0 );
     
-    clientFactory.getBackendCmdService( ).deregisterCluster(clientFactory.getLocalSession( ).getSession( ), part, name, new AsyncCallback<Void>( ) {
+    clientFactory.getBackendAwsService( ).deregisterCluster(clientFactory.getLocalSession( ).getSession( ), part, name, new AsyncCallback<Void>( ) {
 
       @Override
       public void onFailure( Throwable caught ) {
@@ -219,7 +219,7 @@ public class ClusterCtrlActivity extends AbstractSearchActivity implements Clust
 
   private void doRegisterCluster(String part, String name, String host) {
     this.clientFactory.getShellView().getFooterView().showStatus(StatusType.LOADING, "注册集群控制器...", 0);
-    this.clientFactory.getBackendCmdService().registerCluster(this.clientFactory.getLocalSession().getSession(), part, host, name,  
+    this.clientFactory.getBackendAwsService().registerCluster(this.clientFactory.getLocalSession().getSession(), part, host, name,  
         new AsyncCallback<Void>( ) {
           @Override
           public void onFailure( Throwable caught ) {

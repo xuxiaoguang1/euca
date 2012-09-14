@@ -53,7 +53,7 @@ public class KeypairActivity extends AbstractSearchActivity implements KeypairVi
 
   @Override
   protected void doSearch( String query, SearchRange range ) {
-    this.clientFactory.getBackendAwsService().lookupKeypair(this.clientFactory.getLocalSession( ).getSession( ), search, range,
+    this.clientFactory.getBackendAwsService().lookupKeypair(this.clientFactory.getLocalSession( ).getSession( ), 0, search, range,
                                                            new AsyncCallback<SearchResult>( ) {
       
       @Override
@@ -160,7 +160,7 @@ public class KeypairActivity extends AbstractSearchActivity implements KeypairVi
 
   private void doAddKeypair(final String name) {
     this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "添加Keypair " + name + "中 ...", 0 );
-    this.clientFactory.getBackendAwsService().addKeypair(this.clientFactory.getLocalSession( ).getSession( ), name, 
+    this.clientFactory.getBackendAwsService().addKeypair(this.clientFactory.getLocalSession( ).getSession( ), 0, name, 
         new AsyncCallback<String>( ) {
 
           @Override
@@ -208,7 +208,7 @@ public class KeypairActivity extends AbstractSearchActivity implements KeypairVi
     }
     
     clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "删除Keypair中...", 0 );
-    clientFactory.getBackendAwsService().deleteKeypairs(clientFactory.getLocalSession( ).getSession( ), ids, new AsyncCallback<Void>( ) {
+    clientFactory.getBackendAwsService().deleteKeypairs(clientFactory.getLocalSession( ).getSession( ), 0, ids, new AsyncCallback<Void>( ) {
 
       @Override
       public void onFailure( Throwable caught ) {

@@ -60,7 +60,7 @@ public class ImageActivity extends AbstractSearchActivity implements ImageView.P
 
   @Override
   protected void doSearch( String query, SearchRange range ) {
-    this.clientFactory.getBackendAwsService( ).lookupImage( this.clientFactory.getLocalSession( ).getSession( ), search, range,
+    this.clientFactory.getBackendAwsService( ).lookupImage( this.clientFactory.getLocalSession( ).getSession( ), 0, search, range,
                                                            new AsyncCallback<SearchResult>( ) {
       
       @Override
@@ -135,7 +135,7 @@ public class ImageActivity extends AbstractSearchActivity implements ImageView.P
   @Override
   public void processImage(String file, ImageType type, String bucket, String name, String kernel, String ramdisk) {
     ImageActivity.this.clientFactory.getShellView().getFooterView().showStatus(StatusType.LOADING, "上传镜像中...", 0);
-    this.clientFactory.getBackendCmdService().uploadImage(this.clientFactory.getLocalSession( ).getSession( ), file, type, bucket, name, kernel, ramdisk, new AsyncCallback<String>() {
+    this.clientFactory.getBackendAwsService().uploadImage(this.clientFactory.getLocalSession( ).getSession( ), 0, file, type, bucket, name, kernel, ramdisk, new AsyncCallback<String>() {
 
       @Override
       public void onFailure(Throwable caught) {
@@ -220,7 +220,7 @@ public class ImageActivity extends AbstractSearchActivity implements ImageView.P
     for (SearchResultRow r: currentSelected) {
       id = r.getField(RESULT_IMAGE_ID);      
     }
-    this.clientFactory.getBackendAwsService().bindImage(this.clientFactory.getLocalSession( ).getSession( ), id, sysName, sysVer, new AsyncCallback<Void>() {
+    this.clientFactory.getBackendAwsService().bindImage(this.clientFactory.getLocalSession( ).getSession( ), 0, id, sysName, sysVer, new AsyncCallback<Void>() {
 
       @Override
       public void onFailure(Throwable caught) {
@@ -267,7 +267,7 @@ public class ImageActivity extends AbstractSearchActivity implements ImageView.P
     
     clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, FOOTERVIEW_UNBIND_WORKING[1], 0 );
     
-    clientFactory.getBackendAwsService( ).unbindImages( clientFactory.getLocalSession( ).getSession(), ids, new AsyncCallback<Void>( ) {
+    clientFactory.getBackendAwsService( ).unbindImages( clientFactory.getLocalSession( ).getSession(), 0, ids, new AsyncCallback<Void>( ) {
 
       @Override    
       public void onFailure( Throwable caught ) {

@@ -1270,14 +1270,16 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	public List<String> queryKeyPair(Session session) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
-		return EucaServiceWrapper.getInstance().getKeypairs(session);
+	  // FIXME userID
+		return EucaServiceWrapper.getInstance().getKeypairs(session, 0);
 	}
 
 	@Override
 	public List<String> querySecurityGroup(Session session) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
-		return EucaServiceWrapper.getInstance().getSecurityGroups(session);
+  	// FIXME userID
+		return EucaServiceWrapper.getInstance().getSecurityGroups(session, 0);
 	}
 	
 	@Override

@@ -43,7 +43,7 @@ public class StorageCtrlActivity extends AbstractSearchActivity implements Stora
 
   @Override
   protected void doSearch( String query, SearchRange range ) {
-    this.clientFactory.getBackendCmdService( ).lookupStorageCtrl( this.clientFactory.getLocalSession( ).getSession( ), search, range,
+    this.clientFactory.getBackendAwsService( ).lookupStorageCtrl( this.clientFactory.getLocalSession( ).getSession( ), search, range,
                                                            new AsyncCallback<SearchResult>( ) {
       
       @Override
@@ -188,7 +188,7 @@ public class StorageCtrlActivity extends AbstractSearchActivity implements Stora
     
     clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "注销存储控制器中...", 0 );
     
-    clientFactory.getBackendCmdService( ).deregisterStorage(clientFactory.getLocalSession( ).getSession( ), part, name, new AsyncCallback<Void>( ) {
+    clientFactory.getBackendAwsService( ).deregisterStorage(clientFactory.getLocalSession( ).getSession( ), part, name, new AsyncCallback<Void>( ) {
 
       @Override
       public void onFailure( Throwable caught ) {
@@ -218,7 +218,7 @@ public class StorageCtrlActivity extends AbstractSearchActivity implements Stora
 
   private void doRegisterSC(String part, String name, String host) {
     this.clientFactory.getShellView().getFooterView().showStatus(StatusType.LOADING, "注册存储控制器...", 0);
-    this.clientFactory.getBackendCmdService().registerStorage(this.clientFactory.getLocalSession().getSession(), part, host, name,  
+    this.clientFactory.getBackendAwsService().registerStorage(this.clientFactory.getLocalSession().getSession(), part, host, name,  
         new AsyncCallback<Void>( ) {
           @Override
           public void onFailure( Throwable caught ) {

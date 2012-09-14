@@ -47,7 +47,7 @@ public class SecurityGroupActivity extends AbstractSearchActivity implements Sec
 
   @Override
   protected void doSearch( String query, SearchRange range ) {
-    this.clientFactory.getBackendAwsService().lookupSecurityGroup( this.clientFactory.getLocalSession( ).getSession( ), search, range,
+    this.clientFactory.getBackendAwsService().lookupSecurityGroup( this.clientFactory.getLocalSession( ).getSession( ), 0, search, range,
                                                            new AsyncCallback<SearchResult>( ) {
       
       @Override
@@ -102,7 +102,7 @@ public class SecurityGroupActivity extends AbstractSearchActivity implements Sec
 
   private void doCreateSecurityGroup(String name, String desc) {
     this.clientFactory.getShellView().getFooterView().showStatus(StatusType.LOADING, "新建安全组...", 0);
-    this.clientFactory.getBackendAwsService().createSecurityGroup(this.clientFactory.getLocalSession().getSession(), name, desc, 
+    this.clientFactory.getBackendAwsService().createSecurityGroup(this.clientFactory.getLocalSession().getSession(), 0, name, desc, 
         new AsyncCallback<String>( ) {
           @Override
           public void onFailure( Throwable caught ) {
@@ -139,7 +139,7 @@ public class SecurityGroupActivity extends AbstractSearchActivity implements Sec
     
     clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "删除安全组中...", 0 );
     
-    clientFactory.getBackendAwsService( ).deleteSecurityGroups( clientFactory.getLocalSession( ).getSession( ), ids, new AsyncCallback<Void>( ) {
+    clientFactory.getBackendAwsService( ).deleteSecurityGroups( clientFactory.getLocalSession( ).getSession( ), 0, ids, new AsyncCallback<Void>( ) {
 
       @Override
       public void onFailure( Throwable caught ) {

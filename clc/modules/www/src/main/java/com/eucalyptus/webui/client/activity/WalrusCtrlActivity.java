@@ -45,7 +45,7 @@ public class WalrusCtrlActivity extends AbstractSearchActivity implements Walrus
 
   @Override
   protected void doSearch( String query, SearchRange range ) {
-    this.clientFactory.getBackendCmdService( ).lookupWalrusCtrl( this.clientFactory.getLocalSession( ).getSession( ), search, range,
+    this.clientFactory.getBackendAwsService( ).lookupWalrusCtrl( this.clientFactory.getLocalSession( ).getSession( ), search, range,
                                                            new AsyncCallback<SearchResult>( ) {
       
       @Override
@@ -173,7 +173,7 @@ public class WalrusCtrlActivity extends AbstractSearchActivity implements Walrus
     
     clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "注销Walrus控制器中...", 0 );
     
-    clientFactory.getBackendCmdService( ).deregisterWalrus(clientFactory.getLocalSession( ).getSession( ), name, new AsyncCallback<Void>( ) {
+    clientFactory.getBackendAwsService( ).deregisterWalrus(clientFactory.getLocalSession( ).getSession( ), name, new AsyncCallback<Void>( ) {
 
       @Override
       public void onFailure( Throwable caught ) {
@@ -203,7 +203,7 @@ public class WalrusCtrlActivity extends AbstractSearchActivity implements Walrus
 
   private void doRegisterWalrus(String name, String host) {
     this.clientFactory.getShellView().getFooterView().showStatus(StatusType.LOADING, "注册Walrus控制器...", 0);
-    this.clientFactory.getBackendCmdService().registerWalrus(this.clientFactory.getLocalSession().getSession(), host, name,  
+    this.clientFactory.getBackendAwsService().registerWalrus(this.clientFactory.getLocalSession().getSession(), host, name,  
         new AsyncCallback<Void>( ) {
           @Override
           public void onFailure( Throwable caught ) {

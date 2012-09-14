@@ -14,26 +14,4 @@ public interface CmdService extends RemoteService {
 	public String run(Session session, String[] cmd);
 	public String sshRun(Session session, String[] cmd);
 	
-	public SearchResult lookupNodeCtrl(Session session, String search, SearchRange range);
-	public SearchResult lookupWalrusCtrl(Session session, String search, SearchRange range);
-	public SearchResult lookupClusterCtrl(Session session, String search, SearchRange range);
-	public SearchResult lookupStorageCtrl(Session session, String search, SearchRange range);
-	
-	public String uploadImage(Session session, String file, ImageType type, String bucket, String name, String kernel, String ramdisk);
-	
-	public String runInstance(Session session, String image, String keypair, String vmtype, String group);
-	
-	public void registerCluster(Session session, String part, String host, String name) throws EucalyptusServiceException;
-	public void deregisterCluster(Session session, String part, String name) throws EucalyptusServiceException;
-  public void registerNode(Session session, String host) throws EucalyptusServiceException;
-  public void deregisterNode(Session session, String host) throws EucalyptusServiceException;
-  public void registerStorage(Session session, String part, String host, String name) throws EucalyptusServiceException;
-  public void deregisterStorage(Session session, String part, String name) throws EucalyptusServiceException;
-  public void registerWalrus(Session session, String host, String name) throws EucalyptusServiceException;
-  public void deregisterWalrus(Session session, String name) throws EucalyptusServiceException;
-  
-
-	
-	
-	
 }
