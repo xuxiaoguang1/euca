@@ -546,7 +546,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
   
   private String runWithKey(String[] keys, Collection<? extends String> cmd) {
     List<String> _cmd = new ArrayList<String>(cmd);
-    _cmd.addAll(Arrays.asList("-A", keys[0], "-S", keys[1], "-U", getEndPoint()));
+    _cmd.addAll(Arrays.asList("-I", keys[0], "-S", keys[1], "-U", getEndPoint()));
     return sshRun(_cmd);
   }
   
