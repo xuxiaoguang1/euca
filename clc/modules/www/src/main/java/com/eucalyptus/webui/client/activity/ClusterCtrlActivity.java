@@ -162,7 +162,7 @@ public class ClusterCtrlActivity extends AbstractSearchActivity implements Clust
     
     ConfirmationView dialog = this.clientFactory.getConfirmationView( );
     dialog.setPresenter( this );
-    dialog.display( DEREGISTER_CLUSTER_CAPTION[1], DEREGISTER_CLUSTER_SUBJECT[1], currentSelected, new ArrayList<Integer>( Arrays.asList(0, 1 ) ));    
+    dialog.display( DEREGISTER_CLUSTER_CAPTION[1], DEREGISTER_CLUSTER_SUBJECT[1]);    
     
     
   }

@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.client.activity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,6 +10,7 @@ import com.eucalyptus.webui.client.place.SearchPlace;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
@@ -76,6 +76,11 @@ public class KeyActivity extends AbstractSearchActivity implements KeyView.Prese
   @Override
   protected String getTitle( ) {
     return TITLE[1];
+  }
+  
+  @Override
+  public int getPageSize() {
+	  return ViewSearchTableSizeConf.instance().getPageSize(KeyActivity.class.getName());
   }
 
   @Override

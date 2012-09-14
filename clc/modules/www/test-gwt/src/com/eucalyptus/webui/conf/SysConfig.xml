@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Conf>
+	<Language>
+		<index>CHINESE</index>
+	</Language>
+	
+	<SearchTableSize><!--SearchTableSize in View-->
+		<view>
+			<name>com.eucalyptus.webui.client.activity.UserActivity</name>
+			<size>15</size>
+		</view>
+		
+		<view>
+			<name>com.eucalyptus.webui.client.activity.GroupActivity</name>
+			<size>15</size>
+		</view>
+		
+		<view>
+			<name>com.eucalyptus.webui.client.activity.AccountActivity</name>
+			<size>15</size>
+		</view>
+		
+		<view>
+			<name>com.eucalyptus.webui.client.activity.PolicyActivity</name>
+			<size>15</size>
+		</view>
+		
+		<view>
+			<name>com.eucalyptus.webui.client.activity.KeyActivity</name>
+			<size>15</size>
+		</view>
+		
+		<view>
+			<name>com.eucalyptus.webui.client.activity.CertActivity</name>
+			<size>15</size>
+		</view>
+		
+		<view>
+			<name>com.eucalyptus.webui.client.activity.UserAppActivity</name>
+			<size>15</size>
+		</view>
+		
+		<view>
+			<name>com.eucalyptus.webui.client.activity.UserActivity</name>
+			<size>15</size>
+		</view>
+		
+		<view>
+			<name>com.eucalyptus.webui.client.activity.UserActivity</name>
+			<size>15</size>
+		</view>
+		
+		<view>
+			<name>com.eucalyptus.webui.client.activity.UserActivity</name>
+			<size>15</size>
+		</view>
+		
+	</SearchTableSize>
+
+</Conf>

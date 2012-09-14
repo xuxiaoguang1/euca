@@ -39,6 +39,7 @@ import com.eucalyptus.webui.server.user.AuthenticateUserLogin;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.server.user.PwdResetProc;
 import com.eucalyptus.webui.shared.resource.Template;
+import com.eucalyptus.webui.shared.config.SysConfig;
 import com.eucalyptus.webui.shared.query.QueryType;
 import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.user.AccountInfo;
@@ -82,7 +83,6 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	private DeviceBWServiceProcImpl deviceBWServiceProc = new DeviceBWServiceProcImpl();
 	private DeviceTemplateServiceProcImpl deviceTemplateServiceProc = new DeviceTemplateServiceProcImpl();
 	private DeviceVMServiceProcImpl deviceVMServiceProc = new DeviceVMServiceProcImpl();
-
 	private static void randomDelay() {
 		try {
 			Thread.sleep(200 + RANDOM.nextInt(800));
@@ -783,7 +783,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	public void addDeviceCPUPrice(Session session, String cpu_name, String cpu_price_desc, double cpu_price) throws EucalyptusServiceException {
 		deviceCPUPriceServiceProc.addCPUPrice(session, cpu_name, cpu_price_desc, cpu_price);
 	}
-
+	
 	@Override
 	public void modifyDeviceCPUPrice(Session session, int cpu_price_id, String cpu_price_desc, double cpu_price) throws EucalyptusServiceException {
 		deviceCPUPriceServiceProc.modifyCPUPrice(session, cpu_price_id, cpu_price_desc, cpu_price);
@@ -812,13 +812,13 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	
 	@Override
 	public void modifyDeviceTemplatePrice(Session session, int template_price_id, String template_price_desc,
-            double template_price_cpu, double template_price_mem, double template_price_disk, double template_price_bw) throws EucalyptusServiceException {
+	            double template_price_cpu, double template_price_mem, double template_price_disk, double template_price_bw) throws EucalyptusServiceException {
 	    DeviceTemplatePriceService.getInstance().modifyTemplatePrice(session, template_price_id, template_price_desc, template_price_cpu, template_price_mem, template_price_disk, template_price_bw);
 	}
 	
 	@Override
 	public void createDeviceTemplatePriceByID(Session session, int template_id, String template_price_desc,
-            double template_price_cpu, double template_price_mem, double template_price_disk, double template_price_bw) throws EucalyptusServiceException {
+	            double template_price_cpu, double template_price_mem, double template_price_disk, double template_price_bw) throws EucalyptusServiceException {
 	    DeviceTemplatePriceService.getInstance().createTemplatePriceByID(session, template_id, template_price_desc, template_price_cpu, template_price_mem, template_price_disk, template_price_bw);
 	}
 	
@@ -1269,13 +1269,21 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	@Override
 	public List<String> queryKeyPair(Session session) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
+		verifySession(session);
 		return EucaServiceWrapper.getInstance().getKeypairs(session);
 	}
 
 	@Override
 	public List<String> querySecurityGroup(Session session) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
+		verifySession(session);
 		return EucaServiceWrapper.getInstance().getSecurityGroups(session);
+	}
+	
+	@Override
+	public SysConfig readSysConfig() throws EucalyptusServiceException {
+		// TODO Auto-generated method stub
+		return SysConfProcImpl.instance().getSysConfig();
 	}
 	
 //	@Override

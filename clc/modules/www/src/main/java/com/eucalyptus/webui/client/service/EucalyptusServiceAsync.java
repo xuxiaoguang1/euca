@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.eucalyptus.webui.client.session.Session;
+import com.eucalyptus.webui.shared.config.SysConfig;
 import com.eucalyptus.webui.client.view.DeviceCPUDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
@@ -308,6 +309,8 @@ public interface EucalyptusServiceAsync {
 	
 	void queryKeyPair(Session session, AsyncCallback<List<String>> callback);
 	void querySecurityGroup(Session session, AsyncCallback<List<String>> callback);
+	
+	void readSysConfig(AsyncCallback<SysConfig> callback);
 	
 //	void listAccessKeysByUser(Session session, String userId, AsyncCallback<SearchResult> callback);
 //	void listAccessKeys(Session session, AsyncCallback<SearchResult> callback);

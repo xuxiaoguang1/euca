@@ -6,6 +6,7 @@ import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.SearchPlace;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
+import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
 import com.eucalyptus.webui.client.view.CPUStatView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 
@@ -31,6 +32,11 @@ public class CPUStatActivity extends AbstractSearchActivity implements
 	@Override
 	protected String getTitle() {
 		return TITLE;
+	}
+	
+	@Override
+	public int getPageSize() {
+		return ViewSearchTableSizeConf.instance().getPageSize(UserActivity.class.getName());
 	}
 
 	@Override

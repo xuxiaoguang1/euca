@@ -6,6 +6,7 @@ import com.eucalyptus.webui.client.place.SearchPlace;
 import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
+import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.UserAppAddView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
@@ -48,6 +49,11 @@ public class UserAppAddActivity extends AbstractSearchActivity {
   protected String getTitle( ) {
 	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 	  return TITLE[lan];
+  }
+  
+  @Override
+  public int getPageSize() {
+	  return ViewSearchTableSizeConf.instance().getPageSize(UserAppAddActivity.class.getName());
   }
 
   @Override

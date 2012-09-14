@@ -13,6 +13,7 @@ import com.eucalyptus.webui.client.view.CPUStatView;
 import com.eucalyptus.webui.client.view.CertView;
 import com.eucalyptus.webui.client.view.CloudRegistrationView;
 import com.eucalyptus.webui.client.view.ClusterCtrlView;
+import com.eucalyptus.webui.client.view.ConfigView;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.DeviceAreaView;
 import com.eucalyptus.webui.client.view.DeviceBWView;
@@ -47,7 +48,6 @@ import com.eucalyptus.webui.client.view.KeypairView;
 import com.eucalyptus.webui.client.view.LoadingAnimationView;
 import com.eucalyptus.webui.client.view.LoadingProgressView;
 import com.eucalyptus.webui.client.view.LoginView;
-import com.eucalyptus.webui.client.view.ConfigView;
 import com.eucalyptus.webui.client.view.MemoryStatView;
 import com.eucalyptus.webui.client.view.NodeCtrlView;
 import com.eucalyptus.webui.client.view.PolicyView;
@@ -70,7 +70,6 @@ import com.google.gwt.place.shared.Place;
 import com.google.gwt.place.shared.PlaceController;
 import com.google.gwt.place.shared.PlaceHistoryHandler;
 import com.google.gwt.place.shared.PlaceHistoryHandler.Historian;
-import com.google.gwt.user.client.ui.IsWidget;
 
 public interface ClientFactory {
 

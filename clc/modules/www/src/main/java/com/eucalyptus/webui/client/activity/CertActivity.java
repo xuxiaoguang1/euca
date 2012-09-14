@@ -10,6 +10,7 @@ import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
 import com.eucalyptus.webui.client.view.CertView;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
@@ -88,6 +89,11 @@ public class CertActivity extends AbstractSearchActivity implements CertView.Pre
 	@Override
 	protected String getTitle() {
 		return TITLE;
+	}
+	
+	@Override
+	public int getPageSize() {
+		return ViewSearchTableSizeConf.instance().getPageSize(UserActivity.class.getName());
 	}
 
 	@Override

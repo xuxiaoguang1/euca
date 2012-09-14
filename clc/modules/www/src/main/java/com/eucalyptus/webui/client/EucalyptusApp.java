@@ -5,10 +5,15 @@ import com.eucalyptus.webui.client.activity.WebAction;
 import com.eucalyptus.webui.client.place.ConfirmSignupPlace;
 import com.eucalyptus.webui.client.place.LoginPlace;
 import com.eucalyptus.webui.client.place.ResetPasswordPlace;
+import com.eucalyptus.webui.client.service.LanguageSelection;
+import com.eucalyptus.webui.client.service.LanguageSelection.EnumLanguage;
+import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
+import com.eucalyptus.webui.shared.config.SysConfig;
 import com.eucalyptus.webui.shared.query.QueryType;
 import com.google.gwt.activity.shared.ActivityManager;
 import com.google.gwt.activity.shared.ActivityMapper;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AcceptsOneWidget;
 
 /**
@@ -43,6 +48,8 @@ public class EucalyptusApp {
     lifecycleActivityManager.setDisplay( container );
     // First check special action activities
     checkAction( );
+    
+    queryConfig();
   }
   
   private void checkAction( ) {
@@ -64,4 +71,18 @@ public class EucalyptusApp {
     this.clientFactory.getLifecyclePlaceController( ).goTo( new LoginPlace( LoginPlace.DEFAULT_PROMPT ) );
   }
   
+  private void queryConfig() {
+	  this.clientFactory.getBackendService().readSysConfig(new AsyncCallback<SysConfig> () {
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+			}
+			@Override
+			public void onSuccess(SysConfig result) {
+				// TODO Auto-generated method stub
+				LanguageSelection.instance().setCurLanguage(EnumLanguage.valueOf(result.getLanguage()));
+				
+				ViewSearchTableSizeConf.instance().setViewTableSizeConfig(result.getViewTableSizeConfig());
+			}});
+  }
 }

@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.client.activity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,6 +10,7 @@ import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.SearchResult;
+import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
 import com.eucalyptus.webui.client.view.AccountView;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
@@ -18,6 +18,7 @@ import com.eucalyptus.webui.client.view.AccountAddView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.shared.dictionary.ConfDef;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
@@ -25,6 +26,7 @@ import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class AccountActivity extends AbstractSearchActivity
@@ -57,6 +59,8 @@ public class AccountActivity extends AbstractSearchActivity
     
   public static final String[] EMAIL_INPUT_TITLE = {"Admin email", "管理员电子邮件"};
   public static final String[] DESCRIPTION_INPUT_TITLE = {"Admin description", "备注"};
+  
+  private final String[] ALERT_NOT_DEL_ROOT_ACCOUNT = {"Can not delete root account", "根账户不能删除"};
   
   private static final Logger LOG = Logger.getLogger( AccountActivity.class.getName( ) );
 
@@ -109,6 +113,11 @@ public class AccountActivity extends AbstractSearchActivity
 	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 	  return TITLE[lan];
   }
+  
+  @Override
+  public int getPageSize() {
+	  return ViewSearchTableSizeConf.instance().getPageSize(AccountActivity.class.getName());
+  }
 
   @Override
   protected void showView( SearchResult result ) {
@@ -152,7 +161,7 @@ public class AccountActivity extends AbstractSearchActivity
   		ConfirmationView dialog = this.clientFactory.getConfirmationView( );
   		dialog.setPresenter( this );
   		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
-  		dialog.display( DELETE_ACCOUNTS_CAPTION[lan], DELETE_ACCOUNTS_SUBJECT[lan], currentSelected, new ArrayList<Integer>( Arrays.asList( 0, 1 ) ) );
+  		dialog.display( DELETE_ACCOUNTS_CAPTION[lan], DELETE_ACCOUNTS_SUBJECT[lan]);
   }
   
 	@Override
@@ -217,9 +226,18 @@ public class AccountActivity extends AbstractSearchActivity
 		if ( currentSelected == null || currentSelected.size( ) < 1 ) {
 			return;
 		}
+		
+		final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
     
 		final ArrayList<String> ids = Lists.newArrayList( ); 
 		for ( SearchResultRow row : currentSelected ) {
+			
+			String accountName = row.getField(2);
+		    	if (accountName.equals(ConfDef.ROOT_ACCOUNT)) {
+		    		Window.alert(ALERT_NOT_DEL_ROOT_ACCOUNT[lan]);
+		    		return;
+		    }
+		    	
 			ids.add( row.getField( 0 ) );
 		}
     

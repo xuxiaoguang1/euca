@@ -7,10 +7,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.SearchPlace;
-import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.InputField;
@@ -18,7 +18,6 @@ import com.eucalyptus.webui.client.view.InputView;
 import com.eucalyptus.webui.client.view.PolicyView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.InputField.ValueType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.checker.ValueChecker;
 import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
@@ -89,6 +88,11 @@ public class PolicyActivity extends AbstractSearchActivity implements PolicyView
   @Override
   protected String getTitle( ) {
     return TITLE[1];
+  }
+  
+  @Override
+  public int getPageSize() {
+	  return ViewSearchTableSizeConf.instance().getPageSize(PolicyActivity.class.getName());
   }
 
   @Override

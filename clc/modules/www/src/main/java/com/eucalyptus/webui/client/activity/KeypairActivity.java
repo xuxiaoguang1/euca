@@ -10,6 +10,7 @@ import com.eucalyptus.webui.client.place.SearchPlace;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
 import com.eucalyptus.webui.client.view.AreaView;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.DetailView;
@@ -92,6 +93,11 @@ public class KeypairActivity extends AbstractSearchActivity implements KeypairVi
   @Override
   protected String getTitle( ) {
     return TITLE;
+  }
+  
+  @Override
+  public int getPageSize() {
+	  return ViewSearchTableSizeConf.instance().getPageSize(UserActivity.class.getName());
   }
 
   @Override

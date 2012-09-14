@@ -11,6 +11,7 @@ import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.GroupListView;
@@ -157,6 +158,11 @@ public class UserActivity extends AbstractSearchActivity
 	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 	  return TITLE[lan];
   }
+  
+  @Override
+  public int getPageSize() {
+	  return ViewSearchTableSizeConf.instance().getPageSize(UserActivity.class.getName());
+  }
 
   @Override
   protected void showView( SearchResult result ) {
@@ -253,7 +259,6 @@ public class UserActivity extends AbstractSearchActivity
 				@Override
 				public void onFailure(Throwable caught) {
 					// TODO Auto-generated method stub
-					
 				}
 		
 				@Override

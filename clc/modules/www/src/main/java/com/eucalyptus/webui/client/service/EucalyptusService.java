@@ -11,6 +11,7 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.DeviceCPUDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
+import com.eucalyptus.webui.shared.config.SysConfig;
 import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.user.AccountInfo;
@@ -973,12 +974,21 @@ public interface EucalyptusService extends RemoteService {
 	List<String> queryKeyPair(Session session) throws EucalyptusServiceException;
 	
 	/**
-	 * query security group list.
+	 * read system configuration
+	 * 
+	 * @param session
+	 * @throws EucalyptusServiceException
+	 */
+	SysConfig readSysConfig() throws EucalyptusServiceException;
+	
+	/**
+	 * query search table size conf.
 	 * 
 	 * @param session
 	 * @throws EucalyptusServiceException
 	 */
 	List<String> querySecurityGroup(Session session) throws EucalyptusServiceException;
+  
   
   /**
    * Acquire access keys by user id

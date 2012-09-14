@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.client.activity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,6 +10,7 @@ import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.GroupAddView;
@@ -172,6 +172,11 @@ public class GroupActivity extends AbstractSearchActivity
 	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 	  return TITLE[lan];
   }
+  
+  @Override
+  public int getPageSize() {
+	  return ViewSearchTableSizeConf.instance().getPageSize(GroupActivity.class.getName());
+  }
 
   @Override
   protected void showView( SearchResult result ) {
@@ -247,7 +252,7 @@ public class GroupActivity extends AbstractSearchActivity
   		dialog.setPresenter( this );
   		
   		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
-  		dialog.display( DELETE_GROUPS_CAPTION[lan], DELETE_GROUPS_SUBJECT[lan], currentSelected, new ArrayList<Integer>( Arrays.asList( 0, 1 ) ) );
+  		dialog.display( DELETE_GROUPS_CAPTION[lan], DELETE_GROUPS_SUBJECT[lan]);
   	}
   	
   	@Override

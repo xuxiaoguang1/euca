@@ -18,5 +18,6 @@
 	<classpathentry kind="lib" path="lib/guava-r09-gwt.jar"/>
 	<classpathentry kind="lib" path="lib/guava-r09.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

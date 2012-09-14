@@ -10,6 +10,7 @@ import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.GroupAddingUserListView;
@@ -120,6 +121,11 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 	protected String getTitle() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public int getPageSize() {
+		return ViewSearchTableSizeConf.instance().getPageSize(GroupDetailActivity.class.getName());
 	}
 
 	@Override
