@@ -75,8 +75,8 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
    * 
    */
   private static final long serialVersionUID = 1L;
-  static final String FALLBACK_ACCESS_KEY="BHSUGILFWYM4NRQW0XLVA";
-	static final String FALLBACK_SECRET_KEY="LsW9lSUZYi8D7jQIZPk52J1xvEcmX1eWLsQH4rYq";
+  static final String FALLBACK_ACCESS_KEY="6CQT6BWUN4CDB9HTTHZOX";
+	static final String FALLBACK_SECRET_KEY="cboRkSRFMd2hhokkIcVAxDbwTO6828wIB1mD2x5H";
 	static final String FALLBACK_ENDPOINT="http://166.111.134.30:8773/services/Eucalyptus";
 	static final String FALLBACK_SSH_HOST="root@166.111.134.30";
 	static String ENDPOINT = null;
