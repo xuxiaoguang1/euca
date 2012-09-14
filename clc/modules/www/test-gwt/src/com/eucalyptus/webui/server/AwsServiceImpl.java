@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.server;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.ResultSet;
@@ -9,10 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -199,9 +196,20 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     return getLoginUserProfile(session).getUserId();
   }
   
-  private String[] _getKeys(int userID) {
+  private String[] _getKeys(int userID) throws EucalyptusServiceException {
+    String[] keys = null;
     //real code here
-    return null;
+    
+    if (keys == null) {
+      if (CAN_FALLBACK) {
+        keys = new String[2];
+        keys[0] = FALLBACK_ACCESS_KEY;
+        keys[1] = FALLBACK_SECRET_KEY;
+      } else {
+        throw new EucalyptusServiceException("key auth with eucalyptus failed");
+      }
+    }
+    return keys;
   }
   
   private String[] getKeys(Session session, int userID) throws EucalyptusServiceException {
@@ -213,15 +221,6 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
   }
 
 	private AmazonEC2 getEC2(String[] keys) throws EucalyptusServiceException {
-	  if (keys == null) {
-	    if (CAN_FALLBACK) {
-	      keys = new String[2];
-	      keys[0] = FALLBACK_ACCESS_KEY;
-	      keys[1] = FALLBACK_SECRET_KEY;
-	    } else {
-	      throw new EucalyptusServiceException("key auth with eucalyptus failed");
-	    }
-	  }
 		AWSCredentials credentials = new BasicAWSCredentials(keys[0], keys[1]);
 		ClientConfiguration cc = new ClientConfiguration();
 		AmazonEC2 ec2 = new AmazonEC2Client(credentials, cc);
@@ -548,7 +547,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
   private String runWithKey(String[] keys, Collection<? extends String> cmd) {
     List<String> _cmd = new ArrayList<String>(cmd);
     _cmd.addAll(Arrays.asList("-A", keys[0], "-S", keys[1], "-U", getEndPoint()));
-    return run(_cmd);
+    return sshRun(_cmd);
   }
   
   private String run(List<String> cmd) {
