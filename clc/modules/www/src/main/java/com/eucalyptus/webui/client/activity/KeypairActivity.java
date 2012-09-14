@@ -15,16 +15,12 @@ import com.eucalyptus.webui.client.view.AreaView;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.DetailView;
 import com.eucalyptus.webui.client.view.FooterView;
-import com.eucalyptus.webui.client.view.ImageView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.InputField;
 import com.eucalyptus.webui.client.view.InputView;
 import com.eucalyptus.webui.client.view.KeypairView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.InputField.ValueType;
-import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.checker.ValueChecker;
-import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

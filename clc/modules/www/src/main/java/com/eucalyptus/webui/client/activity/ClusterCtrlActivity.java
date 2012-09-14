@@ -18,10 +18,8 @@ import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.InputField;
 import com.eucalyptus.webui.client.view.InputView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.InputField.ValueType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.checker.ValueChecker;
-import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class ClusterCtrlActivity extends AbstractSearchActivity implements ClusterCtrlView.Presenter, DetailView.Presenter, InputView.Presenter, ConfirmationView.Presenter {

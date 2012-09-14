@@ -131,6 +131,9 @@ public class GroupAddViewImpl extends DialogBox implements GroupAddView {
 			this.groupStateBanRadio.setValue(true);
 		
 			break;
+			
+		default:
+			break;
 		}
 		
 		String accountId = Integer.toString(group.getAccountId());

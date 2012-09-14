@@ -8,7 +8,6 @@ import java.security.cert.X509Certificate;
 import org.bouncycastle.openssl.PEMReader;
 
 import com.eucalyptus.webui.server.auth.util.B64;
-import com.eucalyptus.webui.server.auth.util.X509CertHelper;
 
 public class Test {
 	public static final String ppp = "" +

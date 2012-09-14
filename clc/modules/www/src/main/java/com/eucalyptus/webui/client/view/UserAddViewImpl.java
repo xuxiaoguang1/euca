@@ -123,12 +123,15 @@ public class UserAddViewImpl extends DialogBox implements UserAddView {
 		case ADMIN:
 			this.userTypeAdminRadio.setValue(true);
 			this.userTypeUserRadio.setValue(false);
-		break;
+			break;
 		
 		case USER:
 			this.userTypeAdminRadio.setValue(false);
 			this.userTypeUserRadio.setValue(true);
-		break;
+			break;
+			
+		default:
+			break;
 		}
 		
 		this.userStateNormalRadio.setValue(false);
@@ -155,6 +158,9 @@ public class UserAddViewImpl extends DialogBox implements UserAddView {
 			this.userStatePauseRadio.setValue(false);
 			this.userStateBanRadio.setValue(true);
 		
+			break;
+			
+		default:
 			break;
 		}
 		

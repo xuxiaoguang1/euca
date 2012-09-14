@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.client.activity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -12,19 +11,13 @@ import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.view.ConfirmationView;
-import com.eucalyptus.webui.client.view.DetailView;
 import com.eucalyptus.webui.client.view.FooterView;
-import com.eucalyptus.webui.client.view.InputField;
 import com.eucalyptus.webui.client.view.InputView;
-import com.eucalyptus.webui.client.view.UploadImageView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.InputField.ValueType;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.InstanceView;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.client.view.RunInstanceView;
-import com.eucalyptus.webui.shared.checker.ValueChecker;
-import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

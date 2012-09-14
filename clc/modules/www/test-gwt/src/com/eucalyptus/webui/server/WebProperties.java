@@ -1,7 +1,5 @@
 package com.eucalyptus.webui.server;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;

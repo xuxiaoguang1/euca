@@ -88,19 +88,19 @@ public class Enum2String {
 	}
 	
 	private Enum2String () {
-		enumUserType2String.add(new Pair(EnumUserType.NONE, USER_TYPE_NONE_NAME[1]));
-		enumUserType2String.add(new Pair(EnumUserType.ADMIN, USER_TYPE_ADMIN_NAME[1]));
-		enumUserType2String.add(new Pair(EnumUserType.USER, USER_TYPE_USER_NAME[1]));
+		enumUserType2String.add(new Pair<EnumUserType, String>(EnumUserType.NONE, USER_TYPE_NONE_NAME[1]));
+		enumUserType2String.add(new Pair<EnumUserType, String>(EnumUserType.ADMIN, USER_TYPE_ADMIN_NAME[1]));
+		enumUserType2String.add(new Pair<EnumUserType, String>(EnumUserType.USER, USER_TYPE_USER_NAME[1]));
 		
-		enumState2String.add(new Pair(EnumState.NONE, STATE_NONE_NAME[1]));
-		enumState2String.add(new Pair(EnumState.NORMAL, STATE_NORMAL_NAME[1]));
-		enumState2String.add(new Pair(EnumState.PAUSE, STATE_PAUSE_NAME[1]));
-		enumState2String.add(new Pair(EnumState.BAN, STATE_BAN_NAME[1]));
+		enumState2String.add(new Pair<EnumState, String>(EnumState.NONE, STATE_NONE_NAME[1]));
+		enumState2String.add(new Pair<EnumState, String>(EnumState.NORMAL, STATE_NORMAL_NAME[1]));
+		enumState2String.add(new Pair<EnumState, String>(EnumState.PAUSE, STATE_PAUSE_NAME[1]));
+		enumState2String.add(new Pair<EnumState, String>(EnumState.BAN, STATE_BAN_NAME[1]));
 		
-		EnumUserAppStatus2String.add(new Pair(EnumUserAppStatus.NONE, USER_APP_STATE_NONE[1]));
-		EnumUserAppStatus2String.add(new Pair(EnumUserAppStatus.APPLYING, USER_APP_STATE_SOLVING[1]));
-		EnumUserAppStatus2String.add(new Pair(EnumUserAppStatus.APPROVED, USER_APP_STATE_SOLVED[1]));
-		EnumUserAppStatus2String.add(new Pair(EnumUserAppStatus.REJECTED, USER_APP_STATE_TOSOLVE[1]));
+		EnumUserAppStatus2String.add(new Pair<EnumUserAppStatus, String>(EnumUserAppStatus.NONE, USER_APP_STATE_NONE[1]));
+		EnumUserAppStatus2String.add(new Pair<EnumUserAppStatus, String>(EnumUserAppStatus.APPLYING, USER_APP_STATE_SOLVING[1]));
+		EnumUserAppStatus2String.add(new Pair<EnumUserAppStatus, String>(EnumUserAppStatus.APPROVED, USER_APP_STATE_SOLVED[1]));
+		EnumUserAppStatus2String.add(new Pair<EnumUserAppStatus, String>(EnumUserAppStatus.REJECTED, USER_APP_STATE_TOSOLVE[1]));
 	}
 	
 	private final ArrayList<Pair<EnumUserType, String>> enumUserType2String = new ArrayList<Pair<EnumUserType, String>>();

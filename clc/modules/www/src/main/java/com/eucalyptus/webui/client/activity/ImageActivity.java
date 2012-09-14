@@ -20,8 +20,6 @@ import com.eucalyptus.webui.client.view.InputField;
 import com.eucalyptus.webui.client.view.InputView;
 import com.eucalyptus.webui.client.view.UploadImageView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.InputField.ValueType;
-import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.aws.ImageType;
 import com.eucalyptus.webui.shared.checker.ValueChecker;
 import com.google.common.collect.Lists;

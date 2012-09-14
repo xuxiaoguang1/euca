@@ -121,6 +121,9 @@ public class AccountAddViewImpl extends DialogBox implements AccountAddView {
 			this.accountStateBanRadio.setValue(true);
 		
 			break;
+			
+		default:
+			break;
 		}
 	}
 

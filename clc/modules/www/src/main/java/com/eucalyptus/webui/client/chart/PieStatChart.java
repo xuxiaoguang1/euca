@@ -1,7 +1,5 @@
 package com.eucalyptus.webui.client.chart;
 
-import java.util.Arrays;
-
 import com.googlecode.gchart.client.GChart;
 
 public class PieStatChart extends GChart {
