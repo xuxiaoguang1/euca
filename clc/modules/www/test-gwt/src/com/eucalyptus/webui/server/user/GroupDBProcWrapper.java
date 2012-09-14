@@ -345,7 +345,7 @@ public class GroupDBProcWrapper {
 		append(" SET ").
 		append(DBTableName.GROUP).append(".").append(DBTableColName.GROUP.DEL).append(" = ").append(ConfDef.DB_DEL_FIELD_INVALID_STATE).
 		append(", ").
-		append(DBTableName.USER).append(".").append(DBTableColName.USER.DEL).append(" = ").append(ConfDef.DB_DEL_FIELD_INVALID_STATE).
+		append(DBTableName.USER).append(".").append(DBTableColName.USER.GROUP_ID).append(" = null ").
 		append(" WHERE ");
 		
 		for (String str : ids) {

@@ -197,12 +197,15 @@ public class UserDBProcWrapper {
 		append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
 		append(" = ").append(accountId).
 		append(" AND ").
-		append("( ").append(DBTableName.USER).append(".").append(DBTableColName.USER.GROUP_ID).
+		append("( ").
+		append(DBTableName.USER).append(".").append(DBTableColName.USER.GROUP_ID).
 		append(" != ").
 		append(groupId).
 		append(" OR ").
-		append(DBTableName.USER).append(".").append(DBTableColName.USER.GROUP_ID).
-		append(" is NULL )");
+		append(DBTableName.USER).append(".").append(DBTableColName.USER.GROUP_ID).append(" is NULL").
+		append(" OR ").
+		append(DBTableName.USER).append(".").append(DBTableColName.USER.GROUP_ID).append(" = 0").
+		append(" )");
 		
 		System.out.println(sql.toString());
 		
