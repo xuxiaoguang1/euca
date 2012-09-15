@@ -1,11 +1,10 @@
 package com.eucalyptus.webui.server.dictionary;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -19,22 +18,17 @@ public class SysConfParser {
 	}
 	
 	public void parse(String filePath) {
-		File file = new File(filePath);
-		if (!file.exists()) {
-			SysConfParser.LOG.log(Level.WARNING, "System configuration file not existed!");
-			return;
-		}
 		
 		SAXReader saxReader = new SAXReader();
 		
 		try {
-			Document document = saxReader.read(file);
+			Document document = saxReader.read(ClassLoader.getSystemResource(filePath));
 			
 			readElements(document);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			SysConfParser.LOG.log(Level.WARNING, "SysConfParser parsing exception");
+			SysConfParser.LOG.log(Level.ERROR, "SysConfParser parsing exception");
 			e.printStackTrace();
 		}
 	}

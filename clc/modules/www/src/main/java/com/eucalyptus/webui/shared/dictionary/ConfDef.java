@@ -15,5 +15,5 @@ public class ConfDef {
 	public static String ROOT_ACCOUNT = "eucalyptus";
 	public static String ACCOUNT_ADMIN_NAME = "admin";
 	
-	public static String SYS_CONFIG_FILE = "../src/com/eucalyptus/webui/conf/SysConfig.xml";
+	public static String SYS_CONFIG_FILE = "com/eucalyptus/webui/conf/SysConfig.xml";
 }
