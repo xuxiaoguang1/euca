@@ -17,7 +17,7 @@ public class ViewSearchTableSizeConf {
 	}
 	
 	public int getPageSize(String viewActivityName) {
-		Object tableSize = this.searchTableSizeConfList.get(viewActivityName);
+		Object tableSize = this.searchTableSizeConfList.get(viewActivityName.toLowerCase());
 		
 		if (tableSize != null)
 			return Integer.parseInt(tableSize.toString());

@@ -219,35 +219,35 @@ public class SysConfParser {
 				}
 				
 				if (!Strings.isNullOrEmpty(viewName) && !Strings.isNullOrEmpty(tableSize))
-					this.sysConfig.getViewTableSizeConfig().put(viewName, tableSize);
+					this.sysConfig.getViewTableSizeConfig().put(viewName.toLowerCase(), tableSize);
 			}
 		}
 	}
 	
-	private static String XML_TAG_LAN = "Language";
-	private static String XML_TAG_LAN_INDEX = "Index";
+	private static String XML_TAG_LAN = "language";
+	private static String XML_TAG_LAN_INDEX = "index";
 	
-	private static String XML_TAG_TABLESIZE = "SearchTableSize";
-	private static String XML_TAG_TABLESIZE_VIEW = "View";
-	private static String XML_TAG_TABLESIZE_VIEW_NAME = "Name";
-	private static String XML_TAG_TABLESIZE_VIEW_SIZE = "Size";
+	private static String XML_TAG_TABLESIZE = "searchtable_size";
+	private static String XML_TAG_TABLESIZE_VIEW = "view";
+	private static String XML_TAG_TABLESIZE_VIEW_NAME = "name";
+	private static String XML_TAG_TABLESIZE_VIEW_SIZE = "size";
 	
-	private static String XML_TAG_LINKS = "Links";
-	private static String XML_TAG_LINKS_LINK = "Link";
-	private static String XML_TAG_LINKS_LINK_NAME = "Name";
-	private static String XML_TAG_LINKS_LINK_DESC = "Desc";
-	private static String XML_TAG_LINKS_LINK_IMAGE = "Image";
-	private static String XML_TAG_LINKS_LINK_QUERYTYPE = "QueryType";
+	private static String XML_TAG_LINKS = "links";
+	private static String XML_TAG_LINKS_LINK = "link";
+	private static String XML_TAG_LINKS_LINK_NAME = "name";
+	private static String XML_TAG_LINKS_LINK_DESC = "desc";
+	private static String XML_TAG_LINKS_LINK_IMAGE = "image";
+	private static String XML_TAG_LINKS_LINK_QUERYTYPE = "query_type_enum";
 	
-	private static String XML_TAG_LINKCONFIG = "LinkConfig";
-	private static String XML_TAG_LINKCONFIG_GROUP = "Group";
+	private static String XML_TAG_LINKCONFIG = "link_config";
+	private static String XML_TAG_LINKCONFIG_GROUP = "group";
 	private static String XML_TAG_LINKCONFIG_GROUP_PROP_USERTYPE = "user_type";
-	private static String XML_TAG_LINKCONFIG_GROUP_PROP_USERTYPE_SYSADMIN = "SystemAdmin";
-	private static String XML_TAG_LINKCONFIG_GROUP_PROP_USERTYPE_ACCOUNTADMIN = "AccountAdmin";
-	private static String XML_TAG_LINKCONFIG_GROUP_PROP_USERTYPE_USER = "User";
-	private static String XML_TAG_LINKCONFIG_GROUP_TAG = "Tag";
+	private static String XML_TAG_LINKCONFIG_GROUP_PROP_USERTYPE_SYSADMIN = "system_admin";
+	private static String XML_TAG_LINKCONFIG_GROUP_PROP_USERTYPE_ACCOUNTADMIN = "account_admin";
+	private static String XML_TAG_LINKCONFIG_GROUP_PROP_USERTYPE_USER = "user";
+	private static String XML_TAG_LINKCONFIG_GROUP_TAG = "tag";
 	private static String XML_TAG_LINKCONFIG_GROUP_TAG_PROP_NAME = "name";
-	private static String XML_TAG_LINKCONFIG_GROUP_TAG_LINK = "Link";
+	private static String XML_TAG_LINKCONFIG_GROUP_TAG_LINK = "link";
 	
 	private SysConfig sysConfig = new SysConfig();
 	

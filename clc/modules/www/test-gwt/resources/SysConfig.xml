@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Conf>
-	<Language>
+<config>
+	<language>
 		<index>CHINESE</index>
-	</Language>
+	</language>
 	
-	<SearchTableSize><!--SearchTableSize in View-->
+	<searchtable_size><!--searchtable_size in View-->
 		<view>
 			<name>com.eucalyptus.webui.client.activity.UserActivity</name>
 			<size>15</size>
@@ -56,330 +56,330 @@
 			<size>15</size>
 		</view>
 		
-	</SearchTableSize>
+	</searchtable_size>
 
-	<Links>
-		<Link>
+	<links>
+		<link>
 			<name>用户管理</name>
 			<desc>user</desc>
 			<image>user</image>
-			<QueryType>user</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>user</query_type_enum>
+		</link>
+		<link>
 			<name>用户申请管理</name>
 			<desc>user_app</desc>
 			<image>user_app</image>
-			<QueryType>user_app</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>user_app</query_type_enum>
+		</link>
+		<link>
 			<name>组管理</name>
 			<desc>group</desc>
 			<image>group</image>
-			<QueryType>group</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>group</query_type_enum>
+		</link>
+		<link>
 			<name>账户管理</name>
 			<desc>account</desc>
 			<image>account</image>
-			<QueryType>account</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>account</query_type_enum>
+		</link>
+		<link>
 			<name>策略管理</name>
 			<desc>policy</desc>
 			<image>policy</image>
-			<QueryType>policy</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>policy</query_type_enum>
+		</link>
+		<link>
 			<name>密钥管理</name>
 			<desc>key</desc>
 			<image>key</image>
-			<QueryType>key</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>key</query_type_enum>
+		</link>
+		<link>
 			<name>证书管理</name>
 			<desc>cert</desc>
 			<image>cert</image>
-			<QueryType>cert</QueryType>
-		</Link>
+			<query_type_enum>cert</query_type_enum>
+		</link>
 					
-		<Link>
+		<link>
 			<name>区域管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>device_area</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>device_area</query_type_enum>
+		</link>
+		<link>
 			<name>机房管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>device_room</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>device_room</query_type_enum>
+		</link>
+		<link>
 			<name>机柜管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>device_cabinet</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>device_cabinet</query_type_enum>
+		</link>
+		<link>
 			<name>服务器管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>device_server</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>device_server</query_type_enum>
+		</link>
+		<link>
 			<name>内存管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>device_memory</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>device_memory</query_type_enum>
+		</link>
+		<link>
 			<name>硬盘管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>device_disk</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>device_disk</query_type_enum>
+		</link>
+		<link>
 			<name>CPU管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>device_cpu</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>device_cpu</query_type_enum>
+		</link>
+		<link>
 			<name>IP管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>device_ip</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>device_ip</query_type_enum>
+		</link>
+		<link>
 			<name>带宽管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>device_bw</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>device_bw</query_type_enum>
+		</link>
+		<link>
 			<name>模板管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>device_template</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>device_template</query_type_enum>
+		</link>
+		<link>
 			<name>虚拟机管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>instance</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>instance</query_type_enum>
+		</link>
+		<link>
 			<name>镜像管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>image</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>image</query_type_enum>
+		</link>
+		<link>
 			<name>虚拟机管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>instance</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>instance</query_type_enum>
+		</link>
+		<link>
 			<name>Keypair管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>keypair</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>keypair</query_type_enum>
+		</link>
+		<link>
 			<name>安全组管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>securityGroup</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>securityGroup</query_type_enum>
+		</link>
+		<link>
 			<name>规则管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>ipPermission</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>ipPermission</query_type_enum>
+		</link>
+		<link>
 			<name>原模板管理</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>vmtype</QueryType>
-		</Link>
+			<query_type_enum>vmtype</query_type_enum>
+		</link>
 			
-		<Link>
+		<link>
 			<name>CPU定价</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>device_cpu_price</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>device_cpu_price</query_type_enum>
+		</link>
+		<link>
 			<name>其他设备定价</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>device_others_price</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>device_others_price</query_type_enum>
+		</link>
+		<link>
 			<name>模版定价</name>
 			<desc>device</desc>
 			<image>device</image>
-			<QueryType>device_template_price</QueryType>
-		</Link>
+			<query_type_enum>device_template_price</query_type_enum>
+		</link>
 			
-		<Link>
+		<link>
 			<name>节点控制器管理</name>
 			<desc>component</desc>
 			<image>component</image>
-			<QueryType>nodeCtrl</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>nodeCtrl</query_type_enum>
+		</link>
+		<link>
 			<name>集群控制器管理</name>
 			<desc>component</desc>
 			<image>component</image>
-			<QueryType>clusterCtrl</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>clusterCtrl</query_type_enum>
+		</link>
+		<link>
 			<name>存储控制器管理</name>
 			<desc>component</desc>
 			<image>component</image>
-			<QueryType>storageCtrl</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>storageCtrl</query_type_enum>
+		</link>
+		<link>
 			<name>Walrus控制器管理</name>
 			<desc>component</desc>
 			<image>component</image>
-			<QueryType>walrusCtrl</QueryType>
-		</Link>
+			<query_type_enum>walrusCtrl</query_type_enum>
+		</link>
 		
 		
-		<Link>
+		<link>
 			<name>服务组件</name>
 			<desc>config</desc>
 			<image>config</image>
-			<QueryType>config</QueryType>
-		</Link>
+			<query_type_enum>config</query_type_enum>
+		</link>
 			
-		<Link>
+		<link>
 			<name>镜像</name>
 			<desc>image</desc>
 			<image>image</image>
-			<QueryType>image</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>image</query_type_enum>
+		</link>
+		<link>
 			<name>虚拟机类型</name>
 			<desc>type</desc>
 			<image>type</image>
-			<QueryType>vmtype</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>vmtype</query_type_enum>
+		</link>
+		<link>
 			<name>使用报告</name>
 			<desc>report</desc>
 			<image>report</image>
-			<QueryType>report</QueryType>
-		</Link>
+			<query_type_enum>report</query_type_enum>
+		</link>
 		
-		<Link>
+		<link>
 			<name>基本资源统计</name>
 			<desc>report</desc>
 			<image>report</image>
-			<QueryType>res_stat</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>res_stat</query_type_enum>
+		</link>
+		<link>
 			<name>CPU统计</name>
 			<desc>report</desc>
 			<image>report</image>
-			<QueryType>cpu_stat</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>cpu_stat</query_type_enum>
+		</link>
+		<link>
 			<name>内存统计</name>
 			<desc>report</desc>
 			<image>report</image>
-			<QueryType>memory_stat</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>memory_stat</query_type_enum>
+		</link>
+		<link>
 			<name>硬盘统计</name>
 			<desc>report</desc>
 			<image>report</image>
-			<QueryType>disk_stat</QueryType>
-		</Link>
-		<Link>
+			<query_type_enum>disk_stat</query_type_enum>
+		</link>
+		<link>
 			<name>历史使用情况统计</name>
 			<desc>report</desc>
 			<image>report</image>
-			<QueryType>history_stat</QueryType>
-		</Link>
+			<query_type_enum>history_stat</query_type_enum>
+		</link>
 		
-	</Links>
+	</links>
 			
-	<LinkConfig>
-		<Group user_type="SystemAdmin">
-			<Tag name="用户管理">
-				<Link>用户管理</Link>
-				<Link>组管理</Link>
-				<Link>账户管理</Link>
-				<Link>策略管理</Link>
-				<Link>密钥管理</Link>
-				<Link>证书管理</Link>
-				<Link>用户申请管理</Link>
-			</Tag>
-			<Tag name="设备管理">
-				<Link>区域管理</Link>
-				<Link>机房管理</Link>
-				<Link>机柜管理</Link>
-			</Tag>
-			<Tag name="资源管理">
-				<Link>服务器管理</Link>
-				<Link>内存管理</Link>
-				<Link>硬盘管理</Link>
-				<Link>CPU管理</Link>
-				<Link>带宽管理</Link>
-				<Link>IP管理</Link>
-				<Link>模板管理</Link>
-				<Link>虚拟机管理</Link>
-				<Link>镜像管理</Link>
-				<Link>Keypair管理</Link>
-				<Link>安全组管理</Link>
-				<Link>规则管理</Link>
-				<Link>原模板管理</Link>
-			</Tag>
-			<Tag name="定价管理">
-				<Link>CPU定价</Link>
-				<Link>其他设备定价</Link>
-				<Link>模版定价</Link>
-			</Tag>
-			<Tag name="组件管理">
-				<Link>节点控制器管理</Link>
-				<Link>集群控制器管理</Link>
-				<Link>存储控制器管理</Link>
-				<Link>Walrus控制器管理</Link>
-			</Tag>
-			<Tag name="统计管理">
-				<Link>基本资源统计</Link>
-				<Link>CPU统计</Link>
-				<Link>内存统计</Link>
-				<Link>硬盘统计</Link>
-				<Link>历史使用情况统计</Link>
-			</Tag>
-		</Group>
+	<link_config>
+		<group user_type="system_admin">
+			<tag name="用户管理">
+				<link>用户管理</link>
+				<link>组管理</link>
+				<link>账户管理</link>
+				<link>策略管理</link>
+				<link>密钥管理</link>
+				<link>证书管理</link>
+				<link>用户申请管理</link>
+			</tag>
+			<tag name="设备管理">
+				<link>区域管理</link>
+				<link>机房管理</link>
+				<link>机柜管理</link>
+			</tag>
+			<tag name="资源管理">
+				<link>服务器管理</link>
+				<link>内存管理</link>
+				<link>硬盘管理</link>
+				<link>CPU管理</link>
+				<link>带宽管理</link>
+				<link>IP管理</link>
+				<link>模板管理</link>
+				<link>虚拟机管理</link>
+				<link>镜像管理</link>
+				<link>Keypair管理</link>
+				<link>安全组管理</link>
+				<link>规则管理</link>
+				<link>原模板管理</link>
+			</tag>
+			<tag name="定价管理">
+				<link>CPU定价</link>
+				<link>其他设备定价</link>
+				<link>模版定价</link>
+			</tag>
+			<tag name="组件管理">
+				<link>节点控制器管理</link>
+				<link>集群控制器管理</link>
+				<link>存储控制器管理</link>
+				<link>Walrus控制器管理</link>
+			</tag>
+			<tag name="统计管理">
+				<link>基本资源统计</link>
+				<link>CPU统计</link>
+				<link>内存统计</link>
+				<link>硬盘统计</link>
+				<link>历史使用情况统计</link>
+			</tag>
+		</group>
 		
-		<Group user_type="AccountAdmin">
-			<Tag name="用户管理">
-				<Link>用户管理</Link>
-				<Link>组管理</Link>
-				<Link>策略管理</Link>
-				<Link>密钥管理</Link>
-				<Link>证书管理</Link>
-				<Link>用户申请管理</Link>
-			</Tag>
-		</Group>
+		<group user_type="account_admin">
+			<tag name="用户管理">
+				<link>用户管理</link>
+				<link>组管理</link>
+				<link>策略管理</link>
+				<link>密钥管理</link>
+				<link>证书管理</link>
+				<link>用户申请管理</link>
+			</tag>
+		</group>
 		
-		<Group user_type="User">
-			<Tag name="用户管理">
-				<Link>用户管理</Link>
-				<Link>策略管理</Link>
-				<Link>密钥管理</Link>
-				<Link>证书管理</Link>
-				<Link>用户申请管理</Link>
-			</Tag>
-		</Group>
-	</LinkConfig>
+		<group user_type="user">
+			<tag name="用户管理">
+				<link>用户管理</link>
+				<link>策略管理</link>
+				<link>密钥管理</link>
+				<link>证书管理</link>
+				<link>用户申请管理</link>
+			</tag>
+		</group>
+	</link_config>
 	
-</Conf>
+</config>
