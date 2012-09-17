@@ -9,14 +9,14 @@ public class SysConfig implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	String language;
+	EnumLanguage language;
 	
 	HashMap<String, String> viewTableSizeConfig = new HashMap<String, String>();
 	
-	public void setLanguage(String language) {
+	public void setLanguage(EnumLanguage language) {
 		this.language = language;
 	}
-	public String getLanguage() {
+	public EnumLanguage getLanguage() {
 		return this.language;
 	}
 	

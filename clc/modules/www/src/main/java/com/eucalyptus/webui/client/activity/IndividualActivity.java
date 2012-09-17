@@ -4,10 +4,10 @@ import java.util.logging.Logger;
 
 import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.IndividualPlace;
-import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.IndividualView;
+import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.event.shared.EventBus;

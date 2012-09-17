@@ -1,6 +1,6 @@
 package com.eucalyptus.webui.server;
 
-import com.eucalyptus.webui.server.dictionary.SysConfParser;
+import com.eucalyptus.webui.server.config.SysConfParser;
 import com.eucalyptus.webui.shared.config.SysConfig;
 import com.eucalyptus.webui.shared.dictionary.ConfDef;
 

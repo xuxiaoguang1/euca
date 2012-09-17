@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.SearchPlace;
-import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
@@ -18,6 +17,7 @@ import com.eucalyptus.webui.client.view.GroupDetailView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class GroupDetailActivity extends AbstractSearchActivity implements GroupDetailView.Presenter, GroupAddingUserListView.Presenter, ConfirmationView.Presenter {

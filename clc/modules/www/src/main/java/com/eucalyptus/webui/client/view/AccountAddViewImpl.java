@@ -1,10 +1,10 @@
 package com.eucalyptus.webui.client.view;
 
 import com.eucalyptus.webui.client.ClientFactory;
-import com.eucalyptus.webui.client.service.LanguageSelection;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.shared.checker.InvalidValueException;
 import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
+import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.google.common.base.Strings;

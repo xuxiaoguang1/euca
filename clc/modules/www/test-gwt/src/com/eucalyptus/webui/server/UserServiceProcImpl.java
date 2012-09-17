@@ -13,11 +13,14 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
+import com.eucalyptus.webui.server.config.SearchTableCol;
+import com.eucalyptus.webui.server.config.ViewSearchTableColConfig;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.user.RandomPwdCreator;
 import com.eucalyptus.webui.server.user.UserDBProcWrapper;
 import com.eucalyptus.webui.server.user.UserSyncException;
+import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.dictionary.ConfDef;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.EnumState;
@@ -149,17 +152,13 @@ public class UserServiceProcImpl {
 		  
 		  assert (range != null);
 		  
-		  List<SearchResultFieldDesc> FIELDS;
-		  
-		  FIELDS = FIELDS_ROOT;
-		  
 		  final int sortField = range.getSortField( );
 		  
 		  List<SearchResultRow> DATA = resultSet2List(rs);
 		  
 		  int resultLength = Math.min( range.getLength( ), DATA.size( ) - range.getStart( ) );
 		  SearchResult result = new SearchResult(DATA.size(), range );
-		  result.setDescs( FIELDS );
+		  result.setDescs( ViewSearchTableColConfig.instance().getConfig(UserServiceProcImpl.class.getName(), LanguageSelection.instance().getCurLanguage()) );
 		  
 		  if (DATA.size() > 0)
 			  result.setRows( DATA.subList( range.getStart( ), range.getStart( ) + resultLength ) );
@@ -257,24 +256,31 @@ public class UserServiceProcImpl {
 			  if (rs != null) {
 				  result = new ArrayList<SearchResultRow>();
 				  
+				  ArrayList<SearchTableCol> tableCols = ViewSearchTableColConfig.instance().getConfig(UserServiceProcImpl.class.getName());
+				  String[] dbFields = new String[tableCols.size()];
+				  
+				  for (int i=0; i<dbFields.length; i++)
+					  dbFields[i] = tableCols.get(i).getDbField();
+				  
 				  while (rs.next()) {
-						  result.add( new SearchResultRow(
-							  			Arrays.asList(rs.getString(DBTableColName.USER.ID),
-							  							Integer.toString(index++),
-							  							rs.getString(DBTableColName.ACCOUNT.NAME),
-							  							rs.getString(DBTableColName.GROUP.NAME),
-							  							rs.getString(DBTableColName.USER.NAME),
-							  							rs.getString(DBTableColName.USER.TITLE),
-														rs.getString(DBTableColName.USER.EMAIL),
-														rs.getString(DBTableColName.USER.MOBILE),
-														Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.USER.STATE)),
-														Enum2String.getInstance().getEnumUserTypeName(rs.getString(DBTableColName.USER.TYPE)),
-														rs.getString(DBTableColName.ACCOUNT.ID),
-									  					rs.getString(DBTableColName.GROUP.ID),
-									  					rs.getString(DBTableColName.USER.PWD)
-													)
-						  						)
-								  	);
+					  ArrayList<String> rowValue = new ArrayList<String>();
+					  for (int i=0; i<dbFields.length; i++) {
+						  String value;
+						  if (!dbFields[i].equalsIgnoreCase("null")) {
+							  if (dbFields[i].equalsIgnoreCase(DBTableColName.USER.STATE))
+								  value = Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.USER.STATE));
+							  else if (dbFields[i].equalsIgnoreCase(DBTableColName.USER.TYPE))
+								  value = Enum2String.getInstance().getEnumUserTypeName(rs.getString(DBTableColName.USER.TYPE));
+							  else
+								  value = rs.getString(dbFields[i]);
+						  }
+						  else
+							  value = Integer.toString(index++);
+					  			 
+						  rowValue.add(value);
+					  }
+					  	 
+					  result.add(new SearchResultRow(rowValue));
 				}
 				rsWrapper.close();
 			}
@@ -287,34 +293,4 @@ public class UserServiceProcImpl {
 	  }
 	  
 	  private UserDBProcWrapper userDBProc = new UserDBProcWrapper();
-	  
-	  private static final String[] TABLE_COL_TITLE_CHECKALL = {"Check All", "全选"};
-	  private static final String[] TABLE_COL_TITLE_NO = {"No.", "序号"};
-	  private static final String[] TABLE_COL_ACCOUNT_NAME = {"Account", "账户"};
-	  private static final String[] TABLE_COL_GROUP_NAME = {"Group", "组"};
-	  private static final String[] TABLE_COL_TITLE_NAME = {"ID", "帐号"};
-	  private static final String[] TABLE_COL_TITLE_TITLE = {"Name", "姓名"};
-	  private static final String[] TABLE_COL_TITLE_EMAIL = {"Emial", "邮箱"};
-	  private static final String[] TABLE_COL_TITLE_MOBILE = {"Mobile", "手机"};
-	  private static final String[] TABLE_COL_TITLE_STATE = {"State", "状态"};
-	  private static final String[] TABLE_COL_TITLE_TYPE = {"type", "类型"};
-	  private static final String[] TABLE_COL_ACCOUNT_ID = {"AccountID", "账户ID"};
-	  private static final String[] TABLE_COL_GROUP_ID = {"GroupID", "组ID"};
-	  private static final String[] TABLE_COL_USER_PWD = {"PWD", "密码"};
-	  	
-	  private static final List<SearchResultFieldDesc> FIELDS_ROOT = Arrays.asList(
-				new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "5%", false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_ACCOUNT_NAME[1], true, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_GROUP_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_TITLE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_EMAIL[1], true, "18%", TableDisplay.MANDATORY, Type.LINK, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_MOBILE[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_TYPE[1], true, "9%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_ACCOUNT_ID[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true ),
-				new SearchResultFieldDesc( TABLE_COL_GROUP_ID[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true ),
-				new SearchResultFieldDesc( TABLE_COL_USER_PWD[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true )
-			);
 }

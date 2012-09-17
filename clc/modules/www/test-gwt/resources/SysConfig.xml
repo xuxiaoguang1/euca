@@ -5,54 +5,215 @@
 		<index>CHINESE</index>
 	</language>
 	
+	<searchtable_content>
+		<service name="com.eucalyptus.webui.server.UserServiceProcImpl">
+			<col>
+				<title language="ENGLISH">Check All</title>
+				<title language="CHINESE">全选</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>BOOLEAN</text>
+				<editable>true</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>user_id</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">No.</title>
+				<title language="CHINESE">序号</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>null</db_field>
+			</col>
+				<col>
+				<title language="ENGLISH">Account</title>
+				<title language="CHINESE">账户</title>
+				<sortable>true</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>account_name</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Group</title>
+				<title language="CHINESE">组</title>
+				<sortable>true</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>group_name</db_field>
+			</col>	
+			<col>
+				<title language="ENGLISH">ID</title>
+				<title language="CHINESE">帐号</title>
+				<sortable>true</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>user_name</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Name</title>
+				<title language="CHINESE">姓名</title>
+				<sortable>true</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>user_title</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Email</title>
+				<title language="CHINESE">邮箱</title>
+				<sortable>true</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>user_email</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Mobile</title>
+				<title language="CHINESE">手机</title>
+				<sortable>true</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>user_mobile</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">State</title>
+				<title language="CHINESE">状态</title>
+				<sortable>true</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>user_state</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">type</title>
+				<title language="CHINESE">类型</title>
+				<sortable>true</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>user_type</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">AccountID</title>
+				<title language="CHINESE">账户ID</title>
+				<sortable>false</sortable>
+				<width>0%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>true</hidden>
+				<selected>false</selected>
+				<db_field>account_id</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">GroupID</title>
+				<title language="CHINESE">组ID</title>
+				<sortable>false</sortable>
+				<width>0%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>true</hidden>
+				<selected>false</selected>
+				<db_field>group_id</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">PWD</title>
+				<title language="CHINESE">密码</title>
+				<sortable>false</sortable>
+				<width>0%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>true</hidden>
+				<selected>false</selected>
+				<db_field>user_pwd</db_field>
+			</col>
+		</service>
+	</searchtable_content>
+	
 	<searchtable_size><!--searchtable_size in View-->
 		<view>
-			<name>com.eucalyptus.webui.client.activity.UserActivity</name>
+			<activity_name>com.eucalyptus.webui.client.activity.UserActivity</activity_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<name>com.eucalyptus.webui.client.activity.GroupActivity</name>
+			<activity_name>com.eucalyptus.webui.client.activity.GroupActivity</activity_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<name>com.eucalyptus.webui.client.activity.AccountActivity</name>
+			<activity_name>com.eucalyptus.webui.client.activity.AccountActivity</activity_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<name>com.eucalyptus.webui.client.activity.PolicyActivity</name>
+			<activity_name>com.eucalyptus.webui.client.activity.PolicyActivity</activity_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<name>com.eucalyptus.webui.client.activity.KeyActivity</name>
+			<activity_name>com.eucalyptus.webui.client.activity.KeyActivity</activity_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<name>com.eucalyptus.webui.client.activity.CertActivity</name>
+			<activity_name>com.eucalyptus.webui.client.activity.CertActivity</activity_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<name>com.eucalyptus.webui.client.activity.UserAppActivity</name>
+			<activity_name>com.eucalyptus.webui.client.activity.UserAppActivity</activity_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<name>com.eucalyptus.webui.client.activity.UserActivity</name>
+			<activity_name>com.eucalyptus.webui.client.activity.UserActivity</activity_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<name>com.eucalyptus.webui.client.activity.UserActivity</name>
+			<activity_name>com.eucalyptus.webui.client.activity.UserActivity</activity_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<name>com.eucalyptus.webui.client.activity.UserActivity</name>
+			<activity_name>com.eucalyptus.webui.client.activity.UserActivity</activity_name>
 			<size>15</size>
 		</view>
 		

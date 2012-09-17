@@ -1,4 +1,5 @@
-package com.eucalyptus.webui.client.service;
+package com.eucalyptus.webui.shared.config;
+
 
 public class LanguageSelection {
 
@@ -21,10 +22,5 @@ public class LanguageSelection {
 	
 	static private LanguageSelection instance = null;
 	
-	public enum EnumLanguage {
-		ENGLISH,
-		CHINESE,
-	}
-	
-	EnumLanguage lan = EnumLanguage.CHINESE;
+	EnumLanguage lan;
 }
