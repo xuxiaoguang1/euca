@@ -24,6 +24,7 @@ import com.eucalyptus.webui.server.vm.VITDBProcWrapper;
 import com.eucalyptus.webui.server.vm.VITSyncException;
 import com.eucalyptus.webui.server.vm.VmImageType;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
+import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
@@ -213,6 +214,8 @@ public class UserAppServiceProcImpl {
 							  else if (dbFields[i].equalsIgnoreCase("VM_IMAGE_DETAILS")) {
 								  value = "...";
 							  }
+							  else if (dbFields[i].equalsIgnoreCase(DBTableColName.USER_APP.STATUS))
+								  value = Enum2String.getInstance().getUserAppStateName(rs.getString(dbFields[i]));
 							  else
 								  value = rs.getString(dbFields[i]);
 							  
@@ -237,9 +240,7 @@ public class UserAppServiceProcImpl {
 					  
 					  String template_details = formatTemplateInfo(cpu, cpuCount, mem, disk);
 					  String vm_details = formatVMImageTypeInfo(os, ver);
-					  	 
-					  result.add(new SearchResultRow(rowValue));
-					  
+
 					  List<String> links = Arrays.asList(null, null, null, null, template_details, vm_details,	null, null, null, null, null, null);
 					  
 					  SearchResultRow row = new SearchResultRow(rowValue, links);

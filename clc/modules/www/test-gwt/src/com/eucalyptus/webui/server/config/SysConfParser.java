@@ -200,7 +200,6 @@ public class SysConfParser {
 		Iterator<?> childIter = node.elements().iterator();
 		
 		String srvName = null;
-		ArrayList<SearchTableCol> tableCol = new ArrayList<SearchTableCol>();
 		
 		while (childIter.hasNext()) {
 			Element grandchild = (Element) childIter.next();
@@ -208,6 +207,8 @@ public class SysConfParser {
 			if (!grandchild.getName().equalsIgnoreCase(TAG_TABLECOL_SRV))
 				continue;
 			
+			ArrayList<SearchTableCol> tableCol = new ArrayList<SearchTableCol>();
+		
 			srvName = grandchild.attributeValue(TAG_TABLECOL_SRV_PROP_NAME.toLowerCase());
 			
 			Iterator<?> grandchildIter = grandchild.elements().iterator();
@@ -283,10 +284,10 @@ public class SysConfParser {
 					tableCol.add(col);
 				}
 			}
+			
+			if (!Strings.isNullOrEmpty(srvName) && tableCol.size()>0)
+				ViewSearchTableColConfig.instance().setConfig(srvName, tableCol);
 		}
-		
-		if (!Strings.isNullOrEmpty(srvName) && tableCol.size()>0)
-			ViewSearchTableColConfig.instance().setConfig(srvName, tableCol);
 	}
 	
 	private void parseViewTableSizeConfig(Element node) {
