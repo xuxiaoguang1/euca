@@ -1,6 +1,7 @@
 package com.eucalyptus.webui.server.device;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,33 +49,46 @@ public class DeviceServerService {
 			new SearchResultFieldDesc("4%", false, new ClientMessage("", "")),
 			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "序号"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "名称"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "名称"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "描述"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "描述"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "所在机柜"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "所在机柜"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-	        new SearchResultFieldDesc(false, "8%", new ClientMessage("", "IP地址"),
+	        new SearchResultFieldDesc(true, "8%", new ClientMessage("", "IP地址"),
 	                TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(false, "8%", new ClientMessage("", "带宽"),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "带宽"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "状态"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "状态"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "创建时间"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "创建时间"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "修改时间"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "修改时间"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false));
 	
-	public synchronized SearchResult lookupServerByDate(Session session, SearchRange range, ServerState state,
-			Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException {
+    private DBTableColumn getSortColumn(SearchRange range) {
+        switch (range.getSortField()) {
+        case 3: return DBTable.SERVER.SERVER_NAME;
+        case 4: return DBTable.SERVER.SERVER_DESC;
+        case 5: return DBTable.CABINET.CABINET_NAME;
+        case 6: return DBTable.SERVER.SERVER_IP;
+        case 7: return DBTable.SERVER.SERVER_BW;
+        case 8: return DBTable.SERVER.SERVER_STATE;
+        case 9: return DBTable.SERVER.SERVER_CREATIONTIME;
+        case 10: return DBTable.SERVER.SERVER_MODIFIEDTIME;
+        }
+        return null;
+    }
+    
+	public synchronized SearchResult lookupServerByDate(Session session, SearchRange range, ServerState state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
 		if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
         }
 		ResultSetWrapper rsw = null;
 		try {
-			rsw = dbproc.lookupServerByDate(state, creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
+			rsw = dbproc.lookupServerByDate(state, dateBegin, dateEnd, getSortColumn(range), range.isAscending());
 			ResultSet rs = rsw.getResultSet();
-			List<SearchResultRow> rows = new LinkedList<SearchResultRow>();
+			ArrayList<SearchResultRow> rows = new ArrayList<SearchResultRow>();
 			DBTableCabinet CABINET = DBTable.CABINET;
 			DBTableServer SERVER = DBTable.SERVER;
 			for (int index = 1; rs.next(); index ++) {
@@ -120,15 +134,13 @@ public class DeviceServerService {
 		}
 	}
 	
-	public synchronized Map<Integer, Integer> lookupServerCountsGroupByState(Session session,
-			Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd)
-			throws EucalyptusServiceException {
+	public synchronized Map<Integer, Integer> lookupServerCountsGroupByState(Session session) throws EucalyptusServiceException {
 		if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
         }
 		ResultSetWrapper rsw = null;
 		try {
-			rsw = dbproc.lookupServerCountsGroupByState(creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
+			rsw = dbproc.lookupServerCountsGroupByState();
 			ResultSet rs = rsw.getResultSet();
 			Map<Integer, Integer> map = new HashMap<Integer, Integer>();
 			int sum = 0;
@@ -191,8 +203,8 @@ public class DeviceServerService {
 			throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
 		}
 		try {
-			for (int server_id : server_ids) {
-				dbproc.deleteServer(server_id);
+			if (!server_ids.isEmpty()) {
+				dbproc.deleteServer(server_ids);
 			}
 		}
 		catch (Exception e) {
@@ -272,23 +284,28 @@ public class DeviceServerService {
         }
 	}
 	
+	private ServerInfo getServerInfo(ResultSet rs) throws Exception {
+	    DBTableServer SERVER = DBTable.SERVER;
+	    int server_id = DBData.getInt(rs, SERVER.SERVER_ID);
+        String server_name = DBData.getString(rs, SERVER.SERVER_NAME);
+        String server_desc = DBData.getString(rs, SERVER.SERVER_DESC);
+        String server_ip = DBData.getString(rs, SERVER.SERVER_IP);
+        int server_bw = DBData.getInt(rs, SERVER.SERVER_BW);
+        ServerState server_state = ServerState.getServerState(DBData.getInt(rs, SERVER.SERVER_STATE));
+        Date server_creationtime = DBData.getDate(rs, SERVER.SERVER_CREATIONTIME);
+        Date server_modifiedtime = DBData.getDate(rs, SERVER.SERVER_MODIFIEDTIME);
+        int cabinet_id = DBData.getInt(rs, SERVER.CABINET_ID);
+        return new ServerInfo(server_id, server_name, server_desc, server_ip, server_bw, server_state,
+                server_creationtime, server_modifiedtime, cabinet_id);
+	}
+	
 	public synchronized ServerInfo lookupServerInfoByID(int server_id) throws EucalyptusServiceException {
 		ResultSetWrapper rsw = null;
 		try {
 			rsw = dbproc.lookupServerByID(server_id);
 	        ResultSet rs = rsw.getResultSet();
 	        rs.next();
-	        DBTableServer SERVER = DBTable.SERVER;
-	    	String server_name = DBData.getString(rs, SERVER.SERVER_NAME);
-	    	String server_desc = DBData.getString(rs, SERVER.SERVER_DESC);
-	    	String server_ip = DBData.getString(rs, SERVER.SERVER_IP);
-	    	int server_bw = DBData.getInt(rs, SERVER.SERVER_BW);
-	    	ServerState server_state = ServerState.getServerState(DBData.getInt(rs, SERVER.SERVER_STATE));
-	    	Date server_creationtime = DBData.getDate(rs, SERVER.SERVER_CREATIONTIME);
-	    	Date server_modifiedtime = DBData.getDate(rs, SERVER.SERVER_MODIFIEDTIME);
-	    	int cabinet_id = DBData.getInt(rs, SERVER.CABINET_ID);
-	        return new ServerInfo(server_id, server_name, server_desc, server_ip, server_bw, server_state,
-	        		server_creationtime, server_modifiedtime, cabinet_id);
+	        return getServerInfo(rs);
 		}
 		catch (Exception e) {
             e.printStackTrace();
@@ -315,17 +332,7 @@ public class DeviceServerService {
 			rsw = dbproc.lookupServerByName(server_name);
 	        ResultSet rs = rsw.getResultSet();
 	        rs.next();
-	        DBTableServer SERVER = DBTable.SERVER;
-	    	int server_id = DBData.getInt(rs, SERVER.SERVER_ID);
-	    	String server_desc = DBData.getString(rs, SERVER.SERVER_DESC);
-	    	String server_ip = DBData.getString(rs, SERVER.SERVER_IP);
-	    	int server_bw = DBData.getInt(rs, SERVER.SERVER_BW);
-	    	ServerState server_state = ServerState.getServerState(DBData.getInt(rs, SERVER.SERVER_STATE));
-	    	Date server_creationtime = DBData.getDate(rs, SERVER.SERVER_CREATIONTIME);
-	    	Date server_modifiedtime = DBData.getDate(rs, SERVER.SERVER_MODIFIEDTIME);
-	    	int cabinet_id = DBData.getInt(rs, SERVER.CABINET_ID);
-	        return new ServerInfo(server_id, server_name, server_desc, server_ip, server_bw, server_state,
-	        		server_creationtime, server_modifiedtime, cabinet_id);
+	        return getServerInfo(rs);
 		}
 		catch (Exception e) {
             e.printStackTrace();
@@ -361,56 +368,59 @@ class DeviceServerDBProcWrapper {
 		wrapper.update(request);
 	}
 	
-	public ResultSetWrapper lookupServerByDate(ServerState state, Date creationtimeBegin, Date creationtimeEnd,
-			Date modifiedtimeBegin, Date modifiedtimeEnd) throws Exception {
+    public ResultSetWrapper lookupServerByID(int server_id) throws Exception {
+        DBTableServer SERVER = DBTable.SERVER;
+        DBStringBuilder sb = new DBStringBuilder();
+        sb.append("SELECT * FROM ").append(SERVER).append(" WHERE ").append(SERVER.SERVER_ID).append(" = ").append(server_id);
+        return doQuery(sb.toString());
+    }
+    
+    public ResultSetWrapper lookupServerByName(String server_name) throws Exception {
+        DBTableServer SERVER = DBTable.SERVER;
+        DBStringBuilder sb = new DBStringBuilder();
+        sb.append("SELECT * FROM ").append(SERVER).append(" WHERE ").append(SERVER.SERVER_NAME).append(" = ").appendString(server_name);
+        return doQuery(sb.toString());
+    }
+    
+    private DBStringBuilder appendBoundedDate(DBStringBuilder sb, DBTableColumn column, Date dateBegin, Date dateEnd) {
+        sb.append("(");
+        sb.append(column).append(" != ").appendString("0000-00-00");
+        if (dateBegin != null) {
+            sb.append(" AND ").append(column).append(" >= ").appendDate(dateBegin);
+        }
+        if (dateEnd != null) {
+            sb.append(" AND ").append(column).append(" <= ").appendDate(dateEnd);
+        }
+        sb.append(")");
+        return sb;
+    }
+	
+	public ResultSetWrapper lookupServerByDate(ServerState state, Date dateBegin, Date dateEnd, DBTableColumn sort, boolean isAscending) throws Exception {
 		DBTableCabinet CABINET = DBTable.CABINET;
 		DBTableServer SERVER = DBTable.SERVER;
 		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT * FROM ").append(SERVER).append(" LEFT JOIN ").append(CABINET);
-		sb.append(" ON ").append(SERVER.CABINET_ID).append(" = ").append(CABINET.CABINET_ID);
-		sb.append(" WHERE 1=1");
+		sb.append("SELECT ").append(SERVER.ANY).append(", ").append(CABINET.CABINET_NAME).append(" FROM ");
+		sb.append(SERVER).append(" LEFT JOIN ").append(CABINET);
+		sb.append(" ON ").append(SERVER.CABINET_ID).append(" = ").append(CABINET.CABINET_ID).append(" WHERE 1=1");
 		if (state != null) {
 		    sb.append(" AND ").append(SERVER.SERVER_STATE).append(" = ").append(state.getValue());
 		}
-		if (creationtimeBegin != null) {
-			sb.append(" AND ").append(SERVER.SERVER_CREATIONTIME.getName()).append(" >= ").appendDate(creationtimeBegin);
+		if (dateBegin != null || dateEnd != null) {
+		    sb.append(" AND (");
+		    appendBoundedDate(sb, SERVER.SERVER_CREATIONTIME, dateBegin, dateEnd).append(" OR ");
+		    appendBoundedDate(sb, SERVER.SERVER_MODIFIEDTIME, dateBegin, dateEnd);
+		    sb.append(")");
 		}
-		if (creationtimeEnd != null) {
-			sb.append(" AND ").append(SERVER.SERVER_CREATIONTIME.getName()).append(" <= ").appendDate(creationtimeEnd);
-		}
-		if (modifiedtimeBegin != null) {
-			sb.append(" AND ").append(SERVER.SERVER_MODIFIEDTIME.getName()).append(" >= ").appendDate(modifiedtimeBegin);
-		}
-		if (modifiedtimeEnd != null) {
-			sb.append(" AND ").append(SERVER.SERVER_MODIFIEDTIME.getName()).append(" <= ").appendDate(modifiedtimeEnd);
-		}
-		if (modifiedtimeBegin != null || modifiedtimeEnd != null) {
-			sb.append(" AND ").append(SERVER.SERVER_MODIFIEDTIME.getName()).append(" != ").appendString("0000-00-00");
-		}
-		return doQuery(sb.toString());
+		if (sort != null) {
+            sb.append(" ORDER BY ").append(sort).append(isAscending ? " ASC" : " DESC");
+        }
+        return doQuery(sb.toString());
 	}
 	
-	public ResultSetWrapper lookupServerCountsGroupByState(Date creationtimeBegin, Date creationtimeEnd,
-			Date modifiedtimeBegin, Date modifiedtimeEnd) throws Exception {
+	public ResultSetWrapper lookupServerCountsGroupByState() throws Exception {
 		DBTableServer SERVER = DBTable.SERVER;
 		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT ").append(SERVER.SERVER_STATE).append(", count(*) FROM ").append(SERVER).append(" WHERE 1=1");
-		if (creationtimeBegin != null) {
-			sb.append(" AND ").append(SERVER.SERVER_CREATIONTIME.getName()).append(" >= ").appendDate(creationtimeBegin);
-		}
-		if (creationtimeEnd != null) {
-			sb.append(" AND ").append(SERVER.SERVER_CREATIONTIME.getName()).append(" <= ").appendDate(creationtimeEnd);
-		}
-		if (modifiedtimeBegin != null) {
-			sb.append(" AND ").append(SERVER.SERVER_MODIFIEDTIME.getName()).append(" >= ").appendDate(modifiedtimeBegin);
-		}
-		if (modifiedtimeEnd != null) {
-			sb.append(" AND ").append(SERVER.SERVER_MODIFIEDTIME.getName()).append(" <= ").appendDate(modifiedtimeEnd);
-		}
-		if (modifiedtimeBegin != null || modifiedtimeEnd != null) {
-			sb.append(" AND ").append(SERVER.SERVER_MODIFIEDTIME.getName()).append(" != ").appendString("0000-00-00");
-		}
-		sb.append(" GROUP BY ").append(SERVER.SERVER_STATE);
+		sb.append("SELECT ").append(SERVER.SERVER_STATE).append(", count(*) FROM ").append(SERVER).append(" WHERE 1=1").append(" GROUP BY ").append(SERVER.SERVER_STATE);
 		return doQuery(sb.toString());
 	}
 	
@@ -437,11 +447,21 @@ class DeviceServerDBProcWrapper {
 		doUpdate(sb.toString());
 	}
 	
-	public void deleteServer(int server_id) throws Exception {
+	public void deleteServer(List<Integer> server_ids) throws Exception {
 		DBTableServer SERVER = DBTable.SERVER;
 		DBStringBuilder sb = new DBStringBuilder();
+		
+		StringBuilder ids = new StringBuilder();
+		int total = 0;
+		for (int server_id : server_ids) {
+			if (total ++ != 0) {
+				ids.append(", ");
+			}
+			ids.append(server_id);
+		}
+		
 		sb.append("DELETE FROM ").append(SERVER).append(" WHERE ");
-		sb.append(SERVER.SERVER_ID).append(" = ").append(server_id);
+		sb.append(SERVER.SERVER_ID).append(" IN (").append(ids.toString()).append(")");
 		doUpdate(sb.toString());
 	}
 	
@@ -476,20 +496,6 @@ class DeviceServerDBProcWrapper {
 	    sb.append(SERVER).append(" LEFT JOIN ").append(CABINET).append(" ON ").append(SERVER.CABINET_ID).append(" = ").append(CABINET.CABINET_ID);
 	    sb.append(" WHERE ").append(CABINET.CABINET_NAME).append(" = ").appendString(cabinet_name);
 	    return doQuery(sb.toString());
-	}
-	
-	public ResultSetWrapper lookupServerByID(int server_id) throws Exception {
-		DBTableServer SERVER = DBTable.SERVER;
-		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT * FROM ").append(SERVER).append(" WHERE ").append(SERVER.SERVER_ID).append(" = ").append(server_id);
-		return doQuery(sb.toString());
-	}
-	
-	public ResultSetWrapper lookupServerByName(String server_name) throws Exception {
-		DBTableServer SERVER = DBTable.SERVER;
-		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT * FROM ").append(SERVER).append(" WHERE ").append(SERVER.SERVER_NAME).append(" = ").append(server_name);
-		return doQuery(sb.toString());
 	}
 	
 }

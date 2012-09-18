@@ -27,7 +27,7 @@
 	<ui:with field="global"
 		type="com.eucalyptus.webui.client.view.GlobalResources" />
 		
-	<g:DockLayoutPanel unit="EM">
+	<g:DockLayoutPanel unit="EM" ui:field="rootPanel">
 		<g:north size="7">
 			<g:DockLayoutPanel unit="EM">
 				<g:north size="2">
@@ -63,11 +63,11 @@
 											<tbody>
 												<tr>
 													<td>
-														<g:Anchor horizontalAlignment="ALIGN_CENTER" width="6EM">创建日期：</g:Anchor>
+														<g:Anchor horizontalAlignment="ALIGN_CENTER" width="6EM">日期过滤：</g:Anchor>
 													</td>
 													<td width="10px">&nbsp;</td>
 													<td>
-														<d:DeviceDateBox width="5EM" ui:field="creationtimeBegin"/>
+														<d:DeviceDateBox width="5EM" ui:field="dateBegin"/>
 													</td>
 													<td width="8px">&nbsp;</td>
 													<td>
@@ -75,23 +75,7 @@
 													</td>
 													<td width="8px">&nbsp;</td>
 													<td>
-														<d:DeviceDateBox width="5EM" ui:field="creationtimeEnd"/>
-													</td>
-													<td width="80px">&nbsp;</td>
-													<td>
-														<g:Anchor horizontalAlignment="ALIGN_CENTER" width="6EM">修改日期：</g:Anchor>
-													</td>
-													<td width="10px">&nbsp;</td>
-													<td>
-														<d:DeviceDateBox width="5EM" ui:field="modifiedtimeBegin"/>
-													</td>
-													<td width="8px">&nbsp;</td>
-													<td>
-														<g:Anchor horizontalAlignment="ALIGN_CENTER">至</g:Anchor>
-													</td>
-													<td width="8px">&nbsp;</td>
-													<td>
-														<d:DeviceDateBox width="5EM" ui:field="modifiedtimeEnd"/>
+														<d:DeviceDateBox width="5EM" ui:field="dateEnd"/>
 													</td>
 													<td width="40px">&nbsp;</td>
 													<td>

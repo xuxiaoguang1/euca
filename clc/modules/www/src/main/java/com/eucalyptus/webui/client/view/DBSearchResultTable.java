@@ -9,6 +9,7 @@ import com.eucalyptus.webui.client.service.SearchResult;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -23,6 +24,8 @@ import com.google.gwt.user.cellview.client.ColumnSortList.ColumnSortInfo;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
@@ -33,6 +36,7 @@ import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import com.google.gwt.view.client.SelectionModel;
 
+@SuppressWarnings("deprecation")
 public class DBSearchResultTable extends Composite {
 	
 	private static DBSearchResultTableUiBinder uiBinder = GWT.create(DBSearchResultTableUiBinder.class);
@@ -74,9 +78,11 @@ public class DBSearchResultTable extends Composite {
 	
 	private final ArrayList<Integer> tableColIdx = new ArrayList<Integer>();
 	
-	public DBSearchResultTable(int pageSize, ArrayList<SearchResultFieldDesc> descs, final SelectionModel<SearchResultRow> selection) {
+	private static final int DEFAULT_PAGESIZE = 5;
+	
+	public DBSearchResultTable(ArrayList<SearchResultFieldDesc> descs, final SelectionModel<SearchResultRow> selection) {
 		CellTable.Resources resources = GWT.create(TableResources.class);
-		cellTable = new CellTable<SearchResultRow>(pageSize, resources);
+		cellTable = new CellTable<SearchResultRow>(DEFAULT_PAGESIZE, resources);
 		cellTable.setWidth("100%", true);
 		for (int i = 0; i < descs.size(); i ++ ) {
 			final int index = i;
@@ -132,33 +138,34 @@ public class DBSearchResultTable extends Composite {
 		
 		cellTable.addCellPreviewHandler(new Handler<SearchResultRow>() {
 			
-			private volatile int counter = 0;
+			private Timer timer = null;
 			
 			@Override
 			public void onCellPreview(final CellPreviewEvent<SearchResultRow> event) {
 				final DBSearchResultTableClickHandler handler = clickHandler;
 				if (handler != null) {
 					if ("click".equals(event.getNativeEvent().getType())) {
-						if (counter ++ == 0) {
-							new Timer() {
-		
-								@Override
-								public void run() {
-									if (counter != 0) {
-										SearchResultRow row = event.getValue();
-										int row_index = event.getIndex();
-										int col_index = event.getColumn();
-										if (counter == 1) {
-											handler.onClick(row, row_index, col_index);
-										}
-										else {
-											handler.onDoubleClick(row, row_index, col_index);
-										}
-										counter = 0;
+						if (clickHandler != null) {
+							final SearchResultRow row = event.getValue();
+							final int row_index = event.getIndex();
+							final int col_index = event.getColumn();
+							if (timer == null) {
+								timer = new Timer() {
+									
+									@Override
+									public void run() {
+										timer = null;
+										clickHandler.onClick(row, row_index, col_index);
 									}
-								}
-								
-							}.schedule(150);
+									
+								};
+								timer.schedule(150);
+							}
+							else {
+								timer.cancel();
+								timer = null;
+								clickHandler.onDoubleClick(row, row_index, col_index);
+							}
 						}
 					}
 				}
@@ -168,7 +175,7 @@ public class DBSearchResultTable extends Composite {
 		
 		cellTable.addCellPreviewHandler(new Handler<SearchResultRow>() {
 			
-			private volatile Timer timer = null;
+			private Timer timer = null;
 
 			@Override
 			public void onCellPreview(final CellPreviewEvent<SearchResultRow> event) {
@@ -203,12 +210,56 @@ public class DBSearchResultTable extends Composite {
 		pager.setDisplay(cellTable);
 		
 		initWidget(uiBinder.createAndBindUi(this));
+		
+		DeferredCommand.add(new Command() {
+
+			@Override
+			public void execute() {
+				tryResizeCellTable();
+			}
+			
+		});
+	}
+	
+	public DBSearchResultTable(int pageSize, ArrayList<SearchResultFieldDesc> descs, final SelectionModel<SearchResultRow> selection) {
+		this(descs, selection);
+	}
+	
+	public void setPageSize(int pageSize) {
+		if (cellTable != null) {
+			cellTable.setPageSize(pageSize);
+		}
+	}
+	
+	private int pageSize = 0;
+	
+	private void tryResizeCellTable() {
+		if (pageSize == 0) {
+			try {
+				Element container = cellTable.getRowContainer();
+				if (container != null) {
+					int height = cellTable.getParent().getParent().getOffsetHeight() - cellTable.getHeaderHeight();
+					if (height > 0) {
+						pageSize = Math.max(DEFAULT_PAGESIZE, height / (container.getClientHeight() / container.getChildCount()));
+						cellTable.setPageSize(pageSize);
+					}
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public int getPageSize() {
+		return cellTable.getPageSize();
 	}
 	
 	public void setData(SearchResult data) {
 		if (cellTable != null) {
 			cellTable.setRowCount(data.getTotalSize(), true);
 			cellTable.setRowData(data.getRange().getStart(), data.getRows());
+			tryResizeCellTable();
 		}
 	}
 	

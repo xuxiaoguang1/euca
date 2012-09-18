@@ -27,6 +27,9 @@ public class DBStringBuilder {
 	}
 	
 	public DBStringBuilder append(String s) {
+		if (s == null) {
+			s = "";
+		}
 		sb.append(s);
 		return this;
 	}
@@ -37,6 +40,9 @@ public class DBStringBuilder {
 	}
 	
 	public DBStringBuilder appendString(String s) {
+		if (s == null) {
+			s = "";
+		}
 		sb.append("\"").append(s).append("\"");
 		return this;
 	}

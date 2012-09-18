@@ -124,46 +124,46 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 
 			@Override
 			public void lookupAccounts() {
-				getBackendService().listDeviceCPUAccounts(getSession(), new AsyncCallback<List<String>>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						log(QUERY_ACCOUNTS_FAILURE[LAN_SELECT], caught);
-					}
-
-					@Override
-					public void onSuccess(List<String> result) {
-						if (result != null) {
-							serviceAddView.setAccountList(result);
-						}
-						else {
-							showStatus(QUERY_ACCOUNTS_FAILURE[LAN_SELECT]);
-						}
-					}
-
-				});
+//				getBackendService().listDeviceCPUAccounts(getSession(), new AsyncCallback<List<String>>() {
+//
+//					@Override
+//					public void onFailure(Throwable caught) {
+//						log(QUERY_ACCOUNTS_FAILURE[LAN_SELECT], caught);
+//					}
+//
+//					@Override
+//					public void onSuccess(List<String> result) {
+//						if (result != null) {
+//							serviceAddView.setAccountList(result);
+//						}
+//						else {
+//							showStatus(QUERY_ACCOUNTS_FAILURE[LAN_SELECT]);
+//						}
+//					}
+//
+//				});
 			}
 
 			@Override
 			public void lookupUserByAccount(final String account) {
-				getBackendService().listDeviceCPUUsersByAccount(getSession(), account, new AsyncCallback<List<String>>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						log(QUERY_USERS_BY_ACCOUNT_FAILURE[LAN_SELECT], caught);
-					}
-
-					@Override
-					public void onSuccess(List<String> result) {
-						if (result != null) {
-							serviceAddView.setUserList(account, result);
-						}
-						else {
-							showStatus(QUERY_USERS_BY_ACCOUNT_FAILURE[LAN_SELECT]);
-						}
-					}
-
-				});
+//				getBackendService().listDeviceCPUUsersByAccount(getSession(), account, new AsyncCallback<List<String>>() {
+//
+//					@Override
+//					public void onFailure(Throwable caught) {
+//						log(QUERY_USERS_BY_ACCOUNT_FAILURE[LAN_SELECT], caught);
+//					}
+//
+//					@Override
+//					public void onSuccess(List<String> result) {
+//						if (result != null) {
+//							serviceAddView.setUserList(account, result);
+//						}
+//						else {
+//							showStatus(QUERY_USERS_BY_ACCOUNT_FAILURE[LAN_SELECT]);
+//						}
+//					}
+//
+//				});
 			}
 
 			@Override
@@ -178,24 +178,24 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 
 			@Override
 			public void lookupDevicesInfo() {
-				getBackendService().lookupDeviceCPUInfo(getSession(), new AsyncCallback<DataCache>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						log(QUERY_DEVICES_INFO_FAILURE[LAN_SELECT], caught);
-					}
-
-					@Override
-					public void onSuccess(DataCache result) {
-						if (result != null) {
-							deviceAddView.setDevicesInfo(result);
-						}
-						else {
-							showStatus(QUERY_DEVICES_INFO_FAILURE[LAN_SELECT]);
-						}
-					}
-
-				});
+//				getBackendService().lookupDeviceCPUInfo(getSession(), new AsyncCallback<DataCache>() {
+//
+//					@Override
+//					public void onFailure(Throwable caught) {
+//						log(QUERY_DEVICES_INFO_FAILURE[LAN_SELECT], caught);
+//					}
+//
+//					@Override
+//					public void onSuccess(DataCache result) {
+//						if (result != null) {
+//							deviceAddView.setDevicesInfo(result);
+//						}
+//						else {
+//							showStatus(QUERY_DEVICES_INFO_FAILURE[LAN_SELECT]);
+//						}
+//					}
+//
+//				});
 			}
 
 			@Override
@@ -249,44 +249,44 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 	}
 	
 	private void reloadLabels() {
-		getBackendService().getDeviceCPUCounts(getSession(), new AsyncCallback<Map<Integer, Integer>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				log(QUERY_COUNT_FAILURE[LAN_SELECT], caught);
-			}
-
-			@Override
-			public void onSuccess(Map<Integer, Integer> result) {
-				CPUState.reset();
-				for (Map.Entry<Integer, Integer> entry : result.entrySet()) {
-					CPUState.setCount(CPUState.getCPUState(entry.getKey()), entry.getValue());
-				}
-				getView().updateLabels();
-			}
-
-		});
+//		getBackendService().getDeviceCPUCounts(getSession(), new AsyncCallback<Map<Integer, Integer>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				log(QUERY_COUNT_FAILURE[LAN_SELECT], caught);
+//			}
+//
+//			@Override
+//			public void onSuccess(Map<Integer, Integer> result) {
+//				CPUState.reset();
+//				for (Map.Entry<Integer, Integer> entry : result.entrySet()) {
+//					CPUState.setCount(CPUState.getCPUState(entry.getKey()), entry.getValue());
+//				}
+//				getView().updateLabels();
+//			}
+//
+//		});
 	}
 
 	@Override
 	protected void doSearch(String query, SearchRange range) {
-		getBackendService().lookupDeviceCPU(getSession(), query, range, CPUState.getValue(queryState),
-		        new AsyncCallback<SearchResult>() {
-
-			        @Override
-			        public void onFailure(Throwable caught) {
-				        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-				        log(QUERY_TABLE_FAILURE[LAN_SELECT], caught);
-				        displayData(null);
-			        }
-
-			        @Override
-			        public void onSuccess(SearchResult result) {
-				        displayData(result);
-			        }
-
-		        });
-		reloadLabels();
+//		getBackendService().lookupDeviceCPU(getSession(), query, range, CPUState.getValue(queryState),
+//		        new AsyncCallback<SearchResult>() {
+//
+//			        @Override
+//			        public void onFailure(Throwable caught) {
+//				        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
+//				        log(QUERY_TABLE_FAILURE[LAN_SELECT], caught);
+//				        displayData(null);
+//			        }
+//
+//			        @Override
+//			        public void onSuccess(SearchResult result) {
+//				        displayData(result);
+//			        }
+//
+//		        });
+//		reloadLabels();
 	}
 
 	private DeviceCPUView getView() {
@@ -538,182 +538,182 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 	private void handleAddDevice(String serverMark, String name, String vendor, String model, double ghz, double cache,
 	        int num) {
 		assert (!isEmpty(serverMark) && !isEmpty(name));
-		getBackendService().addDeviceCPUDevice(getSession(), serverMark, name, vendor, model, ghz, cache, num,
-		        new AsyncCallback<Boolean>() {
-
-			        @Override
-			        public void onFailure(Throwable caught) {
-				        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-				        log(ADD_DEVICE_FAILURE[LAN_SELECT], caught);
-			        }
-
-			        @Override
-			        public void onSuccess(Boolean result) {
-				        if (!result) {
-					        showStatus(ADD_DEVICE_FAILURE[LAN_SELECT]);
-				        }
-				        else {
-					        showStatus(ADD_DEVICE_SUCCESS[LAN_SELECT]);
-				        }
-				        reloadCurrentRange();
-			        }
-
-		        });
+//		getBackendService().addDeviceCPUDevice(getSession(), serverMark, name, vendor, model, ghz, cache, num,
+//		        new AsyncCallback<Boolean>() {
+//
+//			        @Override
+//			        public void onFailure(Throwable caught) {
+//				        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
+//				        log(ADD_DEVICE_FAILURE[LAN_SELECT], caught);
+//			        }
+//
+//			        @Override
+//			        public void onSuccess(Boolean result) {
+//				        if (!result) {
+//					        showStatus(ADD_DEVICE_FAILURE[LAN_SELECT]);
+//				        }
+//				        else {
+//					        showStatus(ADD_DEVICE_SUCCESS[LAN_SELECT]);
+//				        }
+//				        reloadCurrentRange();
+//			        }
+//
+//		        });
 	}
 
 	private void handleAddService(SearchResultRow row, String account, String user, String starttime, int life,
 	        String state) {
 		assert (row != null && getView().getMirrorModeType() == MirrorModeType.ADD_SERVICE);
-		getBackendService().addDeviceCPUService(getSession(), row, account, user, starttime, life,
-		        CPUState.getValue(state), new AsyncCallback<SearchResultRow>() {
-
-			        @Override
-			        public void onFailure(Throwable caught) {
-				        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-				        log(ADD_SERVICE_FAILURE[LAN_SELECT], caught);
-			        }
-
-			        @Override
-			        public void onSuccess(SearchResultRow result) {
-				        if (result != null) {
-					        showStatus(ADD_SERVICE_SUCCESS[LAN_SELECT]);
-					        if (getView().isMirrorMode()) {
-						        final int col = TABLE_COL_INDEX_CS_ID;
-						        result.setField(TABLE_COL_INDEX_CHECKBOX, "+");
-						        final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
-
-							        @Override
-							        public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								        return row0.getField(col).equals(row1.getField(col));
-							        }
-
-						        };
-						        getView().getMirrorTable().updateRow(result, matcher);
-					        }
-				        }
-				        else {
-					        showStatus(ADD_SERVICE_FAILURE[LAN_SELECT]);
-				        }
-			        	reloadCurrentRange();
-			        }
-
-		        });
+//		getBackendService().addDeviceCPUService(getSession(), row, account, user, starttime, life,
+//		        CPUState.getValue(state), new AsyncCallback<SearchResultRow>() {
+//
+//			        @Override
+//			        public void onFailure(Throwable caught) {
+//				        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
+//				        log(ADD_SERVICE_FAILURE[LAN_SELECT], caught);
+//			        }
+//
+//			        @Override
+//			        public void onSuccess(SearchResultRow result) {
+//				        if (result != null) {
+//					        showStatus(ADD_SERVICE_SUCCESS[LAN_SELECT]);
+//					        if (getView().isMirrorMode()) {
+//						        final int col = TABLE_COL_INDEX_CS_ID;
+//						        result.setField(TABLE_COL_INDEX_CHECKBOX, "+");
+//						        final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
+//
+//							        @Override
+//							        public boolean match(SearchResultRow row0, SearchResultRow row1) {
+//								        return row0.getField(col).equals(row1.getField(col));
+//							        }
+//
+//						        };
+//						        getView().getMirrorTable().updateRow(result, matcher);
+//					        }
+//				        }
+//				        else {
+//					        showStatus(ADD_SERVICE_FAILURE[LAN_SELECT]);
+//				        }
+//			        	reloadCurrentRange();
+//			        }
+//
+//		        });
 	}
 
 	private void handleModifyService(SearchResultRow row, String endtime, String state) {
 		assert (row != null && getView().getMirrorModeType() == MirrorModeType.MODIFY_SERVICE);
-		getBackendService().modifyDeviceCPUService(getSession(), row, endtime, CPUState.getValue(state),
-		        new AsyncCallback<SearchResultRow>() {
-
-			        @Override
-			        public void onFailure(Throwable caught) {
-				        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-				        log(UPDATE_SERVICE_FAILURE[LAN_SELECT], caught);
-			        }
-
-			        @Override
-			        public void onSuccess(SearchResultRow result) {
-				        if (result != null) {
-					        showStatus(UPDATE_SERVICE_SUCCESS[LAN_SELECT]);
-					        if (getView().isMirrorMode()) {
-						        final int col = TABLE_COL_INDEX_CS_ID;
-						        result.setField(TABLE_COL_INDEX_CHECKBOX, "+");
-						        final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
-
-							        @Override
-							        public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								        return row0.getField(col).equals(row1.getField(col));
-							        }
-
-						        };
-						        getView().getMirrorTable().updateRow(result, matcher);
-					        }
-				        }
-				        else {
-					        showStatus(UPDATE_SERVICE_FAILURE[LAN_SELECT]);
-				        }
-			        	reloadCurrentRange();
-			        }
-
-		        });
+//		getBackendService().modifyDeviceCPUService(getSession(), row, endtime, CPUState.getValue(state),
+//		        new AsyncCallback<SearchResultRow>() {
+//
+//			        @Override
+//			        public void onFailure(Throwable caught) {
+//				        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
+//				        log(UPDATE_SERVICE_FAILURE[LAN_SELECT], caught);
+//			        }
+//
+//			        @Override
+//			        public void onSuccess(SearchResultRow result) {
+//				        if (result != null) {
+//					        showStatus(UPDATE_SERVICE_SUCCESS[LAN_SELECT]);
+//					        if (getView().isMirrorMode()) {
+//						        final int col = TABLE_COL_INDEX_CS_ID;
+//						        result.setField(TABLE_COL_INDEX_CHECKBOX, "+");
+//						        final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
+//
+//							        @Override
+//							        public boolean match(SearchResultRow row0, SearchResultRow row1) {
+//								        return row0.getField(col).equals(row1.getField(col));
+//							        }
+//
+//						        };
+//						        getView().getMirrorTable().updateRow(result, matcher);
+//					        }
+//				        }
+//				        else {
+//					        showStatus(UPDATE_SERVICE_FAILURE[LAN_SELECT]);
+//				        }
+//			        	reloadCurrentRange();
+//			        }
+//
+//		        });
 	}
 
 	private void handleDeleteService(List<SearchResultRow> list) {
 		DeviceCPUView view = getView();
 		assert (list.size() != 0 && view.getMirrorModeType() == MirrorModeType.DELETE_SERVICE);
-		getBackendService().deleteDeviceCPUService(getSession(), list, new AsyncCallback<List<SearchResultRow>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-				log(DELETE_SERVICE_FAILURE[LAN_SELECT], caught);
-			}
-
-			@Override
-			public void onSuccess(List<SearchResultRow> result) {
-				if (result != null) {
-					showStatus(DELETE_SERVICE_SUCCESS[LAN_SELECT]);
-					if (getView().isMirrorMode()) {
-						final int col = TABLE_COL_INDEX_CS_ID;
-						final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
-
-							@Override
-							public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								return row0.getField(col).equals(row1.getField(col));
-							}
-
-						};
-						for (SearchResultRow row : result) {
-							getView().getMirrorTable().deleteRow(row, matcher);
-						}
-			        }
-				}
-				else {
-					showStatus(DELETE_SERVICE_FAILURE[LAN_SELECT]);
-				}
-	        	reloadCurrentRange();
-			}
-
-		});
+//		getBackendService().deleteDeviceCPUService(getSession(), list, new AsyncCallback<List<SearchResultRow>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				ActivityUtil.logoutForInvalidSession(clientFactory, caught);
+//				log(DELETE_SERVICE_FAILURE[LAN_SELECT], caught);
+//			}
+//
+//			@Override
+//			public void onSuccess(List<SearchResultRow> result) {
+//				if (result != null) {
+//					showStatus(DELETE_SERVICE_SUCCESS[LAN_SELECT]);
+//					if (getView().isMirrorMode()) {
+//						final int col = TABLE_COL_INDEX_CS_ID;
+//						final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
+//
+//							@Override
+//							public boolean match(SearchResultRow row0, SearchResultRow row1) {
+//								return row0.getField(col).equals(row1.getField(col));
+//							}
+//
+//						};
+//						for (SearchResultRow row : result) {
+//							getView().getMirrorTable().deleteRow(row, matcher);
+//						}
+//			        }
+//				}
+//				else {
+//					showStatus(DELETE_SERVICE_FAILURE[LAN_SELECT]);
+//				}
+//	        	reloadCurrentRange();
+//			}
+//
+//		});
 	}
 
 	private void handleDeleteDevice(List<SearchResultRow> list) {
 		DeviceCPUView view = getView();
 		assert (list.size() != 0 && view.getMirrorModeType() == MirrorModeType.DELETE_DEVICE);
-		getBackendService().deleteDeviceCPUDevice(getSession(), list, new AsyncCallback<List<SearchResultRow>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-				log(DELETE_DEVICE_FAILURE[LAN_SELECT], caught);
-			}
-
-			@Override
-			public void onSuccess(List<SearchResultRow> result) {
-				if (result != null) {
-					showStatus(DELETE_DEVICE_SUCCESS[LAN_SELECT]);
-					if (getView().isMirrorMode()) {
-						final int col = TABLE_COL_INDEX_CPU_ID;
-						final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
-
-							@Override
-							public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								return row0.getField(col).equals(row1.getField(col));
-							}
-
-						};
-						for (SearchResultRow row : result) {
-							getView().getMirrorTable().deleteRow(row, matcher);
-						}
-			        }
-				}
-				else {
-					showStatus(DELETE_DEVICE_FAILURE[LAN_SELECT]);
-				}
-	        	reloadCurrentRange();
-			}
-
-		});
+//		getBackendService().deleteDeviceCPUDevice(getSession(), list, new AsyncCallback<List<SearchResultRow>>() {
+//
+//			@Override
+//			public void onFailure(Throwable caught) {
+//				ActivityUtil.logoutForInvalidSession(clientFactory, caught);
+//				log(DELETE_DEVICE_FAILURE[LAN_SELECT], caught);
+//			}
+//
+//			@Override
+//			public void onSuccess(List<SearchResultRow> result) {
+//				if (result != null) {
+//					showStatus(DELETE_DEVICE_SUCCESS[LAN_SELECT]);
+//					if (getView().isMirrorMode()) {
+//						final int col = TABLE_COL_INDEX_CPU_ID;
+//						final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
+//
+//							@Override
+//							public boolean match(SearchResultRow row0, SearchResultRow row1) {
+//								return row0.getField(col).equals(row1.getField(col));
+//							}
+//
+//						};
+//						for (SearchResultRow row : result) {
+//							getView().getMirrorTable().deleteRow(row, matcher);
+//						}
+//			        }
+//				}
+//				else {
+//					showStatus(DELETE_DEVICE_FAILURE[LAN_SELECT]);
+//				}
+//	        	reloadCurrentRange();
+//			}
+//
+//		});
 	}
 
 	private SearchResultRow copyRow(SearchResultRow row) {

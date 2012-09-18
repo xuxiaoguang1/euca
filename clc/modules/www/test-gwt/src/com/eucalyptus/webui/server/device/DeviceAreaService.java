@@ -1,6 +1,7 @@
 package com.eucalyptus.webui.server.device;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -48,26 +49,34 @@ public class DeviceAreaService {
 			new SearchResultFieldDesc("4%", false, new ClientMessage("", "")),
 			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "序号"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "名称"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "名称"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "描述"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "描述"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "创建时间"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "创建时间"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "修改时间"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "修改时间"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false));
 	
-	public synchronized SearchResult lookupAreaByDate(Session session, SearchRange range,
-			Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd)
-					throws EucalyptusServiceException {
+	private DBTableColumn getSortColumn(SearchRange range) {
+	    switch (range.getSortField()) {
+	    case 3: return DBTable.AREA.AREA_NAME;
+	    case 4: return DBTable.AREA.AREA_DESC;
+	    case 5: return DBTable.AREA.AREA_CREATIONTIME;
+	    case 6: return DBTable.AREA.AREA_MODIFIEDTIME;
+	    }
+	    return null;
+	}
+	
+	public synchronized SearchResult lookupAreaByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd)  throws EucalyptusServiceException {
 		if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
         }
 		ResultSetWrapper rsw = null;
 		try {
-			rsw = dbproc.lookupAreaByDate(creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
+			rsw = dbproc.lookupAreaByDate(dateBegin, dateEnd, getSortColumn(range), range.isAscending());
 			ResultSet rs = rsw.getResultSet();
-			List<SearchResultRow> rows = new LinkedList<SearchResultRow>();
+			ArrayList<SearchResultRow> rows = new ArrayList<SearchResultRow>();
 			DBTableArea AREA = DBTable.AREA;
 			for (int index = 1; rs.next(); index ++) {
 				int area_id = DBData.getInt(rs, AREA.AREA_ID);
@@ -130,8 +139,8 @@ public class DeviceAreaService {
 			throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
 		}
 		try {
-			for (int area_id : area_ids) {
-				dbproc.deleteArea(area_id);
+			if (!area_ids.isEmpty()) {
+				dbproc.deleteArea(area_ids);
 			}
 		}
 		catch (Exception e) {
@@ -162,15 +171,15 @@ public class DeviceAreaService {
         }
 		ResultSetWrapper rsw = null;
 		try {
-			rsw = dbproc.lookupAreaNames();
-			ResultSet rs = rsw.getResultSet();
-			List<String> area_name_list = new LinkedList<String>();
-			DBTableArea AREA = DBTable.AREA;
-			while (rs.next()) {
-				String area_name = DBData.getString(rs, AREA.AREA_NAME);
-				area_name_list.add(area_name);
-			}
-			return area_name_list;
+            rsw = dbproc.lookupAreaNames();
+            ResultSet rs = rsw.getResultSet();
+            List<String> area_name_list = new LinkedList<String>();
+            DBTableArea AREA = DBTable.AREA;
+            while (rs.next()) {
+                String area_name = DBData.getString(rs, AREA.AREA_NAME);
+                area_name_list.add(area_name);
+            }
+            return area_name_list;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -188,18 +197,23 @@ public class DeviceAreaService {
 		}
 	}
 	
+    private AreaInfo getAreaInfo(ResultSet rs) throws Exception {
+        DBTableArea AREA = DBTable.AREA;
+        int area_id = DBData.getInt(rs, AREA.AREA_ID);
+        String area_name = DBData.getString(rs, AREA.AREA_NAME);
+        String area_desc = DBData.getString(rs, AREA.AREA_DESC);
+        Date area_creationtime = DBData.getDate(rs, AREA.AREA_CREATIONTIME);
+        Date area_modifiedtime = DBData.getDate(rs, AREA.AREA_MODIFIEDTIME);
+        return new AreaInfo(area_id, area_name, area_desc, area_creationtime, area_modifiedtime);
+    }
+	
 	public synchronized AreaInfo lookupAreaInfoByID(int area_id) throws EucalyptusServiceException {
 	    ResultSetWrapper rsw = null;
 	    try {
 	        rsw = dbproc.lookupAreaByID(area_id);
 	        ResultSet rs = rsw.getResultSet();
 	        rs.next();
-            DBTableArea AREA = DBTable.AREA;
-            String area_name = DBData.getString(rs, AREA.AREA_NAME);
-            String area_desc = DBData.getString(rs, AREA.AREA_DESC);
-            Date area_creationtime = DBData.getDate(rs, AREA.AREA_CREATIONTIME);
-            Date area_modifiedtime = DBData.getDate(rs, AREA.AREA_MODIFIEDTIME);
-            return new AreaInfo(area_id, area_name, area_desc, area_creationtime, area_modifiedtime);
+	        return getAreaInfo(rs);
 	    }
         catch (Exception e) {
             e.printStackTrace();
@@ -216,23 +230,18 @@ public class DeviceAreaService {
             }
         }
 	}
-	
-	public synchronized AreaInfo lookupAreaInfoByName(String area_name) throws EucalyptusServiceException {
-	    if (isEmpty(area_name)) {
-			throw new EucalyptusServiceException(new ClientMessage("", "无效的区域名称"));
-		}
-	    ResultSetWrapper rsw = null;
-	    try {
-	        rsw = dbproc.lookupAreaByName(area_name);
-	        ResultSet rs = rsw.getResultSet();
-	        rs.next();
-            DBTableArea AREA = DBTable.AREA;
-            int area_id = DBData.getInt(rs, AREA.AREA_ID);
-            String area_desc = DBData.getString(rs, AREA.AREA_DESC);
-            Date area_creationtime = DBData.getDate(rs, AREA.AREA_CREATIONTIME);
-            Date area_modifiedtime = DBData.getDate(rs, AREA.AREA_MODIFIEDTIME);
-            return new AreaInfo(area_id, area_name, area_desc, area_creationtime, area_modifiedtime);
-	    }
+    
+    public synchronized AreaInfo lookupAreaInfoByName(String area_name) throws EucalyptusServiceException {
+        if (isEmpty(area_name)) {
+            throw new EucalyptusServiceException(new ClientMessage("", "无效的区域名称"));
+        }
+        ResultSetWrapper rsw = null;
+        try {
+            rsw = dbproc.lookupAreaByName(area_name);
+            ResultSet rs = rsw.getResultSet();
+            rs.next();
+            return getAreaInfo(rs);
+        }
         catch (Exception e) {
             e.printStackTrace();
             throw new EucalyptusServiceException(new ClientMessage("", "获取区域信息失败"));
@@ -247,7 +256,7 @@ public class DeviceAreaService {
                 }
             }
         }
-	}
+    }
 	
 }
 
@@ -281,25 +290,31 @@ class DeviceAreaDBProcWrapper {
 	    return doQuery(sb.toString());
 	}
 	
-	public ResultSetWrapper lookupAreaByDate(Date creationtimeBegin, Date creationtimeEnd,
-			Date modifiedtimeBegin, Date modifiedtimeEnd) throws Exception {
+	private DBStringBuilder appendBoundedDate(DBStringBuilder sb, DBTableColumn column, Date dateBegin, Date dateEnd) {
+		sb.append("(");
+		sb.append(column).append(" != ").appendString("0000-00-00");
+		if (dateBegin != null) {
+			sb.append(" AND ").append(column).append(" >= ").appendDate(dateBegin);
+		}
+		if (dateEnd != null) {
+			sb.append(" AND ").append(column).append(" <= ").appendDate(dateEnd);
+		}
+		sb.append(")");
+		return sb;
+	}
+	
+	public ResultSetWrapper lookupAreaByDate(Date dateBegin, Date dateEnd, DBTableColumn sort, boolean isAscending) throws Exception {
 		DBTableArea AREA = DBTable.AREA;
 		DBStringBuilder sb = new DBStringBuilder();
 		sb.append("SELECT * FROM ").append(AREA).append(" WHERE 1=1");
-		if (creationtimeBegin != null) {
-			sb.append(" AND ").append(AREA.AREA_CREATIONTIME.getName()).append(" >= ").appendDate(creationtimeBegin);
+		if (dateBegin != null || dateEnd != null) {
+			sb.append(" AND (");
+			appendBoundedDate(sb, AREA.AREA_CREATIONTIME, dateBegin, dateEnd).append(" OR ");
+			appendBoundedDate(sb, AREA.AREA_MODIFIEDTIME, dateBegin, dateEnd);
+			sb.append(")");
 		}
-		if (creationtimeEnd != null) {
-			sb.append(" AND ").append(AREA.AREA_CREATIONTIME.getName()).append(" <= ").appendDate(creationtimeEnd);
-		}
-		if (modifiedtimeBegin != null) {
-			sb.append(" AND ").append(AREA.AREA_MODIFIEDTIME.getName()).append(" >= ").appendDate(modifiedtimeBegin);
-		}
-		if (modifiedtimeEnd != null) {
-			sb.append(" AND ").append(AREA.AREA_MODIFIEDTIME.getName()).append(" <= ").appendDate(modifiedtimeEnd);
-		}
-		if (modifiedtimeBegin != null || modifiedtimeEnd != null) {
-			sb.append(" AND ").append(AREA.AREA_MODIFIEDTIME.getName()).append(" != ").appendString("0000-00-00");
+		if (sort != null) {
+		    sb.append(" ORDER BY ").append(sort).append(isAscending ? " ASC" : " DESC");
 		}
 		return doQuery(sb.toString());
 	}
@@ -318,11 +333,21 @@ class DeviceAreaDBProcWrapper {
 		doUpdate(sb.toString());
 	}
 	
-	public void deleteArea(int area_id) throws Exception {
+	public void deleteArea(List<Integer> area_ids) throws Exception {
 		DBTableArea AREA = DBTable.AREA;
 		DBStringBuilder sb = new DBStringBuilder();
+		
+		StringBuilder ids = new StringBuilder();
+		int total = 0;
+		for (int area_id : area_ids) {
+			if (total ++ != 0) {
+				ids.append(", ");
+			}
+			ids.append(area_id);
+		}
+		
 		sb.append("DELETE FROM ").append(AREA).append(" WHERE ");
-		sb.append(AREA.AREA_ID).append(" = ").append(area_id);
+		sb.append(AREA.AREA_ID).append(" IN (").append(ids.toString()).append(")");
 		doUpdate(sb.toString());
 	}
 	

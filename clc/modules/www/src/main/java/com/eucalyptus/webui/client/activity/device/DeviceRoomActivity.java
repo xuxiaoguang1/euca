@@ -32,10 +32,8 @@ public class DeviceRoomActivity extends AbstractSearchActivity implements Device
 	
 	private static final ClientMessage title = new ClientMessage("Room", "机房");
 	
-	private Date creationtimeBegin;
-	private Date creationtimeEnd;
-	private Date modifiedtimeBegin;
-	private Date modifiedtimeEnd;
+	private Date dateBegin;
+	private Date dateEnd;
 	
 	private DeviceRoomAddView roomAddView;
 	private DeviceRoomModifyView roomModifyView;
@@ -112,9 +110,7 @@ public class DeviceRoomActivity extends AbstractSearchActivity implements Device
 
 	@Override
 	protected void doSearch(String query, SearchRange range) {
-		getBackendService().lookupDeviceRoomByDate(getSession(), range,
-				creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd, 
-				new AsyncCallback<SearchResult>() {
+		getBackendService().lookupDeviceRoomByDate(getSession(), range, dateBegin, dateEnd, new AsyncCallback<SearchResult>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -329,13 +325,11 @@ public class DeviceRoomActivity extends AbstractSearchActivity implements Device
 	}
 
     @Override
-    public void updateSearchResult(Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) {
+    public void updateSearchResult(Date dateBegin, Date dateEnd) {
     	getView().clearSelection();
-    	this.creationtimeBegin = creationtimeBegin;
-    	this.creationtimeEnd = creationtimeEnd;
-    	this.modifiedtimeBegin = modifiedtimeBegin;
-    	this.modifiedtimeEnd = modifiedtimeEnd;
-    	range = new SearchRange(0, DeviceRoomView.DEFAULT_PAGESIZE, -1, true);
+    	this.dateBegin = dateBegin;
+    	this.dateEnd = dateEnd;
+    	range = new SearchRange(0, getView().getPageSize(), -1, true);
     	reloadCurrentRange();
     }
 	

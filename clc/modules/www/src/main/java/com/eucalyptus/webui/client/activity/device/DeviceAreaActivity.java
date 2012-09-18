@@ -32,10 +32,8 @@ public class DeviceAreaActivity extends AbstractSearchActivity implements Device
 	
 	private static final ClientMessage title = new ClientMessage("Area", "区域");
 	
-	private Date creationtimeBegin;
-	private Date creationtimeEnd;
-	private Date modifiedtimeBegin;
-	private Date modifiedtimeEnd;
+	private Date dateBegin;
+	private Date dateEnd;
 	
 	private DeviceAreaAddView areaAddView;
 	private DeviceAreaModifyView areaModifyView;
@@ -112,9 +110,7 @@ public class DeviceAreaActivity extends AbstractSearchActivity implements Device
 
 	@Override
 	protected void doSearch(String query, SearchRange range) {
-		getBackendService().lookupDeviceAreaByDate(getSession(), range,
-				creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd, 
-				new AsyncCallback<SearchResult>() {
+		getBackendService().lookupDeviceAreaByDate(getSession(), range, dateBegin, dateEnd, new AsyncCallback<SearchResult>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -302,13 +298,11 @@ public class DeviceAreaActivity extends AbstractSearchActivity implements Device
 	}
 
     @Override
-    public void updateSearchResult(Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) {
+    public void updateSearchResult(Date dateBegin, Date dateEnd) {
     	getView().clearSelection();
-    	this.creationtimeBegin = creationtimeBegin;
-    	this.creationtimeEnd = creationtimeEnd;
-    	this.modifiedtimeBegin = modifiedtimeBegin;
-    	this.modifiedtimeEnd = modifiedtimeEnd;
-    	range = new SearchRange(0, DeviceAreaView.DEFAULT_PAGESIZE, -1, true);
+    	this.dateBegin = dateBegin;
+    	this.dateEnd = dateEnd;
+    	range = new SearchRange(0, getView().getPageSize(), -1, true);
     	reloadCurrentRange();
     }
 	

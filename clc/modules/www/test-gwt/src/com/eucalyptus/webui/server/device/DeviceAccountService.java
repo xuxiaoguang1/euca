@@ -34,7 +34,7 @@ public class DeviceAccountService {
         return s == null || s.length() == 0;
     }
     
-    public synchronized List<String> listAccounts(Session session) throws EucalyptusServiceException {
+    public synchronized List<String> lookupAccountNames(Session session) throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
         }
@@ -66,7 +66,7 @@ public class DeviceAccountService {
         }
     }
     
-    public synchronized List<String> listUserNamesByAccountName(Session session, String account_name) throws EucalyptusServiceException {
+    public synchronized List<String> lookupUserNamesByAccountName(Session session, String account_name) throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
         }

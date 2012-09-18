@@ -1,6 +1,7 @@
 package com.eucalyptus.webui.server.device;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -48,28 +49,37 @@ public class DeviceRoomService {
 			new SearchResultFieldDesc("4%", false, new ClientMessage("", "")),
 			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "序号"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "名称"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "名称"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "描述"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "描述"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "所在区域"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "所在区域"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "创建时间"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "创建时间"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "修改时间"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "修改时间"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false));
 	
-	public synchronized SearchResult lookupRoomByDate(Session session, SearchRange range,
-			Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd)
-					throws EucalyptusServiceException {
+    private DBTableColumn getSortColumn(SearchRange range) {
+        switch (range.getSortField()) {
+        case 3: return DBTable.ROOM.ROOM_NAME;
+        case 4: return DBTable.ROOM.ROOM_DESC;
+        case 5: return DBTable.AREA.AREA_NAME;
+        case 6: return DBTable.ROOM.ROOM_CREATIONTIME;
+        case 7: return DBTable.ROOM.ROOM_MODIFIEDTIME;
+        }
+        return null;
+    }
+	
+	public synchronized SearchResult lookupRoomByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
 	    if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
         }
 		ResultSetWrapper rsw = null;
 		try {
-			rsw = dbproc.lookupRoomByDate(creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
+			rsw = dbproc.lookupRoomByDate(dateBegin, dateEnd, getSortColumn(range), range.isAscending());
 			ResultSet rs = rsw.getResultSet();
-			List<SearchResultRow> rows = new LinkedList<SearchResultRow>();
+			ArrayList<SearchResultRow> rows = new ArrayList<SearchResultRow>();
 			DBTableArea AREA = DBTable.AREA;
 			DBTableRoom ROOM = DBTable.ROOM;
 			for (int index = 1; rs.next(); index ++) {
@@ -137,8 +147,8 @@ public class DeviceRoomService {
 			throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
 		}
 		try {
-			for (int room_id : room_ids) {
-				dbproc.deleteRoom(room_id);
+			if (!room_ids.isEmpty()) {
+				dbproc.deleteRoom(room_ids);
 			}
 		}
 		catch (Exception e) {
@@ -198,19 +208,24 @@ public class DeviceRoomService {
 		}
 	}
 	
+	private RoomInfo getRoomInfo(ResultSet rs) throws Exception {
+	    DBTableRoom ROOM = DBTable.ROOM;
+	    int room_id = DBData.getInt(rs, ROOM.ROOM_ID);
+        String room_name = DBData.getString(rs, ROOM.ROOM_NAME);
+        String room_desc = DBData.getString(rs, ROOM.ROOM_DESC);
+        Date room_creationtime = DBData.getDate(rs, ROOM.ROOM_CREATIONTIME);
+        Date room_modifiedtime = DBData.getDate(rs, ROOM.ROOM_MODIFIEDTIME);
+        int area_id = DBData.getInt(rs, ROOM.AREA_ID);
+        return new RoomInfo(room_id, room_name, room_desc, room_creationtime, room_modifiedtime, area_id);
+	}
+	
 	public synchronized RoomInfo lookupRoomInfoByID(int room_id) throws EucalyptusServiceException {
 		ResultSetWrapper rsw = null;
 		try {
 			rsw = dbproc.lookupRoomByID(room_id);
 	        ResultSet rs = rsw.getResultSet();
 	        rs.next();
-	        DBTableRoom ROOM = DBTable.ROOM;
-	        String room_name = DBData.getString(rs, ROOM.ROOM_NAME);
-	        String room_desc = DBData.getString(rs, ROOM.ROOM_DESC);
-	        Date room_creationtime = DBData.getDate(rs, ROOM.ROOM_CREATIONTIME);
-	        Date room_modifiedtime = DBData.getDate(rs, ROOM.ROOM_MODIFIEDTIME);
-	        int area_id = DBData.getInt(rs, ROOM.AREA_ID);
-	        return new RoomInfo(room_id, room_name, room_desc, room_creationtime, room_modifiedtime, area_id);
+	        return getRoomInfo(rs);
 		}
 		catch (Exception e) {
             e.printStackTrace();
@@ -237,13 +252,7 @@ public class DeviceRoomService {
 			rsw = dbproc.lookupRoomByName(room_name);
 	        ResultSet rs = rsw.getResultSet();
 	        rs.next();
-	        DBTableRoom ROOM = DBTable.ROOM;
-	        int room_id = DBData.getInt(rs, ROOM.ROOM_ID);
-	        String room_desc = DBData.getString(rs, ROOM.ROOM_DESC);
-	        Date room_creationtime = DBData.getDate(rs, ROOM.ROOM_CREATIONTIME);
-	        Date room_modifiedtime = DBData.getDate(rs, ROOM.ROOM_MODIFIEDTIME);
-	        int area_id = DBData.getInt(rs, ROOM.AREA_ID);
-	        return new RoomInfo(room_id, room_name, room_desc, room_creationtime, room_modifiedtime, area_id);
+	        return getRoomInfo(rs);
 		}
 		catch (Exception e) {
             e.printStackTrace();
@@ -279,28 +288,48 @@ class DeviceRoomDBProcWrapper {
 		wrapper.update(request);
 	}
 	
-	public ResultSetWrapper lookupRoomByDate(Date creationtimeBegin, Date creationtimeEnd,
-			Date modifiedtimeBegin, Date modifiedtimeEnd) throws Exception {
+    public ResultSetWrapper lookupRoomByID(int room_id) throws Exception {
+        DBTableRoom ROOM = DBTable.ROOM;
+        DBStringBuilder sb = new DBStringBuilder();
+        sb.append("SELECT * FROM ").append(ROOM).append(" WHERE ").append(ROOM.ROOM_ID).append(" = ").append(room_id);
+        return doQuery(sb.toString());
+    }
+    
+    public ResultSetWrapper lookupRoomByName(String room_name) throws Exception {
+        DBTableRoom ROOM = DBTable.ROOM;
+        DBStringBuilder sb = new DBStringBuilder();
+        sb.append("SELECT * FROM ").append(ROOM).append(" WHERE ").append(ROOM.ROOM_NAME).append(" = ").appendString(room_name);
+        return doQuery(sb.toString());
+    }
+    
+    private DBStringBuilder appendBoundedDate(DBStringBuilder sb, DBTableColumn column, Date dateBegin, Date dateEnd) {
+        sb.append("(");
+        sb.append(column).append(" != ").appendString("0000-00-00");
+        if (dateBegin != null) {
+            sb.append(" AND ").append(column).append(" >= ").appendDate(dateBegin);
+        }
+        if (dateEnd != null) {
+            sb.append(" AND ").append(column).append(" <= ").appendDate(dateEnd);
+        }
+        sb.append(")");
+        return sb;
+    }
+	
+	public ResultSetWrapper lookupRoomByDate(Date dateBegin, Date dateEnd, DBTableColumn sort, boolean isAscending) throws Exception {
 	    DBTableArea AREA = DBTable.AREA;
 		DBTableRoom ROOM = DBTable.ROOM;
 		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT * FROM ").append(ROOM).append(" LEFT JOIN ").append(AREA);
-		sb.append(" ON ").append(ROOM.AREA_ID).append(" = ").append(AREA.AREA_ID);
-		sb.append(" WHERE 1=1");
-		if (creationtimeBegin != null) {
-			sb.append(" AND ").append(ROOM.ROOM_CREATIONTIME.getName()).append(" >= ").appendDate(creationtimeBegin);
+		sb.append("SELECT ").append(ROOM.ANY).append(", ").append(AREA.AREA_NAME).append(" FROM ");
+		sb.append(ROOM).append(" LEFT JOIN ").append(AREA);
+		sb.append(" ON ").append(ROOM.AREA_ID).append(" = ").append(AREA.AREA_ID).append(" WHERE 1=1");
+		if (dateBegin != null || dateEnd != null) {
+		    sb.append(" AND (");
+		    appendBoundedDate(sb, ROOM.ROOM_CREATIONTIME, dateBegin, dateEnd).append(" OR ");
+		    appendBoundedDate(sb, ROOM.ROOM_MODIFIEDTIME, dateBegin, dateEnd);
+		    sb.append(")");
 		}
-		if (creationtimeEnd != null) {
-			sb.append(" AND ").append(ROOM.ROOM_CREATIONTIME.getName()).append(" <= ").appendDate(creationtimeEnd);
-		}
-		if (modifiedtimeBegin != null) {
-			sb.append(" AND ").append(ROOM.ROOM_MODIFIEDTIME.getName()).append(" >= ").appendDate(modifiedtimeBegin);
-		}
-		if (modifiedtimeEnd != null) {
-			sb.append(" AND ").append(ROOM.ROOM_MODIFIEDTIME.getName()).append(" <= ").appendDate(modifiedtimeEnd);
-		}
-		if (modifiedtimeBegin != null || modifiedtimeEnd != null) {
-			sb.append(" AND ").append(ROOM.ROOM_MODIFIEDTIME.getName()).append(" != ").appendString("0000-00-00");
+		if (sort != null) {
+		    sb.append(" ORDER BY ").append(sort).append(isAscending ? " ASC" : " DESC");
 		}
 		return doQuery(sb.toString());
 	}
@@ -352,11 +381,21 @@ class DeviceRoomDBProcWrapper {
 		createRoom(room_name, room_desc, lookupAreaIDByName(area_name));
 	}
 	
-	public void deleteRoom(int room_id) throws Exception {
+	public void deleteRoom(List<Integer> room_ids) throws Exception {
 		DBTableRoom ROOM = DBTable.ROOM;
 		DBStringBuilder sb = new DBStringBuilder();
+		
+		StringBuilder ids = new StringBuilder();
+		int total = 0;
+		for (int room_id : room_ids) {
+			if (total ++ != 0) {
+				ids.append(", ");
+			}
+			ids.append(room_id);
+		}
+		
 		sb.append("DELETE FROM ").append(ROOM).append(" WHERE ");
-		sb.append(ROOM.ROOM_ID).append(" = ").append(room_id);
+		sb.append(ROOM.ROOM_ID).append(" IN (").append(ids.toString()).append(")");
 		doUpdate(sb.toString());
 	}
 	
@@ -378,20 +417,6 @@ class DeviceRoomDBProcWrapper {
 		sb.append("SELECT ").append(ROOM.ROOM_NAME).append(" FROM ");
 		sb.append(ROOM).append(" LEFT JOIN ").append(AREA).append(" ON ").append(ROOM.AREA_ID).append(" = ").append(AREA.AREA_ID);
 		sb.append(" WHERE ").append(AREA.AREA_NAME).append(" = ").appendString(area_name);
-		return doQuery(sb.toString());
-	}
-	
-	public ResultSetWrapper lookupRoomByID(int room_id) throws Exception {
-		DBTableRoom ROOM = DBTable.ROOM;
-		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT * FROM ").append(ROOM).append(" WHERE ").append(ROOM.ROOM_ID).append(" = ").append(room_id);
-		return doQuery(sb.toString());
-	}
-	
-	public ResultSetWrapper lookupRoomByName(String room_name) throws Exception {
-		DBTableRoom ROOM = DBTable.ROOM;
-		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT * FROM ").append(ROOM).append(" WHERE ").append(ROOM.ROOM_NAME).append(" = ").appendString(room_name);
 		return doQuery(sb.toString());
 	}
 	

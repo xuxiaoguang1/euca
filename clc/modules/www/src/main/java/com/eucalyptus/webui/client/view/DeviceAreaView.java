@@ -9,13 +9,13 @@ import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceAreaView extends IsWidget, CanDisplaySearchResult, Clearable, SelectionController {
 	
-	public static final int DEFAULT_PAGESIZE = 20;
-	
 	public void setPresenter(Presenter presenter);
 	
 	public Set<SearchResultRow> getSelectedSet();
 	
 	public void setSelectedRow(SearchResultRow row);
+	
+	public int getPageSize();
 	
 	public interface Presenter extends MultiSelectionChangeHandler, KnowsPageSize, DBSearchResultTableClickHandler, SearchRangeChangeHandler {
 		
@@ -25,7 +25,7 @@ public interface DeviceAreaView extends IsWidget, CanDisplaySearchResult, Cleara
 		
 		public void onDelete();
 		
-		public void updateSearchResult(Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd);
+		public void updateSearchResult(Date dateBegin, Date dateEnd);
 		
 	}
 	

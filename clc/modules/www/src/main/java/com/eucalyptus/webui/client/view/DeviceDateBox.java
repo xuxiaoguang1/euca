@@ -83,6 +83,19 @@ public class DeviceDateBox extends DateBox {
 			}
 			
         });
+        getTextBox().addValueChangeHandler(new ValueChangeHandler<String> () {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				String text = event.getValue();
+				if (isEmpty(text)) {
+					if (handler != null) {
+						handler.onValueChanged();
+					}
+				}
+			}
+			
+        });
     }
     
     public void setErrorHandler(Handler handler) {

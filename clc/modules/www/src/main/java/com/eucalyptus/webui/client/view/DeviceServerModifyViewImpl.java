@@ -1,6 +1,5 @@
 package com.eucalyptus.webui.client.view;
 
-import com.eucalyptus.webui.client.activity.device.DeviceServerActivity.ServerState;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -43,9 +42,9 @@ public class DeviceServerModifyViewImpl extends DialogBox implements DeviceServe
 	@Override
 	public void popup(SearchResultRow row, int state) {
 		selected = row;
-		buttonStart.setEnabled(state != ServerState.INUSE.getValue());
-		buttonStop.setEnabled(state != ServerState.STOP.getValue());
-		buttonError.setEnabled(state != ServerState.ERROR.getValue());
+//		buttonStart.setEnabled(state != ServerState.INUSE.getValue());
+//		buttonStop.setEnabled(state != ServerState.STOP.getValue());
+//		buttonError.setEnabled(state != ServerState.ERROR.getValue());
 		show();
 	}
 	
@@ -58,19 +57,19 @@ public class DeviceServerModifyViewImpl extends DialogBox implements DeviceServe
 	@UiHandler("buttonStart")
 	void handleButtonStart(ClickEvent event) {
 		this.hide();
-		presenter.onOK(selected, ServerState.INUSE.getValue());
+		// presenter.onOK(selected, ServerState.INUSE.getValue());
 	}
 	
 	@UiHandler("buttonStop")
 	void handleButtonStop(ClickEvent event) {
 		this.hide();
-		presenter.onOK(selected, ServerState.STOP.getValue());
+		// presenter.onOK(selected, ServerState.STOP.getValue());
 	}
 	
 	@UiHandler("buttonError")
 	void handleButtonError(ClickEvent event) {
 		this.hide();
-		presenter.onOK(selected, ServerState.ERROR.getValue());
+		// presenter.onOK(selected, ServerState.ERROR.getValue());
 	}
 
 }

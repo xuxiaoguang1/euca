@@ -27,7 +27,7 @@ public class SearchResultFieldDesc implements Serializable {
 		KEYVAL, // dynamic key value (like single line text but can be removed)
 		NEWKEYVAL, // empty key value (for adding new)
 		LINK, // URL link
-		ACTION // custom action, usually causing a popup
+		ACTION, // custom action, usually causing a popup
 	}
 	
 	public static final String LINK_VALUE[] = {"Details ...", "查看 ..."};

@@ -14,10 +14,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 
@@ -33,18 +33,14 @@ public class DeviceAreaViewImpl extends Composite implements DeviceAreaView {
 	@UiField Anchor buttonDelete;
 	@UiField Anchor buttonModify;
 	@UiField Anchor buttonClearSelection;
-	@UiField DeviceDateBox creationtimeBegin;
-	@UiField DeviceDateBox creationtimeEnd;
-	@UiField DeviceDateBox modifiedtimeBegin;
-	@UiField DeviceDateBox modifiedtimeEnd;
+	@UiField DeviceDateBox dateBegin;
+	@UiField DeviceDateBox dateEnd;
 	@UiField Anchor buttonClearDate;
 	
 	private Presenter presenter;
 	private MultiSelectionModel<SearchResultRow> selection;
 	private DBSearchResultTable table;
 	private DevicePopupPanel popup = new DevicePopupPanel();
-	
-	private DeviceDateBox[] dateBoxList;
 	
 	public DeviceAreaViewImpl() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -61,11 +57,9 @@ public class DeviceAreaViewImpl extends Composite implements DeviceAreaView {
 		updateSearchResultButtonStatus();
 		
 		popup.setAutoHideEnabled(true);
-        
-		dateBoxList = new DeviceDateBox[]{creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd};
 		
-		for (final DeviceDateBox dateBox : dateBoxList) {
-		    dateBox.setErrorHandler(new Handler() {
+		for (final DeviceDateBox dateBox : new DeviceDateBox[]{dateBegin, dateEnd}) {
+			dateBox.setErrorHandler(new Handler() {
 
 				@Override
 				public void onErrorHappens() {
@@ -78,34 +72,28 @@ public class DeviceAreaViewImpl extends Composite implements DeviceAreaView {
 				@Override
 				public void onValueChanged() {
 					updateDateButtonStatus();
-                	int x = dateBox.getAbsoluteLeft();
+	            	int x = dateBox.getAbsoluteLeft();
 		            int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
-                    DeviceDateBox box0, box1, pair;
-                    if (dateBox == creationtimeBegin || dateBox == creationtimeEnd) {
-                        box0 = creationtimeBegin;
-                        box1 = creationtimeEnd;
-                    }
-                    else {
-                        box0 = modifiedtimeBegin;
-                        box1 = modifiedtimeEnd;
-                    }
-                    pair = (box0 != dateBox ? box0 : box1);
-                    if (!pair.hasError()) {
-                    	Date date0 = box0.getValue(), date1 = box1.getValue();
-                    	if (date0 != null && date1 != null) {
-                    		if (date0.getTime() > date1.getTime()) {
-                    			popup.setHTML(x, y, "12EM", "2EM", getDateErrorHTML(box0, box1));
-                    			return;
-                    		}
-                    	}
-                    	updateSearchRange();
-                    }
+	                DeviceDateBox pair;
+	                pair = (dateBox != dateBegin ? dateBegin : dateEnd);
+	                if (!pair.hasError()) {
+	                	Date date0 = dateBegin.getValue(), date1 = dateEnd.getValue();
+	                	if (date0 != null && date1 != null) {
+	                		if (date0.getTime() > date1.getTime()) {
+	                			popup.setHTML(x, y, "12EM", "2EM", getDateErrorHTML(dateBegin, dateEnd));
+	                			return;
+	                		}
+	                	}
+	                	updateSearchRange();
+	                }
 				}
-				
-		    });
+			});
 		}
+		
 		updateDateButtonStatus();
 	}
+	
+	@UiField DockLayoutPanel rootPanel;
 	
 	private HTML getDateErrorHTML(DeviceDateBox dateBox) {
 	    StringBuilder sb = new StringBuilder();
@@ -154,13 +142,12 @@ public class DeviceAreaViewImpl extends Composite implements DeviceAreaView {
 	}
 	
 	private void updateDateButtonStatus() {
-	    for (DeviceDateBox dateBox : dateBoxList) {
-	    	if (!isEmpty(dateBox.getText())) {
-	            buttonClearDate.setEnabled(true);
-	            return;
-	        }
-	    }
-	    buttonClearDate.setEnabled(false);
+		if (isEmpty(dateBegin.getText()) && isEmpty(dateEnd.getText())) {
+			buttonClearDate.setEnabled(false);
+		}
+		else {
+            buttonClearDate.setEnabled(true);
+		}
 	}
 	
 	public boolean isEmpty(String s) {
@@ -168,19 +155,15 @@ public class DeviceAreaViewImpl extends Composite implements DeviceAreaView {
 	}
 	
 	private void updateSearchRange() {
-		for (DeviceDateBox dateBox : dateBoxList) {
-			if (dateBox.hasError()) {
-				return;
-			}
+		if (!dateBegin.hasError() && !dateEnd.hasError()) {
+			presenter.updateSearchResult(dateBegin.getValue(), dateEnd.getValue());
 		}
-		presenter.updateSearchResult(creationtimeBegin.getValue(), creationtimeEnd.getValue(),
-				modifiedtimeBegin.getValue(), modifiedtimeEnd.getValue());
 	}
 	
 	@Override
 	public void showSearchResult(SearchResult result) {
 		if (table == null) {
-			table = new DBSearchResultTable(DEFAULT_PAGESIZE, result.getDescs(), selection);
+			table = new DBSearchResultTable(result.getDescs(), selection);
 			table.setRangeChangeHandler(presenter);
 			table.setClickHandler(presenter);
 			table.load();
@@ -188,7 +171,12 @@ public class DeviceAreaViewImpl extends Composite implements DeviceAreaView {
 		}
 		table.setData(result);
 	}
-
+	
+	@Override
+	public int getPageSize() {
+		return table.getPageSize();
+	}
+	
 	@Override
 	public void clear() {
 		resultPanel.clear();
@@ -250,9 +238,8 @@ public class DeviceAreaViewImpl extends Composite implements DeviceAreaView {
 	@UiHandler("buttonClearDate")
 	void handleButtonClearDate(ClickEvent event) {
 	    if (buttonClearDate.isEnabled()) {
-    	    for (DateBox dateBox : dateBoxList) {
-    	        dateBox.setValue(null);
-    	    }
+    	    dateBegin.setValue(null);
+    	    dateEnd.setValue(null);
     	    updateDateButtonStatus();
     	    updateSearchRange();
 	    }

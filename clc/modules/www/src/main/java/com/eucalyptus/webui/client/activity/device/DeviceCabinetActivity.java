@@ -32,10 +32,8 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 	
 	private static final ClientMessage title = new ClientMessage("Cabinet", "机柜");
 	
-	private Date creationtimeBegin;
-	private Date creationtimeEnd;
-	private Date modifiedtimeBegin;
-	private Date modifiedtimeEnd;
+	private Date dateBegin;
+	private Date dateEnd;
 	
 	private DeviceCabinetAddView cabinetAddView;
 	private DeviceCabinetModifyView cabinetModifyView;
@@ -112,9 +110,7 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 
 	@Override
 	protected void doSearch(String query, SearchRange range) {
-		getBackendService().lookupDeviceCabinetByDate(getSession(), range,
-				creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd, 
-				new AsyncCallback<SearchResult>() {
+		getBackendService().lookupDeviceCabinetByDate(getSession(), range, dateBegin, dateEnd, new AsyncCallback<SearchResult>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -356,13 +352,11 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 	}
 
     @Override
-    public void updateSearchResult(Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) {
+    public void updateSearchResult(Date dateBegin, Date dateEnd) {
     	getView().clearSelection();
-    	this.creationtimeBegin = creationtimeBegin;
-    	this.creationtimeEnd = creationtimeEnd;
-    	this.modifiedtimeBegin = modifiedtimeBegin;
-    	this.modifiedtimeEnd = modifiedtimeEnd;
-    	range = new SearchRange(0, DeviceCabinetView.DEFAULT_PAGESIZE, -1, true);
+    	this.dateBegin = dateBegin;
+    	this.dateEnd = dateEnd;
+    	range = new SearchRange(0, getView().getPageSize(), -1, true);
     	reloadCurrentRange();
     }
 	

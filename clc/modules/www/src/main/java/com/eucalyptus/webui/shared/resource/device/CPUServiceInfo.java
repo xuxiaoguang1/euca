@@ -9,27 +9,27 @@ public class CPUServiceInfo implements Serializable {
 
 	private static final long serialVersionUID = -1366046491326557115L;
 	
-	public int cpu_service_id;
-	public String cpu_service_desc;
-	public Date cpu_service_starttime;
-	public Date cpu_service_endtime;
-	public CPUState cpu_service_state;
-	public Date cpu_service_creationtime;
-	public Date cpu_service_modifiedtime;
+	public int cs_id;
+	public String cs_desc;
+	public Date cs_starttime;
+	public Date cs_endtime;
+	public CPUState cpu_state;
+	public Date cs_creationtime;
+	public Date cs_modifiedtime;
 	public int cpu_id;
 	public int user_id;
 	
 	public CPUServiceInfo() {
 	}
 	
-	public CPUServiceInfo(int cpu_service_id, String cpu_service_desc, Date cpu_service_starttime, Date cpu_service_endtime, CPUState cpu_service_state, Date cpu_service_creationtime, Date cpu_service_modifiedtime, int cpu_id, int user_id) {
-		this.cpu_service_id = cpu_service_id;
-		this.cpu_service_desc = cpu_service_desc;
-		this.cpu_service_starttime = cpu_service_starttime;
-		this.cpu_service_endtime = cpu_service_endtime;
-		this.cpu_service_state = cpu_service_state;
-		this.cpu_service_creationtime = cpu_service_creationtime;
-		this.cpu_service_modifiedtime = cpu_service_modifiedtime;
+	public CPUServiceInfo(int cs_id, String cs_desc, Date cs_starttime, Date cs_endtime, CPUState cpu_state, Date cs_creationtime, Date cs_modifiedtime, int cpu_id, int user_id) {
+		this.cs_id = cs_id;
+		this.cs_desc = cs_desc;
+		this.cs_starttime = cs_starttime;
+		this.cs_endtime = cs_endtime;
+		this.cpu_state = cpu_state;
+		this.cs_creationtime = cs_creationtime;
+		this.cs_modifiedtime = cs_modifiedtime;
 		this.cpu_id = cpu_id;
 		this.user_id = user_id;
 	}

@@ -1,6 +1,7 @@
 package com.eucalyptus.webui.server.device;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -48,28 +49,37 @@ public class DeviceCabinetService {
 			new SearchResultFieldDesc("4%", false, new ClientMessage("", "")),
 			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "序号"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "名称"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "名称"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "描述"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "描述"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "所在机房"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "所在机房"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "创建时间"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "创建时间"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "修改时间"),
+			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "修改时间"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false));
 	
-	public synchronized SearchResult lookupCabinetByDate(Session session, SearchRange range,
-			Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd)
-					throws EucalyptusServiceException {
+    private DBTableColumn getSortColumn(SearchRange range) {
+        switch (range.getSortField()) {
+        case 3: return DBTable.CABINET.CABINET_NAME;
+        case 4: return DBTable.CABINET.CABINET_DESC;
+        case 5: return DBTable.ROOM.ROOM_NAME;
+        case 6: return DBTable.CABINET.CABINET_CREATIONTIME;
+        case 7: return DBTable.CABINET.CABINET_MODIFIEDTIME;
+        }
+        return null;
+    }
+	
+	public synchronized SearchResult lookupCabinetByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
 		if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
         }
 		ResultSetWrapper rsw = null;
 		try {
-			rsw = dbproc.lookupCabinetByDate(creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
+			rsw = dbproc.lookupCabinetByDate(dateBegin, dateEnd, getSortColumn(range), range.isAscending());
 			ResultSet rs = rsw.getResultSet();
-			List<SearchResultRow> rows = new LinkedList<SearchResultRow>();
+			ArrayList<SearchResultRow> rows = new ArrayList<SearchResultRow>();
 			DBTableRoom ROOM = DBTable.ROOM;
 			DBTableCabinet CABINET = DBTable.CABINET;
 			for (int index = 1; rs.next(); index ++) {
@@ -137,8 +147,8 @@ public class DeviceCabinetService {
 			throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
 		}
 		try {
-			for (int cabinet_id : cabinet_ids) {
-				dbproc.deleteCabinet(cabinet_id);
+			if (!cabinet_ids.isEmpty()) {
+				dbproc.deleteCabinet(cabinet_ids);
 			}
 		}
 		catch (Exception e) {
@@ -198,19 +208,24 @@ public class DeviceCabinetService {
         }
 	}
 	
+	private CabinetInfo getCabinetInfo(ResultSet rs) throws Exception {
+	    DBTableCabinet CABINET = DBTable.CABINET;
+	    int cabinet_id = DBData.getInt(rs, CABINET.CABINET_ID);
+        String cabinet_name = DBData.getString(rs, CABINET.CABINET_NAME);
+        String cabinet_desc = DBData.getString(rs, CABINET.CABINET_DESC);
+        Date cabinet_creationtime = DBData.getDate(rs, CABINET.CABINET_CREATIONTIME);
+        Date cabinet_modifiedtime = DBData.getDate(rs, CABINET.CABINET_MODIFIEDTIME);
+        int room_id = DBData.getInt(rs, CABINET.ROOM_ID);
+        return new CabinetInfo(cabinet_id, cabinet_name, cabinet_desc, cabinet_creationtime, cabinet_modifiedtime, room_id);
+	}
+	
 	public synchronized CabinetInfo lookupCabinetInfoByID(int cabinet_id) throws EucalyptusServiceException {
 		ResultSetWrapper rsw = null;
 		try {
 			rsw = dbproc.lookupCabinetByID(cabinet_id);
 	        ResultSet rs = rsw.getResultSet();
 	        rs.next();
-	        DBTableCabinet CABINET = DBTable.CABINET;
-	        String cabinet_name = DBData.getString(rs, CABINET.CABINET_NAME);
-	        String cabinet_desc = DBData.getString(rs, CABINET.CABINET_DESC);
-	        Date cabinet_creationtime = DBData.getDate(rs, CABINET.CABINET_CREATIONTIME);
-	        Date cabinet_modifiedtime = DBData.getDate(rs, CABINET.CABINET_MODIFIEDTIME);
-	        int room_id = DBData.getInt(rs, CABINET.ROOM_ID);
-	        return new CabinetInfo(cabinet_id, cabinet_name, cabinet_desc, cabinet_creationtime, cabinet_modifiedtime, room_id);
+	        return getCabinetInfo(rs);
 		}
 		catch (Exception e) {
             e.printStackTrace();
@@ -237,13 +252,7 @@ public class DeviceCabinetService {
 			rsw = dbproc.lookupCabinetByName(cabinet_name);
 	        ResultSet rs = rsw.getResultSet();
 	        rs.next();
-	        DBTableCabinet CABINET = DBTable.CABINET;
-	        int cabinet_id = DBData.getInt(rs, CABINET.CABINET_ID);
-	        String cabinet_desc = DBData.getString(rs, CABINET.CABINET_DESC);
-	        Date cabinet_creationtime = DBData.getDate(rs, CABINET.CABINET_CREATIONTIME);
-	        Date cabinet_modifiedtime = DBData.getDate(rs, CABINET.CABINET_MODIFIEDTIME);
-	        int room_id = DBData.getInt(rs, CABINET.ROOM_ID);
-	        return new CabinetInfo(cabinet_id, cabinet_name, cabinet_desc, cabinet_creationtime, cabinet_modifiedtime, room_id);
+	        return getCabinetInfo(rs);
 		}
 		catch (Exception e) {
             e.printStackTrace();
@@ -260,7 +269,6 @@ public class DeviceCabinetService {
             }
         }
 	}
-
 	
 }
 
@@ -280,29 +288,49 @@ class DeviceCabinetDBProcWrapper {
 		wrapper.update(request);
 	}
 	
-	public ResultSetWrapper lookupCabinetByDate(Date creationtimeBegin, Date creationtimeEnd,
-			Date modifiedtimeBegin, Date modifiedtimeEnd) throws Exception {
+    public ResultSetWrapper lookupCabinetByID(int cabinet_id) throws Exception {
+        DBTableCabinet CABINET = DBTable.CABINET;
+        DBStringBuilder sb = new DBStringBuilder();
+        sb.append("SELECT * FROM ").append(CABINET).append(" WHERE ").append(CABINET.CABINET_ID).append(" = ").append(cabinet_id);
+        return doQuery(sb.toString());
+    }
+    
+    public ResultSetWrapper lookupCabinetByName(String cabinet_name) throws Exception {
+        DBTableCabinet CABINET = DBTable.CABINET;
+        DBStringBuilder sb = new DBStringBuilder();
+        sb.append("SELECT * FROM ").append(CABINET).append(" WHERE ").append(CABINET.CABINET_NAME).append(" = ").append(cabinet_name);
+        return doQuery(sb.toString());
+    }
+    
+    private DBStringBuilder appendBoundedDate(DBStringBuilder sb, DBTableColumn column, Date dateBegin, Date dateEnd) {
+        sb.append("(");
+        sb.append(column).append(" != ").appendString("0000-00-00");
+        if (dateBegin != null) {
+            sb.append(" AND ").append(column).append(" >= ").appendDate(dateBegin);
+        }
+        if (dateEnd != null) {
+            sb.append(" AND ").append(column).append(" <= ").appendDate(dateEnd);
+        }
+        sb.append(")");
+        return sb;
+    }
+	
+	public ResultSetWrapper lookupCabinetByDate(Date dateBegin, Date dateEnd, DBTableColumn sort, boolean isAscending) throws Exception {
 	    DBTableRoom ROOM = DBTable.ROOM;
 		DBTableCabinet CABINET = DBTable.CABINET;
 		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT * FROM ").append(CABINET).append(" LEFT JOIN ").append(ROOM);
-		sb.append(" ON ").append(CABINET.ROOM_ID).append(" = ").append(ROOM.ROOM_ID);
-		sb.append(" WHERE 1=1");
-		if (creationtimeBegin != null) {
-			sb.append(" AND ").append(CABINET.CABINET_CREATIONTIME.getName()).append(" >= ").appendDate(creationtimeBegin);
-		}
-		if (creationtimeEnd != null) {
-			sb.append(" AND ").append(CABINET.CABINET_CREATIONTIME.getName()).append(" <= ").appendDate(creationtimeEnd);
-		}
-		if (modifiedtimeBegin != null) {
-			sb.append(" AND ").append(CABINET.CABINET_MODIFIEDTIME.getName()).append(" >= ").appendDate(modifiedtimeBegin);
-		}
-		if (modifiedtimeEnd != null) {
-			sb.append(" AND ").append(CABINET.CABINET_MODIFIEDTIME.getName()).append(" <= ").appendDate(modifiedtimeEnd);
-		}
-		if (modifiedtimeBegin != null || modifiedtimeEnd != null) {
-			sb.append(" AND ").append(CABINET.CABINET_MODIFIEDTIME.getName()).append(" != ").appendString("0000-00-00");
-		}
+		sb.append("SELECT ").append(CABINET.ANY).append(", ").append(ROOM.ROOM_NAME).append(" FROM ");
+		sb.append(CABINET).append(" LEFT JOIN ").append(ROOM);
+		sb.append(" ON ").append(CABINET.ROOM_ID).append(" = ").append(ROOM.ROOM_ID).append(" WHERE 1=1");
+		if (dateBegin != null || dateEnd != null) {
+            sb.append(" AND (");
+            appendBoundedDate(sb, CABINET.CABINET_CREATIONTIME, dateBegin, dateEnd).append(" OR ");
+            appendBoundedDate(sb, CABINET.CABINET_MODIFIEDTIME, dateBegin, dateEnd);
+            sb.append(")");
+        }
+		if (sort != null) {
+            sb.append(" ORDER BY ").append(sort).append(isAscending ? " ASC" : " DESC");
+        }
 		return doQuery(sb.toString());
 	}
 	
@@ -323,11 +351,21 @@ class DeviceCabinetDBProcWrapper {
         doUpdate(sb.toString());
 	}
 	
-	public void deleteCabinet(int cabinet_id) throws Exception {
+	public void deleteCabinet(List<Integer> cabinet_ids) throws Exception {
 		DBTableCabinet CABINET = DBTable.CABINET;
 		DBStringBuilder sb = new DBStringBuilder();
+		
+		StringBuilder ids = new StringBuilder();
+		int total = 0;
+		for (int cabinet_id : cabinet_ids) {
+			if (total ++ != 0) {
+				ids.append(", ");
+			}
+			ids.append(cabinet_id);
+		}
+		
 		sb.append("DELETE FROM ").append(CABINET).append(" WHERE ");
-		sb.append(CABINET.CABINET_ID).append(" = ").append(cabinet_id);
+		sb.append(CABINET.CABINET_ID).append(" IN (").append(ids.toString()).append(")");
 		doUpdate(sb.toString());
 	}
 	
@@ -351,19 +389,5 @@ class DeviceCabinetDBProcWrapper {
 	    sb.append(" WHERE ").append(ROOM.ROOM_NAME).append(" = ").appendString(room_name);
 	    return doQuery(sb.toString());
     }
-	
-	public ResultSetWrapper lookupCabinetByID(int cabinet_id) throws Exception {
-		DBTableCabinet CABINET = DBTable.CABINET;
-		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT * FROM ").append(CABINET).append(" WHERE ").append(CABINET.CABINET_ID).append(" = ").append(cabinet_id);
-		return doQuery(sb.toString());
-	}
-	
-	public ResultSetWrapper lookupCabinetByName(String cabinet_name) throws Exception {
-		DBTableCabinet CABINET = DBTable.CABINET;
-		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT * FROM ").append(CABINET).append(" WHERE ").append(CABINET.CABINET_NAME).append(" = ").append(cabinet_name);
-		return doQuery(sb.toString());
-	}
 
 }
