@@ -29,7 +29,7 @@
 				<editable>false</editable>
 				<hidden>false</hidden>
 				<selected>false</selected>
-				<db_field>null</db_field>
+				<db_field>NULL</db_field>
 			</col>
 				<col>
 				<title language="ENGLISH">Account</title>
@@ -162,6 +162,213 @@
 				<hidden>true</hidden>
 				<selected>false</selected>
 				<db_field>user_pwd</db_field>
+			</col>
+		</service>
+
+		<service name="com.eucalyptus.webui.server.UserAppServiceProcImpl">
+			<col>
+				<title language="ENGLISH">Check All</title>
+				<title language="CHINESE">全选</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>BOOLEAN</text>
+				<editable>true</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>ua_id</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">No.</title>
+				<title language="CHINESE">序号</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+			</col>
+				<col>
+				<title language="ENGLISH">Account</title>
+				<title language="CHINESE">账户</title>
+				<sortable>true</sortable>
+				<width>10%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>account_name</db_field>
+			</col>	
+			<col>
+				<title language="ENGLISH">ID</title>
+				<title language="CHINESE">帐号</title>
+				<sortable>true</sortable>
+				<width>10%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>user_name</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Template</title>
+				<title language="CHINESE">模板</title>
+				<sortable>true</sortable>
+				<width>10%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>TEMPLATE_DETAILS</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">VM Image</title>
+				<title language="CHINESE">虚拟机镜像</title>
+				<sortable>true</sortable>
+				<width>10%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>VM_IMAGE_DETAILS</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Applying Time</title>
+				<title language="CHINESE">申请时间</title>
+				<sortable>true</sortable>
+				<width>10%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>ua_apptime</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Staring Time</title>
+				<title language="CHINESE">起始时间</title>
+				<sortable>true</sortable>
+				<width>10%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>ua_srv_startingtime</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Ending Time</title>
+				<title language="CHINESE">结束时间</title>
+				<sortable>true</sortable>
+				<width>10%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>ua_srv_endingtime</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Application State</title>
+				<title language="CHINESE">申请状态</title>
+				<sortable>true</sortable>
+				<width>10%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>ua_status</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Comment</title>
+				<title language="CHINESE">备注</title>
+				<sortable>false</sortable>
+				<width>20%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>ua_comment</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">CPU</title>
+				<title language="CHINESE">CPU</title>
+				<sortable>false</sortable>
+				<width>0%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>true</hidden>
+				<selected>false</selected>
+				<db_field>template_cpu</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">NCPUS</title>
+				<title language="CHINESE">CPU数量</title>
+				<sortable>false</sortable>
+				<width>0%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>template_ncpus</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Mem</title>
+				<title language="CHINESE">内存</title>
+				<sortable>false</sortable>
+				<width>0%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>template_mem</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Disk</title>
+				<title language="CHINESE">磁盘</title>
+				<sortable>false</sortable>
+				<width>0%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>template_disk</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">OS</title>
+				<title language="CHINESE">操作系统</title>
+				<sortable>false</sortable>
+				<width>0%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>vit_os</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Ver</title>
+				<title language="CHINESE">版本</title>
+				<sortable>false</sortable>
+				<width>0%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>vit_ver</db_field>
 			</col>
 		</service>
 	</searchtable_content>

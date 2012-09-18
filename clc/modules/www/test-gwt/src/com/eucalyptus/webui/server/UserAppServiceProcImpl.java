@@ -11,11 +11,10 @@ import java.util.List;
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.client.session.Session;
+import com.eucalyptus.webui.server.config.SearchTableCol;
+import com.eucalyptus.webui.server.config.ViewSearchTableColConfig;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.device.DeviceTemplateServiceProcImpl;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
@@ -24,7 +23,7 @@ import com.eucalyptus.webui.server.user.UserAppSyncException;
 import com.eucalyptus.webui.server.vm.VITDBProcWrapper;
 import com.eucalyptus.webui.server.vm.VITSyncException;
 import com.eucalyptus.webui.server.vm.VmImageType;
-import com.eucalyptus.webui.shared.dictionary.Enum2String;
+import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
@@ -172,22 +171,13 @@ public class UserAppServiceProcImpl {
 		  
 		  assert (range != null);
 		  
-		  List<SearchResultFieldDesc> FIELDS;
-		  
-		  if (isRootAdmin) {
-			  FIELDS = FIELDS_ROOT;
-		  }
-		  else {
-			  FIELDS = FIELDS_NONROOT;
-		  }
-		  
 		  final int sortField = range.getSortField( );
 		  
 		  DATA = resultSet2List(rs);
 		  
 		  int resultLength = Math.min( range.getLength( ), DATA.size( ) - range.getStart( ) );
 		  SearchResult result = new SearchResult( DATA.size( ), range );
-		  result.setDescs( FIELDS );
+		  result.setDescs( ViewSearchTableColConfig.instance().getConfig(UserAppServiceProcImpl.class.getName(), LanguageSelection.instance().getCurLanguage())  );
 		  result.setRows( DATA.subList( range.getStart( ), range.getStart( ) + resultLength ) );
 			
 		  return result;
@@ -202,36 +192,57 @@ public class UserAppServiceProcImpl {
 			  if (rs != null) {
 				  result = new ArrayList<SearchResultRow>();
 				  
+				  ArrayList<SearchTableCol> tableCols = ViewSearchTableColConfig.instance().getConfig(UserAppServiceProcImpl.class.getName());
+				  String[] dbFields = new String[tableCols.size()];
+				  
+				  for (int i=0; i<dbFields.length; i++)
+					  dbFields[i] = tableCols.get(i).getDbField();
+				  
 				  while (rs.next()) {
-					  String id = rs.getString(DBTableColName.USER_APP.ID);
-					  String accountName = rs.getNString(DBTableColName.ACCOUNT.NAME);
-					  String userName = rs.getString(DBTableColName.USER.NAME);
-					  String appTime = rs.getString(DBTableColName.USER_APP.APP_TIME);
-					  String srvStatingTime = rs.getString(DBTableColName.USER_APP.SRV_STARTINGTIME);
-					  String srvEndingTime = rs.getString(DBTableColName.USER_APP.SRV_ENDINGTIME);
-					  String state = Enum2String.getInstance().getUserAppStateName(rs.getString(DBTableColName.USER_APP.STATUS));
-					  String comment = rs.getString(DBTableColName.USER_APP.COMMENT);
+					  ArrayList<String> rowValue = new ArrayList<String>();
 					  
-					  String cpu = rs.getString(DBTableColName.TEMPLATE.CPU);
-					  String cpuCount = rs.getString(DBTableColName.TEMPLATE.NCPUS);
-					  String mem = rs.getString(DBTableColName.TEMPLATE.MEM);
-					  String disk = rs.getString(DBTableColName.TEMPLATE.DISK);
-
-					  String template = formatTemplateInfo(cpu, cpuCount, mem, disk);
-				
-					  String os = rs.getString(DBTableColName.VM_IMAGE_TYPE.OS);
-					  String ver = rs.getString(DBTableColName.VM_IMAGE_TYPE.VER);
-					  String vmImageInfo = formatVMImageTypeInfo(os, ver);
+					  String cpu=null, cpuCount=null, mem=null, disk=null;
+					  String os=null, ver=null;
 					  
-					  List<String> fields = Arrays.asList(id, Integer.toString(index++), 
-							  										accountName, userName,
-							  										SearchResultFieldDesc.LINK_VALUE[1], SearchResultFieldDesc.LINK_VALUE[1],
-							  										appTime, srvStatingTime, srvEndingTime, 
-							  										state, comment != null ? comment : "");
+					  for (int i=0; i<dbFields.length; i++) {
+						  String value = null;
+						  if (!dbFields[i].equalsIgnoreCase("null")) {
+							  if (dbFields[i].equalsIgnoreCase("TEMPLATE_DETAILS")) {
+								  value = "...";
+							  }
+							  else if (dbFields[i].equalsIgnoreCase("VM_IMAGE_DETAILS")) {
+								  value = "...";
+							  }
+							  else
+								  value = rs.getString(dbFields[i]);
+							  
+							  if (dbFields[i].equalsIgnoreCase(DBTableColName.TEMPLATE.CPU))
+								  cpu = value;
+							  else if (dbFields[i].equalsIgnoreCase(DBTableColName.TEMPLATE.NCPUS))
+								  cpuCount = value;
+							  else if (dbFields[i].equalsIgnoreCase(DBTableColName.TEMPLATE.MEM))
+								  mem = value;
+							  else if (dbFields[i].equalsIgnoreCase(DBTableColName.TEMPLATE.DISK))
+								  disk = value;
+							  else if (dbFields[i].equalsIgnoreCase(DBTableColName.VM_IMAGE_TYPE.OS))
+								  os = value;
+							  else if (dbFields[i].equalsIgnoreCase(DBTableColName.VM_IMAGE_TYPE.VER))
+								  ver = value;
+						  }
+						  else
+							  value = Integer.toString(index++);
+					  			 
+						  rowValue.add(value);
+					  }
 					  
-					  List<String> links = Arrays.asList(null, null, null, null, template, vmImageInfo,	null, null, null, null, null, null);
+					  String template_details = formatTemplateInfo(cpu, cpuCount, mem, disk);
+					  String vm_details = formatVMImageTypeInfo(os, ver);
+					  	 
+					  result.add(new SearchResultRow(rowValue));
 					  
-					  SearchResultRow row = new SearchResultRow(fields, links);
+					  List<String> links = Arrays.asList(null, null, null, null, template_details, vm_details,	null, null, null, null, null, null);
+					  
+					  SearchResultRow row = new SearchResultRow(rowValue, links);
 					  
 					  result.add(row);
 				  }
@@ -273,45 +284,4 @@ public class UserAppServiceProcImpl {
 	  private VITDBProcWrapper vitDBProc = new VITDBProcWrapper();
 	  
 	  private static List<SearchResultRow> DATA = null;
-	
-	  private static final String[] TABLE_COL_TITLE_CHECKALL = {"Check All", "全选"};
-	  private static final String[] TABLE_COL_TITLE_NO = {"No.", "序号"};
-	  private static final String[] TABLE_COL_TITLE_ACCOUNT_NAME = {"Account", "账户"};
-	  private static final String[] TABLE_COL_TITLE_NAME = {"ID", "用户"};
-	  private static final String[] TABLE_COL_TEMPLATE = {"Template", "模板"};
-	  private static final String[] TABLE_COL_VM_IMAGE_TYPE = {"VM Image", "虚拟机镜像"};
-	  private static final String[] TABLE_COL_TITLE_APPTIME = {"Applying Time", "申请时间"};
-	  private static final String[] TABLE_COL_TITLE_SRV_STARTINGTIME = {"Staring Time", "起始时间"};
-	  private static final String[] TABLE_COL_TITLE_SRV_ENDINGTIME = {"Ending Time", "结束时间"};
-	  private static final String[] TABLE_COL_TITLE_STATE = {"Application State", "申请状态"};
-	  private static final String[] TABLE_COL_TITLE_COMMENT = {"Comment", "备注"};
-	
-	  private static final List<SearchResultFieldDesc> FIELDS_ROOT = Arrays.asList(
-				new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "5%", false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TEMPLATE[1], true, "10%", TableDisplay.MANDATORY, Type.LINK, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_VM_IMAGE_TYPE[1], true, "10%", TableDisplay.MANDATORY, Type.LINK, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_APPTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_SRV_STARTINGTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_SRV_ENDINGTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_COMMENT[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false )
-				
-			);
-	  
-	  private static final List<SearchResultFieldDesc> FIELDS_NONROOT = Arrays.asList(
-			  new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "5%", false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, true ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TEMPLATE[1], true, "10%", TableDisplay.MANDATORY, Type.LINK, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_VM_IMAGE_TYPE[1], true, "10%", TableDisplay.MANDATORY, Type.LINK, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_APPTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_SRV_STARTINGTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_SRV_ENDINGTIME[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_COMMENT[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false )
-			);
 }

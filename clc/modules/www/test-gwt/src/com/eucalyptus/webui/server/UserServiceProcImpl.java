@@ -3,16 +3,12 @@ package com.eucalyptus.webui.server;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.server.config.SearchTableCol;
 import com.eucalyptus.webui.server.config.ViewSearchTableColConfig;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
