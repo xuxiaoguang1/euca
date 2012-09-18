@@ -14,12 +14,20 @@ public class ClientMessage implements Serializable {
 	}
 	
 	public ClientMessage(String text0, String text1) {
-		text = new String[]{text0, text1};
+	    text = new String[]{text0, text1};
+	}
+	
+	public String getText(int index) {
+	    return text[index];
+	}
+	
+	public String getText() {
+	    return text[LAN_SELECT];
 	}
 	
 	@Override
 	public String toString() {
-		return text[LAN_SELECT];
+	    return getText();
 	}
 	
 }

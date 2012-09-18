@@ -150,7 +150,12 @@ public class DeviceAreaActivity extends AbstractSearchActivity implements Device
 
 	@Override
 	public void onClick(SearchResultRow row, int row_index, int column_index) {
-		System.out.println("single click " + row_index + " " + column_index + " " + row);
+		/* do nothing */
+	}
+
+	@Override
+	public void onHover(SearchResultRow row, int row_index, int columin_index) {
+		/* do nothing */
 	}
 
 	@Override

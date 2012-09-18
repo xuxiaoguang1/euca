@@ -34,7 +34,7 @@ public class SearchResultFieldDesc implements Serializable {
 	
 	private String name; // ID of the field, also used as the key of a KEYVAL
 	private String title; // title for display
-	private ClientMessage clientMsg;
+	private ClientMessage message;
 	private Boolean sortable; // if sortable in table display
 	private String width; // width of column for table display
 	private TableDisplay tableDisplay; // table display type
@@ -62,7 +62,7 @@ public class SearchResultFieldDesc implements Serializable {
 	
 	public SearchResultFieldDesc(boolean sortable, String width, ClientMessage clientMsg) {
 		this(null, sortable, width);
-		this.clientMsg = clientMsg;
+		this.message = clientMsg;
 	}
 	
 	public SearchResultFieldDesc(String title, String width, Boolean selected) {
@@ -79,7 +79,7 @@ public class SearchResultFieldDesc implements Serializable {
 	
 	public SearchResultFieldDesc(String width, boolean selected, ClientMessage clientMsg) {
 		this(null, width, selected);
-		this.clientMsg = clientMsg;
+		this.message = clientMsg;
 	}
 	
 	public SearchResultFieldDesc(String title, Boolean sortable, String width, TableDisplay tableDisplay, Type type, Boolean editable, Boolean hidden) {
@@ -96,7 +96,7 @@ public class SearchResultFieldDesc implements Serializable {
 	
 	public SearchResultFieldDesc(boolean sortable, String width, ClientMessage clientMsg, TableDisplay tableDisplay, Type type, Boolean editable, Boolean hidden) {
 		this(null, sortable, width, tableDisplay, type, editable, hidden);
-		this.clientMsg = clientMsg;
+		this.message = clientMsg;
 	}
 	
 	public SearchResultFieldDesc(String name, String title, Boolean sortable, String width, TableDisplay tableDisplay, Type type, Boolean editable, Boolean hidden) {
@@ -111,9 +111,9 @@ public class SearchResultFieldDesc implements Serializable {
 		this.selected = false;
 	}
 	
-	public SearchResultFieldDesc(String name, boolean sortable, String width, ClientMessage clientMsg, TableDisplay tableDisplay, Type type, Boolean editable, Boolean hidden) {
+	public SearchResultFieldDesc(String name, boolean sortable, String width, ClientMessage message, TableDisplay tableDisplay, Type type, Boolean editable, Boolean hidden) {
 		this(name, null, sortable, width, tableDisplay, type, editable, hidden);
-		this.clientMsg = clientMsg;
+		this.message = message;
 	}
 	
 	@Override
@@ -141,8 +141,8 @@ public class SearchResultFieldDesc implements Serializable {
 		if (title != null) {
 			return title;
 		}
-		if (clientMsg != null) {
-			return clientMsg.toString();
+		if (message != null) {
+			return message.toString();
 		}
 		return null;
 	}
@@ -203,8 +203,8 @@ public class SearchResultFieldDesc implements Serializable {
 		if (name != null) {
 			return name;
 		}
-		if (clientMsg != null) {
-			return clientMsg.toString();
+		if (message != null) {
+			return message.getText();
 		}
 		return null;
 	}

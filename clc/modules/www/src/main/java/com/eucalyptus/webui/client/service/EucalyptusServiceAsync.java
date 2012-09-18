@@ -162,25 +162,29 @@ public interface EucalyptusServiceAsync {
 	void lookupDeviceAreaByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd, AsyncCallback<SearchResult> callback);
 	void addDeviceArea(Session session, String area_name, String area_desc, AsyncCallback<Void> callback);
 	void modifyDeviceArea(Session session, int area_id, String area_desc, AsyncCallback<Void> callback);
-	void deleteDeviceArea(Session session, Collection<Integer> area_ids, AsyncCallback<Void> callback);
+	void deleteDeviceArea(Session session, List<Integer> area_ids,
+			AsyncCallback<Void> callback);
 	void lookupDeviceAreaNames(Session session, AsyncCallback<List<String>> callback);
 
 	void lookupDeviceRoomByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd, AsyncCallback<SearchResult> callback);
 	void addDeviceRoom(Session session, String room_name, String room_desc, String area_name, AsyncCallback<Void> callback);
 	void modifyDeviceRoom(Session session, int room_id, String room_desc, AsyncCallback<Void> callback);
-	void deleteDeviceRoom(Session session, Collection<Integer> room_ids, AsyncCallback<Void> callback);
+	void deleteDeviceRoom(Session session, List<Integer> room_ids,
+			AsyncCallback<Void> callback);
 	void lookupDeviceRoomNamesByAreaName(Session session, String area_name, AsyncCallback<List<String>> callback);
 	
 	void lookupDeviceCabinetByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd, AsyncCallback<SearchResult> callback);
 	void addDeviceCabinet(Session session, String cabinet_name, String cabinet_desc, String room_name, AsyncCallback<Void> callback);
 	void modifyDeviceCabinet(Session session, int cabinet_id, String cabinet_desc, AsyncCallback<Void> callback);
-	void deleteDeviceCabinet(Session session, Collection<Integer> cabinet_ids, AsyncCallback<Void> callback);
+	void deleteDeviceCabinet(Session session, List<Integer> cabinet_ids,
+			AsyncCallback<Void> callback);
     void lookupCabinetNamesByRoomName(Session session, String room_name, AsyncCallback<List<String>> callback);
 	
 	void lookupDeviceCPUPriceByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd, AsyncCallback<SearchResult> callback);
 	void addDeviceCPUPrice(Session session, String cpu_name, String cpu_price_desc, double cpu_price, AsyncCallback<Void> callback);
 	void modifyDeviceCPUPrice(Session session, int cpu_price_id, String cpu_price_desc, double cpu_price, AsyncCallback<Void> callback);
-	void deleteDeviceCPUPrice(Session session, Collection<Integer> cpu_price_ids, AsyncCallback<Void> callback);
+	void deleteDeviceCPUPrice(Session session, List<Integer> cpu_price_ids,
+			AsyncCallback<Void> callback);
 	void lookupDeviceCPUNamesUnpriced(Session session, AsyncCallback<List<String>> callback);
 	
     void lookupDeviceMemoryPrice(Session session, AsyncCallback<SearchResultRow> callback);
@@ -194,7 +198,8 @@ public interface EucalyptusServiceAsync {
     void lookupDeviceTemplatePriceByDate(Session session, SearchRange range, Date creationtimeBegin,
             Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd, AsyncCallback<SearchResult> callback);
     void lookupDeviceTemplatePriceByPriceID(int template_price_id, AsyncCallback<Double> callback);
-    void deleteDeviceTemplatePrice(Session session, Collection<Integer> template_price_ids, AsyncCallback<Void> callback);
+    void deleteDeviceTemplatePrice(Session session,
+			List<Integer> template_price_ids, AsyncCallback<Void> callback);
     void modifyDeviceTemplatePrice(Session session, int template_price_id, String template_prcie_desc,
             double template_price_cpu, double template_price_mem, double template_price_disk, double template_price_bw,
             AsyncCallback<Void> callback);

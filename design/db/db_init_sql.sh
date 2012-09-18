@@ -129,8 +129,9 @@ id=`getvalue cabinet cabinet_id cabinet_name cabinet0`
 
 for ((i=0;i<20;i++)) do
     let x="$i%3";
-    command insert into server \(server_name, server_mark, server_conf, server_ip, server_bw, server_state, server_starttime, cabinet_id\) \
-        values \(\"name$x\", \"mark$i\", \"conf$i\", \"192.168.134.$i\", \"$i\", \"$x\", \"2012-07-07\", \"$id\"\)
+    let j="$i%10";
+    command insert into server \(server_name, server_desc, server_ip, server_bw, server_state, server_creationtime, server_modifiedtime, cabinet_id\) \
+        values \(\"name$i\", \"desc$i\", \"192.168.134.$i\", \"$i\", \"$x\", \"2011-01-0$j\", \"\", \"$id\"\)
 done
 
 # insert cpu
@@ -146,8 +147,8 @@ for ((i=0;i<40;i++)) do
         vendor="amd"
     fi
     let cache="2 << $i % 5";
-    command insert into cpu \(cpu_name, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, server_id\) \
-        values \(\"cpu$i\", \"$vendor\", \"model$j\", \"2.$j\", \"$cache\", \"$id\"\)
+    command insert into cpu \(cpu_name, cpu_desc, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, cpu_creationtime, cpu_modifiedtime, server_id\) \
+        values \(\"cpu$i\", \"\", \"$vendor\", \"model$j\", \"2.$j\", \"$cache\", \"2012-02-0$j\", \"\", \"$id\"\)
 done
 
 # insert cpu_service
@@ -158,8 +159,9 @@ for ((i=0;i<40;i++)) do
     let d="10+$i%20";
     let x="$i%3";
     if [ $x -ne 2 ]; then
-        command insert into cpu_service \(cs_starttime, cs_life, cs_state, cpu_id, user_id\) \
-            values \(\"2012-07-$d\", \"32\", \"$x\", \"$cpuid\", \"$userid\"\)
+        command insert into cpu_service \(cs_desc, cs_starttime, cs_endtime, cs_state, \
+            cs_creationtime, cs_modifiedtime, cpu_id, user_id\) \
+            values \(\"\", \"2012-03-$d\", \"2012-04-$d\", \"$x\", \"2012-02-$d\", \"\", \"$cpuid\", \"$userid\"\)
     else
         command insert into cpu_service \(cs_state, cpu_id, user_id\) \
             values \(\"$x\", \"$cpuid\", \"$userid\"\)

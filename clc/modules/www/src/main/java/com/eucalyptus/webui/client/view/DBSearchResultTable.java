@@ -44,6 +44,7 @@ public class DBSearchResultTable extends Composite {
 		
 		public void onClick(SearchResultRow row, int row_index, int column_index);
 		public void onDoubleClick(SearchResultRow row, int row_index, int column_index);
+		public void onHover(SearchResultRow row, int row_index, int columin_index);
 		
 	}
 	
@@ -135,29 +136,62 @@ public class DBSearchResultTable extends Composite {
 			
 			@Override
 			public void onCellPreview(final CellPreviewEvent<SearchResultRow> event) {
-				if ("click".equals(event.getNativeEvent().getType())) {
-					final DBSearchResultTableClickHandler handler = clickHandler;
-					if (handler != null && counter ++ == 0) {
-						new Timer() {
-	
+				final DBSearchResultTableClickHandler handler = clickHandler;
+				if (handler != null) {
+					if ("click".equals(event.getNativeEvent().getType())) {
+						if (counter ++ == 0) {
+							new Timer() {
+		
+								@Override
+								public void run() {
+									if (counter != 0) {
+										SearchResultRow row = event.getValue();
+										int row_index = event.getIndex();
+										int col_index = event.getColumn();
+										if (counter == 1) {
+											handler.onClick(row, row_index, col_index);
+										}
+										else {
+											handler.onDoubleClick(row, row_index, col_index);
+										}
+										counter = 0;
+									}
+								}
+								
+							}.schedule(150);
+						}
+					}
+				}
+			}
+			
+		});
+		
+		cellTable.addCellPreviewHandler(new Handler<SearchResultRow>() {
+			
+			private volatile Timer timer = null;
+
+			@Override
+			public void onCellPreview(final CellPreviewEvent<SearchResultRow> event) {
+				final DBSearchResultTableClickHandler handler = clickHandler;
+				if (handler != null) {
+					String type = event.getNativeEvent().getType();
+					if (timer != null) {
+						timer.cancel();
+						timer = null;
+					}
+					if ("mouseover".equals(type)) {
+						timer = new Timer() {
+
 							@Override
 							public void run() {
-								if (counter == 0) {
-									return ;
-								}
 								SearchResultRow row = event.getValue();
 								int row_index = event.getIndex();
 								int col_index = event.getColumn();
-								if (counter == 1) {
-									handler.onClick(row, row_index, col_index);
-								}
-								else {
-									handler.onDoubleClick(row, row_index, col_index);
-								}
-								counter = 0;
+								handler.onHover(row, row_index, col_index);
 							}
 							
-						}.schedule(150);
+						};
+						timer.schedule(1500);
 					}
 				}
 			}

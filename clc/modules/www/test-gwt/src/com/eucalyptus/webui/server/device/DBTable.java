@@ -13,12 +13,16 @@ public class DBTable {
 		return name;
 	}
 	
+	public static final DBTableAccount ACCOUNT = new DBTableAccount();
+	public static final DBTableUser USER = new DBTableUser();
+	
 	public static final DBTableArea AREA = new DBTableArea();
 	public static final DBTableRoom ROOM = new DBTableRoom();
 	public static final DBTableCabinet CABINET = new DBTableCabinet();
 	public static final DBTableServer SERVER = new DBTableServer();
 	
 	public static final DBTableCPU CPU = new DBTableCPU();
+	public static final DBTableCPUService CPU_SERVICE = new DBTableCPUService();
 	
 	public static final DBTableTemplate TEMPLATE = new DBTableTemplate();
 	
@@ -27,7 +31,6 @@ public class DBTable {
 	public static final DBTableTemplatePrice TEMPLATE_PRICE = new DBTableTemplatePrice();
 	
 }
-
 
 class DBTableColumn {
 	
@@ -48,6 +51,29 @@ class DBTableColumn {
 		return name;
 	}
 				
+}
+
+class DBTableAccount extends DBTable {
+    
+    public DBTableAccount() {
+        super("account");
+    }
+    
+    public final DBTableColumn ACCOUNT_ID = new DBTableColumn(this, "account_id");
+    public final DBTableColumn ACCOUNT_NAME = new DBTableColumn(this, "account_name");
+    
+}
+
+class DBTableUser extends DBTable {
+    
+    public DBTableUser() {
+        super("user");
+    }
+    
+    public final DBTableColumn USER_ID = new DBTableColumn(this, "user_id");
+    public final DBTableColumn USER_NAME = new DBTableColumn(this, "user_name");
+    public final DBTableColumn ACCOUNT_ID = new DBTableColumn(this, "account_id");
+    
 }
 
 class DBTableArea extends DBTable {
@@ -101,16 +127,13 @@ class DBTableServer extends DBTable {
 	}
 	
 	public final DBTableColumn SERVER_ID = new DBTableColumn(this, "server_id");
-	public final DBTableColumn SERVER_MARK = new DBTableColumn(this, "server_mark");
 	public final DBTableColumn SERVER_NAME = new DBTableColumn(this, "server_name");
 	public final DBTableColumn SERVER_DESC = new DBTableColumn(this, "server_desc");
-	public final DBTableColumn SERVER_CONF = new DBTableColumn(this, "server_conf");
 	public final DBTableColumn SERVER_IP = new DBTableColumn(this, "server_ip");
 	public final DBTableColumn SERVER_BW = new DBTableColumn(this, "server_bw");
 	public final DBTableColumn SERVER_STATE = new DBTableColumn(this, "server_state");
 	public final DBTableColumn SERVER_CREATIONTIME = new DBTableColumn(this, "server_creationtime");
 	public final DBTableColumn SERVER_MODIFIEDTIME = new DBTableColumn(this, "server_modifiedtime");
-	public final DBTableColumn SERVER_STARTTIME = new DBTableColumn(this, "server_starttime");
 	public final DBTableColumn CABINET_ID = new DBTableColumn(this, "cabinet_id");
 	
 }
@@ -123,7 +146,33 @@ class DBTableCPU extends DBTable {
 	
 	public final DBTableColumn CPU_ID = new DBTableColumn(this, "cpu_id");
 	public final DBTableColumn CPU_NAME = new DBTableColumn(this, "cpu_name");
+	public final DBTableColumn CPU_DESC = new DBTableColumn(this, "cpu_desc");
+	public final DBTableColumn CPU_VENDOR = new DBTableColumn(this, "cpu_vendor");
+	public final DBTableColumn CPU_MODEL = new DBTableColumn(this, "cpu_model");
+	public final DBTableColumn CPU_GHZ = new DBTableColumn(this, "cpu_ghz");
+	public final DBTableColumn CPU_CACHE = new DBTableColumn(this, "cpu_cache");
+	public final DBTableColumn CPU_CREATIONTIME = new DBTableColumn(this, "cpu_creationtime");
+	public final DBTableColumn CPU_MODIFIEDTIME = new DBTableColumn(this, "cpu_modifiedtime");
+	public final DBTableColumn SERVER_ID = new DBTableColumn(this, "server_id");
+	
+}
 
+class DBTableCPUService extends DBTable {
+    
+    public DBTableCPUService() {
+        super("cpu_service");
+    }
+    
+    public final DBTableColumn CPU_SERVICE_ID = new DBTableColumn(this, "cs_id");
+    public final DBTableColumn CPU_SERVICE_DESC = new DBTableColumn(this, "cs_desc");
+    public final DBTableColumn CPU_SERVICE_STARTTIME = new DBTableColumn(this, "cs_starttime");
+    public final DBTableColumn CPU_SERVICE_ENDTIME = new DBTableColumn(this, "cs_endtime");
+    public final DBTableColumn CPU_SERVICE_STATE = new DBTableColumn(this, "cs_state");
+    public final DBTableColumn CPU_SERVICE_CREATIONTIME = new DBTableColumn(this, "cs_creationtime");
+    public final DBTableColumn CPU_SERVICE_MODIFIEDTIME = new DBTableColumn(this, "cs_modifiedtime");
+    public final DBTableColumn CPU_ID = new DBTableColumn(this, "cpu_id");
+    public final DBTableColumn USER_ID = new DBTableColumn(this, "user_id");
+    
 }
 
 class DBTableTemplate extends DBTable {

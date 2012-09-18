@@ -2,7 +2,6 @@ package com.eucalyptus.webui.server.device;
 
 import java.sql.ResultSet;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -119,20 +118,18 @@ public class DeviceCPUPriceServiceProcImpl {
 		}
 	}
 	
-	public synchronized void deleteCPUPrice(Session session, Collection<Integer> cpu_price_ids) throws EucalyptusServiceException {
-		if (cpu_price_ids != null && !cpu_price_ids.isEmpty()) {
-			if (!getUser(session).isSystemAdmin()) {
-				throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
+	public synchronized void deleteCPUPrice(Session session, List<Integer> cpu_price_ids) throws EucalyptusServiceException {
+		if (!getUser(session).isSystemAdmin()) {
+			throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
+		}
+		try {
+			for (int cpu_price_id : cpu_price_ids) {
+				dbproc.deleteCPUPrice(cpu_price_id);
 			}
-			try {
-				for (int cpu_price_id : cpu_price_ids) {
-					dbproc.deleteCPUPrice(cpu_price_id);
-				}
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				throw new EucalyptusServiceException(new ClientMessage("", "删除CPU定价失败"));
-			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new EucalyptusServiceException(new ClientMessage("", "删除CPU定价失败"));
 		}
 	}
 	

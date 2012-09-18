@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.client.service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -724,26 +723,26 @@ public interface EucalyptusService extends RemoteService {
 	SearchResult lookupDeviceAreaByDate(Session session, SearchRange range,
 			Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException;
 	void modifyDeviceArea(Session session, int area_id, String area_desc) throws EucalyptusServiceException;
-	void deleteDeviceArea(Session session, Collection<Integer> area_ids) throws EucalyptusServiceException;
+	void deleteDeviceArea(Session session, List<Integer> area_ids) throws EucalyptusServiceException;
 	void addDeviceArea(Session session, String area_name, String area_desc) throws EucalyptusServiceException;
 	List<String> lookupDeviceAreaNames(Session session) throws EucalyptusServiceException;
 	
 	SearchResult lookupDeviceRoomByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException;
 	void addDeviceRoom(Session session, String room_name, String room_desc, String area_name) throws EucalyptusServiceException;
 	void modifyDeviceRoom(Session session, int room_id, String room_desc) throws EucalyptusServiceException;
-	void deleteDeviceRoom(Session session, Collection<Integer> room_ids) throws EucalyptusServiceException;
+	void deleteDeviceRoom(Session session, List<Integer> room_ids) throws EucalyptusServiceException;
 	List<String> lookupDeviceRoomNamesByAreaName(Session session, String area_name) throws EucalyptusServiceException;
 	
 	SearchResult lookupDeviceCabinetByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException;
 	void addDeviceCabinet(Session session, String cabinet_name, String cabinet_desc, String room_name) throws EucalyptusServiceException;
 	void modifyDeviceCabinet(Session session, int cabinet_id, String cabinet_desc) throws EucalyptusServiceException;
-	void deleteDeviceCabinet(Session session, Collection<Integer> cabinet_ids) throws EucalyptusServiceException;
+	void deleteDeviceCabinet(Session session, List<Integer> cabinet_ids) throws EucalyptusServiceException;
 	List<String> lookupCabinetNamesByRoomName(Session session, String room_name) throws EucalyptusServiceException;
 	
 	SearchResult lookupDeviceCPUPriceByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException;
 	void addDeviceCPUPrice(Session session, String cpu_name, String cpu_price_desc, double cpu_price) throws EucalyptusServiceException;
 	void modifyDeviceCPUPrice(Session session, int cpu_price_id, String cpu_price_desc, double cpu_price) throws EucalyptusServiceException;
-	void deleteDeviceCPUPrice(Session session, Collection<Integer> cpu_price_ids) throws EucalyptusServiceException;
+	void deleteDeviceCPUPrice(Session session, List<Integer> cpu_price_ids) throws EucalyptusServiceException;
 	List<String> lookupDeviceCPUNamesUnpriced(Session session) throws EucalyptusServiceException;
 	
 	SearchResultRow lookupDeviceMemoryPrice(Session session) throws EucalyptusServiceException;
@@ -757,7 +756,7 @@ public interface EucalyptusService extends RemoteService {
 	double lookupDeviceTemplatePriceByPriceID(int template_price_id) throws EucalyptusServiceException;
 	SearchResult lookupDeviceTemplatePriceByDate(Session session, SearchRange range, Date creationtimeBegin,
 	        Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException;
-    void deleteDeviceTemplatePrice(Session session, Collection<Integer> template_price_ids) throws EucalyptusServiceException;
+    void deleteDeviceTemplatePrice(Session session, List<Integer> template_price_ids) throws EucalyptusServiceException;
     void modifyDeviceTemplatePrice(Session session, int template_price_id, String template_price_desc, double template_price_cpu,
             double template_price_mem, double template_price_disk, double template_price_bw) throws EucalyptusServiceException;
     void createDeviceTemplatePriceByID(Session session, int template_id, String template_price_desc, double template_price_cpu,
@@ -1025,5 +1024,5 @@ public interface EucalyptusService extends RemoteService {
   void modifyPolicy(Session session, String policyId, String name, String content) throws EucalyptusServiceException;
 
   SearchResult lookupHistory(Session session, String search, SearchRange range) throws EucalyptusServiceException;
-  
+
 }

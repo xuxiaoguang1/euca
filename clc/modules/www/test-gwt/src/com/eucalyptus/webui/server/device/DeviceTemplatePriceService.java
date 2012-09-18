@@ -2,7 +2,6 @@ package com.eucalyptus.webui.server.device;
 
 import java.sql.ResultSet;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -173,20 +172,18 @@ public class DeviceTemplatePriceService {
 		}
 	}
 	
-	public synchronized void deleteTemplatePrice(Session session, Collection<Integer> template_price_ids) throws EucalyptusServiceException {
-		if (template_price_ids != null && !template_price_ids.isEmpty()) {
-			if (!getUser(session).isSystemAdmin()) {
-				throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
+	public synchronized void deleteTemplatePrice(Session session, List<Integer> template_price_ids) throws EucalyptusServiceException {
+		if (!getUser(session).isSystemAdmin()) {
+			throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
+		}
+		try {
+			for (int template_price_id : template_price_ids) {
+				dbproc.deleteTemplatePrice(template_price_id);
 			}
-			try {
-				for (int template_price_id : template_price_ids) {
-					dbproc.deleteTemplatePrice(template_price_id);
-				}
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				throw new EucalyptusServiceException(new ClientMessage("", "删除模板定价失败"));
-			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new EucalyptusServiceException(new ClientMessage("", "删除模板定价失败"));
 		}
 	}
 	

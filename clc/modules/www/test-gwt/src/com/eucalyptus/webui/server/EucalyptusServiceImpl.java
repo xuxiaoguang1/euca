@@ -21,17 +21,15 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.DeviceCPUDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
 import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
-import com.eucalyptus.webui.server.device.DeviceAreaServiceProcImpl;
+import com.eucalyptus.webui.server.device.DeviceAreaService;
 import com.eucalyptus.webui.server.device.DeviceBWServiceProcImpl;
 import com.eucalyptus.webui.server.device.DeviceCPUPriceServiceProcImpl;
-import com.eucalyptus.webui.server.device.DeviceCPUServiceProcImpl;
-import com.eucalyptus.webui.server.device.DeviceCabinetServiceProcImpl;
+import com.eucalyptus.webui.server.device.DeviceCabinetService;
 import com.eucalyptus.webui.server.device.DeviceDiskServiceProcImpl;
 import com.eucalyptus.webui.server.device.DeviceIPServiceProcImpl;
 import com.eucalyptus.webui.server.device.DeviceMemoryServiceProcImpl;
 import com.eucalyptus.webui.server.device.DeviceOthersPriceServiceProcImpl;
-import com.eucalyptus.webui.server.device.DeviceRoomServiceProcImpl;
-import com.eucalyptus.webui.server.device.DeviceServerServiceProcImpl;
+import com.eucalyptus.webui.server.device.DeviceRoomService;
 import com.eucalyptus.webui.server.device.DeviceTemplatePriceService;
 import com.eucalyptus.webui.server.device.DeviceTemplateServiceProcImpl;
 import com.eucalyptus.webui.server.mail.MailSenderInfo;
@@ -69,13 +67,8 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	private UserServiceProcImpl userServiceProc = new UserServiceProcImpl();
 	private UserAppServiceProcImpl userAppServiceProc = new UserAppServiceProcImpl();
 	private GroupServiceProcImpl groupServiceProc = new GroupServiceProcImpl();
-	private DeviceAreaServiceProcImpl deviceAreaServiceProc = new DeviceAreaServiceProcImpl();
-	private DeviceRoomServiceProcImpl deviceRoomServiceProc = new DeviceRoomServiceProcImpl();
-	private DeviceCabinetServiceProcImpl deviceCabinetServiceProc = new DeviceCabinetServiceProcImpl();
 	private DeviceCPUPriceServiceProcImpl deviceCPUPriceServiceProc = new DeviceCPUPriceServiceProcImpl();
 	private DeviceOthersPriceServiceProcImpl deviceOthersPriceServiceProc = new DeviceOthersPriceServiceProcImpl();
-	private DeviceServerServiceProcImpl deviceServerServiceProc = new DeviceServerServiceProcImpl();
-	private DeviceCPUServiceProcImpl deviceCPUServiceProc = new DeviceCPUServiceProcImpl();
 	private DeviceMemoryServiceProcImpl deviceMemoryServiceProc = new DeviceMemoryServiceProcImpl();
 	private DeviceDiskServiceProcImpl deviceDiskServiceProc = new DeviceDiskServiceProcImpl();
 	private DeviceIPServiceProcImpl deviceIPServiceProc = new DeviceIPServiceProcImpl();
@@ -698,79 +691,79 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	@Override
 	public SearchResult lookupDeviceAreaByDate(Session session, SearchRange range,
 			Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException {
-		return deviceAreaServiceProc.lookupAreaByDate(session, range, creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
+		return DeviceAreaService.getInstance().lookupAreaByDate(session, range, creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
 	}
 	
 	@Override
 	public void addDeviceArea(Session session, String area_name, String area_desc) throws EucalyptusServiceException {
-		deviceAreaServiceProc.addArea(session, area_name, area_desc);
+		DeviceAreaService.getInstance().addArea(session, area_name, area_desc);
 	}
 	
 	@Override
 	public void modifyDeviceArea(Session session, int area_id, String area_desc) throws EucalyptusServiceException {
-		deviceAreaServiceProc.modifyArea(session, area_id, area_desc);
+		DeviceAreaService.getInstance().modifyArea(session, area_id, area_desc);
 	}
 
 	@Override
-	public void deleteDeviceArea(Session session, Collection<Integer> area_ids) throws EucalyptusServiceException {
-		deviceAreaServiceProc.deleteArea(session, area_ids);
+	public void deleteDeviceArea(Session session, List<Integer> area_ids) throws EucalyptusServiceException {
+		DeviceAreaService.getInstance().deleteArea(session, area_ids);
 	}
 	
 	@Override
 	public List<String> lookupDeviceAreaNames(Session session) throws EucalyptusServiceException {
-		return deviceAreaServiceProc.lookupAreaNames(session);
+		return DeviceAreaService.getInstance().lookupAreaNames(session);
 	}
 	
 	@Override
 	public SearchResult lookupDeviceRoomByDate(Session session, SearchRange range,
 			Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException {
-		return deviceRoomServiceProc.lookupRoomByDate(session, range, creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
+		return DeviceRoomService.getInstance().lookupRoomByDate(session, range, creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
 	}
 	
 	@Override
 	public void addDeviceRoom(Session session, String room_name, String room_desc, String area_name) throws EucalyptusServiceException {
-		deviceRoomServiceProc.addRoom(session, room_name, room_desc, area_name);
+		DeviceRoomService.getInstance().addRoom(session, room_name, room_desc, area_name);
 	}
 	
 	@Override
 	public void modifyDeviceRoom(Session session, int room_id, String room_desc) throws EucalyptusServiceException {
-		deviceRoomServiceProc.modifyRoom(session, room_id, room_desc);
+		DeviceRoomService.getInstance().modifyRoom(session, room_id, room_desc);
 	}
 
 	@Override
-	public void deleteDeviceRoom(Session session, Collection<Integer> room_ids) throws EucalyptusServiceException {
-		deviceRoomServiceProc.deleteRoom(session, room_ids);
+	public void deleteDeviceRoom(Session session, List<Integer> room_ids) throws EucalyptusServiceException {
+		DeviceRoomService.getInstance().deleteRoom(session, room_ids);
 	}
 	
 	@Override
 	public List<String> lookupDeviceRoomNamesByAreaName(Session session, String area_name) throws EucalyptusServiceException {
-		return deviceRoomServiceProc.lookupRoomNamesByAreaName(session, area_name);
+		return DeviceRoomService.getInstance().lookupRoomNamesByAreaName(session, area_name);
 	}
 	
 	@Override
 	public SearchResult lookupDeviceCabinetByDate(Session session, SearchRange range,
 			Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException {
-		return deviceCabinetServiceProc.lookupCabinetByDate(session, range, creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
+		return DeviceCabinetService.getInstance().lookupCabinetByDate(session, range, creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
 	}
 	
 	@Override
 	public void addDeviceCabinet(Session session, String cabinet_name, String cabinet_desc, String room_name) throws EucalyptusServiceException {
-		deviceCabinetServiceProc.addCabinet(session, cabinet_name, cabinet_desc, room_name);
+		DeviceCabinetService.getInstance().addCabinet(session, cabinet_name, cabinet_desc, room_name);
 	}
 	
 	@Override
 	public void modifyDeviceCabinet(Session session, int cabinet_id, String cabinet_desc) throws EucalyptusServiceException {
-		deviceCabinetServiceProc.modifyCabinet(session, cabinet_id, cabinet_desc);
+		DeviceCabinetService.getInstance().modifyCabinet(session, cabinet_id, cabinet_desc);
 	}
 
 	@Override
-	public void deleteDeviceCabinet(Session session, Collection<Integer> cabinet_ids) throws EucalyptusServiceException {
-		deviceCabinetServiceProc.deleteCabinet(session, cabinet_ids);
+	public void deleteDeviceCabinet(Session session, List<Integer> cabinet_ids) throws EucalyptusServiceException {
+		DeviceCabinetService.getInstance().deleteCabinet(session, cabinet_ids);
 	}
 	
 	@Override
 	public List<String> lookupCabinetNamesByRoomName(Session session, String room_name) throws EucalyptusServiceException {
-	    return deviceCabinetServiceProc.lookupCabinetNamesByRoomName(session, room_name);
+	    return DeviceCabinetService.getInstance().lookupCabinetNamesByRoomName(session, room_name);
 	}
 	
 	@Override
@@ -801,7 +794,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 	
 	@Override
-	public void deleteDeviceTemplatePrice(Session session, Collection<Integer> template_price_ids) throws EucalyptusServiceException {
+	public void deleteDeviceTemplatePrice(Session session, List<Integer> template_price_ids) throws EucalyptusServiceException {
 	    DeviceTemplatePriceService.getInstance().deleteTemplatePrice(session, template_price_ids);
 	}
 	
@@ -828,7 +821,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 
 	@Override
-	public void deleteDeviceCPUPrice(Session session, Collection<Integer> cpu_price_ids) throws EucalyptusServiceException {
+	public void deleteDeviceCPUPrice(Session session, List<Integer> cpu_price_ids) throws EucalyptusServiceException {
 		deviceCPUPriceServiceProc.deleteCPUPrice(session, cpu_price_ids);
 	}
 	
@@ -869,80 +862,95 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	
 	@Override
 	public SearchResult lookupDeviceServer(Session session, String search, SearchRange range, int queryState) {
-		return deviceServerServiceProc.lookupServer(session, search, range, queryState);
+		throw new RuntimeException("not finish yet");
+		// return deviceServerServiceProc.lookupServer(session, search, range, queryState);
 	}
 
 	@Override
 	public Map<Integer, Integer> getDeviceServerCounts(Session session) {
-		return deviceServerServiceProc.getServerCounts(session);
+		throw new RuntimeException("not finish yet");
+		// return deviceServerServiceProc.getServerCounts(session);
 	}
 	
 	@Override
     public List<SearchResultRow> deleteDeviceServer(Session session, List<SearchResultRow> list) {
-		return deviceServerServiceProc.deleteDevice(session, list);
+		throw new RuntimeException("not finish yet");
+		// return deviceServerServiceProc.deleteDevice(session, list);
     }
 
 	@Override
 	public SearchResultRow modifyDeviceServerState(Session session, SearchResultRow row, int state) {
-		return deviceServerServiceProc.modifyServerState(session, row, state);
+		throw new RuntimeException("not finish yet");
+		// return deviceServerServiceProc.modifyServerState(session, row, state);
 	}
 	
 	@Override
 	public void createDeviceServer(Session session, String mark, String name, String conf, String ip,
 			int bw, int state, String cabinet_name) throws EucalyptusServiceException {
-		deviceServerServiceProc.createServer(session, mark, name, conf, ip, bw, state, cabinet_name);
+		throw new RuntimeException("not finish yet");
+		// deviceServerServiceProc.createServer(session, mark, name, conf, ip, bw, state, cabinet_name);
 	}
 
 	@Override
 	public SearchResult lookupDeviceCPU(Session session, String search, SearchRange range, int queryState) {
-		return deviceCPUServiceProc.lookupCPU(session, search, range, queryState);
+		throw new RuntimeException("not finish yet");
+		// return deviceCPUServiceProc.lookupCPU(session, search, range, queryState);
 	}
 
 	@Override
 	public Map<Integer, Integer> getDeviceCPUCounts(Session session) {
-		return deviceCPUServiceProc.getCPUCounts(session);
+		throw new RuntimeException("not finish yet");
+		// return deviceCPUServiceProc.getCPUCounts(session);
 	}
 
 	@Override
 	public SearchResultRow modifyDeviceCPUService(Session session, SearchResultRow row, String endtime, int state) {
-		return deviceCPUServiceProc.modifyService(session, row, endtime, state);
+		throw new RuntimeException("not finish yet");
+		// return deviceCPUServiceProc.modifyService(session, row, endtime, state);
 	}
 
 	@Override
 	public List<SearchResultRow> deleteDeviceCPUService(Session session, List<SearchResultRow> list) {
-		return deviceCPUServiceProc.deleteService(session, list);
+		throw new RuntimeException("not finish yet");
+		// return deviceCPUServiceProc.deleteService(session, list);
 	}
 
 	@Override
 	public List<SearchResultRow> deleteDeviceCPUDevice(Session session, List<SearchResultRow> list) {
-		return deviceCPUServiceProc.deleteDevice(session, list);
+		throw new RuntimeException("not finish yet");
+		// return deviceCPUServiceProc.deleteDevice(session, list);
 	}
 
 	@Override
 	public SearchResultRow addDeviceCPUService(Session session, SearchResultRow row, String account, String user,
 	        String starttime, int life, int state) {
-		return deviceCPUServiceProc.addService(session, row, account, user, starttime, life, state);
+		throw new RuntimeException("not finish yet");
+		// return deviceCPUServiceProc.addService(session, row, account, user, starttime, life, state);
 	}
 
 	@Override
 	public boolean addDeviceCPUDevice(Session session, String serverMark, String name, String vendor, String model,
 	        double ghz, double cache, int num) {
-		return deviceCPUServiceProc.addDevice(session, serverMark, name, vendor, model, ghz, cache, num);
+		throw new RuntimeException("not finish yet");
+		// return deviceCPUServiceProc.addDevice(session, serverMark, name, vendor, model, ghz, cache, num);
 	}
 
 	@Override
 	public DeviceCPUDeviceAddView.DataCache lookupDeviceCPUInfo(Session session) {
-		return deviceCPUServiceProc.lookupDeviceInfo(session);
+		throw new RuntimeException("not finish yet");
+		// return deviceCPUServiceProc.lookupDeviceInfo(session);
 	}
 	
 	@Override
 	public List<String> listDeviceCPUAccounts(Session session) {
-		return deviceCPUServiceProc.listAccounts(session);
+		throw new RuntimeException("not finish yet");
+		// return deviceCPUServiceProc.listAccounts(session);
 	}
 
 	@Override
 	public List<String> listDeviceCPUUsersByAccount(Session session, String account) {
-		return deviceCPUServiceProc.listUsersByAccount(session, account);
+		throw new RuntimeException("not finish yet");
+		// return deviceCPUServiceProc.listUsersByAccount(session, account);
 	}
 
 	@Override
