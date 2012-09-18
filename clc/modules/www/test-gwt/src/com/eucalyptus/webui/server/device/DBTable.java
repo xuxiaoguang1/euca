@@ -23,6 +23,10 @@ public class DBTable {
 	
 	public static final DBTableCPU CPU = new DBTableCPU();
 	public static final DBTableCPUService CPU_SERVICE = new DBTableCPUService();
+	public static final DBTableMemory MEMORY = new DBTableMemory();
+	public static final DBTableMemoryService MEMORY_SERVICE = new DBTableMemoryService();
+	public static final DBTableDisk DISK = new DBTableDisk();
+    public static final DBTableDiskService DISK_SERVICE = new DBTableDiskService();
 	
 	public static final DBTableTemplate TEMPLATE = new DBTableTemplate();
 	
@@ -189,6 +193,76 @@ class DBTableCPUService extends DBTable {
     public final DBTableColumn CPU_SERVICE_CREATIONTIME = new DBTableColumn(this, "cs_creationtime");
     public final DBTableColumn CPU_SERVICE_MODIFIEDTIME = new DBTableColumn(this, "cs_modifiedtime");
     public final DBTableColumn CPU_ID = new DBTableColumn(this, "cpu_id");
+    public final DBTableColumn USER_ID = new DBTableColumn(this, "user_id");
+    
+}
+
+class DBTableMemory extends DBTable {
+    
+    public DBTableMemory() {
+        super("memory");
+    }
+    
+    public final DBTableColumn MEMORY_ID = new DBTableColumn(this, "mem_id");
+    public final DBTableColumn MEMORY_NAME = new DBTableColumn(this, "mem_name");
+    public final DBTableColumn MEMORY_DESC = new DBTableColumn(this, "mem_desc");
+    public final DBTableColumn MEMORY_TOTAL = new DBTableColumn(this, "mem_total");
+    public final DBTableColumn MEMORY_CREATIONTIME = new DBTableColumn(this, "mem_creationtime");
+    public final DBTableColumn MEMORY_MODIFIEDTIME = new DBTableColumn(this, "mem_modifiedtime");
+    public final DBTableColumn SERVER_ID = new DBTableColumn(this, "server_id");
+    
+}
+
+class DBTableMemoryService extends DBTable {
+    
+    public DBTableMemoryService() {
+        super("mem_service");
+    }
+    
+    public final DBTableColumn MEMORY_SERVICE_ID = new DBTableColumn(this, "ms_id");
+    public final DBTableColumn MEMORY_SERVICE_DESC = new DBTableColumn(this, "ms_desc");
+    public final DBTableColumn MEMORY_SERVICE_USED = new DBTableColumn(this, "ms_used");
+    public final DBTableColumn MEMORY_SERVICE_STARTTIME = new DBTableColumn(this, "ms_starttime");
+    public final DBTableColumn MEMORY_SERVICE_ENDTIME = new DBTableColumn(this, "ms_endtime");
+    public final DBTableColumn MEMORY_SERVICE_STATE = new DBTableColumn(this, "ms_state");
+    public final DBTableColumn MEMORY_SERVICE_CREATIONTIME = new DBTableColumn(this, "ms_creationtime");
+    public final DBTableColumn MEMORY_SERVICE_MODIFIEDTIME = new DBTableColumn(this, "ms_modifiedtime");
+    public final DBTableColumn MEMORY_ID = new DBTableColumn(this, "mem_id");
+    public final DBTableColumn USER_ID = new DBTableColumn(this, "user_id");
+    
+}
+
+class DBTableDisk extends DBTable {
+    
+    public DBTableDisk() {
+        super("disk");
+    }
+    
+    public final DBTableColumn DISK_ID = new DBTableColumn(this, "disk_id");
+    public final DBTableColumn DISK_NAME = new DBTableColumn(this, "disk_name");
+    public final DBTableColumn DISK_DESC = new DBTableColumn(this, "disk_desc");
+    public final DBTableColumn DISK_TOTAL = new DBTableColumn(this, "disk_total");
+    public final DBTableColumn DISK_CREATIONTIME = new DBTableColumn(this, "disk_creationtime");
+    public final DBTableColumn DISK_MODIFIEDTIME = new DBTableColumn(this, "disk_modifiedtime");
+    public final DBTableColumn SERVER_ID = new DBTableColumn(this, "server_id");
+    
+}
+
+class DBTableDiskService extends DBTable {
+    
+    public DBTableDiskService() {
+        super("disk_service");
+    }
+    
+    public final DBTableColumn DISK_SERVICE_ID = new DBTableColumn(this, "ds_id");
+    public final DBTableColumn DISK_SERVICE_DESC = new DBTableColumn(this, "ds_desc");
+    public final DBTableColumn DISK_SERVICE_USED = new DBTableColumn(this, "ds_used");
+    public final DBTableColumn DISK_SERVICE_STARTTIME = new DBTableColumn(this, "ds_starttime");
+    public final DBTableColumn DISK_SERVICE_ENDTIME = new DBTableColumn(this, "ds_endtime");
+    public final DBTableColumn DISK_SERVICE_STATE = new DBTableColumn(this, "ds_state");
+    public final DBTableColumn DISK_SERVICE_CREATIONTIME = new DBTableColumn(this, "ds_creationtime");
+    public final DBTableColumn DISK_SERVICE_MODIFIEDTIME = new DBTableColumn(this, "ds_modifiedtime");
+    public final DBTableColumn DISK_ID = new DBTableColumn(this, "disk_id");
     public final DBTableColumn USER_ID = new DBTableColumn(this, "user_id");
     
 }

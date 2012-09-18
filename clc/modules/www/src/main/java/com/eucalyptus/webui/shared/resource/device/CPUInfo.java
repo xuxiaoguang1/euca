@@ -16,11 +16,12 @@ public class CPUInfo implements Serializable {
 	public double cpu_cache;
 	public Date cpu_creationtime;
 	public Date cpu_modifiedtime;
+	public int server_id;
 	
 	public CPUInfo() {
 	}
 	
-	public CPUInfo(int cpu_id, String cpu_name, String cpu_desc, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, Date cpu_creationtime, Date cpu_modifiedtime) {
+	public CPUInfo(int cpu_id, String cpu_name, String cpu_desc, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, Date cpu_creationtime, Date cpu_modifiedtime, int server_id) {
 		this.cpu_id = cpu_id;
 		this.cpu_name = cpu_name;
 		this.cpu_desc = cpu_desc;
@@ -30,6 +31,7 @@ public class CPUInfo implements Serializable {
 		this.cpu_cache = cpu_cache;
 		this.cpu_creationtime = cpu_creationtime;
 		this.cpu_modifiedtime = cpu_modifiedtime;
+		this.server_id = server_id;
 	}
 
 }

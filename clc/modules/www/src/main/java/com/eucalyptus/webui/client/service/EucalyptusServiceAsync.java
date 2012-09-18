@@ -186,6 +186,7 @@ public interface EucalyptusServiceAsync {
     void lookupDeviceServerCounts(Session session, AsyncCallback<Map<Integer, Integer>> callback);
     void addDeviceServer(Session session, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, String cabinet_name, AsyncCallback<Void> callback);
     void modifyDeviceServer(Session session, int server_id, String server_desc, String server_ip, int server_bw, ServerState server_state, AsyncCallback<Void> callback);
+	void modifyDeviceServerState(Session session, int server_id, ServerState server_state, AsyncCallback<Void> callback);
     void deleteDeviceServer(Session session, List<Integer> server_ids, AsyncCallback<Void> callback);
     void lookupDeviceServerNamesByCabinetName(Session session, String cabinet_name, AsyncCallback<List<String>> callback);
     

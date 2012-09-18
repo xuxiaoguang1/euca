@@ -1,6 +1,6 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.Collection;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -58,15 +58,16 @@ public class DeviceCabinetAddViewImpl extends DialogBox implements DeviceCabinet
 	
 	@Override
 	public void popup() {
-		cabinetName.setValue("");
-		cabinetDesc.setValue("");
+		cabinetName.setText("");
+		cabinetDesc.setText("");
 		areaNameList.clear();
 		roomNameList.clear();
 		presenter.lookupAreaNames();
 		show();
 	}
 	
-	public void setAreaNameList(Collection<String> area_name_list) {
+	@Override
+	public void setAreaNameList(List<String> area_name_list) {
 		areaNameList.clear();
 		roomNameList.clear();
 		if (area_name_list != null && !area_name_list.isEmpty()) {
@@ -82,7 +83,7 @@ public class DeviceCabinetAddViewImpl extends DialogBox implements DeviceCabinet
 	}
 	
 	@Override
-	public void setRoomNameList(String area_name, Collection<String> room_name_list) {
+	public void setRoomNameList(String area_name, List<String> room_name_list) {
 		if (getAreaName().equals(area_name)) {
 			roomNameList.clear();
 			if (room_name_list != null && !room_name_list.isEmpty()) {
@@ -97,35 +98,43 @@ public class DeviceCabinetAddViewImpl extends DialogBox implements DeviceCabinet
 	}
 	
 	private String getCabinetName() {
-		String cabinet_name = cabinetName.getValue();
-		if (cabinet_name == null) {
-			return "";
-		}
-		return cabinet_name;
+		return getInputText(cabinetName);
 	}
 	
 	private String getCabinetDesc() {
-		String cabinet_desc = cabinetDesc.getValue();
-		if (cabinet_desc == null) {
-			return "";
-		}
-		return cabinet_desc;
+		return getInputText(cabinetDesc);
 	}
 	
 	private String getAreaName() {
-		int index = areaNameList.getSelectedIndex();
-		if (index == -1) {
-			return "";
-		}
-		return areaNameList.getItemText(index);
+		return getSelectedText(areaNameList);
 	}
 	
 	private String getRoomName() {
-		int index = roomNameList.getSelectedIndex();
-		if (index == -1) {
+		return getSelectedText(roomNameList);
+	}
+	
+	private String getInputText(TextBox textbox) {
+		String text = textbox.getText();
+		if (text == null) {
 			return "";
 		}
-		return roomNameList.getItemText(index);
+		return text;
+	}
+	
+	private String getInputText(TextArea textarea) {
+		String text = textarea.getText();
+		if (text == null) {
+			return "";
+		}
+		return text;
+	}
+	
+	private String getSelectedText(ListBox listbox) {
+	    int index = listbox.getSelectedIndex();
+	    if (index == -1) {
+	    	return "";
+	    }
+	    return listbox.getItemText(index);
 	}
 
 	@UiHandler("buttonOK")

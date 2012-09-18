@@ -175,8 +175,8 @@ for ((i=0;i<20;i++)) do
     let x="$i%3";
     let size="(1024 + i * 10) * 1024";
     id=`getvalue server server_id server_name name$x`
-    command insert into memory \(mem_name, mem_total, server_id\) \
-        values \(\"memory$i\", $size, \"$id\"\)
+    command insert into memory \(mem_name, mem_desc, mem_total, mem_creationtime, server_id\) \
+        values \(\"memory$i\", \"desc$i\", $size, \"2012-09-18\", \"$id\"\)
 done
 
 # insert mem_service

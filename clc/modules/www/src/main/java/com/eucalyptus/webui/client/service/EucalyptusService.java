@@ -748,6 +748,7 @@ public interface EucalyptusService extends RemoteService {
 	Map<Integer, Integer> lookupDeviceServerCounts(Session session) throws EucalyptusServiceException;
 	void addDeviceServer(Session session, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, String cabinet_name) throws EucalyptusServiceException;
 	void modifyDeviceServer(Session session, int server_id, String server_desc, String server_ip, int server_bw, ServerState server_state) throws EucalyptusServiceException;
+	void modifyDeviceServerState(Session session, int server_id, ServerState server_state) throws EucalyptusServiceException;
     void deleteDeviceServer(Session session, List<Integer> server_ids) throws EucalyptusServiceException;
     List<String> lookupDeviceServerNamesByCabinetName(Session session, String cabinet_name) throws EucalyptusServiceException;
     

@@ -31,7 +31,7 @@ import com.eucalyptus.webui.server.dictionary.DBTableName;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
-class DeviceDiskDBProcWrapper {
+class DeviceDiskDBProcWrapper2 {
 
 	private static final Logger LOG = Logger.getLogger(DeviceDiskDBProcWrapper.class.getName());
 
@@ -437,7 +437,7 @@ class DeviceDiskDBProcWrapper {
 
 public class DeviceDiskServiceProcImpl {
 
-	private DeviceDiskDBProcWrapper dbproc = new DeviceDiskDBProcWrapper();
+	private DeviceDiskDBProcWrapper2 dbproc = new DeviceDiskDBProcWrapper2();
 
 	private LoginUserProfile getUser(Session session) {
 		return LoginUserProfileStorer.instance().get(session.getId());

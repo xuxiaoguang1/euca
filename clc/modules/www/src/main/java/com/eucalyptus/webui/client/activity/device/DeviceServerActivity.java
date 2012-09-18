@@ -1,17 +1,15 @@
 package com.eucalyptus.webui.client.activity.device;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.activity.AbstractSearchActivity;
-import com.eucalyptus.webui.client.activity.ActivityUtil;
 import com.eucalyptus.webui.client.place.SearchPlace;
 import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
@@ -19,17 +17,18 @@ import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.client.view.DeviceServerDeviceAddView;
-import com.eucalyptus.webui.client.view.DeviceServerDeviceAddViewImpl;
+import com.eucalyptus.webui.client.view.DeviceServerAddView;
+import com.eucalyptus.webui.client.view.DeviceServerAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceServerModifyView;
 import com.eucalyptus.webui.client.view.DeviceServerModifyViewImpl;
+import com.eucalyptus.webui.client.view.DeviceServerOperateView;
+import com.eucalyptus.webui.client.view.DeviceServerOperateViewImpl;
 import com.eucalyptus.webui.client.view.DeviceServerView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.LogView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
-import com.eucalyptus.webui.shared.checker.InvalidValueException;
 import com.eucalyptus.webui.shared.resource.device.status.ServerState;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -42,9 +41,10 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 	private Date dateEnd;
 	private ServerState queryState = null;
 	private Map<Integer, Integer> serverCounts = new HashMap<Integer, Integer>();
-	
+
+	private DeviceServerAddView serverAddView;
 	private DeviceServerModifyView serverModifyView;
-	private DeviceServerDeviceAddView deviceAddView;
+	private DeviceServerOperateView serverOperateView;
 	
 	public DeviceServerActivity(SearchPlace place, ClientFactory clientFactory) {
 		super(place, clientFactory);
@@ -78,10 +78,16 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 		return clientFactory.getLocalSession().getSession();
 	}
 	
+	private final static int SERVER_ID = 0;
+	private final static int SERVER_NAME = 3;
+	private final static int SERVER_DESC = 4;
+	private final static int SERVER_IP = 6;
+	private final static int SERVER_BW = 7;
+	private final static int SERVER_STATE = 8;
+	
 	private boolean isEmpty(String s) {
 		return s == null || s.length() == 0;
 	}
-
 	
     private void showStatus(ClientMessage msg) {
         getFooterView().showStatus(StatusType.NONE, msg.toString(), FooterView.CLEAR_DELAY_SECOND * 3);
@@ -183,26 +189,299 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 	
 	@Override
 	public void onAddServer() {
-//		final String[] stateValueList = new String[]{ServerState.INUSE.toString(), ServerState.STOP.toString(),
-//		        ServerState.ERROR.toString()};
-//		deviceAddView.popup(stateValueList);
-	}
+		try {
+			if (Window.confirm(new ClientMessage("", "确认创建新服务器").toString())) {
+				if (serverAddView == null) {
+					serverAddView = new DeviceServerAddViewImpl();
+					serverAddView.setPresenter(new DeviceServerAddView.Presenter() {
+						
+						@Override
+						public boolean onOK(String server_name, String server_desc, String server_ip, String bandwidth, ServerState server_state, String cabinet_name) {
+							if (isEmpty(server_name)) {
+								StringBuilder sb = new StringBuilder();
+								sb.append(new ClientMessage("", "服务器名称非法")).append(" = '").append(server_name).append("' ");
+								sb.append(new ClientMessage("", "请重新选择服务器"));
+								Window.alert(sb.toString());
+								return false;
+							}
+							if (isEmpty(cabinet_name)) {
+								StringBuilder sb = new StringBuilder();
+								sb.append(new ClientMessage("", "机柜名称非法")).append(" = '").append(cabinet_name).append("' ");
+								sb.append(new ClientMessage("", "请重新选择机柜"));
+								Window.alert(sb.toString());
+								return false;
+							}
+							int server_bw = 0;
+							try {
+								if (!isEmpty(bandwidth)) {
+									server_bw = Integer.parseInt(bandwidth);
+								}
+							}
+							catch (Exception e) {
+								StringBuilder sb = new StringBuilder();
+								sb.append(new ClientMessage("", "带宽数值非法")).append(" = '").append(server_bw).append("' ");
+								sb.append(new ClientMessage("", "请重新选择带宽"));
+								Window.alert(sb.toString());
+								return false;
+							}
+							getBackendService().addDeviceServer(getSession(), server_name, server_desc, server_ip, server_bw, server_state, cabinet_name, new AsyncCallback<Void>() {
 
+								@Override
+								public void onFailure(Throwable caught) {
+									if (caught instanceof EucalyptusServiceException) {
+										onBackendServiceFailure((EucalyptusServiceException)caught);
+									}
+									getView().clearSelection();
+								}
+
+								@Override
+								public void onSuccess(Void result) {
+									showStatus(new ClientMessage("", "添加服务器成功"));
+									reloadCurrentRange();
+									getView().clearSelection();
+								}
+								
+							});
+							return true;
+						}
+						
+						@Override
+						public void lookupAreaNames() {
+							getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<List<String>>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									if (caught instanceof EucalyptusServiceException) {
+										onBackendServiceFailure((EucalyptusServiceException)caught);
+									}
+								}
+
+								@Override
+								public void onSuccess(List<String> area_name_list) {
+									showStatus(new ClientMessage("", "获取区域列表成功"));
+									serverAddView.setAreaNameList(area_name_list);
+								}
+								
+							});
+						}
+						
+						@Override
+						public void lookupRoomNamesByAreaName(final String area_name) {
+							if (isEmpty(area_name)) {
+								StringBuilder sb = new StringBuilder();
+								sb.append(new ClientMessage("", "区域名称非法")).append(" = '").append(area_name).append("'");
+								Window.alert(sb.toString());
+							}
+							else {
+								getBackendService().lookupDeviceRoomNamesByAreaName(getSession(), area_name, new AsyncCallback<List<String>>() {
+
+									@Override
+									public void onFailure(Throwable caught) {
+										if (caught instanceof EucalyptusServiceException) {
+											onBackendServiceFailure((EucalyptusServiceException)caught);
+										}
+									}
+
+									@Override
+									public void onSuccess(List<String> room_name_list) {
+										showStatus(new ClientMessage("", "获取机房列表成功"));
+										serverAddView.setRoomNameList(area_name, room_name_list);
+									}
+									
+								});
+							}
+						}
+						
+						@Override
+						public void lookupCabinetNamesByRoomName(final String room_name) {
+							if (isEmpty(room_name)) {
+								StringBuilder sb = new StringBuilder();
+								sb.append(new ClientMessage("", "机房名称非法")).append(" = '").append(room_name).append("'");
+								Window.alert(sb.toString());
+							}
+							else {
+								getBackendService().lookupCabinetNamesByRoomName(getSession(), room_name, new AsyncCallback<List<String>>() {
+
+									@Override
+									public void onFailure(Throwable caught) {
+										if (caught instanceof EucalyptusServiceException) {
+											onBackendServiceFailure((EucalyptusServiceException)caught);
+										}
+									}
+
+									@Override
+									public void onSuccess(List<String> cabinet_name_list) {
+										showStatus(new ClientMessage("", "获取机柜列表成功"));
+										serverAddView.setCabinetNameList(room_name, cabinet_name_list);
+									}
+									
+								});
+							}
+						}
+						
+					});
+				}
+				serverAddView.popup();
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			onFrontendServiceFailure(e);
+		}
+	}
+	
 	@Override
 	public void onModifyServer() {
-		// TODO Auto-generated method stub
+		Set<SearchResultRow> set = getView().getSelectedSet();
+		try {
+			if (set != null && !set.isEmpty()) {
+				SearchResultRow row = new LinkedList<SearchResultRow>(set).getFirst();
+				if (Window.confirm(new ClientMessage("", "确认修改所选择的服务器").toString())) {
+					int server_id = Integer.parseInt(row.getField(SERVER_ID));
+					String server_name = row.getField(SERVER_NAME);
+					String server_desc = row.getField(SERVER_DESC);
+					String server_ip = row.getField(SERVER_IP);
+					String server_bw = row.getField(SERVER_BW);
+					ServerState server_state = ServerState.parse(row.getField(SERVER_STATE));
+					if (serverModifyView == null) {
+						serverModifyView = new DeviceServerModifyViewImpl();
+						serverModifyView.setPresenter(new DeviceServerModifyView.Presenter() {
+							
+							@Override
+							public boolean onOK(int server_id, String server_desc, String server_ip, String bandwidth, ServerState server_state) {
+								int server_bw = 0;
+								try {
+									if (!isEmpty(bandwidth)) {
+										server_bw = Integer.parseInt(bandwidth);
+									}
+								}
+								catch (Exception e) {
+									StringBuilder sb = new StringBuilder();
+									sb.append(new ClientMessage("", "带宽数值非法")).append(" = '").append(server_bw).append("' ");
+									sb.append(new ClientMessage("", "请重新选择带宽"));
+									Window.alert(sb.toString());
+									return false;
+								}
+								getBackendService().modifyDeviceServer(getSession(), server_id, server_desc, server_ip, server_bw, server_state, new AsyncCallback<Void>() {
+
+									@Override
+									public void onFailure(Throwable caught) {
+										if (caught instanceof EucalyptusServiceException) {
+											onBackendServiceFailure((EucalyptusServiceException)caught);
+										}
+										getView().clearSelection();
+									}
+
+									@Override
+									public void onSuccess(Void result) {
+										showStatus(new ClientMessage("", "修改服务器成功"));
+										reloadCurrentRange();
+										getView().clearSelection();
+									}
+									
+								});
+								return true;
+							}
+							
+						});
+					}
+					serverModifyView.popup(server_id, server_name, server_desc, server_ip, server_bw, server_state);
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			onFrontendServiceFailure(e);
+		}
 	}
 
 	@Override
 	public void onOperateServer() {
-		// TODO Auto-generated method stub
-		
+		Set<SearchResultRow> set = getView().getSelectedSet();
+		try {
+			if (set != null && !set.isEmpty()) {
+				SearchResultRow row = new LinkedList<SearchResultRow>(set).getFirst();
+				if (Window.confirm(new ClientMessage("", "确认操作所选择的服务器").toString())) {
+					int server_id = Integer.parseInt(row.getField(SERVER_ID));
+					String server_name = row.getField(SERVER_NAME);
+					ServerState server_state = ServerState.parse(row.getField(SERVER_STATE));
+					if (serverOperateView == null) {
+						serverOperateView = new DeviceServerOperateViewImpl();
+						serverOperateView.setPresenter(new DeviceServerOperateView.Presenter() {
+							
+							@Override
+							public void onOK(int server_id, ServerState server_state) {
+								getBackendService().modifyDeviceServerState(getSession(), server_id, server_state, new AsyncCallback<Void>() {
+
+									@Override
+									public void onFailure(Throwable caught) {
+										if (caught instanceof EucalyptusServiceException) {
+											onBackendServiceFailure((EucalyptusServiceException)caught);
+										}
+										getView().clearSelection();
+									}
+
+									@Override
+									public void onSuccess(Void result) {
+										showStatus(new ClientMessage("", "修改服务器状态成功"));
+										reloadCurrentRange();
+										getView().clearSelection();
+									}
+									
+								});
+							}
+							
+						});
+					}
+					serverOperateView.popup(server_id, server_name, server_state);
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			onFrontendServiceFailure(e);
+		}
+
 	}
 
 	@Override
 	public void onDeleteServer() {
-		// TODO Auto-generated method stub
+		Set<SearchResultRow> set = getView().getSelectedSet();
+		try {
+			if (set != null && !set.isEmpty()) {
+				List<Integer> server_id_list = new ArrayList<Integer>();
+				for (SearchResultRow row : set) {
+					int server_id = Integer.parseInt(row.getField(SERVER_ID));
+					server_id_list.add(server_id);
+				}
+				if (!server_id_list.isEmpty()) {
+					if (Window.confirm(new ClientMessage("", "确认删除所选择的服务器").toString())) {
+						getBackendService().deleteDeviceServer(getSession(), server_id_list, new AsyncCallback<Void>() {
 		
+							@Override
+							public void onFailure(Throwable caught) {
+								if (caught instanceof EucalyptusServiceException) {
+									onBackendServiceFailure((EucalyptusServiceException)caught);
+								}
+								getView().clearSelection();
+							}
+		
+							@Override
+							public void onSuccess(Void result) {
+								showStatus(new ClientMessage("", "删除服务器成功"));
+								reloadCurrentRange();
+								getView().clearSelection();
+							}
+							
+						});
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			onFrontendServiceFailure(e);
+		}
 	}
 
 	@Override
@@ -238,366 +517,4 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
     	reloadCurrentRange();
 	}
 	
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-//    public static final int TABLE_COL_INDEX_SERVER_ID = 0;
-//    public static final int TABLE_COL_INDEX_CHECKBOX = 1;
-//    public static final int TABLE_COL_INDEX_NO = 2;
-//    public static final int TABLE_COL_INDEX_STATE = 10;
-//
-////	public DeviceServerActivity(SearchPlace place, ClientFactory clientFactory) {
-////		super(place, clientFactory);
-////		serverModifyView = new DeviceServerModifyViewImpl();
-////		serverModifyView.setPresenter(new DeviceServerModifyView.Presenter() {
-////
-////			@Override
-////			public void onOK(SearchResultRow row, int state) {
-////				handleModifyServer(row, state);
-////				getView().getMirrorTable().clearSelection();
-////			}
-////
-////			@Override
-////			public void onCancel() {
-////				getView().getMirrorTable().clearSelection();
-////			}
-////
-////		});
-////
-////		deviceAddView = new DeviceServerDeviceAddViewImpl();
-////		deviceAddView.setPresenter(new DeviceServerDeviceAddView.Presenter() {
-////
-////			@Override
-////			public boolean onOK(String mark, String name, String conf, String ip, int bw, String sstate, String cabinet_name) {
-////				if (isEmpty(mark) || isEmpty(name)) {
-////					StringBuilder sb = new StringBuilder();
-////					sb.append(ADD_DEVICE_FAILURE_INVALID_ARGS[LAN_SELECT]).append("\n");
-////					sb.append("<mark='").append(mark).append("'").append(", ");
-////					sb.append("name='").append(name).append("', ");
-////					sb.append("conf='").append(conf).append("', ");
-////					sb.append("ip='").append(ip).append("', ");
-////					sb.append("bw='").append(bw).append("', ");
-////					sb.append("state='").append(sstate).append("', ");
-////					sb.append("cabinet_name='").append(cabinet_name).append("'>");
-////					Window.alert(sb.toString());
-////					return false;
-////				}
-////				int state = ServerState.ERROR.getValue();
-////				try {
-////					state = ServerState.getValue(sstate);
-////				}
-////				catch (Exception e) {
-////				}
-////				handleAddDevice(mark, name, conf, ip, bw, state, cabinet_name);
-////				return true;
-////			}
-////
-////            @Override
-////            public void lookupAreaNames() {
-////                getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<List<String>>() {
-////
-////                    @Override
-////                    public void onFailure(Throwable caught) {
-////                        if (caught instanceof EucalyptusServiceException) {
-////                            onBackendServiceFailure((EucalyptusServiceException)caught);
-////                        }
-////                    }
-////
-////                    @Override
-////                    public void onSuccess(List<String> area_name_list) {
-////                        showStatus(new ClientMessage("", "获取区域列表成功"));
-////                        deviceAddView.setAreaNameList(area_name_list);
-////                    }
-////                    
-////                });
-////            }
-////
-////            @Override
-////            public void lookupRoomNamesByAreaName(final String area_name) {
-////                if (isEmpty(area_name)) {
-////                    StringBuilder sb = new StringBuilder();
-////                    sb.append(new ClientMessage("", "区域名称非法")).append(" = '").append(area_name).append("'");
-////                    Window.alert(sb.toString());
-////                }
-////                else {
-////                    getBackendService().lookupDeviceRoomNamesByAreaName(getSession(), area_name, new AsyncCallback<List<String>>() {
-////
-////                        @Override
-////                        public void onFailure(Throwable caught) {
-////                            if (caught instanceof EucalyptusServiceException) {
-////                                onBackendServiceFailure((EucalyptusServiceException)caught);
-////                            }
-////                        }
-////
-////                        @Override
-////                        public void onSuccess(List<String> room_name_list) {
-////                            showStatus(new ClientMessage("", "获取机房列表成功"));
-////                            deviceAddView.setRoomNameList(area_name, room_name_list);
-////                        }
-////                        
-////                    });
-////                }
-////            }
-////
-////            @Override
-////            public void lookupCabinetNamesByRoomName(final String room_name) {
-////                if (isEmpty(room_name)) {
-////                    StringBuilder sb = new StringBuilder();
-////                    sb.append(new ClientMessage("", "机房名称非法")).append(" = '").append(room_name).append("'");
-////                    Window.alert(sb.toString());
-////                }
-////                else {
-////                    getBackendService().lookupCabinetNamesByRoomName(getSession(), room_name, new AsyncCallback<List<String>>() {
-////
-////                        @Override
-////                        public void onFailure(Throwable caught) {
-////                            if (caught instanceof EucalyptusServiceException) {
-////                                onBackendServiceFailure((EucalyptusServiceException)caught);
-////                            }
-////                        }
-////
-////                        @Override
-////                        public void onSuccess(List<String> cabinet_name_list) {
-////                            showStatus(new ClientMessage("", "获取机柜列表成功"));
-////                            deviceAddView.setCabinetNameList(room_name, cabinet_name_list);
-////                        }
-////                        
-////                    });
-////                }
-////            }
-////
-////		});
-////	}
-//	
-//	private void reloadLabels() {
-////		getBackendService().getDeviceServerCounts(getSession(), new AsyncCallback<Map<Integer, Integer>>() {
-////
-////			@Override
-////			public void onFailure(Throwable caught) {
-////				log(QUERY_COUNT_FAILURE[LAN_SELECT], caught);
-////			}
-////
-////			@Override
-////			public void onSuccess(Map<Integer, Integer> result) {
-////				ServerState.reset();
-////				for (Map.Entry<Integer, Integer> entry : result.entrySet()) {
-////					ServerState.setCount(ServerState.getServerState(entry.getKey()), entry.getValue());
-////				}
-////				getView().updateLabels();
-////			}
-////
-////		});
-//	}
-//	
-//	@Override
-//	public void setQueryState(ServerState state) {
-//		getView().clearSelection();
-//		this.queryState = state;
-//		this.range = new SearchRange(0, DeviceServerView.DEFAULT_PAGESIZE, -1, true);
-//		reloadCurrentRange();
-//	}
-//
-//	@Override
-//	public ServerState getQueryState() {
-//		return queryState;
-//	}
-//
-//	@Override
-//	public int getCounts(ServerState state) {
-//		return ServerState.getCount(state);
-//	}
-//
-//	private static final String[] QUERY_COUNT_FAILURE = {"", "获取资源失败"};
-//	private static final String[] QUERY_TABLE_FAILURE = {"", "获取列表失败"};
-//	private static final String[] UPDATE_SERVER_FAILURE = {"", "更新服务失败"};
-//	private static final String[] UPDATE_SERVER_SUCCESS = {"", "更新服务成功"};
-//	private static final String[] ADD_DEVICE_FAILURE_INVALID_ARGS = {"", "添加设备失败：无效的参数"};
-//	private static final String[] MODIFY_STATE_CONFIRM = {"", "确认对所选择服务器进行操作？"};
-//	private static final String[] ACTION_SELECTED_FAILURE = {"", "请选择操作对象"};
-//	private static final String[] DELETE_DEVICE_FAILURE = {"", "删除设备失败"};
-//	private static final String[] DELETE_DEVICE_SUCCESS = {"", "删除设备成功"};
-//	private static final String[] DELETE_DELETE_CONFIRM = {"", "确认删除所选择的 设备？"};
-//	private static final String[] DELETE_ALL_DEVICE_CONFIRM = {"", "确认删除所选择的 全部设备？"};
-//
-//	private void prepareModifyServerState(SearchResultRow row) {
-//		if (!Window.confirm(MODIFY_STATE_CONFIRM[LAN_SELECT])) {
-//			getView().getMirrorTable().clearSelection();
-//			return;
-//		}
-//		int state = -1;
-//		try {
-//			state = ServerState.getValue(row.getField(TABLE_COL_INDEX_STATE));
-//		}
-//		catch (Exception e) {
-//		}
-//		serverModifyView.popup(row, state);
-//	}
-//
-//	private void prepareDeleteDevice(SearchResultRow row) {
-//		if (!Window.confirm(DELETE_DELETE_CONFIRM[LAN_SELECT])) {
-//			getView().getMirrorTable().clearSelection();
-//			return;
-//		}
-//		List<SearchResultRow> list = new ArrayList<SearchResultRow>();
-//		list.add(row);
-//		handleDeleteDevice(list);
-//	}
-//
-//	@Override
-//	public void onMirrorSelectRow(SearchResultRow row) {
-//		if (row == null) {
-//			return;
-//		}
-//		switch (getView().getMirrorModeType()) {
-//		case MODIFY_STATE:
-//			prepareModifyServerState(row);
-//			return;
-//		case DELETE_DEVICE:
-//			prepareDeleteDevice(row);
-//			return;
-//		default:
-//			return;
-//		}
-//	}
-//
-//	private void handleAddDevice(String mark, String name, String conf, String ip, int bw, int state, String cabinet_name) {
-////		getBackendService().createDeviceServer(getSession(), mark, name, conf, ip, bw, state, cabinet_name,
-////		        new AsyncCallback<Void>() {
-////
-////			        @Override
-////			        public void onFailure(Throwable caught) {
-////                        if (caught instanceof EucalyptusServiceException) {
-////                            onBackendServiceFailure((EucalyptusServiceException)caught);
-////                        }
-////                        getView().clearSelection();
-////			        }
-////
-////			        @Override
-////			        public void onSuccess(Void result) {
-////                        showStatus(new ClientMessage("", "添加服务器成功"));
-////                        reloadCurrentRange();
-////                        getView().clearSelection();
-////			        }
-////
-////		        });
-//	}
-//
-//	private void handleModifyServer(SearchResultRow row, int state) {
-////		assert (row != null && getView().getMirrorModeType() == MirrorModeType.MODIFY_STATE);
-////		getBackendService().modifyDeviceServerState(getSession(), row, state, new AsyncCallback<SearchResultRow>() {
-////
-////			@Override
-////			public void onFailure(Throwable caught) {
-////				ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-////				log(UPDATE_SERVER_FAILURE[LAN_SELECT], caught);
-////			}
-////
-////			@Override
-////			public void onSuccess(SearchResultRow result) {
-////				if (result != null) {
-////					showStatus(UPDATE_SERVER_SUCCESS[LAN_SELECT]);
-////					if (getView().isMirrorMode()) {
-////						final int col = TABLE_COL_INDEX_SERVER_ID;
-////						result.setField(TABLE_COL_INDEX_CHECKBOX, "+");
-////						final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
-////
-////							@Override
-////							public boolean match(SearchResultRow row0, SearchResultRow row1) {
-////								return row0.getField(col).equals(row1.getField(col));
-////							}
-////
-////						};
-////						getView().getMirrorTable().updateRow(result, matcher);
-////					}
-////				}
-////				else {
-////					showStatus(UPDATE_SERVER_FAILURE[LAN_SELECT]);
-////				}
-////				reloadCurrentRange();
-////			}
-////
-////		});
-//	}
-//
-//	private void handleDeleteDevice(List<SearchResultRow> list) {
-////		DeviceServerView view = getView();
-////		assert (list.size() != 0 && view.getMirrorModeType() == MirrorModeType.DELETE_DEVICE);
-////		getBackendService().deleteDeviceServer(getSession(), list, new AsyncCallback<List<SearchResultRow>>() {
-////
-////			@Override
-////			public void onFailure(Throwable caught) {
-////				ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-////				log(DELETE_DEVICE_FAILURE[LAN_SELECT], caught);
-////			}
-////
-////			@Override
-////			public void onSuccess(List<SearchResultRow> result) {
-////				if (result != null) {
-////					showStatus(DELETE_DEVICE_SUCCESS[LAN_SELECT]);
-////					if (getView().isMirrorMode()) {
-////						final int col = TABLE_COL_INDEX_SERVER_ID;
-////						final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
-////
-////							@Override
-////							public boolean match(SearchResultRow row0, SearchResultRow row1) {
-////								return row0.getField(col).equals(row1.getField(col));
-////							}
-////
-////						};
-////						for (SearchResultRow row : result) {
-////							getView().getMirrorTable().deleteRow(row, matcher);
-////						}
-////					}
-////				}
-////				else {
-////					showStatus(DELETE_DEVICE_FAILURE[LAN_SELECT]);
-////				}
-////				reloadCurrentRange();
-////			}
-////
-////		});
-//	}
-
-//	private SearchResultRow copyRow(SearchResultRow row) {
-//		SearchResultRow tmp = row.copy();
-//		tmp.setField(TABLE_COL_INDEX_CHECKBOX, "");
-//		return tmp;
-//	}
-//
-//	@Override
-//	public void onModifyState() {
-//		Set<SearchResultRow> selected = getView().getSelectedSet();
-//		if (selected == null || selected.isEmpty()) {
-//			showStatus(ACTION_SELECTED_FAILURE[LAN_SELECT]);
-//			return;
-//		}
-//		List<SearchResultRow> list = new ArrayList<SearchResultRow>();
-//		for (SearchResultRow row : selected) {
-//			list.add(copyRow(row));
-//		}
-//		getView().openMirrorMode(MirrorModeType.MODIFY_STATE, sortSearchResultRow(list));
-//	}
-//
-//	@Override
-//	public void onDeleteDevice() {
-//		Set<SearchResultRow> selected = getView().getSelectedSet();
-//		if (selected == null || selected.isEmpty()) {
-//			showStatus(ACTION_SELECTED_FAILURE[LAN_SELECT]);
-//			return;
-//		}
-//		List<SearchResultRow> list = new ArrayList<SearchResultRow>();
-//		for (SearchResultRow row : selected) {
-//			list.add(copyRow(row));
-//		}
-//		getView().openMirrorMode(MirrorModeType.DELETE_DEVICE, sortSearchResultRow(list));
-//	}
-
 }

@@ -57,7 +57,7 @@ public class DeviceServerService {
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(true, "8%", new ClientMessage("", "IP地址"),
 	                TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "带宽"),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "带宽(KB)"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
 			new SearchResultFieldDesc(true, "8%", new ClientMessage("", "状态"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
@@ -190,7 +190,7 @@ public class DeviceServerService {
 			server_ip = "";
 		}
 		try {
-			dbproc.createServer(server_name, server_desc, server_ip, server_bw, server_state.getValue(), cabinet_name);
+			dbproc.createServer(server_name, server_desc, server_ip, server_bw, server_state, cabinet_name);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -213,7 +213,7 @@ public class DeviceServerService {
 		}
 	}
 	
-	public synchronized void modifyServer(Session session, int server_id,  String server_desc, String server_ip, int server_bw,
+	public synchronized void modifyServer(Session session, int server_id, String server_desc, String server_ip, int server_bw,
 			ServerState server_state) throws EucalyptusServiceException {
 		if (!getUser(session).isSystemAdmin()) {
 			throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
@@ -228,7 +228,23 @@ public class DeviceServerService {
 			server_ip = "";
 		}		
 		try {
-			dbproc.modifyServer(server_id, server_desc, server_ip, server_bw, server_state.getValue());
+			dbproc.modifyServer(server_id, server_desc, server_ip, server_bw, server_state);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new EucalyptusServiceException(new ClientMessage("", "修改服务器失败"));
+		}
+	}
+	
+	public synchronized void modifyServerState(Session session, int server_id, ServerState server_state) throws EucalyptusServiceException {
+		if (!getUser(session).isSystemAdmin()) {
+			throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
+		}
+		if (server_state == null) {
+			throw new EucalyptusServiceException(new ClientMessage("", "无效的服务器状态"));
+		}
+		try {
+			dbproc.updateServerState(server_id, server_state);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -241,7 +257,7 @@ public class DeviceServerService {
 			throw new EucalyptusServiceException(new ClientMessage("", "无效的服务器状态"));
 		}
 		try {
-			dbproc.updateServerState(server_id, server_state.getValue());
+			dbproc.updateServerState(server_id, server_state);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -424,7 +440,7 @@ class DeviceServerDBProcWrapper {
 		return doQuery(sb.toString());
 	}
 	
-	public void createServer(String server_name, String server_desc, String server_ip, int server_bw, int server_state, String cabinet_name) throws Exception {
+	public void createServer(String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, String cabinet_name) throws Exception {
 		DBTableCabinet CABINET = DBTable.CABINET;
 		DBTableServer SERVER = DBTable.SERVER;
 		DBStringBuilder sb = new DBStringBuilder();
@@ -441,7 +457,7 @@ class DeviceServerDBProcWrapper {
 		sb.appendString(server_desc).append(", ");
 		sb.appendString(server_ip).append(", ");
 		sb.append(server_bw).append(", ");
-		sb.append(server_state).append(", ");
+		sb.append(server_state.getValue()).append(", ");
 		sb.append("(SELECT ").append(CABINET.CABINET_ID).append(" FROM ").append(CABINET).append(" WHERE ").append(CABINET.CABINET_NAME).append(" = ").appendString(cabinet_name).append("), ");
 		sb.appendDate(new Date()).append(")");
 		doUpdate(sb.toString());
@@ -465,24 +481,24 @@ class DeviceServerDBProcWrapper {
 		doUpdate(sb.toString());
 	}
 	
-	public void modifyServer(int server_id, String server_desc, String server_ip, int server_bw, int server_state) throws Exception {
+	public void modifyServer(int server_id, String server_desc, String server_ip, int server_bw, ServerState server_state) throws Exception {
 		DBTableServer SERVER = DBTable.SERVER;
 		DBStringBuilder sb = new DBStringBuilder();
 		sb.append("UPDATE ").append(SERVER).append(" SET ");
 		sb.append(SERVER.SERVER_DESC).append(" = ").appendString(server_desc).append(", ");
 		sb.append(SERVER.SERVER_IP).append(" = ").appendString(server_ip).append(", ");
 		sb.append(SERVER.SERVER_BW).append(" = ").append(server_bw).append(", ");
-		sb.append(SERVER.SERVER_STATE).append(" = ").append(server_state).append(", ");
+		sb.append(SERVER.SERVER_STATE).append(" = ").append(server_state.getValue());
 		sb.append(" WHERE ");
 		sb.append(SERVER.SERVER_ID).append(" = ").append(server_id);
 		doUpdate(sb.toString());
 	}
 	
-	public void updateServerState(int server_id, int server_state) throws Exception {
+	public void updateServerState(int server_id, ServerState server_state) throws Exception {
 		DBTableServer SERVER = DBTable.SERVER;
 		DBStringBuilder sb = new DBStringBuilder();
 		sb.append("UPDATE ").append(SERVER).append(" SET ");
-		sb.append(SERVER.SERVER_STATE).append(" = ").append(server_state).append(", ");
+		sb.append(SERVER.SERVER_STATE).append(" = ").append(server_state.getValue());
 		sb.append(" WHERE ");
 		sb.append(SERVER.SERVER_ID).append(" = ").append(server_id);
 		doUpdate(sb.toString());

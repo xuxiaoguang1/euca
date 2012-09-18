@@ -40,8 +40,8 @@ public class DeviceRoomAddViewImpl extends DialogBox implements DeviceRoomAddVie
 	
 	@Override
 	public void popup() {
-		roomName.setValue("");
-		roomDesc.setValue("");
+		roomName.setText("");
+		roomDesc.setText("");
 		areaNameList.clear();
 		presenter.lookupAreaNames();
 		show();
@@ -58,27 +58,39 @@ public class DeviceRoomAddViewImpl extends DialogBox implements DeviceRoomAddVie
 	}
 	
 	private String getRoomName() {
-		String room_name = roomName.getValue();
-		if (room_name == null) {
-			return "";
-		}
-		return room_name;
+		return getInputText(roomName);
 	}
 	
 	private String getRoomDesc() {
-		String room_desc = roomDesc.getValue();
-		if (room_desc == null) {
-			return "";
-		}
-		return room_desc;
+		return getInputText(roomDesc);
 	}
 	
 	private String getAreaName() {
-		int index = areaNameList.getSelectedIndex();
-		if (index == -1) {
+		return getSelectedText(areaNameList);
+	}
+	
+	private String getInputText(TextBox textbox) {
+		String text = textbox.getText();
+		if (text == null) {
 			return "";
 		}
-		return areaNameList.getItemText(index);
+		return text;
+	}
+	
+	private String getInputText(TextArea textarea) {
+		String text = textarea.getText();
+		if (text == null) {
+			return "";
+		}
+		return text;
+	}
+	
+	private String getSelectedText(ListBox listbox) {
+	    int index = listbox.getSelectedIndex();
+	    if (index == -1) {
+	    	return "";
+	    }
+	    return listbox.getItemText(index);
 	}
 
 	@UiHandler("buttonOK")

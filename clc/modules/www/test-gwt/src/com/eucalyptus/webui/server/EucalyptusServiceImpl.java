@@ -799,6 +799,11 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     }
     
     @Override
+    public void modifyDeviceServerState(Session session, int server_id, ServerState server_state) throws EucalyptusServiceException {
+    	DeviceServerService.getInstance().modifyServerState(session, server_id, server_state);
+    }
+    
+    @Override
     public void deleteDeviceServer(Session session, List<Integer> server_ids) throws EucalyptusServiceException {
         DeviceServerService.getInstance().deleteServer(session, server_ids);
     }

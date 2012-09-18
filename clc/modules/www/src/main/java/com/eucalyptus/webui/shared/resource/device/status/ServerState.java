@@ -28,7 +28,7 @@ public class ServerState implements Serializable {
 		return value;
 	}
 	
-	public ServerState parse(String state) {
+	public static ServerState parse(String state) {
 		if (state.equals(INUSE.toString())) {
 			return INUSE;
 		}

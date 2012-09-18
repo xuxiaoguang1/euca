@@ -36,25 +36,33 @@ public class DeviceAreaAddViewImpl extends DialogBox implements DeviceAreaAddVie
 	
 	@Override
 	public void popup() {
-		areaName.setValue("");
-		areaDesc.setValue("");
+		areaName.setText("");
+		areaDesc.setText("");
 		show();
 	}
 	
 	private String getAreaName() {
-		String area_name = areaName.getValue();
-		if (area_name == null) {
-			return "";
-		}
-		return area_name;
+		return getInputText(areaName);
 	}
 	
 	private String getAreaDesc() {
-		String area_desc = areaDesc.getValue();
-		if (area_desc == null) {
+		return getInputText(areaDesc);
+	}
+	
+	private String getInputText(TextBox textbox) {
+		String text = textbox.getText();
+		if (text == null) {
 			return "";
 		}
-		return area_desc;
+		return text;
+	}
+	
+	private String getInputText(TextArea textarea) {
+		String text = textarea.getText();
+		if (text == null) {
+			return "";
+		}
+		return text;
 	}
 
 	@UiHandler("buttonOK")
