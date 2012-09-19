@@ -16,7 +16,7 @@ import com.eucalyptus.webui.server.QuickLinks;
 import com.eucalyptus.webui.shared.config.EnumLanguage;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.config.SysConfig;
-import com.google.gwt.thirdparty.guava.common.base.Strings;
+import com.google.common.base.Strings;
 
 public class SysConfParser {
 
