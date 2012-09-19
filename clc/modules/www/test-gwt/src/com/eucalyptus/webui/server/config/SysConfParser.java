@@ -1,5 +1,7 @@
 package com.eucalyptus.webui.server.config;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +37,11 @@ public class SysConfParser {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			SysConfParser.LOG.log(Level.ERROR, "SysConfParser parsing exception");
-			e.printStackTrace();
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			SysConfParser.LOG.log(Level.ERROR, sw.toString()); // stack trace as a string
+			
 		}
 	}
 	
