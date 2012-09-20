@@ -31,10 +31,12 @@ public class ImageViewImpl extends Composite implements ImageView {
   LayoutPanel tablePanel;
   
  
+  /*
   @UiHandler( "uploadButton" )
   void handleUploadButtonClick( ClickEvent e ) {
     this.presenter.onUploadImage();
   }
+  */
 
   @UiHandler( "bindButton" )
   void handleBindButtonClick( ClickEvent e ) {

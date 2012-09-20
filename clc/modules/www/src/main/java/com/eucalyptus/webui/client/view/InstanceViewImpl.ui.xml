@@ -13,6 +13,7 @@
     <g:DockLayoutPanel unit="PX">
         <g:north size="41">
         	<g:FlowPanel >
+        	    <!-- 
         		<g:Button text="产品体验"/>
         		<g:Button text="管理密钥"/>
         		<g:Button text="开机/关机" ui:field="stopButton"/>
@@ -21,6 +22,7 @@
         		<g:Button text="变更"/>
         		<g:Button text="删除"/>
         		<g:Button text="创建" ui:field="runButton"/>
+        		-->
         	</g:FlowPanel>
         </g:north>
         <g:center size="1000">

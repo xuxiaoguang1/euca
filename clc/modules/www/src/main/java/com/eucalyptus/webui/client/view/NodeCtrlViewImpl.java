@@ -30,6 +30,7 @@ public class NodeCtrlViewImpl extends Composite implements NodeCtrlView {
   @UiField
   LayoutPanel tablePanel;
   
+  /*
   @UiHandler("newButton")
   void onNewButtonClick(ClickEvent event) {
     this.presenter.onRegister();
@@ -38,6 +39,7 @@ public class NodeCtrlViewImpl extends Composite implements NodeCtrlView {
   void onDelButtonClick(ClickEvent event) {
     this.presenter.onDeregister();
   }
+  */
   
   private MultiSelectionModel<SearchResultRow> selectionModel;
   

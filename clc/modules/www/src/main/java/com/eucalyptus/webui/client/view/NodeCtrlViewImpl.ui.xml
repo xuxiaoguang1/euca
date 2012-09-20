@@ -26,6 +26,7 @@
                     <colgroup width="1px"/>
                     <tbody>
                         <tr>
+                        <!-- 
                             <td>
                                 <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="newButton">
                                     <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>注册
@@ -36,6 +37,7 @@
                                     <span class="{global.buttonCss.minus} {global.buttonCss.icon}"/>注销
                                 </g:Anchor>
                             </td>
+                        -->
                         </tr>
                     </tbody>
                 </table>

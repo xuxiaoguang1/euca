@@ -37,6 +37,7 @@ public class InstanceViewImpl extends Composite implements InstanceView {
   
   private Presenter presenter;
   
+  /*
   @UiHandler( "startButton" )
   void handleStartButtonClick( ClickEvent e ) {
     this.presenter.onStartInstances();
@@ -47,10 +48,12 @@ public class InstanceViewImpl extends Composite implements InstanceView {
     this.presenter.onTerminateInstances();
   }
   
+  
   @UiHandler( "runButton" )
   void handleRunButtonClick( ClickEvent e ) {
     this.presenter.onRunInstance();
   }
+  */
 
   public InstanceViewImpl( ) {
     initWidget( uiBinder.createAndBindUi( this ) );
