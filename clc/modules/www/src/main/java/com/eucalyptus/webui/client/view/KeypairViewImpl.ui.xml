@@ -31,11 +31,13 @@
                                     <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>添加
                                 </g:Anchor>                            
                             </td>
+                            <!-- 
                             <td>
                                 <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="importButton">
                                     <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>导入
                                 </g:Anchor>                            
                             </td>
+                             -->
                             
                             <td>
                                 <g:Anchor styleName="{global.buttonCss.negative} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="delButton">

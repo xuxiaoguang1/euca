@@ -26,11 +26,13 @@
                     <colgroup width="1px"/>
                     <tbody>
                         <tr>
+                            <!-- 
                             <td>
                                 <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="uploadButton">
                                     <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>上传镜像
                                 </g:Anchor>                            
                             </td>
+                             -->
                             <td>
                                 <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.right}" ui:field="bindButton">
                                     <span class="{global.buttonCss.plus} {global.buttonCss.icon}"/>绑定镜像

@@ -37,8 +37,10 @@ public class KeypairViewImpl extends Composite implements KeypairView {
   @UiField
   Anchor delButton;
 
+  /*
   @UiField
   Anchor importButton;
+  */
   
   @UiHandler( "newButton" )
   void handleNewButtonClick( ClickEvent e ) {
@@ -49,11 +51,13 @@ public class KeypairViewImpl extends Composite implements KeypairView {
   void handleDelButtonClick( ClickEvent e ) {
     this.presenter.onDelKeypair();
   }
-  
+ 
+  /*
   @UiHandler( "importButton" )
   void handleImportButtonClick( ClickEvent e ) {
     this.presenter.onImportKeypair();
   }
+  */
   
   
   private MultiSelectionModel<SearchResultRow> selectionModel;
