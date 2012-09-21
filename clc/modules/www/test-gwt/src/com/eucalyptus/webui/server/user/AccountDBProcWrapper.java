@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.eucalyptus.webui.client.service.SearchRange;
+import com.eucalyptus.webui.server.SorterProxy;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
@@ -13,6 +15,10 @@ import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 
 public class AccountDBProcWrapper {
+	
+	public AccountDBProcWrapper(SorterProxy sorterProxy) {
+		
+	}
 	public int addAccount(AccountInfo account) throws AccountSyncException {
 		if (account == null)
 			throw new AccountSyncException("Invalid account para for creating");
@@ -62,10 +68,16 @@ public class AccountDBProcWrapper {
 		}
 	}
 	
-	public ResultSetWrapper queryTotalAccounts() throws AccountSyncException {
+	public ResultSetWrapper queryTotalAccounts(SearchRange range) throws AccountSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
 		StringBuilder sql = queryAccountSql();
+		
+		if (this.sorterProxy != null) {
+			String orderBy = this.sorterProxy.orderBy(range);
+			if (orderBy != null)
+				sql.append(orderBy);
+		}
 		
 		System.out.println(sql.toString());
 		
@@ -271,4 +283,6 @@ public class AccountDBProcWrapper {
 		
 		return sql.toString();
 	}
+	
+	SorterProxy sorterProxy;
 }

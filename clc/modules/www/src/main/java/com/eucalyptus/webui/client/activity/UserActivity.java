@@ -10,7 +10,7 @@ import com.eucalyptus.webui.client.place.SearchPlace;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
+import com.eucalyptus.webui.client.service.ViewSearchTableClientConfig;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.GroupListView;
@@ -21,8 +21,10 @@ import com.eucalyptus.webui.client.view.UserView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.checker.ValueChecker;
 import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
+import com.eucalyptus.webui.shared.config.EnumService;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.dictionary.ConfDef;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
@@ -161,7 +163,7 @@ public class UserActivity extends AbstractSearchActivity
   
   @Override
   public int getPageSize() {
-	  return ViewSearchTableSizeConf.instance().getPageSize(UserActivity.class.getName());
+	  return ViewSearchTableClientConfig.instance().getPageSize(EnumService.USER_SRV);
   }
 
   @Override
@@ -700,30 +702,69 @@ public class UserActivity extends AbstractSearchActivity
 		SearchResultRow row = this.currentSelected.toArray(new SearchResultRow[0])[0];
 		
 		final UserInfo user = new UserInfo();
-		user.setId(Integer.parseInt(row.getField(0)));
-		user.setName(row.getField(4));
-		user.setTitle(row.getField(5));
-		user.setEmail(row.getField(6));
-		user.setMobile(row.getField(7));
-		String userState = row.getField(8);
-		String userType = row.getField(9);
 		
-		EnumState state = Enum2String.getInstance().getEnumState(userState);
-		EnumUserType type = Enum2String.getInstance().getEnumUserType(userType);
+		int userIdColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.USER_SRV, 
+																							DBTableColName.USER.ID);
+		if (userIdColIndex >= 0) 
+			user.setId(Integer.parseInt(row.getField(userIdColIndex)));
 		
-		user.setState(state);
-		user.setType(type);
+		int userNameColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.USER_SRV, 
+																							DBTableColName.USER.NAME);
+		if (userNameColIndex >= 0) 
+			user.setName(row.getField(userNameColIndex));
 		
-		String accountId = row.getField(10);
-		String groupId = row.getField(11);
+		int userTitleColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.USER_SRV, 
+																							DBTableColName.USER.TITLE);
+		if (userTitleColIndex >= 0) 
+			user.setTitle(row.getField(userTitleColIndex));
+		
+		
+		int userEmailColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.USER_SRV, 
+																							DBTableColName.USER.EMAIL);
+		if (userEmailColIndex >= 0) 
+			user.setEmail(row.getField(userEmailColIndex));
+		
+		int userMobileColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.USER_SRV, 
+																							DBTableColName.USER.MOBILE);
+		if (userMobileColIndex >= 0) 
+			user.setMobile(row.getField(userMobileColIndex));
+		
+		int userStateColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.USER_SRV, 
+																							DBTableColName.USER.STATE);
+		if (userStateColIndex >= 0) {
+			String userState = row.getField(userStateColIndex);
+			EnumState state = Enum2String.getInstance().getEnumState(userState);
+			user.setState(state);
+		}
+		
+		int userTypeColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.USER_SRV, 
+																							DBTableColName.USER.TYPE);
+		if (userTypeColIndex >= 0) {
+			String userType = row.getField(userTypeColIndex);
+			EnumUserType type = Enum2String.getInstance().getEnumUserType(userType);
+			user.setType(type);
+		}
+		
+		int accountIdColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.USER_SRV, 
+																							DBTableColName.USER.ACCOUNT_ID);
+		if (accountIdColIndex >= 0) {
+			String accountId = row.getField(accountIdColIndex);
+			if (!Strings.isNullOrEmpty(accountId))
+				user.setAccountId(Integer.parseInt(accountId));
+		}
+		
+		int groupIdColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.USER_SRV, 
+																							DBTableColName.USER.GROUP_ID);
+			if (groupIdColIndex >= 0) {
+				String groupId = row.getField(groupIdColIndex);
+				if (!Strings.isNullOrEmpty(groupId))
+					user.setGroupId(Integer.parseInt(groupId));
+			}
 
-		if (!Strings.isNullOrEmpty(accountId))
-			user.setAccountId(Integer.parseInt(accountId));
-		
-		if (!Strings.isNullOrEmpty(groupId))
-			user.setGroupId(Integer.parseInt(groupId));
-		
-		user.setPwd(row.getField(12));
+		int userPwdColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.USER_SRV, 
+																							DBTableColName.USER.PWD);
+			if (userPwdColIndex >= 0) 
+				user.setPwd(row.getField(userPwdColIndex));
 
 		window.display();
 		

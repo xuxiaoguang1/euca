@@ -10,13 +10,14 @@ import com.eucalyptus.webui.client.place.SearchPlace;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
+import com.eucalyptus.webui.client.service.ViewSearchTableClientConfig;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.KeyView;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.shared.config.EnumService;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -80,7 +81,7 @@ public class KeyActivity extends AbstractSearchActivity implements KeyView.Prese
   
   @Override
   public int getPageSize() {
-	  return ViewSearchTableSizeConf.instance().getPageSize(KeyActivity.class.getName());
+	  return ViewSearchTableClientConfig.instance().getPageSize(EnumService.KEY_SRV);
   }
 
   @Override

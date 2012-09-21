@@ -13,8 +13,7 @@ import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.server.config.SearchTableCol;
-import com.eucalyptus.webui.server.config.ViewSearchTableColConfig;
+import com.eucalyptus.webui.server.config.ViewSearchTableServerConfig;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.device.DeviceTemplateServiceProcImpl;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
@@ -23,7 +22,9 @@ import com.eucalyptus.webui.server.user.UserAppSyncException;
 import com.eucalyptus.webui.server.vm.VITDBProcWrapper;
 import com.eucalyptus.webui.server.vm.VITSyncException;
 import com.eucalyptus.webui.server.vm.VmImageType;
+import com.eucalyptus.webui.shared.config.EnumService;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
+import com.eucalyptus.webui.shared.config.SearchTableCol;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
@@ -71,10 +72,10 @@ public class UserAppServiceProcImpl {
 		  ResultSetWrapper rs;
 		  try {
 			  if (isRootAdmin) {
-				  rs = userAppDBProc.queryUserApp(0, 0, state);
+				  rs = userAppDBProc.queryUserApp(0, 0, state, range);
 			  }
 			  else {		  
-				  rs = userAppDBProc.queryUserApp(curUser.getAccountId(), curUser.getUserId(), state);
+				  rs = userAppDBProc.queryUserApp(curUser.getAccountId(), curUser.getUserId(), state, range);
 			  }
 		  } catch (UserAppSyncException e) {
 				// TODO Auto-generated catch block
@@ -170,15 +171,11 @@ public class UserAppServiceProcImpl {
 	  
 	  private SearchResult getSearchResult(boolean isRootAdmin, ResultSetWrapper rs, SearchRange range) {
 		  
-		  assert (range != null);
-		  
-		  final int sortField = range.getSortField( );
-		  
 		  DATA = resultSet2List(rs);
 		  
 		  int resultLength = Math.min( range.getLength( ), DATA.size( ) - range.getStart( ) );
 		  SearchResult result = new SearchResult( DATA.size( ), range );
-		  result.setDescs( ViewSearchTableColConfig.instance().getConfig(UserAppServiceProcImpl.class.getName(), LanguageSelection.instance().getCurLanguage())  );
+		  result.setDescs( ViewSearchTableServerConfig.instance().getConfig(EnumService.USER_APP_SRV, LanguageSelection.instance().getCurLanguage())  );
 		  result.setRows( DATA.subList( range.getStart( ), range.getStart( ) + resultLength ) );
 			
 		  return result;
@@ -193,7 +190,7 @@ public class UserAppServiceProcImpl {
 			  if (rs != null) {
 				  result = new ArrayList<SearchResultRow>();
 				  
-				  ArrayList<SearchTableCol> tableCols = ViewSearchTableColConfig.instance().getConfig(UserAppServiceProcImpl.class.getName());
+				  ArrayList<SearchTableCol> tableCols = ViewSearchTableServerConfig.instance().getConfig(EnumService.USER_APP_SRV);
 				  String[] dbFields = new String[tableCols.size()];
 				  
 				  for (int i=0; i<dbFields.length; i++)
@@ -279,8 +276,9 @@ public class UserAppServiceProcImpl {
 		  return str.toString();
 	  }
 	  
+	  private SorterProxy sorterProxy = new SorterProxy(EnumService.USER_APP_SRV);
+	  private UserAppDBProcWrapper userAppDBProc = new UserAppDBProcWrapper(this.sorterProxy);
 	  
-	  private UserAppDBProcWrapper userAppDBProc = new UserAppDBProcWrapper();
 	  private DeviceTemplateServiceProcImpl deviceTemDBProc = new DeviceTemplateServiceProcImpl();
 	  private VITDBProcWrapper vitDBProc = new VITDBProcWrapper();
 	  

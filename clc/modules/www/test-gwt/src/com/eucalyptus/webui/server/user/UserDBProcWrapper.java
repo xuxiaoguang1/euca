@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.eucalyptus.webui.client.service.SearchRange;
+import com.eucalyptus.webui.server.SorterProxy;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
@@ -17,6 +19,14 @@ import com.eucalyptus.webui.shared.user.UserInfo;
 import com.google.common.base.Strings;
 
 public class UserDBProcWrapper {
+	
+	public UserDBProcWrapper() {
+	}
+	
+	public UserDBProcWrapper(SorterProxy sorterProxy) {
+		this.sorterProxy = sorterProxy;
+	}
+	
 	public void addUser(UserInfo user) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		String sql = addUserSql(user);
@@ -126,10 +136,16 @@ public class UserDBProcWrapper {
 		}
 	}
 	
-	public ResultSetWrapper queryTotalUsers() throws UserSyncException {
+	public ResultSetWrapper queryTotalUsers(SearchRange range) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
 		StringBuilder sql = userAccountGroupViewSql();
+		
+		if (this.sorterProxy != null) {
+			String orderBy = this.sorterProxy.orderBy(range);
+			if (orderBy != null)
+				sql.append(orderBy);
+		}
 		
 		System.out.println(sql.toString());
 		
@@ -144,7 +160,7 @@ public class UserDBProcWrapper {
 		}
 	}
 	
-	public ResultSetWrapper queryUsersByGroupId(int groupId) throws UserSyncException {
+	public ResultSetWrapper queryUsersByGroupId(int groupId, SearchRange range) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
 		StringBuilder sql = userAccountGroupViewSql();
@@ -153,6 +169,12 @@ public class UserDBProcWrapper {
 		append(DBTableName.USER).append(".").append(DBTableColName.USER.GROUP_ID).
 		append(" = '").append(groupId).append("' ");
 		
+		if (this.sorterProxy != null) {
+			String orderBy = this.sorterProxy.orderBy(range);
+			if (orderBy != null)
+				sql.append(orderBy);
+		}
+		
 		System.out.println(sql.toString());
 		
 		try {
@@ -166,7 +188,7 @@ public class UserDBProcWrapper {
 		}
 	}
 	
-	public ResultSetWrapper queryUsersByAccountId(int accountId) throws UserSyncException {
+	public ResultSetWrapper queryUsersByAccountId(int accountId, SearchRange range) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
 		StringBuilder sql = userAccountGroupViewSql();
@@ -175,6 +197,12 @@ public class UserDBProcWrapper {
 		append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
 		append(" = '").append(accountId).append("' ");
 		
+		if (this.sorterProxy != null) {
+			String orderBy = this.sorterProxy.orderBy(range);
+			if (orderBy != null)
+				sql.append(orderBy);
+		}
+		
 		System.out.println(sql.toString());
 		
 		try {
@@ -188,7 +216,7 @@ public class UserDBProcWrapper {
 		}
 	}
 	
-	public ResultSetWrapper queryUsersByAccountIdExcludeGroupId(int accountId, int groupId) throws UserSyncException {
+	public ResultSetWrapper queryUsersByAccountIdExcludeGroupId(int accountId, int groupId, SearchRange range) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
 		StringBuilder sql = userAccountGroupViewSql();
@@ -207,6 +235,12 @@ public class UserDBProcWrapper {
 		append(DBTableName.USER).append(".").append(DBTableColName.USER.GROUP_ID).append(" = 0").
 		append(" )");
 		
+		if (this.sorterProxy != null) {
+			String orderBy = this.sorterProxy.orderBy(range);
+			if (orderBy != null)
+				sql.append(orderBy);
+		}
+		
 		System.out.println(sql.toString());
 		
 		try {
@@ -220,7 +254,7 @@ public class UserDBProcWrapper {
 		}
 	}
 	
-	public ResultSetWrapper queryUsersBy(int accountId, int userId, EnumUserType userType) throws UserSyncException {
+	public ResultSetWrapper queryUsersBy(int accountId, int userId, EnumUserType userType, SearchRange range) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
 		StringBuilder sql = userAccountGroupViewSql();
@@ -1003,4 +1037,6 @@ public class UserDBProcWrapper {
 		
 		return sql.toString();
 	}
+	
+	private SorterProxy sorterProxy;
 }

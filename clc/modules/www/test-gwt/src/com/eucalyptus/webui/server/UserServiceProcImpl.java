@@ -9,14 +9,15 @@ import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.server.config.SearchTableCol;
-import com.eucalyptus.webui.server.config.ViewSearchTableColConfig;
+import com.eucalyptus.webui.server.config.ViewSearchTableServerConfig;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.user.RandomPwdCreator;
 import com.eucalyptus.webui.server.user.UserDBProcWrapper;
 import com.eucalyptus.webui.server.user.UserSyncException;
+import com.eucalyptus.webui.shared.config.EnumService;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
+import com.eucalyptus.webui.shared.config.SearchTableCol;
 import com.eucalyptus.webui.shared.dictionary.ConfDef;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.EnumState;
@@ -71,14 +72,15 @@ public class UserServiceProcImpl {
 	   */
 	  public SearchResult lookupUser( LoginUserProfile curUser, String search, SearchRange range ) throws EucalyptusServiceException {
 		  boolean isRootAdmin = curUser.isSystemAdmin();
+		  assert (range != null);
 		  
 		  ResultSetWrapper rs;
 		   try {
 			  if (isRootAdmin) {
-					rs = userDBProc.queryTotalUsers();
+					rs = userDBProc.queryTotalUsers(range);
 			  }
 			  else {		  
-				  rs = userDBProc.queryUsersBy(curUser.getAccountId(), curUser.getUserId(), curUser.getUserType());
+				  rs = userDBProc.queryUsersBy(curUser.getAccountId(), curUser.getUserId(), curUser.getUserType(), range);
 			  }
 		  } catch (UserSyncException e) {
 				// TODO Auto-generated catch block
@@ -95,7 +97,7 @@ public class UserServiceProcImpl {
 		  ResultSetWrapper rs;
 		  
 		  try {
-			  rs = userDBProc.queryUsersByGroupId(groupId);
+			  rs = userDBProc.queryUsersByGroupId(groupId, range);
 		  } catch (UserSyncException e) {
 			  // TODO Auto-generated catch block
 			  e.printStackTrace();
@@ -113,7 +115,7 @@ public class UserServiceProcImpl {
 		  ResultSetWrapper rs;
 		  
 		  try {
-			  rs = userDBProc.queryUsersByAccountId(accountId);
+			  rs = userDBProc.queryUsersByAccountId(accountId, range);
 		  } catch (UserSyncException e) {
 			  // TODO Auto-generated catch block
 			  e.printStackTrace();
@@ -131,7 +133,7 @@ public class UserServiceProcImpl {
 		  ResultSetWrapper rs;
 		  
 		  try {
-			  rs = userDBProc.queryUsersByAccountIdExcludeGroupId(accountId, groupId);
+			  rs = userDBProc.queryUsersByAccountIdExcludeGroupId(accountId, groupId, range);
 		  } catch (UserSyncException e) {
 			  // TODO Auto-generated catch block
 			  e.printStackTrace();
@@ -146,22 +148,14 @@ public class UserServiceProcImpl {
 	  
 	  private SearchResult getSearchResult(ResultSetWrapper rs, SearchRange range) {
 		  
-		  assert (range != null);
-		  
-		  final int sortField = range.getSortField( );
-		  
 		  List<SearchResultRow> DATA = resultSet2List(rs);
 		  
 		  int resultLength = Math.min( range.getLength( ), DATA.size( ) - range.getStart( ) );
 		  SearchResult result = new SearchResult(DATA.size(), range );
-		  result.setDescs( ViewSearchTableColConfig.instance().getConfig(UserServiceProcImpl.class.getName(), LanguageSelection.instance().getCurLanguage()) );
+		  result.setDescs( ViewSearchTableServerConfig.instance().getConfig(EnumService.USER_SRV, LanguageSelection.instance().getCurLanguage()) );
 		  
 		  if (DATA.size() > 0)
 			  result.setRows( DATA.subList( range.getStart( ), range.getStart( ) + resultLength ) );
-		
-		  for ( SearchResultRow row : result.getRows( ) ) {
-			  System.out.println( "Row: " + row );
-		  }
 			
 		  return result;
 	  }
@@ -252,7 +246,7 @@ public class UserServiceProcImpl {
 			  if (rs != null) {
 				  result = new ArrayList<SearchResultRow>();
 				  
-				  ArrayList<SearchTableCol> tableCols = ViewSearchTableColConfig.instance().getConfig(UserServiceProcImpl.class.getName());
+				  ArrayList<SearchTableCol> tableCols = ViewSearchTableServerConfig.instance().getConfig(EnumService.USER_SRV);
 				  String[] dbFields = new String[tableCols.size()];
 				  
 				  for (int i=0; i<dbFields.length; i++)
@@ -288,5 +282,6 @@ public class UserServiceProcImpl {
 		  return result;
 	  }
 	  
-	  private UserDBProcWrapper userDBProc = new UserDBProcWrapper();
+	  private SorterProxy sorterProxy = new SorterProxy(EnumService.USER_SRV);
+	  private UserDBProcWrapper userDBProc = new UserDBProcWrapper(sorterProxy);
 }

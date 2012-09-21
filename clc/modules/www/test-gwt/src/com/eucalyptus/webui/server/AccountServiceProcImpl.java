@@ -3,20 +3,20 @@ package com.eucalyptus.webui.server;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
+import com.eucalyptus.webui.server.config.ViewSearchTableServerConfig;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.user.AccountDBProcWrapper;
 import com.eucalyptus.webui.server.user.AccountSyncException;
+import com.eucalyptus.webui.shared.config.EnumService;
+import com.eucalyptus.webui.shared.config.LanguageSelection;
+import com.eucalyptus.webui.shared.config.SearchTableCol;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
@@ -92,7 +92,7 @@ public class AccountServiceProcImpl {
 		  ResultSetWrapper rs;
 		  
 		  try {
-			  rs = accountDBProc.queryTotalAccounts();
+			  rs = accountDBProc.queryTotalAccounts(range);
 		  } catch (AccountSyncException e) {
 			  // TODO Auto-generated catch block
 			  e.printStackTrace();
@@ -129,7 +129,7 @@ public class AccountServiceProcImpl {
 		  ResultSetWrapper rsw;
 		  
 		  try {
-			  rsw = accountDBProc.queryTotalAccounts();
+			  rsw = accountDBProc.queryTotalAccounts(null);
 		  } catch (AccountSyncException e) {
 			  // TODO Auto-generated catch block
 			  e.printStackTrace();
@@ -168,14 +168,10 @@ public class AccountServiceProcImpl {
 	  
 	  private SearchResult getSearchResult(ResultSetWrapper rs, SearchRange range) {
 		  
-		  List<SearchResultFieldDesc> FIELDS = this.FIELDS;
-		  
-		  final int sortField = range.getSortField( );
-		  
 		  List<SearchResultRow> DATA = resultSet2List(rs);
 		  int resultLength = Math.min( range.getLength( ), DATA.size( ) - range.getStart( ) );
 		  SearchResult result = new SearchResult( DATA.size( ), range );
-		  result.setDescs( FIELDS );
+		  result.setDescs( ViewSearchTableServerConfig.instance().getConfig(EnumService.ACCOUNT_SRV, LanguageSelection.instance().getCurLanguage()));
 		  
 		  if (DATA.size() > 0)
 			  result.setRows( DATA.subList( range.getStart( ), range.getStart( ) + resultLength ) );
@@ -195,17 +191,31 @@ public class AccountServiceProcImpl {
 			  if (rs != null) {
 				 result = new ArrayList<SearchResultRow>();
 				  
+				 ArrayList<SearchTableCol> tableCols = ViewSearchTableServerConfig.instance().getConfig(EnumService.ACCOUNT_SRV);
+				 String[] dbFields = new String[tableCols.size()];
+				  
+				 for (int i=0; i<dbFields.length; i++)
+					 dbFields[i] = tableCols.get(i).getDbField();
+				  
 				 while (rs.next()) {
-					 result.add( new SearchResultRow(
-							  			Arrays.asList(rs.getString(DBTableColName.ACCOUNT.ID),
-							  							Integer.toString(index++),
-							  							rs.getString(DBTableColName.ACCOUNT.NAME),
-														rs.getString(DBTableColName.ACCOUNT.EMAIL),
-														rs.getString(DBTableColName.ACCOUNT.DES),
-														Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.ACCOUNT.STATE)),
-														rs.getString(DBTableColName.ACCOUNT.ID))
-						  								)
-								  	);
+					 ArrayList<String> rowValue = new ArrayList<String>();
+					 
+					 for (int i=0; i<dbFields.length; i++) {
+						  String value;
+						  
+						  if (!dbFields[i].equalsIgnoreCase("null")) {
+							  if (dbFields[i].equalsIgnoreCase(DBTableColName.ACCOUNT.STATE))
+								  value = Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.ACCOUNT.STATE));
+							  else
+								  value = rs.getString(dbFields[i]);
+						  }
+						  else
+							  value = Integer.toString(index++);
+					  			 
+						  rowValue.add(value);
+					 }
+					 
+					 result.add(new SearchResultRow(rowValue));
 				 }
 			  }
 			  
@@ -218,25 +228,8 @@ public class AccountServiceProcImpl {
 		  return result;
 	  }		
 	  
-	  private AccountDBProcWrapper accountDBProc = new AccountDBProcWrapper();
+	  private SorterProxy sorterProxy = new SorterProxy(EnumService.ACCOUNT_SRV);
+	  private AccountDBProcWrapper accountDBProc = new AccountDBProcWrapper(sorterProxy);
 	  
 	  ServletUtils servletUtils = new ServletUtils();
-	  
-	  private static final String[] TABLE_COL_TITLE_CHECKALL = {"Check All", "全选"};
-	  private static final String[] TABLE_COL_TITLE_NO = {"No.", "序号"};
-	  private static final String[] TABLE_COL_ACCOUNT_NAME = {"Account", "账户"};
-	  private static final String[] TABLE_COL_TITLE_EMAIL = {"Emial", "邮箱"};
-	  private static final String[] TABLE_COL_TITLE_STATE = {"State", "状态"};
-	  private static final String[] TABLE_COL_TITLE_DES = {"Description", "描述"};
-	  private static final String[] TABLE_COL_TITLE_ID = {"ID", "账户ID"};
-	  
-	  private static final List<SearchResultFieldDesc> FIELDS = Arrays.asList(
-				new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "5%", false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "5%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_ACCOUNT_NAME[1], true, "15%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_EMAIL[1], true, "25%", TableDisplay.MANDATORY, Type.LINK, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_DES[1], true, "40%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], true, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),				
-				new SearchResultFieldDesc( TABLE_COL_TITLE_ID[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true )
-				);
 }

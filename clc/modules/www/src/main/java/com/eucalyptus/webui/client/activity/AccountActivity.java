@@ -9,7 +9,7 @@ import com.eucalyptus.webui.client.place.AccountPlace;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.SearchResult;
-import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
+import com.eucalyptus.webui.client.service.ViewSearchTableClientConfig;
 import com.eucalyptus.webui.client.view.AccountView;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
@@ -17,13 +17,14 @@ import com.eucalyptus.webui.client.view.AccountAddView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.server.dictionary.DBTableColName;
+import com.eucalyptus.webui.shared.config.EnumService;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.dictionary.ConfDef;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.user.client.Window;
@@ -116,7 +117,7 @@ public class AccountActivity extends AbstractSearchActivity
   
   @Override
   public int getPageSize() {
-	  return ViewSearchTableSizeConf.instance().getPageSize(AccountActivity.class.getName());
+	  return ViewSearchTableClientConfig.instance().getPageSize(EnumService.ACCOUNT_SRV);
   }
 
   @Override
@@ -266,8 +267,6 @@ public class AccountActivity extends AbstractSearchActivity
 		for ( SearchResultRow row : currentSelected ) {
 			ids.add( row.getField(0) );
 		}
-		
-		final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 	  
 		clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, footerViewMsg + "...", 0 );
 		clientFactory.getBackendService( ).updateAccountState( clientFactory.getLocalSession( ).getSession( ), 
@@ -319,19 +318,29 @@ public class AccountActivity extends AbstractSearchActivity
 		SearchResultRow row = this.currentSelected.toArray(new SearchResultRow[0])[0];
 		
 		final AccountInfo account = new AccountInfo();
-		account.setId(Integer.parseInt(row.getField(0)));
-		account.setName(row.getField(2));
-		account.setEmail(row.getField(3));
-		account.setDescription(row.getField(4));
 		
-		String groupState = row.getField(5);		
-		EnumState state = Enum2String.getInstance().getEnumState(groupState);
-		account.setState(state);
+		int idColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.ACCOUNT_SRV, DBTableColName.ACCOUNT.ID);
+		if (idColIndex >= 0) 
+			account.setId(Integer.parseInt(row.getField(idColIndex)));
 		
-		String accountId = row.getField(6);
-
-		if (!Strings.isNullOrEmpty(accountId))
-			account.setId(Integer.parseInt(accountId));
+		int nameColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.ACCOUNT_SRV, DBTableColName.ACCOUNT.NAME);
+		if (nameColIndex >= 0) 
+			account.setName(row.getField(nameColIndex));
+		
+		int emailColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.ACCOUNT_SRV, DBTableColName.ACCOUNT.EMAIL);
+		if (emailColIndex >= 0) 
+			account.setEmail(row.getField(emailColIndex));
+		
+		int desColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.ACCOUNT_SRV, DBTableColName.ACCOUNT.DES);
+		if (desColIndex >= 0) 
+			account.setDescription(row.getField(desColIndex));
+		
+		int stateColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.ACCOUNT_SRV, DBTableColName.ACCOUNT.STATE);
+		if (stateColIndex >= 0) {
+			String state = row.getField(stateColIndex);
+			EnumState accountState = Enum2String.getInstance().getEnumState(state);
+			account.setState(accountState);
+		}
 		
 		final AccountAddView window = clientFactory.getAccountAddView();
   		window.setPresenter(this);

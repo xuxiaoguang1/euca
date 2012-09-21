@@ -1,9 +1,13 @@
-package com.eucalyptus.webui.server.config;
+package com.eucalyptus.webui.shared.config;
 
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 
-public class SearchTableCol {
+public class SearchTableCol implements java.io.Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	String[] title = null;
 	String width = null;
 	TableDisplay display = TableDisplay.NONE;
@@ -15,6 +19,9 @@ public class SearchTableCol {
 	boolean selected = false;
 	
 	String dbField = null;
+	
+	public SearchTableCol() {
+	}
 	
 	public SearchTableCol(String[] title, String width, TableDisplay display, Type text, String db_field,
 			boolean sortable, boolean editable, boolean hidden, boolean selected) {

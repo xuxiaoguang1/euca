@@ -5,8 +5,7 @@ import com.eucalyptus.webui.client.activity.WebAction;
 import com.eucalyptus.webui.client.place.ConfirmSignupPlace;
 import com.eucalyptus.webui.client.place.LoginPlace;
 import com.eucalyptus.webui.client.place.ResetPasswordPlace;
-import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
-import com.eucalyptus.webui.shared.config.EnumLanguage;
+import com.eucalyptus.webui.client.service.ViewSearchTableClientConfig;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.config.SysConfig;
 import com.eucalyptus.webui.shared.query.QueryType;
@@ -81,8 +80,8 @@ public class EucalyptusApp {
 			public void onSuccess(SysConfig result) {
 				// TODO Auto-generated method stub
 				LanguageSelection.instance().setCurLanguage(result.getLanguage());
-				
-				ViewSearchTableSizeConf.instance().setViewTableSizeConfig(result.getViewTableSizeConfig());
+				ViewSearchTableClientConfig.instance().setViewTableColConfig(result.getViewTableColConfig());
+				ViewSearchTableClientConfig.instance().setViewTableSizeConfig(result.getViewTableSizeConfig());
 			}});
   }
 }

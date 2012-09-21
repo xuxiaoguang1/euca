@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.eucalyptus.webui.client.service.SearchRange;
+import com.eucalyptus.webui.server.SorterProxy;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
@@ -19,6 +21,10 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class UserAppDBProcWrapper {
+	public UserAppDBProcWrapper(SorterProxy sorterProxy) {
+		this.sorterProxy = sorterProxy;
+	}
+	
 	public void addUserApp(UserApp userApp) throws UserAppSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		String sql = addUserAppSql(userApp);
@@ -147,7 +153,7 @@ public class UserAppDBProcWrapper {
 		return null;
 	}
 	
-	public ResultSetWrapper queryUserApp(int accountId, int userId, EnumUserAppStatus state) throws UserAppSyncException {
+	public ResultSetWrapper queryUserApp(int accountId, int userId, EnumUserAppStatus state, SearchRange range) throws UserAppSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
 		StringBuilder sql = userAppAccountUserViewSql();
@@ -178,6 +184,12 @@ public class UserAppDBProcWrapper {
 			append(DBTableColName.USER_APP.USER_ID).
 			append(" = ").
 			append(userId);
+		}
+		
+		if (this.sorterProxy != null) {
+			String orderBy = this.sorterProxy.orderBy(range);
+			if (orderBy != null)
+				sql.append(orderBy);
 		}
 		
 		System.out.println(sql.toString());
@@ -568,4 +580,5 @@ public class UserAppDBProcWrapper {
 	}
 	
 	SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
+	SorterProxy sorterProxy;
 }

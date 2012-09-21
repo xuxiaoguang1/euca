@@ -4,9 +4,84 @@
 	<language>
 		<index>CHINESE</index>
 	</language>
-	
+				
 	<searchtable_content>
-		<service name="com.eucalyptus.webui.server.UserServiceProcImpl">
+		<service name="ACCOUNT_SRV">
+			<col>
+				<title language="ENGLISH">Check All</title>
+				<title language="CHINESE">全选</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>BOOLEAN</text>
+				<editable>true</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>account_id</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">No.</title>
+				<title language="CHINESE">序号</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+			</col>
+				<col>
+				<title language="ENGLISH">Account</title>
+				<title language="CHINESE">账户</title>
+				<sortable>true</sortable>
+				<width>15%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>account_name</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Email</title>
+				<title language="CHINESE">邮箱</title>
+				<sortable>true</sortable>
+				<width>25%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>account_email</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Comment</title>
+				<title language="CHINESE">备注</title>
+				<sortable>false</sortable>
+				<width>40%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>account_descrip</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">State</title>
+				<title language="CHINESE">状态</title>
+				<sortable>true</sortable>
+				<width>10%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>account_state</db_field>
+			</col>
+		</service>
+		
+		<service name="USER_SRV">
 			<col>
 				<title language="ENGLISH">Check All</title>
 				<title language="CHINESE">全选</title>
@@ -165,7 +240,7 @@
 			</col>
 		</service>
 
-		<service name="com.eucalyptus.webui.server.UserAppServiceProcImpl">
+		<service name="USER_APP_SRV">
 			<col>
 				<title language="ENGLISH">Check All</title>
 				<title language="CHINESE">全选</title>
@@ -375,54 +450,64 @@
 	
 	<searchtable_size><!--searchtable_size in View-->
 		<view>
-			<activity_name>com.eucalyptus.webui.client.activity.UserActivity</activity_name>
+			<service_name>ACCOUNT_SRV</service_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<activity_name>com.eucalyptus.webui.client.activity.GroupActivity</activity_name>
+			<service_name>GROUP_SRV</service_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<activity_name>com.eucalyptus.webui.client.activity.AccountActivity</activity_name>
+			<service_name>GROUP_ADDING_SRV</service_name>
+			<size>15</size>
+		</view>
+
+		<view>
+			<service_name>GROUP_DETAIL_SRV</service_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<activity_name>com.eucalyptus.webui.client.activity.PolicyActivity</activity_name>
+			<service_name>POLICY_SRV</service_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<activity_name>com.eucalyptus.webui.client.activity.KeyActivity</activity_name>
+			<service_name>KEY_SRV</service_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<activity_name>com.eucalyptus.webui.client.activity.CertActivity</activity_name>
+			<service_name>CERT_SRV</service_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<activity_name>com.eucalyptus.webui.client.activity.UserAppActivity</activity_name>
+			<service_name>USER_APP_SRV</service_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<activity_name>com.eucalyptus.webui.client.activity.UserActivity</activity_name>
+			<service_name>USER_APP_ADDING_SRV</service_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<activity_name>com.eucalyptus.webui.client.activity.UserActivity</activity_name>
+			<service_name>USER_SRV</service_name>
 			<size>15</size>
 		</view>
 		
 		<view>
-			<activity_name>com.eucalyptus.webui.client.activity.UserActivity</activity_name>
+			<service_name>KEYPAIR_SRV</service_name>
 			<size>15</size>
 		</view>
+		
+		<view>
+			<service_name>CPU_STAT_SRV</service_name>
+			<size>15</size>
+		</view>,
 		
 	</searchtable_size>
 

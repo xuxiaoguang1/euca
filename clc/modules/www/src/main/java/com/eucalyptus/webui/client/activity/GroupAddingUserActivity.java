@@ -7,8 +7,9 @@ import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.client.place.SearchPlace;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
-import com.eucalyptus.webui.client.service.ViewSearchTableSizeConf;
+import com.eucalyptus.webui.client.service.ViewSearchTableClientConfig;
 import com.eucalyptus.webui.client.view.HasValueWidget;
+import com.eucalyptus.webui.shared.config.EnumService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class GroupAddingUserActivity extends AbstractSearchActivity {
@@ -64,7 +65,7 @@ public class GroupAddingUserActivity extends AbstractSearchActivity {
 	
 	@Override
 	public int getPageSize() {
-		return ViewSearchTableSizeConf.instance().getPageSize(GroupAddingUserActivity.class.getName());
+		return ViewSearchTableClientConfig.instance().getPageSize(EnumService.GROUP_ADDING_SRV);
 	}
 
 	@Override

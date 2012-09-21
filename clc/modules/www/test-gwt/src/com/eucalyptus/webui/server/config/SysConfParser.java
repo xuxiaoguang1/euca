@@ -16,7 +16,9 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.server.QuickLinks;
 import com.eucalyptus.webui.shared.config.EnumLanguage;
+import com.eucalyptus.webui.shared.config.EnumService;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
+import com.eucalyptus.webui.shared.config.SearchTableCol;
 import com.eucalyptus.webui.shared.config.SysConfig;
 import com.google.common.base.Strings;
 
@@ -291,8 +293,11 @@ public class SysConfParser {
 				}
 			}
 			
-			if (!Strings.isNullOrEmpty(srvName) && tableCol.size()>0)
-				ViewSearchTableColConfig.instance().setConfig(srvName, tableCol);
+			if (!Strings.isNullOrEmpty(srvName) && tableCol.size()>0) {
+				EnumService srv = EnumService.valueOf(srvName);
+				ViewSearchTableServerConfig.instance().setConfig(srv, tableCol);
+				this.sysConfig.setViewTableColConfig(srv, tableCol);
+			}
 		}
 	}
 	
@@ -309,7 +314,7 @@ public class SysConfParser {
 				List<?> eles = child.elements();
 				
 				Iterator<?> propIter = eles.iterator();
-				String viewName = null;
+				String srvName = null;
 				String tableSize = null;
 				
 				while (propIter.hasNext()) {
@@ -320,16 +325,18 @@ public class SysConfParser {
 					if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(data))
 						continue;
 					
-					if (name.equalsIgnoreCase(TAG_TABLESIZE_VIEW_ACTIVITYNAME)) {
-						viewName = data;
+					if (name.equals(TAG_TABLESIZE_VIEW_SRVNAME)) {
+						srvName = data;
 					}
 					else if (name.equalsIgnoreCase(TAG_TABLESIZE_VIEW_SIZE)) {
 						tableSize = data;
 					}
 				}
 				
-				if (!Strings.isNullOrEmpty(viewName) && !Strings.isNullOrEmpty(tableSize))
-					this.sysConfig.getViewTableSizeConfig().put(viewName.toLowerCase(), tableSize);
+				if (!Strings.isNullOrEmpty(srvName) && !Strings.isNullOrEmpty(tableSize)) {
+					EnumService srv = EnumService.valueOf(srvName);
+					this.sysConfig.setViewTableSizeConfig(srv, tableSize);
+				}
 			}
 		}
 	}
@@ -354,7 +361,7 @@ public class SysConfParser {
 	
 	private static String TAG_TABLESIZE = "searchtable_size";
 	private static String TAG_TABLESIZE_VIEW = "view";
-	private static String TAG_TABLESIZE_VIEW_ACTIVITYNAME = "activity_name";
+	private static String TAG_TABLESIZE_VIEW_SRVNAME = "service_name";
 	private static String TAG_TABLESIZE_VIEW_SIZE = "size";
 	
 	private static String TAG_LINKS = "links";

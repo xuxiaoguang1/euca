@@ -1,12 +1,10 @@
 package com.eucalyptus.webui.server;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 import com.eucalyptus.webui.client.service.QuickLink;
 import com.eucalyptus.webui.client.service.QuickLinkTag;
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
-import com.eucalyptus.webui.shared.checker.InvalidValueException;
 import com.eucalyptus.webui.shared.query.QueryType;
 import com.eucalyptus.webui.shared.user.EnumUserType;
 
