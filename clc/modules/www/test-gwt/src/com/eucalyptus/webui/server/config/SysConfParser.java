@@ -61,6 +61,8 @@ public class SysConfParser {
 			
 			if (tag.equalsIgnoreCase(SysConfParser.TAG_LAN))
 				parseLanguageConf(parent);
+			else if (tag.equalsIgnoreCase(SysConfParser.TAG_DB))
+				parseDBConf(parent);
 			else if (tag.equalsIgnoreCase(TAG_LINKS))
 				parseLinks(parent);
 			else if (tag.equalsIgnoreCase(TAG_LINKCONFIG))
@@ -79,7 +81,7 @@ public class SysConfParser {
 		
 		while (childIter.hasNext()) {
 			Element child = (Element) childIter.next();
-			System.out.println(child.getName());
+			
 			if (child.getName().equalsIgnoreCase(TAG_LAN_INDEX)) {
 				Object value = child.getData();
 				
@@ -89,6 +91,34 @@ public class SysConfParser {
 					LanguageSelection.instance().setCurLanguage(lan);
 				}
 			}
+		}
+	}
+	
+	private void parseDBConf(Element node) {
+		List<?> childs = node.elements();
+		
+		Iterator<?> childIter = childs.iterator();
+		
+		Object url = null;
+		Object usr = null;
+		Object pwd = null;
+		
+		while (childIter.hasNext()) {
+			Element child = (Element) childIter.next();
+			
+			if (child.getName().equalsIgnoreCase(TAG_DB_URL)) {
+				url = child.getData();
+			}
+			else if (child.getName().equalsIgnoreCase(TAG_DB_USR)) {
+				usr = child.getData();
+			}
+			else if (child.getName().equalsIgnoreCase(TAG_DB_PWD)) {
+				pwd = child.getData();
+			}
+		}
+		
+		if (url != null && usr != null && pwd != null) {
+			DBConfig.instance().set(url.toString(), usr.toString(), pwd.toString());
 		}
 	}
 	
@@ -343,6 +373,11 @@ public class SysConfParser {
 	
 	private static String TAG_LAN = "language";
 	private static String TAG_LAN_INDEX = "index";
+	
+	private static String TAG_DB = "db";
+	private static String TAG_DB_URL = "url";
+	private static String TAG_DB_USR = "usr";
+	private static String TAG_DB_PWD = "pwd";
 
 	private static String TAG_TABLECOL = "searchtable_content";
 	private static String TAG_TABLECOL_SRV = "service";

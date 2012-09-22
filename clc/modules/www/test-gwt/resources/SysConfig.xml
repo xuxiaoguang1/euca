@@ -4,6 +4,12 @@
 	<language>
 		<index>CHINESE</index>
 	</language>
+	
+	<db>
+		<url>jdbc:mysql://127.0.0.1:3306/eucalyptus</url>
+		<usr>root</usr>
+		<pwd>root</pwd>
+	</db>
 				
 	<searchtable_content>
 		<service name="ACCOUNT_SRV">

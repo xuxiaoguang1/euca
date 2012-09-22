@@ -35,7 +35,7 @@ package com.eucalyptus.webui.server.db;
 
 import java.sql.*;
 
-import com.eucalyptus.webui.shared.dictionary.ConfDef;
+import com.eucalyptus.webui.server.config.DBConfig;
 
 public class DBProcWrapper {
 	private final static DBProcWrapper dbProc = new DBProcWrapper();
@@ -62,7 +62,7 @@ public class DBProcWrapper {
 	 */
 	public void update(String sql) throws SQLException {
 		try {
-			Connection conn = DriverManager.getConnection(ConfDef.DB_URL, ConfDef.DB_USR, ConfDef.DB_PWD);
+			Connection conn = DriverManager.getConnection(DBConfig.instance().url(), DBConfig.instance().usr(), DBConfig.instance().pwd());
 			
 			if (!conn.isClosed()) {
 				Statement statement = conn.createStatement();
@@ -79,7 +79,7 @@ public class DBProcWrapper {
 	public int insertAndGetInsertId(String sql) throws SQLException {
 		int insertId = 0;
 		try {
-			Connection conn = DriverManager.getConnection(ConfDef.DB_URL, ConfDef.DB_USR, ConfDef.DB_PWD);
+			Connection conn = DriverManager.getConnection(DBConfig.instance().url(), DBConfig.instance().usr(), DBConfig.instance().pwd());
 			
 			if (!conn.isClosed()) {
 				Statement statement = conn.createStatement();
@@ -104,7 +104,7 @@ public class DBProcWrapper {
 	 */
 	public ResultSetWrapper query(String sql) throws SQLException {
 		try {
-			Connection conn = DriverManager.getConnection(ConfDef.DB_URL, ConfDef.DB_USR, ConfDef.DB_PWD);
+			Connection conn = DriverManager.getConnection(DBConfig.instance().url(), DBConfig.instance().usr(), DBConfig.instance().pwd());
 			
 			if (!conn.isClosed()) {
 				Statement statement = conn.createStatement();
