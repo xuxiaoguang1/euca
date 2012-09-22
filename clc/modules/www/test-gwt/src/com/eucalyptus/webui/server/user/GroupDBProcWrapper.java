@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.eucalyptus.webui.client.service.SearchRange;
+import com.eucalyptus.webui.server.SorterProxy;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
@@ -14,6 +16,11 @@ import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.google.common.base.Strings;
 
 public class GroupDBProcWrapper {
+	
+	public GroupDBProcWrapper(SorterProxy sorterProxy) {
+		this.sorterProxy = sorterProxy;
+	}
+	
 	public void addGroup(GroupInfo group) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		String sql = addGroupSql(group);
@@ -40,8 +47,8 @@ public class GroupDBProcWrapper {
 	 * 
 	 * @return result set wrapper
 	 */
-	public ResultSetWrapper queryTotalGroups() {
-		return doQueryTotalGroups(0);
+	public ResultSetWrapper queryTotalGroups(SearchRange range) {
+		return doQueryTotalGroups(0, range);
 	}
 	
 	/**
@@ -49,8 +56,8 @@ public class GroupDBProcWrapper {
 	 * @param accountId
 	 * @return result set wrapper
 	 */
-	public ResultSetWrapper queryGroupsBy(int accountId) {
-		return doQueryTotalGroups(accountId);
+	public ResultSetWrapper queryGroupsBy(int accountId, SearchRange range) {
+		return doQueryTotalGroups(accountId, range);
 	}
 	
 	/**
@@ -79,14 +86,20 @@ public class GroupDBProcWrapper {
 	 * @param accountId
 	 * @return result set wrapper
 	 */
-	public ResultSetWrapper listTotalGroups() throws UserSyncException {
+	public ResultSetWrapper listTotalGroups(SearchRange range) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
-		String sql = listGroupsSql(0);
+		StringBuilder sql = listGroupsSql(0);
+		
+		if (this.sorterProxy != null) {
+			String orderBy = this.sorterProxy.orderBy(range);
+			if (orderBy != null)
+				sql.append(orderBy);
+		}
 		
 		ResultSetWrapper result;
 		try {
-			result = dbProc.query(sql);
+			result = dbProc.query(sql.toString());
 			return result;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -95,14 +108,20 @@ public class GroupDBProcWrapper {
 		}
 	}
 	
-	public ResultSetWrapper listGroupsBy(int accountId) throws UserSyncException {
+	public ResultSetWrapper listGroupsBy(int accountId, SearchRange range) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
-		String sql = listGroupsSql(accountId);
+		StringBuilder sql = listGroupsSql(accountId);
+		
+		if (this.sorterProxy != null) {
+			String orderBy = this.sorterProxy.orderBy(range);
+			if (orderBy != null)
+				sql.append(orderBy);
+		}
 		
 		ResultSetWrapper result;
 		try {
-			result = dbProc.query(sql);
+			result = dbProc.query(sql.toString());
 			return result;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -185,7 +204,7 @@ public class GroupDBProcWrapper {
 		}
 	}
 	
-	private ResultSetWrapper doQueryTotalGroups(int accountId) {
+	private ResultSetWrapper doQueryTotalGroups(int accountId, SearchRange range) {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
 		StringBuilder sql = new StringBuilder("SELECT ").
@@ -219,6 +238,12 @@ public class GroupDBProcWrapper {
 			append(" = '").
 			append(accountId).
 			append("'");
+		}
+		
+		if (this.sorterProxy != null) {
+			String orderBy = this.sorterProxy.orderBy(range);
+			if (orderBy != null)
+				sql.append(orderBy);
 		}
 		System.out.println(sql.toString());
 		
@@ -362,7 +387,7 @@ public class GroupDBProcWrapper {
 		return sql.toString();
 	}
 
-	private String listGroupsSql(int accountId) {
+	private StringBuilder listGroupsSql(int accountId) {
 		StringBuilder sql = new StringBuilder("SELECT * FROM ").
 		append(DBTableName.GROUP).
 		append(" WHERE ").
@@ -377,7 +402,7 @@ public class GroupDBProcWrapper {
 			append("'");
 		}
 		
-		return sql.toString();
+		return sql;
 	}
 	
 	private String updateGroupStateSql(ArrayList<String> ids, EnumState state) {
@@ -415,4 +440,6 @@ public class GroupDBProcWrapper {
 	
 		return sql.toString();
 	}
+	
+	SorterProxy sorterProxy;
 }

@@ -31,7 +31,7 @@
 				<selected>false</selected>
 				<db_field>NULL</db_field>
 			</col>
-				<col>
+			<col>
 				<title language="ENGLISH">Account</title>
 				<title language="CHINESE">账户</title>
 				<sortable>true</sortable>
@@ -81,6 +81,93 @@
 			</col>
 		</service>
 		
+		<service name="GROUP_SRV">
+			<col>
+				<title language="ENGLISH">Check All</title>
+				<title language="CHINESE">全选</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>BOOLEAN</text>
+				<editable>true</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>group_id</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">No.</title>
+				<title language="CHINESE">序号</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Account</title>
+				<title language="CHINESE">账户</title>
+				<sortable>true</sortable>
+				<width>20%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>account_name</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Group</title>
+				<title language="CHINESE">组</title>
+				<sortable>true</sortable>
+				<width>20%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>group_name</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">Comment</title>
+				<title language="CHINESE">备注</title>
+				<sortable>false</sortable>
+				<width>40%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>group_descrip</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">State</title>
+				<title language="CHINESE">状态</title>
+				<sortable>true</sortable>
+				<width>10%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>group_state</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">AccountID</title>
+				<title language="CHINESE">账户ID</title>
+				<sortable>false</sortable>
+				<width>0%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>true</hidden>
+				<selected>false</selected>
+				<db_field>account_id</db_field>
+			</col>
+		</service>
+				
 		<service name="USER_SRV">
 			<col>
 				<title language="ENGLISH">Check All</title>

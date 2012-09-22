@@ -3,22 +3,22 @@ package com.eucalyptus.webui.server;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.client.session.Session;
+import com.eucalyptus.webui.server.config.ViewSearchTableServerConfig;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.user.GroupDBProcWrapper;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.server.user.UserSyncException;
+import com.eucalyptus.webui.shared.config.EnumService;
+import com.eucalyptus.webui.shared.config.LanguageSelection;
+import com.eucalyptus.webui.shared.config.SearchTableCol;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
@@ -92,35 +92,26 @@ public class GroupServiceProcImpl {
 		boolean isRootAdmin = curUser.isSystemAdmin();
 		
 		ResultSetWrapper rs;
-		List<SearchResultFieldDesc> FIELDS;
 		  
 		if (isRootAdmin) {
-			rs = groupDBProc.queryTotalGroups();
-			FIELDS = GroupServiceProcImpl.FIELDS_ROOT;
+			rs = groupDBProc.queryTotalGroups(range);
 		}
 		else {		  
-			rs = groupDBProc.queryGroupsBy(curUser.getAccountId());
-			FIELDS = GroupServiceProcImpl.FIELDS_NONROOT;
+			rs = groupDBProc.queryGroupsBy(curUser.getAccountId(), range);
 		}
 		  
 		if (rs == null)
 			return null;
-		
-		final int sortField = range.getSortField( );
 		  
-		List<SearchResultRow> DATA = resultSet2List(isRootAdmin, rs);
+		List<SearchResultRow> DATA = resultSet2List(rs);
 		  
 		int resultLength = Math.min( range.getLength( ), DATA.size( ) - range.getStart( ) );
 		SearchResult result = new SearchResult(DATA.size(), range );
-		result.setDescs( FIELDS );
+		result.setDescs( ViewSearchTableServerConfig.instance().getConfig(EnumService.GROUP_SRV, LanguageSelection.instance().getCurLanguage()) );
 	  
 		if (DATA.size() > 0)
 			result.setRows( DATA.subList( range.getStart( ), range.getStart( ) + resultLength ) );
 		
-		for ( SearchResultRow row : result.getRows( ) ) {
-			System.out.println( "Row: " + row );
-		}
-			
 		return result;
 	}
 	
@@ -133,10 +124,10 @@ public class GroupServiceProcImpl {
 		
 		try {  
 			if (isRootAdmin) {
-				rs = groupDBProc.listTotalGroups();
+				rs = groupDBProc.listTotalGroups(null);
 			}
 			else {		  
-				rs = groupDBProc.listGroupsBy(curUser.getAccountId());
+				rs = groupDBProc.listGroupsBy(curUser.getAccountId(), null);
 			}
 			
 			ResultSet resultSet = rs.getResultSet();
@@ -180,9 +171,7 @@ public class GroupServiceProcImpl {
 		}
 	}
 	  
-	private GroupDBProcWrapper groupDBProc = new GroupDBProcWrapper();
-	  
-	private List<SearchResultRow> resultSet2List(boolean isRootView, ResultSetWrapper rsWrapper) {
+	private List<SearchResultRow> resultSet2List(ResultSetWrapper rsWrapper) {
 	
 		ResultSet rs = rsWrapper.getResultSet();
 		int index = 1;
@@ -190,18 +179,32 @@ public class GroupServiceProcImpl {
 		try {
 			if (rs != null) {
 				result = new ArrayList<SearchResultRow>();
+				
+				ArrayList<SearchTableCol> tableCols = ViewSearchTableServerConfig.instance().getConfig(EnumService.GROUP_SRV);
+				String[] dbFields = new String[tableCols.size()];
+				  
+				for (int i=0; i<dbFields.length; i++)
+					dbFields[i] = tableCols.get(i).getDbField();
 				  
 				while (rs.next()) {
-					  if (isRootView) {
-						  result.add( new SearchResultRow(Arrays.asList(rs.getString(DBTableColName.GROUP.ID),
-								  							Integer.toString(index++),
-								  							rs.getString(DBTableColName.ACCOUNT.NAME),
-								  							rs.getString(DBTableColName.GROUP.NAME),
-															rs.getString(DBTableColName.GROUP.DESCRIPTION),
-															Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.GROUP.STATE)),
-															rs.getString(DBTableColName.GROUP.ACCOUNT_ID))
-								  							));
-					  }
+					ArrayList<String> rowValue = new ArrayList<String>();
+					 
+					for (int i=0; i<dbFields.length; i++) {
+						String value;
+						  
+						if (!dbFields[i].equalsIgnoreCase("null")) {
+							if (dbFields[i].equalsIgnoreCase(DBTableColName.GROUP.STATE))
+								value = Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.GROUP.STATE));
+							else
+								value = rs.getString(dbFields[i]);
+						}
+						else
+							value = Integer.toString(index++);
+					  			 
+						rowValue.add(value);
+					}
+					
+					result.add( new SearchResultRow(rowValue));
 				  }
 			}
 
@@ -212,33 +215,8 @@ public class GroupServiceProcImpl {
 		  }
 		  
 		  return result;
-	  }
+	}
 	
-	  private static final String[] TABLE_COL_TITLE_CHECKALL = {"Check All", "全选"};
-	  private static final String[] TABLE_COL_TITLE_NO = {"No.", "序号"};
-	  private static final String[] TABLE_COL_TITLE_ACCOUNT_NAME = {"Account", "账户"};
-	  private static final String[] TABLE_COL_TITLE_NAME = {"Group name", "组名"};
-	  private static final String[] TABLE_COL_TITLE_DESCRIPTION = {"Description", "备注"};
-	  private static final String[] TABLE_COL_TITLE_STATE = {"State", "状态"};
-	  private static final String[] TABLE_COL_TITLE_ACCOUNT_ID = {"AccountId", "账户ID"};
-	
-	  private static final List<SearchResultFieldDesc> FIELDS_ROOT = Arrays.asList(
-				new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "10%", false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_NAME[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_DESCRIPTION[1], false, "30%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-				new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_ID[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true )					
-			);
-	  
-	  private static final List<SearchResultFieldDesc> FIELDS_NONROOT = Arrays.asList(
-			  	new SearchResultFieldDesc( TABLE_COL_TITLE_CHECKALL[1], "10%", false ),
-			  	new SearchResultFieldDesc( TABLE_COL_TITLE_NO[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-			  	new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_NAME[1], true, "20%", TableDisplay.MANDATORY, Type.TEXT, false, true ),
-			  	new SearchResultFieldDesc( TABLE_COL_TITLE_NAME[1], true, "25%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-			  	new SearchResultFieldDesc( TABLE_COL_TITLE_DESCRIPTION[1], false, "35%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-			  	new SearchResultFieldDesc( TABLE_COL_TITLE_STATE[1], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false ),
-			  	new SearchResultFieldDesc( TABLE_COL_TITLE_ACCOUNT_ID[1], true, "0%", TableDisplay.MANDATORY, Type.TEXT, false, true )
-			);
+	private SorterProxy sorterProxy = new SorterProxy(EnumService.GROUP_SRV);
+	private GroupDBProcWrapper groupDBProc = new GroupDBProcWrapper(sorterProxy);
 }

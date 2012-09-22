@@ -18,6 +18,7 @@ import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.client.view.InputView;
+import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.config.EnumService;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
@@ -473,19 +474,30 @@ public class GroupActivity extends AbstractSearchActivity
 		SearchResultRow row = this.currentSelected.toArray(new SearchResultRow[0])[0];
 		
 		final GroupInfo group = new GroupInfo();
-		group.setId(Integer.parseInt(row.getField(0)));
-		group.setName(row.getField(3));
-		group.setDescription(row.getField(4));
 		
-		String groupState = row.getField(5);		
-		EnumState state = Enum2String.getInstance().getEnumState(groupState);
-		group.setState(state);
+		int idColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.GROUP_SRV, DBTableColName.GROUP.ID);
+		if (idColIndex >= 0) 
+			group.setId(Integer.parseInt(row.getField(idColIndex)));
 		
-		String accountId = row.getField(6);
-
-		if (!Strings.isNullOrEmpty(accountId))
-			group.setAccountId(Integer.parseInt(accountId));
+		int nameColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.GROUP_SRV, DBTableColName.GROUP.NAME);
+		if (nameColIndex >= 0) 
+			group.setName(row.getField(nameColIndex));
 		
+		int desColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.GROUP_SRV, DBTableColName.GROUP.DESCRIPTION);
+		if (desColIndex >= 0) 
+			group.setDescription(row.getField(desColIndex));
+		
+		int stateColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.GROUP_SRV, DBTableColName.GROUP.STATE);
+		if (stateColIndex >= 0) {
+			String state = row.getField(stateColIndex);
+			EnumState accountState = Enum2String.getInstance().getEnumState(state);
+			group.setState(accountState);
+		}
+		
+		int accountIdColIndex = ViewSearchTableClientConfig.instance().getSearchTableColIndex(EnumService.GROUP_SRV, DBTableColName.GROUP.ACCOUNT_ID);
+		if (accountIdColIndex >= 0) 
+			group.setAccountId(Integer.parseInt(row.getField(accountIdColIndex)));
+				
 		final GroupAddView window = clientFactory.getGroupAddView();
   		window.setPresenter(this);
   		window.display();
