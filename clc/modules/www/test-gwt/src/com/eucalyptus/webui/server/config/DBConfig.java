@@ -11,7 +11,7 @@ public class DBConfig {
 	}
 	
 	public void set(String url, String usr, String pwd) {
-		this.url = url;
+		this.url = url + "?useUnicode=true&characterEncoding=GB2312";
 		this.usr = usr;
 		this.pwd = pwd;
 	}
