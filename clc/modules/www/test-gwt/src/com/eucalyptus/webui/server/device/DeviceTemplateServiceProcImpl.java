@@ -946,9 +946,9 @@ public class DeviceTemplateServiceProcImpl {
 	private static final String[] TABLE_COL_TITLE_MARK = {"", "标识"};
 	private static final String[] TABLE_COL_TITLE_CPU = {"", "CPU"};
 	private static final String[] TABLE_COL_TITLE_NCPUS = {"", "CPU数量"};
-	private static final String[] TABLE_COL_TITLE_MEM = {"", "内存"};
-	private static final String[] TABLE_COL_TITLE_DISK = {"", "硬盘"};
-	private static final String[] TABLE_COL_TITLE_BW = {"", "带宽"};
+	private static final String[] TABLE_COL_TITLE_MEM = {"", "内存(MB)"};
+	private static final String[] TABLE_COL_TITLE_DISK = {"", "硬盘(MB)"};
+	private static final String[] TABLE_COL_TITLE_BW = {"", "带宽(KB)"};
 	private static final String[] TABLE_COL_TITLE_IMAGE = {"", "镜像"};
 	private static final String[] TABLE_COL_TITLE_STARTTIME = {"", "开始时间"};
 

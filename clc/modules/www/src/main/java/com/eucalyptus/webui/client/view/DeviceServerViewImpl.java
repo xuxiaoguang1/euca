@@ -60,19 +60,14 @@ public class DeviceServerViewImpl extends Composite implements DeviceServerView 
 
 	private void updatePanel() {
 		updateLabels();
+		resultPanel.clear();
 		if (!isMirrorMode()) {
-			if (mirrorTable != null) {
-				resultPanel.remove(mirrorTable);
-			}
 			if (table != null) {
 				resultPanel.add(table);
 			}
 			deckPanel.showWidget(0);
 		}
 		else {
-			if (table != null) {
-				resultPanel.remove(table);
-			}
 			if (mirrorTable != null) {
 				resultPanel.add(mirrorTable);
 			}

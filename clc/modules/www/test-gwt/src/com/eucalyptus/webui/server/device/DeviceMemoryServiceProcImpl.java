@@ -1010,8 +1010,8 @@ public class DeviceMemoryServiceProcImpl {
 	private static final String[] TABLE_COL_TITLE_CHECKBOX = {"", ""};
 	private static final String[] TABLE_COL_TITLE_NO = {"", "序号"};
 	private static final String[] TABLE_COL_TITLE_SERVER = {"", "服务器"};
-	private static final String[] TABLE_COL_TITLE_TOTAL = {"", "总大小"};
-	private static final String[] TABLE_COL_TITLE_USED = {"", "此项大小"};
+	private static final String[] TABLE_COL_TITLE_TOTAL = {"", "总大小(MB)"};
+	private static final String[] TABLE_COL_TITLE_USED = {"", "此项大小(MB)"};
 	private static final String[] TABLE_COL_TITLE_STARTTIME = {"", "开始时间"};
 	private static final String[] TABLE_COL_TITLE_LIFE = {"", "服务期限"};
 	private static final String[] TABLE_COL_TITLE_REMAINS = {"", "剩余时间"};
@@ -1026,7 +1026,7 @@ public class DeviceMemoryServiceProcImpl {
 			new SearchResultFieldDesc(TABLE_COL_TITLE_NO[LAN_SELECT], false, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_SERVER[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_TOTAL[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
-	        new SearchResultFieldDesc(TABLE_COL_TITLE_USED[LAN_SELECT], false, "8%", TableDisplay.MANDATORY, Type.TEXT, false, false),
+	        new SearchResultFieldDesc(TABLE_COL_TITLE_USED[LAN_SELECT], false, "12%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_ACCOUNT[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_USER[LAN_SELECT], false, "10%", TableDisplay.MANDATORY, Type.TEXT, false, false),
 	        new SearchResultFieldDesc(TABLE_COL_TITLE_STARTTIME[LAN_SELECT], false, "14%", TableDisplay.MANDATORY, Type.TEXT, false, false),

@@ -446,9 +446,9 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
       String name = g.getGroupName();
       for (IpPermission i : g.getIpPermissions()) {
         String id = String.valueOf(++ total);
-        String fromPort = i.getFromPort().toString();
+        String fromPort = i.getFromPort() != null ? i.getFromPort().toString() : "";
         String proto = i.getIpProtocol();
-        String toPort = i.getToPort().toString();
+        String toPort = i.getToPort() != null ? i.getToPort().toString() : "";
         List<String> _ipRange = i.getIpRanges();
         //FIXME should it be joined like this?
         String ipRange = StringUtils.join(_ipRange, ",");

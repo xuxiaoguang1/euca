@@ -660,7 +660,7 @@ public class DeviceBWServiceProcImpl {
 
 	private static final String[] TABLE_COL_TITLE_CHECKBOX = {"", ""};
 	private static final String[] TABLE_COL_TITLE_NO = {"", "序号"};
-	private static final String[] TABLE_COL_TITLE_BW = {"", "带宽"};
+	private static final String[] TABLE_COL_TITLE_BW = {"", "带宽(KB)"};
 	private static final String[] TABLE_COL_TITLE_BWSPEED = {"", "速率/S"};
 	private static final String[] TABLE_COL_TITLE_IPADDR = {"", "IP地址"};
 	private static final String[] TABLE_COL_TITLE_STARTTIME = {"", "开始时间"};
