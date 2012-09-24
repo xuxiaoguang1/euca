@@ -12,7 +12,6 @@ import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.ViewSearchTableClientConfig;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
-import com.eucalyptus.webui.client.view.GroupAddingUserListView;
 import com.eucalyptus.webui.client.view.GroupDetailView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
@@ -21,13 +20,13 @@ import com.eucalyptus.webui.shared.config.EnumService;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class GroupDetailActivity extends AbstractSearchActivity implements GroupDetailView.Presenter, GroupAddingUserListView.Presenter, ConfirmationView.Presenter {
+public class GroupDetailActivity extends AbstractSearchActivity implements GroupDetailView.Presenter, ConfirmationView.Presenter {
 
 	private GroupAddingUserActivity groupAddingUserActivity;
 	
 	public GroupDetailActivity(SearchPlace place, ClientFactory clientFactory) {
 		super(place, clientFactory);
-		this.groupAddingUserActivity = new GroupAddingUserActivity(place, clientFactory);
+		this.groupAddingUserActivity = new GroupAddingUserActivity(place, clientFactory, this);
 		
 		// TODO Auto-generated constructor stub
 		this.range = new SearchRange( 0, pageSize, -1/*sortField*/, true );
@@ -58,7 +57,7 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 	public void onAddUsers(int accountId, int groupId) {
 		// TODO Auto-generated method stub
 		this.groupAddingUserActivity.setAccountAndGroupId(accountId, groupId);
-		this.clientFactory.getGroupAddingUserListView().setPresenter(this);
+		this.clientFactory.getGroupAddingUserListView().setPresenter(this.groupAddingUserActivity);
 
 		this.clientFactory.getBackendService().lookupUserExcludeGroupId(
 		        this.clientFactory.getLocalSession().getSession(), accountId, groupId, this.groupAddingUserActivity.getRange(),
@@ -133,12 +132,6 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 	protected void showView(SearchResult result) {
 		// TODO Auto-generated method stub
 	}
-	
-	private static final Logger LOG = Logger.getLogger( GroupActivity.class.getName( ) );
-	  
-	private Set<SearchResultRow> currentSelected;
-	
-	private int groupId;
 
 	@Override
 	public void saveValue(ArrayList<String> keys,
@@ -204,23 +197,7 @@ public class GroupDetailActivity extends AbstractSearchActivity implements Group
 		        });
 	}
 	
-	@Override
-	public void process(ArrayList<String> userIds) {
-		// TODO Auto-generated method stub
-		this.clientFactory.getBackendService().addUsersToGroupsById(this.clientFactory.getLocalSession().getSession(),
-		        userIds, this.groupId, new AsyncCallback<Void>() {
-			        @Override
-			        public void onFailure(Throwable caught) {
-				        // TODO Auto-generated method stub
-			        }
-
-			        @Override
-			        public void onSuccess(Void result) {
-				        // TODO Auto-generated method stub
-			        	reloadCurrentRange();
-			        }
-		        });
-	}
-	
-
+	private static final Logger LOG = Logger.getLogger( GroupActivity.class.getName( ) );
+	private Set<SearchResultRow> currentSelected;
+	private int groupId;
 }

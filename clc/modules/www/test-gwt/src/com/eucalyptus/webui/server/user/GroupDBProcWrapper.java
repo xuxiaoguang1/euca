@@ -68,9 +68,8 @@ public class GroupDBProcWrapper {
 		if (ids == null || ids.size() == 0)
 			return;
 		
-		String sql = delGroupSql(ids);
-		
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
+		String sql = delGroupSql(ids);
 		
 		try {
 			dbProc.update(sql);
@@ -274,8 +273,6 @@ public class GroupDBProcWrapper {
 									append(" AND ").
 									append(DBTableColName.GROUP.NAME).append(" = '").append(groupName).append("'");
 		
-		System.out.println(sql.toString());
-		
 		try {	
 			ResultSetWrapper result = dbProc.query(sql.toString());
 			return result;
@@ -320,8 +317,6 @@ public class GroupDBProcWrapper {
 		else
 			str.append("null)");
 		
-		System.out.println(str.toString());
-		
 		return str.toString();
 	}
 	
@@ -352,8 +347,6 @@ public class GroupDBProcWrapper {
 		str.append("WHERE ").append(DBTableColName.GROUP.ID).append(" = ").
 		append(group.getId());
 		
-		System.out.println(str.toString());
-		
 		return str.toString();
 	}
 	
@@ -381,8 +374,6 @@ public class GroupDBProcWrapper {
 		}
 		
 		sql.delete(sql.length() -3 , sql.length());
-		
-		System.out.println(sql);
 		
 		return sql.toString();
 	}
@@ -420,8 +411,6 @@ public class GroupDBProcWrapper {
 		}
 		
 		sql.delete(sql.length() -3 , sql.length());
-		
-		System.out.println(sql);
 		
 		return sql.toString();
 	}

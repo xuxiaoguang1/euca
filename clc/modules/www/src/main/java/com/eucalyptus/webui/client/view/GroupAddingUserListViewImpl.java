@@ -81,6 +81,12 @@ public class GroupAddingUserListViewImpl extends DialogBox implements GroupAddin
 		// TODO Auto-generated method stub
 		this.presenter = presenter;
 	}
+	
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		this.close();
+	}
 		
 	private void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
 		tablePanel.clear( );

@@ -65,11 +65,8 @@ public class UserAppActivity extends AbstractSearchActivity
   
 	private EnumUserAppStatus appState = EnumUserAppStatus.NONE;
   
-	private UserAppAddActivity userAppAddActivity = null;
-  
 	public UserAppActivity( SearchPlace place, ClientFactory clientFactory ) {
 		super( place, clientFactory );
-		this.userAppAddActivity = new UserAppAddActivity(place, clientFactory);
 	}
 
 	@Override
@@ -433,7 +430,6 @@ public class UserAppActivity extends AbstractSearchActivity
 	    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_ADD_USERAPP[lan]);
 	    		
 	    		reloadCurrentRange();
-	    		//updateUserAppCountInfo();
 			}
       });
   }

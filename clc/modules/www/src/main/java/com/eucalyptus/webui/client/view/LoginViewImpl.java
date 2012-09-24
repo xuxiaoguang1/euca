@@ -4,11 +4,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -58,20 +56,20 @@ public class LoginViewImpl extends Composite implements LoginView {
     //userSignup.setVisible( false );
   }
 
-  @UiHandler( "accountSignup" )
-  void handleAccountSignupButtonClick( ClickEvent e ) {
-    this.presenter.onAccountSignup( );
-  }
-
-//  @UiHandler( "userSignup" )
-//  void handleUserSignupButtonClick( ClickEvent e ) {
-//    this.presenter.onUserSignup( );
+//  @UiHandler( "accountSignup" )
+//  void handleAccountSignupButtonClick( ClickEvent e ) {
+//    this.presenter.onAccountSignup( );
 //  }
 //
-  @UiHandler( "recover" )
-  void handleRecoverButtonClick( ClickEvent e ) {
-    this.presenter.onRecoverPassword( );
-  }
+////  @UiHandler( "userSignup" )
+////  void handleUserSignupButtonClick( ClickEvent e ) {
+////    this.presenter.onUserSignup( );
+////  }
+////
+//  @UiHandler( "recover" )
+//  void handleRecoverButtonClick( ClickEvent e ) {
+//    this.presenter.onRecoverPassword( );
+//  }
 
   private void injectLoginForm( ) {
     // Inject style first. After the form is wrapped, it is too late (IDs are gone)

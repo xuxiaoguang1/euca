@@ -7,10 +7,10 @@
 	<g:HTMLPanel>
 		<g:LayoutPanel width="629px" height="325px" ui:field="tablePanel"/>
 		<g:LayoutPanel width="629px" height="51px">
-			<g:layer left="411px" width="103px" top="12px" height="25px">
+			<g:layer left="548px" width="103px" top="12px" height="25px">
 				<g:Button text="确定" ui:field="buttonOk"/>
 			</g:layer>
-			<g:layer left="524px" width="54px" top="12px" height="25px">
+			<g:layer left="481px" width="54px" top="12px" height="25px">
 				<g:Button text="取消" ui:field="buttonCancle"/>
 			</g:layer>
 		</g:LayoutPanel>
