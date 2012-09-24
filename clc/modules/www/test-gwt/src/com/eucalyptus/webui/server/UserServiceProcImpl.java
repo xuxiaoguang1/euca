@@ -12,13 +12,11 @@ import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.server.config.ViewSearchTableServerConfig;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
-import com.eucalyptus.webui.server.user.RandomPwdCreator;
 import com.eucalyptus.webui.server.user.UserDBProcWrapper;
 import com.eucalyptus.webui.server.user.UserSyncException;
 import com.eucalyptus.webui.shared.config.EnumService;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.config.SearchTableCol;
-import com.eucalyptus.webui.shared.dictionary.ConfDef;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
@@ -26,19 +24,21 @@ import com.eucalyptus.webui.shared.user.UserInfo;
 
 public class UserServiceProcImpl {
 	
-	public void createUser(int accountId, UserInfo user) throws EucalyptusServiceException {
+	public int createUser(int accountId, UserInfo user) throws EucalyptusServiceException {
 		if ( user == null) {
 			throw new EucalyptusServiceException( "Empty accountId or invalid user on creating user" );
 		}
 		
-		user.setPwd(RandomPwdCreator.genRandomNum(ConfDef.DEFAULT_PWD_LEN));
+		//user.setPwd(RandomPwdCreator.genRandomNum(ConfDef.DEFAULT_PWD_LEN));
+		//use name as default pwd temporarily, because the mail notification function not enabled
+		user.setPwd(user.getName());
 		  
 		// user account_id == 0, which means that this user group is same as the session's account
 		if (user.getAccountId() == 0)
 			user.setAccountId(accountId);
 		  
 		try {
-			userDBProc.addUser(user);
+			return userDBProc.addUser(user);
 		} catch (UserSyncException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

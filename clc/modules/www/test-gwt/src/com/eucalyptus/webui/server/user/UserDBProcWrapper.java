@@ -27,12 +27,12 @@ public class UserDBProcWrapper {
 		this.sorterProxy = sorterProxy;
 	}
 	
-	public void addUser(UserInfo user) throws UserSyncException {
+	public int addUser(UserInfo user) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		String sql = addUserSql(user);
 		
 		try {
-			dbProc.update(sql);
+			return dbProc.insertAndGetInsertId(sql);
 		} catch (SQLException e) {
 			throw new UserSyncException ("Database fails");
 		}
