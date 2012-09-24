@@ -440,24 +440,20 @@ public class UserActivity extends AbstractSearchActivity
   
   @Override
   public void confirm( String subject ) {
-	  int lan = LanguageSelection.instance().getCurLanguage().ordinal();
-    if ( DELETE_USERS_SUBJECT[lan].equals( subject ) ) {
-    	doDeleteUsers( );
-    } else if ( RESUME_USERS_SUBJECT[lan].equals( subject ) ) {
-    	doUpdateUserState(EnumState.NORMAL);
-    } else if ( PAUSE_USERS_SUBJECT[lan].equals( subject ) ) {
-    	doUpdateUserState(EnumState.PAUSE);
-    } else if ( BAN_USERS_SUBJECT[lan].equals( subject ) ) {
-    	doUpdateUserState(EnumState.BAN);
-    } else if ( REMOVE_FROM_GROUPS_SUBJECT[lan].equals( subject ) ) {
-    	doRemoveUserFromGroup();
-    } else if ( ADD_POLICY_SUBJECT[lan].equals( subject ) ) {
-    	//doAddPolicy();
-    } else if ( ADD_KEY_SUBJECT[lan].equals( subject ) ) {
-    	doAddKey();
-    } else if ( ADD_CERT_SUBJECT[lan].equals( subject ) ) {
-    	//doAddCert();
-    }
+	int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+	if ( DELETE_USERS_SUBJECT[lan].equals( subject ) ) {
+		doDeleteUsers( );
+	} else if ( RESUME_USERS_SUBJECT[lan].equals( subject ) ) {
+		doUpdateUserState(EnumState.NORMAL);
+	} else if ( PAUSE_USERS_SUBJECT[lan].equals( subject ) ) {
+		doUpdateUserState(EnumState.PAUSE);
+	} else if ( BAN_USERS_SUBJECT[lan].equals( subject ) ) {
+		doUpdateUserState(EnumState.BAN);
+	} else if ( REMOVE_FROM_GROUPS_SUBJECT[lan].equals( subject ) ) {
+		doRemoveUserFromGroup();
+	} else if ( ADD_KEY_SUBJECT[lan].equals( subject ) ) {
+		doAddKey();
+	}
   }
 
   private void doDeleteUsers( ) {
@@ -498,7 +494,7 @@ public class UserActivity extends AbstractSearchActivity
 	    });
 	}
 
-  private void doAddKey( ) {
+  	private void doAddKey( ) {
 	    if ( currentSelected == null || currentSelected.size( ) != 1 ) {
 	    	return;
 	    }
@@ -521,7 +517,7 @@ public class UserActivity extends AbstractSearchActivity
 	  	    	reloadCurrentRange( );
 	        }
 	     });
-  }
+  	}
 
 	  
 	private void doAddCert(final String pem) {

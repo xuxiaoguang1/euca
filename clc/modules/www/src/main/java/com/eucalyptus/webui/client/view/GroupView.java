@@ -13,6 +13,8 @@ public interface GroupView extends IsWidget, CanDisplaySearchResult, Clearable, 
     
     void showGroupDetails();
     
+    void onAddPolicy();
+    
     void onPauseGroup();
     void onResumeGroup();
     void onBanGroup();

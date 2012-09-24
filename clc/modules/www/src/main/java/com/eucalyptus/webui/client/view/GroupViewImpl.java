@@ -62,6 +62,10 @@ public class GroupViewImpl extends Composite implements GroupView {
 	void onShowGroupDetailsButtonClick(ClickEvent event) {
 		this.presenter.showGroupDetails();
 	}
+	@UiHandler("addPolicyButton")
+	void onAddPolicyButtonClick(ClickEvent event) {
+		this.presenter.onAddPolicy();
+	}
 	@UiHandler("resumeGroupButton")
 	void onBUTTON_RESUMEClick(ClickEvent event) {
 		this.presenter.onResumeGroup();

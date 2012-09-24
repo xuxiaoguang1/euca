@@ -60,6 +60,11 @@ public class AccountViewImpl extends Composite implements AccountView {
   void handleDelButtonClick( ClickEvent e ) {
 	  this.presenter.onDeleteAccounts( );
   }
+  
+  @UiHandler("addPolicyButton")
+  void onAddPolicyButtonClick(ClickEvent event) {
+	  this.presenter.onAddPolicy();
+  }
 
   @UiHandler( "resumeButton" )
   void handleResumeButtonClick( ClickEvent e ) {

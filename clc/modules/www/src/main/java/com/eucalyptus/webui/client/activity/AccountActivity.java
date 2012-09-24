@@ -1,6 +1,7 @@
 package com.eucalyptus.webui.client.activity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,10 +15,14 @@ import com.eucalyptus.webui.client.view.AccountView;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.AccountAddView;
+import com.eucalyptus.webui.client.view.InputField;
+import com.eucalyptus.webui.client.view.InputView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
+import com.eucalyptus.webui.shared.checker.ValueChecker;
+import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
 import com.eucalyptus.webui.shared.config.EnumService;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.dictionary.ConfDef;
@@ -31,7 +36,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class AccountActivity extends AbstractSearchActivity
-    implements AccountView.Presenter, ConfirmationView.Presenter, AccountAddView.Presenter {
+    implements AccountView.Presenter, ConfirmationView.Presenter, AccountAddView.Presenter, InputView.Presenter {
   
   public static final String[] TITLE = {"ACCOUNTS", "账户"};
   
@@ -62,6 +67,11 @@ public class AccountActivity extends AbstractSearchActivity
   public static final String[] DESCRIPTION_INPUT_TITLE = {"Admin description", "备注"};
   
   private final String[] ALERT_NOT_DEL_ROOT_ACCOUNT = {"Can not delete root account", "根账户不能删除"};
+  
+  public static final String[] ADD_POLICY_CAPTION = {"Add new policy", "增加策略"};
+  public static final String[] ADD_POLICY_SUBJECT = {"Enter new policy to assign to the selected account:", "为选中的账户输入策略"};
+  public static final String[] POLICY_NAME_INPUT_TITLE = {"Policy name", "策略名称"};
+  public static final String[] POLICY_CONTENT_INPUT_TITLE = {"Policy content", "策略内容"};
   
   private static final Logger LOG = Logger.getLogger( AccountActivity.class.getName( ) );
 
@@ -163,7 +173,56 @@ public class AccountActivity extends AbstractSearchActivity
   		dialog.setPresenter( this );
   		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
   		dialog.display( DELETE_ACCOUNTS_CAPTION[lan], DELETE_ACCOUNTS_SUBJECT[lan]);
-  }
+	}
+	
+	@Override
+	public void onAddPolicy() {
+		// TODO Auto-generated method stub
+		if (!oneSelectionIsValid())
+			return;
+
+		InputView dialog = this.clientFactory.getInputView();
+		dialog.setPresenter(this);
+		final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		dialog.display(ADD_POLICY_CAPTION[lan], ADD_POLICY_SUBJECT[lan],
+				new ArrayList<InputField>(Arrays.asList(
+					new InputField() {
+	
+						@Override
+						public String getTitle() {
+							return POLICY_NAME_INPUT_TITLE[lan];
+						}
+	
+						@Override
+						public ValueType getType() {
+							return ValueType.TEXT;
+						}
+	
+						@Override
+						public ValueChecker getChecker() {
+							return ValueCheckerFactory.createPolicyNameChecker();
+						}
+	
+					}, 
+					new InputField() {
+	
+						@Override
+						public String getTitle() {
+							return POLICY_CONTENT_INPUT_TITLE[lan];
+						}
+	
+						@Override
+						public ValueType getType() {
+							return ValueType.TEXTAREA;
+						}
+	
+						@Override
+						public ValueChecker getChecker() {
+							return ValueCheckerFactory.createNonEmptyValueChecker();
+						}
+
+				})));
+	}
   
 	@Override
 	public void onResume( ) {
@@ -176,7 +235,7 @@ public class AccountActivity extends AbstractSearchActivity
 	  
 		int lan = LanguageSelection.instance().getCurLanguage().ordinal();
 		confirmView.display(RESUME_ACCOUNTS_CAPTION[lan], RESUME_ACCOUNTS_SUBJECT[lan]);
-  }
+	}
   
 	@Override
 	public void onPause() {
@@ -391,5 +450,39 @@ public class AccountActivity extends AbstractSearchActivity
 		    	  reloadCurrentRange( );
 		      }
 		    } );
+	}
+
+	@Override
+	public void process(String subject, ArrayList<String> values) {
+		// TODO Auto-generated method stub
+		final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		if (ADD_POLICY_SUBJECT[lan].equals(subject)) {
+			doAddPolicy(values.get(0), values.get(1));
+		}
+	}
+	
+	private void doAddPolicy( final String name, final String document ) {
+		if ( currentSelected == null || currentSelected.size( ) != 1 ) {
+			return;
+		}
+		
+		final String accountId = this.currentSelected.toArray( new SearchResultRow[0] )[0].getField( 0 );
+		this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "Adding policy " + name + " ...", 0 );
+		      
+		this.clientFactory.getBackendService( ).addAccountPolicy(this.clientFactory.getLocalSession( ).getSession( ), accountId, name, document, new AsyncCallback<Void>() {  
+			@Override
+			public void onFailure( Throwable caught ) {
+				ActivityUtil.logoutForInvalidSession( clientFactory, caught );
+			    clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, "Failed to add policy", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+			    clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, "Failed to add policy " + name + " for user " + accountId + ": " + caught.getMessage( ) );
+			}
+			  
+			@Override
+			public void onSuccess( Void arg ) {
+				clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Policy added", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+			    clientFactory.getShellView( ).getLogView( ).log( LogType.INFO, "New policy " + name + " is added to user " + accountId );
+			    reloadCurrentRange( );
+			}
+		});
 	}
 }

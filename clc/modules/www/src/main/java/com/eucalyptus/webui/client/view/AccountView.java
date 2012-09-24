@@ -10,10 +10,11 @@ public interface AccountView extends IsWidget, CanDisplaySearchResult, Clearable
   void setPresenter( Presenter presenter );
   
   public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, SearchTableDoubleClickHandler {
-    void onCreateAccount( );
+    void onCreateAccount();
     void onModifyAccount();
-    void onDeleteAccounts( );
-    void onResume( );
+    void onDeleteAccounts();
+    void onAddPolicy();
+    void onResume();
     void onPause();
     void onBan();
   }

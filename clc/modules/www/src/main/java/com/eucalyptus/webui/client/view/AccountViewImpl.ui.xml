@@ -43,6 +43,12 @@
                                 </g:Anchor>
                             </td>
                             <td>&nbsp;</td>
+                            <td>
+                                <g:Anchor styleName="{global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="addPolicyButton">
+                                    <span class="{global.buttonCss.lock} {global.buttonCss.icon}"/>增加策略
+                                </g:Anchor>
+                            </td>
+                            <td>&nbsp;</td>
                             <td>                             
                                 <g:Anchor styleName="{global.buttonCss.positive} {global.buttonCss.button} {global.buttonCss.small} {global.buttonCss.left}" ui:field="resumeButton">
                                     <span class="{global.buttonCss.check} {global.buttonCss.icon}"/>恢复

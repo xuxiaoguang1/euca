@@ -1,6 +1,7 @@
 package com.eucalyptus.webui.client.activity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,10 +16,14 @@ import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.GroupAddView;
 import com.eucalyptus.webui.client.view.GroupView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
+import com.eucalyptus.webui.client.view.InputField;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
+import com.eucalyptus.webui.client.view.InputField.ValueType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.client.view.InputView;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
+import com.eucalyptus.webui.shared.checker.ValueChecker;
+import com.eucalyptus.webui.shared.checker.ValueCheckerFactory;
 import com.eucalyptus.webui.shared.config.EnumService;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
@@ -58,6 +63,9 @@ public class GroupActivity extends AbstractSearchActivity
   public static final String ADD_POLICY_SUBJECT[] = {"Enter new policy to assign to the selected group:", "给选定的组增加新的策略"};
   public static final String POLICY_NAME_INPUT_TITLE[] = {"Policy name", "策略名称"};
   public static final String POLICY_CONTENT_INPUT_TITLE[] = {"Policy content", "策略内容"};
+  
+  private final String[] FOOTERVIEW_GROUP_NO_SELECTION = {"Must select at least one user group", "必须选择至少一个用户组"};
+  private final String[] FOOTERVIEW_GROUP_ONE_SELECTION = {"Must select one user group", "必须选择一个用户组"};
 
   private static final Logger LOG = Logger.getLogger( GroupActivity.class.getName( ) );
   
@@ -265,6 +273,55 @@ public class GroupActivity extends AbstractSearchActivity
 	    showSingleSelectedDetails( this.currentSelected.toArray( new SearchResultRow[0] )[0] );
 	}
   	
+  	@Override
+	public void onAddPolicy() {
+		// TODO Auto-generated method stub
+  		if (!oneSelectionIsValid())
+			return;
+
+		InputView dialog = this.clientFactory.getInputView();
+		dialog.setPresenter(this);
+		final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+		dialog.display(ADD_POLICY_CAPTION[lan], ADD_POLICY_SUBJECT[lan],
+				new ArrayList<InputField>(Arrays.asList(
+					new InputField() {
+	
+						@Override
+						public String getTitle() {
+							return POLICY_NAME_INPUT_TITLE[lan];
+						}
+	
+						@Override
+						public ValueType getType() {
+							return ValueType.TEXT;
+						}
+	
+						@Override
+						public ValueChecker getChecker() {
+							return ValueCheckerFactory.createPolicyNameChecker();
+						}
+	
+					}, 
+					new InputField() {
+	
+						@Override
+						public String getTitle() {
+							return POLICY_CONTENT_INPUT_TITLE[lan];
+						}
+	
+						@Override
+						public ValueType getType() {
+							return ValueType.TEXTAREA;
+						}
+	
+						@Override
+						public ValueChecker getChecker() {
+							return ValueCheckerFactory.createNonEmptyValueChecker();
+						}
+
+				})));
+	}
+  
   	private final static String[] GROUP_ACTIVITY_No_SELECTION = {"Please select at least on group", "请至少选择一个组"};
   	private final static String[] FOOTERVIEW_GROUP_ACTIVITY_UPDATE_USERSTATE_SUCCEED = {"Update user state succeeds", "更新用户状态成功"};
   	private final static String[] FOOTERVIEW_GROUP_ACTIVITY_UPDATE_USERSTATE_FAIL = {"Failed to update user state", "更新用户状态成功"};
@@ -525,4 +582,14 @@ public class GroupActivity extends AbstractSearchActivity
   		// TODO Auto-generated method stub
   		this.doModifyGroup();
   	}
+  	
+  	private boolean oneSelectionIsValid() {
+		if ( currentSelected == null || currentSelected.size( ) != 1 ) {
+			int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+			clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_GROUP_ONE_SELECTION[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+			return false;
+		}
+	  
+		return true;
+	}
 }
