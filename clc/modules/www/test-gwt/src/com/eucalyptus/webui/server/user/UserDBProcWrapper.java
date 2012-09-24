@@ -470,16 +470,16 @@ public class UserDBProcWrapper {
 		}
 	}
 	
-	public void addAccessKey(int userId, String akey, String skey, boolean active, Date created_date) throws UserSyncException {
+	public int addAccessKey(int userId, String akey, String skey, boolean active, Date created_date) throws UserSyncException {
 		if (userId == 0 || Strings.isNullOrEmpty(akey) || Strings.isNullOrEmpty(skey))
-			return;
+			return -1;
 		
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
 		String sql = addAccessKeySql(userId, akey, skey, active, created_date).toString();
 		
 		try {
-			dbProc.update(sql);
+			return dbProc.insertAndGetInsertId(sql);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

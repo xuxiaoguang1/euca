@@ -21,12 +21,12 @@ public class GroupDBProcWrapper {
 		this.sorterProxy = sorterProxy;
 	}
 	
-	public void addGroup(GroupInfo group) throws UserSyncException {
+	public int addGroup(GroupInfo group) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		String sql = addGroupSql(group);
 		
 		try {
-			dbProc.update(sql);
+			return dbProc.insertAndGetInsertId(sql);
 		} catch (SQLException e) {
 			throw new UserSyncException ("Database fails");
 		}
