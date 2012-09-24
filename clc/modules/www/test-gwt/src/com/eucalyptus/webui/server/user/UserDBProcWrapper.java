@@ -9,9 +9,9 @@ import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.server.SorterProxy;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
-import com.eucalyptus.webui.server.dictionary.DBTableColName;
-import com.eucalyptus.webui.server.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.dictionary.ConfDef;
+import com.eucalyptus.webui.shared.dictionary.DBTableColName;
+import com.eucalyptus.webui.shared.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserRegStatus;
 import com.eucalyptus.webui.shared.user.EnumUserType;
@@ -27,12 +27,12 @@ public class UserDBProcWrapper {
 		this.sorterProxy = sorterProxy;
 	}
 	
-	public void addUser(UserInfo user) throws UserSyncException {
+	public int addUser(UserInfo user) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		String sql = addUserSql(user);
 		
 		try {
-			dbProc.update(sql);
+			return dbProc.insertAndGetInsertId(sql);
 		} catch (SQLException e) {
 			throw new UserSyncException ("Database fails");
 		}
@@ -470,16 +470,16 @@ public class UserDBProcWrapper {
 		}
 	}
 	
-	public void addAccessKey(int userId, String akey, String skey, boolean active, Date created_date) throws UserSyncException {
+	public int addAccessKey(int userId, String akey, String skey, boolean active, Date created_date) throws UserSyncException {
 		if (userId == 0 || Strings.isNullOrEmpty(akey) || Strings.isNullOrEmpty(skey))
-			return;
+			return -1;
 		
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		
 		String sql = addAccessKeySql(userId, akey, skey, active, created_date).toString();
 		
 		try {
-			dbProc.update(sql);
+			return dbProc.insertAndGetInsertId(sql);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

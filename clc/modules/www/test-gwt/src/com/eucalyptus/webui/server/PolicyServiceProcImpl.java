@@ -17,8 +17,8 @@ import com.eucalyptus.webui.server.auth.CertificateSyncException;
 import com.eucalyptus.webui.server.auth.PolicyDBProcWrapper;
 import com.eucalyptus.webui.server.auth.PolicySyncException;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
-import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.auth.Policy;
+import com.eucalyptus.webui.shared.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
 public class PolicyServiceProcImpl {

@@ -1,4 +1,4 @@
-package com.eucalyptus.webui.server.dictionary;
+package com.eucalyptus.webui.shared.dictionary;
 
 public class DBTableName {
 	public static final String USER = "user";

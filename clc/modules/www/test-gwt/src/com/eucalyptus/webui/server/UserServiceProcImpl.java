@@ -9,16 +9,15 @@ import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.service.Session;
 import com.eucalyptus.webui.server.config.ViewSearchTableServerConfig;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
-import com.eucalyptus.webui.server.dictionary.DBTableColName;
-import com.eucalyptus.webui.server.user.RandomPwdCreator;
 import com.eucalyptus.webui.server.user.UserDBProcWrapper;
 import com.eucalyptus.webui.server.user.UserSyncException;
 import com.eucalyptus.webui.shared.config.EnumService;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.config.SearchTableCol;
-import com.eucalyptus.webui.shared.dictionary.ConfDef;
+import com.eucalyptus.webui.shared.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
@@ -26,19 +25,21 @@ import com.eucalyptus.webui.shared.user.UserInfo;
 
 public class UserServiceProcImpl {
 	
-	public void createUser(int accountId, UserInfo user) throws EucalyptusServiceException {
+	public int createUser(int accountId, UserInfo user) throws EucalyptusServiceException {
 		if ( user == null) {
 			throw new EucalyptusServiceException( "Empty accountId or invalid user on creating user" );
 		}
 		
-		user.setPwd(RandomPwdCreator.genRandomNum(ConfDef.DEFAULT_PWD_LEN));
+		//user.setPwd(RandomPwdCreator.genRandomNum(ConfDef.DEFAULT_PWD_LEN));
+		//use name as default pwd temporarily, because the mail notification function not enabled
+		user.setPwd(user.getName());
 		  
 		// user account_id == 0, which means that this user group is same as the session's account
 		if (user.getAccountId() == 0)
 			user.setAccountId(accountId);
 		  
 		try {
-			userDBProc.addUser(user);
+			return userDBProc.addUser(user);
 		} catch (UserSyncException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -238,50 +239,86 @@ public class UserServiceProcImpl {
 			}
 	  }
 	  
-	  private List<SearchResultRow> resultSet2List(ResultSetWrapper rsWrapper) {
-		  ResultSet rs = rsWrapper.getResultSet();
-		  int index = 1;
-		  List<SearchResultRow> result = null;
+	  public ArrayList<Integer> getUserCounts(Session session) throws EucalyptusServiceException {
+		  ResultSetWrapper rs;
+		  
 		  try {
-			  if (rs != null) {
-				  result = new ArrayList<SearchResultRow>();
+			  rs = userDBProc.queryTotalUsers(null);
+		  } catch (UserSyncException e) {
+			  e.printStackTrace();
+			  throw new EucalyptusServiceException("query users fails");
+		  }
+		  
+		  ResultSet set = rs.getResultSet();
+		  
+		  int total = 0;
+		  int active = 0;
+
+		  try {
+			  while(set.next()){
+				++total;
 				  
-				  ArrayList<SearchTableCol> tableCols = ViewSearchTableServerConfig.instance().getConfig(EnumService.USER_SRV);
-				  String[] dbFields = new String[tableCols.size()];
+				if(set.getInt(DBTableColName.USER.STATE) == 1) {
+					  ++active;
+				}
+			  }
+		  }catch(SQLException e){
+			  throw new EucalyptusServiceException(e.getMessage());
+		  }
+		  
+		  ArrayList<Integer> res = new ArrayList<Integer>();
+		  
+		  res.add(total);
+		  res.add(active);
+		  
+		  return res;
+	}
+	  
+	private List<SearchResultRow> resultSet2List(ResultSetWrapper rsWrapper) {
+		ResultSet rs = rsWrapper.getResultSet();
+		int index = 1;
+		List<SearchResultRow> result = null;
+		
+		try {
+			if (rs != null) {
+				result = new ArrayList<SearchResultRow>();
 				  
-				  for (int i=0; i<dbFields.length; i++)
-					  dbFields[i] = tableCols.get(i).getDbField();
-				  
-				  while (rs.next()) {
-					  ArrayList<String> rowValue = new ArrayList<String>();
-					  for (int i=0; i<dbFields.length; i++) {
-						  String value;
-						  if (!dbFields[i].equalsIgnoreCase("null")) {
-							  if (dbFields[i].equalsIgnoreCase(DBTableColName.USER.STATE))
-								  value = Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.USER.STATE));
-							  else if (dbFields[i].equalsIgnoreCase(DBTableColName.USER.TYPE))
-								  value = Enum2String.getInstance().getEnumUserTypeName(rs.getString(DBTableColName.USER.TYPE));
-							  else
-								  value = rs.getString(dbFields[i]);
-						  }
-						  else
-							  value = Integer.toString(index++);
-					  			 
-						  rowValue.add(value);
-					  }
-					  	 
-					  result.add(new SearchResultRow(rowValue));
+				ArrayList<SearchTableCol> tableCols = ViewSearchTableServerConfig.instance().getConfig(EnumService.USER_SRV);
+				String[] dbFields = new String[tableCols.size()];
+				
+				for (int i=0; i<dbFields.length; i++)
+					dbFields[i] = tableCols.get(i).getDbField();
+				
+				while (rs.next()) {
+					ArrayList<String> rowValue = new ArrayList<String>();
+					for (int i=0; i<dbFields.length; i++) {
+						String value;
+						if (!dbFields[i].equalsIgnoreCase("null")) {
+							if (dbFields[i].equalsIgnoreCase(DBTableColName.USER.STATE))
+								value = Enum2String.getInstance().getEnumStateName(rs.getString(DBTableColName.USER.STATE));
+							else if (dbFields[i].equalsIgnoreCase(DBTableColName.USER.TYPE))
+								value = Enum2String.getInstance().getEnumUserTypeName(rs.getString(DBTableColName.USER.TYPE));
+							else
+								value = rs.getString(dbFields[i]);
+						}
+						else
+							value = Integer.toString(index++);
+								 
+						rowValue.add(value);
+					}
+						 
+					result.add(new SearchResultRow(rowValue));
 				}
 				rsWrapper.close();
 			}
-		  } catch (SQLException e) {
+		} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-		  }
-		  
-		  return result;
-	  }
-	  
-	  private SorterProxy sorterProxy = new SorterProxy(EnumService.USER_SRV);
-	  private UserDBProcWrapper userDBProc = new UserDBProcWrapper(sorterProxy);
+		}
+		
+		return result;
+	}
+	
+	private SorterProxy sorterProxy = new SorterProxy(EnumService.USER_SRV);
+	private UserDBProcWrapper userDBProc = new UserDBProcWrapper(sorterProxy);
 }

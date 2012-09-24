@@ -8,9 +8,9 @@ import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.server.SorterProxy;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
-import com.eucalyptus.webui.server.dictionary.DBTableColName;
-import com.eucalyptus.webui.server.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.dictionary.ConfDef;
+import com.eucalyptus.webui.shared.dictionary.DBTableColName;
+import com.eucalyptus.webui.shared.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 

@@ -7,9 +7,9 @@ import java.util.List;
 
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
-import com.eucalyptus.webui.server.dictionary.DBTableColName;
-import com.eucalyptus.webui.server.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.auth.Policy;
+import com.eucalyptus.webui.shared.dictionary.DBTableColName;
+import com.eucalyptus.webui.shared.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.user.EnumUserType;
 
 public class PolicyDBProcWrapper {

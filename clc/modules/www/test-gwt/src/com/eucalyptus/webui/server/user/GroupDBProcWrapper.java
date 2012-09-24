@@ -8,9 +8,9 @@ import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.server.SorterProxy;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
-import com.eucalyptus.webui.server.dictionary.DBTableColName;
-import com.eucalyptus.webui.server.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.dictionary.ConfDef;
+import com.eucalyptus.webui.shared.dictionary.DBTableColName;
+import com.eucalyptus.webui.shared.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.GroupInfo;
 import com.google.common.base.Strings;
@@ -21,12 +21,12 @@ public class GroupDBProcWrapper {
 		this.sorterProxy = sorterProxy;
 	}
 	
-	public void addGroup(GroupInfo group) throws UserSyncException {
+	public int addGroup(GroupInfo group) throws UserSyncException {
 		DBProcWrapper dbProc = DBProcWrapper.Instance();
 		String sql = addGroupSql(group);
 		
 		try {
-			dbProc.update(sql);
+			return dbProc.insertAndGetInsertId(sql);
 		} catch (SQLException e) {
 			throw new UserSyncException ("Database fails");
 		}
