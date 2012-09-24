@@ -14,8 +14,8 @@ import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
-import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.stat.HistoryDBProcWrapper;
+import com.eucalyptus.webui.shared.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 

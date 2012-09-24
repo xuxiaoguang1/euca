@@ -11,7 +11,7 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.device.DeviceSyncException;
 import com.eucalyptus.webui.server.VMDBProcWrapper;
-import com.eucalyptus.webui.server.dictionary.DBTableColName;
+import com.eucalyptus.webui.shared.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.resource.VMImageType;
 
 public class DeviceVMServiceProcImpl {

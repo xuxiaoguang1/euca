@@ -1,4 +1,4 @@
-package com.eucalyptus.webui.server.dictionary;
+package com.eucalyptus.webui.shared.dictionary;
 
 public class DBTableColName {
 	public interface USER {

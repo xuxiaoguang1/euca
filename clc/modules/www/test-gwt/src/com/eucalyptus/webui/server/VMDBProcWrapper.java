@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.device.DeviceSyncException;
-import com.eucalyptus.webui.server.dictionary.DBTableName;
+import com.eucalyptus.webui.shared.dictionary.DBTableName;
 
 public class VMDBProcWrapper {
 	public ResultSetWrapper queryVMImageType() throws DeviceSyncException {
