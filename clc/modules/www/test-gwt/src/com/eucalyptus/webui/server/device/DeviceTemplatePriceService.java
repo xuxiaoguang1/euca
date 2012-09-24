@@ -68,10 +68,6 @@ public class DeviceTemplatePriceService {
 			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "修改时间"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false));
 	
-	private static final long DIV_BW = 1024;
-	private static final long DIV_MEM = 1024 * 1024;
-	private static final long DIV_DISK = 1000 * 1000;
-	
 	public synchronized double lookupTemplatePriceByPriceID(int template_price_id) throws EucalyptusServiceException {
 	    ResultSetWrapper rsw = null;
         try {
@@ -82,9 +78,9 @@ public class DeviceTemplatePriceService {
             }
             DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
             DBTableTemplatePrice TEMPLATE_PRICE = DBTable.TEMPLATE_PRICE;
-            double template_mem = (double)DBData.getLong(rs, TEMPLATE.TEMPLATE_MEM) / DIV_MEM;
-            double template_disk = (double)DBData.getLong(rs, TEMPLATE.TEMPLATE_DISK) / DIV_DISK;
-            double template_bw = (double)DBData.getLong(rs, TEMPLATE.TEMPLATE_BW) / DIV_BW;
+            double template_mem = (double)DBData.getLong(rs, TEMPLATE.TEMPLATE_MEM);
+            double template_disk = (double)DBData.getLong(rs, TEMPLATE.TEMPLATE_DISK);
+            double template_bw = (double)DBData.getLong(rs, TEMPLATE.TEMPLATE_BW);
             int template_ncpus = DBData.getInt(rs, TEMPLATE.TEMPLATE_NCPUS);
             double template_price_cpu = DBData.getDouble(rs, TEMPLATE_PRICE.TEMPLATE_PRICE_CPU);
             double template_price_mem = DBData.getDouble(rs, TEMPLATE_PRICE.TEMPLATE_PRICE_MEM);
@@ -127,9 +123,9 @@ public class DeviceTemplatePriceService {
 				String template_name = DBData.getString(rs, TEMPLATE.TEMPLATE_NAME);
 				String template_price_desc = DBData.getString(rs, TEMPLATE_PRICE.TEMPLATE_PRICE_DESC);
 				String template_cpu = DBData.getString(rs, TEMPLATE.TEMPLATE_CPU);
-				double template_mem = (double)DBData.getLong(rs, TEMPLATE.TEMPLATE_MEM) / DIV_MEM;
-				double template_disk = (double)DBData.getLong(rs, TEMPLATE.TEMPLATE_DISK) / DIV_DISK;
-				double template_bw = (double)DBData.getLong(rs, TEMPLATE.TEMPLATE_BW) / DIV_BW;
+				double template_mem = (double)DBData.getLong(rs, TEMPLATE.TEMPLATE_MEM);
+				double template_disk = (double)DBData.getLong(rs, TEMPLATE.TEMPLATE_DISK);
+				double template_bw = (double)DBData.getLong(rs, TEMPLATE.TEMPLATE_BW);
 				int template_ncpus = DBData.getInt(rs, TEMPLATE.TEMPLATE_NCPUS);
 				double template_price_cpu = DBData.getDouble(rs, TEMPLATE_PRICE.TEMPLATE_PRICE_CPU);
 				double template_price_mem = DBData.getDouble(rs, TEMPLATE_PRICE.TEMPLATE_PRICE_MEM);

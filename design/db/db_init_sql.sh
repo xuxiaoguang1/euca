@@ -254,6 +254,8 @@ done
 # insert template
 for ((i=0;i<10;i++)) do
     let d="10+$i%10";
+    let ms="(4+$i)*1024";
+    let ds="(100+$i)*1000"
     command insert into template \( \
         template_name, \
         template_cpu, \
@@ -266,9 +268,9 @@ for ((i=0;i<10;i++)) do
         values \( \
         \"name$i\", \
         \"cpu0\", \
-        \"2$i""000000\", \
-        \"3$i""000000\", \
-        \"4$i""000\", \
+        \"$ms\", \
+        \"$ds\", \
+        \"100\", \
         \"image$i\", \
         \"2012-07-$d\", \
         \"1\" \

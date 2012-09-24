@@ -1,6 +1,7 @@
 package com.eucalyptus.webui.client.view;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
@@ -73,11 +74,14 @@ public class DeviceMirrorSearchResultTable extends Composite {
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
-	private List<SearchResultRow> dataCached;
+	private List<SearchResultRow> dataCached = new LinkedList<SearchResultRow>();
 	private int pageSize;
 
 	public void setData(List<SearchResultRow> data) {
 		if (cellTable != null) {
+			if (data == null) {
+				data = new LinkedList<SearchResultRow>();
+			}
 			dataCached = data;
 			cellTable.setRowCount(dataCached.size(), true);
 			int start = 0, length = Math.min(dataCached.size(), pageSize);
