@@ -6,6 +6,7 @@ public interface InstanceView extends IsWidget, CanDisplaySearchResult, Clearabl
     
   
   void setPresenter( Presenter presenter );
+  void setCellClickProc(SearchTableCellClickHandler clickHandler);
   
   public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize {
 	  void onStartInstances( );

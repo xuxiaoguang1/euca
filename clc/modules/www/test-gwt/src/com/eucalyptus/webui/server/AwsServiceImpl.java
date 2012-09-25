@@ -54,9 +54,12 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
+import com.eucalyptus.webui.server.config.ViewSearchTableServerConfig;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.shared.aws.ImageType;
+import com.eucalyptus.webui.shared.config.EnumService;
+import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.query.QueryParser;
@@ -72,8 +75,8 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
    * 
    */
   private static final long serialVersionUID = 1L;
-  static final String FALLBACK_ACCESS_KEY="6CQT6BWUN4CDB9HTTHZOX";
-	static final String FALLBACK_SECRET_KEY="cboRkSRFMd2hhokkIcVAxDbwTO6828wIB1mD2x5H";
+  static final String FALLBACK_ACCESS_KEY="GEHBHS2X2J7E2KBKS7PSJ";
+	static final String FALLBACK_SECRET_KEY="wc65Oy6BnQzRR3Qscm6byU9rclq0awwCDWywvSmn";
 	static final String FALLBACK_ENDPOINT="http://166.111.134.30:8773/services/Eucalyptus";
 	static final String FALLBACK_SSH_HOST="root@166.111.134.30";
 	static String ENDPOINT = null;
@@ -92,20 +95,6 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 	private static final Logger LOG = Logger.getLogger(AwsServiceImpl.class);
 	DBProcWrapper wrapper = DBProcWrapper.Instance();
 	
-	public static final ArrayList<SearchResultFieldDesc> INSTANCE_COMMON_FIELD_DESCS = Lists.newArrayList();
-	static {
-		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "虚拟机ID", true, "10%") );
-		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "镜像ID", true, "10%") );
-		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "公共IP", true, "10%") );
-		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "私有IP", true, "10%") );
-		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "密钥", true, "10%") );
-		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "所属安全组", true, "10%") );
-		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "使用用户", true, "10%") );
-		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "开始时间", true, "10%") );
-		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "服务期限", true, "10%") );
-		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "剩余时间", true, "10%") );
-		INSTANCE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "运行状态", true, "10%") );		
-	}
 	public static final ArrayList<SearchResultFieldDesc> IMAGE_COMMON_FIELD_DESCS = Lists.newArrayList();
 	static {
 	  IMAGE_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc( "全选", "5%", false));
@@ -235,8 +224,10 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 		DescribeInstancesResult r = ec2.describeInstances();
 		//DescribeInstanceStatusResult rr = ec2.describeInstanceStatus();
 		List<SearchResultRow> data = new ArrayList<SearchResultRow>();
+		int i = 0;
 		for (Reservation res : r.getReservations()) {
 			Instance ins = res.getInstances().get(0);
+			LOG.debug(ins);
 			String owner = res.getOwnerId();
 			String id = ins.getInstanceId();
 			String image = ins.getImageId();
@@ -246,12 +237,21 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 			String seGroup = res.getGroups().size() > 0 ? res.getGroups().get(0).getGroupName() : "";
 			String date = ins.getLaunchTime().toString();
 			String key = ins.getKeyName();
-			data.add(new SearchResultRow(Arrays.asList(id, image, pubIp, priIp, key, seGroup, owner, date, "", "", state)));
+			String reason = ins.getStateTransitionReason();;
+			String platform = ins.getPlatform();
+			String rootDevice = ins.getRootDeviceType();
+			String pubDns = ins.getPublicDnsName();
+			String priDns = ins.getPrivateDnsName();
+			String kernel = ins.getKernelId();
+			String ramdisk = ins.getRamdiskId();
+			String vmtype = ins.getInstanceType();
+			data.add(new SearchResultRow(Arrays.asList(String.valueOf(++i), owner, id, image, kernel, ramdisk, state, pubDns, priDns, priIp, pubIp, key, seGroup, reason, vmtype, rootDevice, date, "", "", platform)));
 		}
 		
 		int resultLength = data.size();
 		SearchResult result = new SearchResult(data.size(), range);
-		result.setDescs(INSTANCE_COMMON_FIELD_DESCS);
+		//result.setDescs(INSTANCE_COMMON_FIELD_DESCS);
+		result.setDescs(ViewSearchTableServerConfig.instance().getConfig(EnumService.INSTANCE_SRV, LanguageSelection.instance().getCurLanguage()));
 		result.setRows(data.subList(range.getStart(), range.getStart() + resultLength));
 		return result;
 	}

@@ -18,11 +18,13 @@ import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.InstanceView;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.client.view.RunInstanceView;
+import com.eucalyptus.webui.client.view.SearchTableCellClickHandler;
 import com.google.common.collect.Lists;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class InstanceActivity extends AbstractSearchActivity
-    implements InstanceView.Presenter, ConfirmationView.Presenter, InputView.Presenter, RunInstanceView.Presenter {
+    implements InstanceView.Presenter, ConfirmationView.Presenter, InputView.Presenter, RunInstanceView.Presenter, SearchTableCellClickHandler {
   
   public static final String TITLE = "虚拟机管理";
   private static final Logger LOG = Logger.getLogger( InstanceActivity.class.getName( ) );
@@ -86,7 +88,9 @@ public class InstanceActivity extends AbstractSearchActivity
       ( ( InstanceView ) this.view ).clear( );
     }
     
-    ( ( InstanceView ) this.view ).showSearchResult( result );    
+    ( ( InstanceView ) this.view ).showSearchResult( result );
+    //Registering setCellClickProc must await UserAppView's table inited  
+    ( ( InstanceView ) this.view ).setCellClickProc( this );
   }
 
   @Override
@@ -107,146 +111,152 @@ public class InstanceActivity extends AbstractSearchActivity
 
   }
 
-@Override
-public void onStartInstances() {
-	final ArrayList<String> ids = Lists.newArrayList();
-    for ( SearchResultRow row : currentSelected ) {
-        ids.add(row.getField(0));
-    }
-    
-	this.clientFactory.getBackendAwsService().startInstances(clientFactory.getLocalSession( ).getSession( ), 0, ids, new AsyncCallback<ArrayList<String>>( ) {
-	      @Override
-	      public void onFailure( Throwable caught ) {
-	        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-	        // Log
-	      }
-	      @Override
-	      public void onSuccess( ArrayList<String> arg ) {
-	    	  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Instances stopped", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-	    	// Log
-	      }
-	});
-	
-}
-
-@Override
-public void onStopInstances() {
-	final ArrayList<String> ids = Lists.newArrayList();
-    for ( SearchResultRow row : currentSelected ) {
-        ids.add(row.getField(0));
-    }
-	this.clientFactory.getBackendAwsService().stopInstances(clientFactory.getLocalSession( ).getSession( ), 0, ids, new AsyncCallback<ArrayList<String>>( ) {
-	      @Override
-	      public void onFailure( Throwable caught ) {
-	        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-	        // Log
-	      }
-	      @Override
-	      public void onSuccess( ArrayList<String> arg ) {
-	    	  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Instances stopped", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-	    	// Log
-	      }
-	});
-	
-}
-
-@Override
-public void onTerminateInstances() {
-	final ArrayList<String> ids = Lists.newArrayList();
-    for ( SearchResultRow row : currentSelected ) {
-        ids.add(row.getField(0));
-    }
-	this.clientFactory.getBackendAwsService().terminateInstances(clientFactory.getLocalSession( ).getSession( ), 0, ids, new AsyncCallback<ArrayList<String>>( ) {
-	      @Override
-	      public void onFailure( Throwable caught ) {
-	        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
-	        // Log
-	      }
-	      @Override
-	      public void onSuccess( ArrayList<String> arg ) {
-	    	  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "正在关闭虚拟机...", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-	    	  InstanceActivity.this.reloadCurrentRange();
-	    	// Log
-	      }
-	});
-	
-}
-
-@Override
-public void onRunInstance() {
-  this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "获取信息中...", 0 );
-  mImages = new ArrayList<String>();
-  mKeypairs = new ArrayList<String>();
-  this.clientFactory.getBackendAwsService().lookupKeypair(clientFactory.getLocalSession( ).getSession( ), 0, "", new SearchRange(), new AsyncCallback<SearchResult> () {
-
-    @Override
-    public void onFailure(Throwable caught) {
-      // TODO Auto-generated method stub
+  @Override
+  public void onStartInstances() {
+  	final ArrayList<String> ids = Lists.newArrayList();
+      for ( SearchResultRow row : currentSelected ) {
+          ids.add(row.getField(0));
+      }
       
-    }
-
-    @Override
-    public void onSuccess(SearchResult result) {
-      for (SearchResultRow r : result.getRows()) 
-        mKeypairs.add(r.getField(0));
-      InstanceActivity.this.clientFactory.getBackendAwsService().lookupImage(clientFactory.getLocalSession( ).getSession( ), 0, "machine", new SearchRange(), new AsyncCallback<SearchResult>() {
-
-        @Override
-        public void onFailure(Throwable caught) {
-          // TODO Auto-generated method stub
-          
-        }
-
-        @Override
-        public void onSuccess(SearchResult result) {
-          for (SearchResultRow r : result.getRows()) 
-            mImages.add(r.getField(0));
-          clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-          _onRunInstance();
-        }     
-      });
-    }
+  	this.clientFactory.getBackendAwsService().startInstances(clientFactory.getLocalSession( ).getSession( ), 0, ids, new AsyncCallback<ArrayList<String>>( ) {
+  	      @Override
+  	      public void onFailure( Throwable caught ) {
+  	        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
+  	        // Log
+  	      }
+  	      @Override
+  	      public void onSuccess( ArrayList<String> arg ) {
+  	    	  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Instances stopped", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+  	    	// Log
+  	      }
+  	});
+  	
+  }
+  
+  @Override
+  public void onStopInstances() {
+  	final ArrayList<String> ids = Lists.newArrayList();
+      for ( SearchResultRow row : currentSelected ) {
+          ids.add(row.getField(0));
+      }
+  	this.clientFactory.getBackendAwsService().stopInstances(clientFactory.getLocalSession( ).getSession( ), 0, ids, new AsyncCallback<ArrayList<String>>( ) {
+  	      @Override
+  	      public void onFailure( Throwable caught ) {
+  	        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
+  	        // Log
+  	      }
+  	      @Override
+  	      public void onSuccess( ArrayList<String> arg ) {
+  	    	  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Instances stopped", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+  	    	// Log
+  	      }
+  	});
+  	
+  }
+  
+  @Override
+  public void onTerminateInstances() {
+  	final ArrayList<String> ids = Lists.newArrayList();
+      for ( SearchResultRow row : currentSelected ) {
+          ids.add(row.getField(0));
+      }
+  	this.clientFactory.getBackendAwsService().terminateInstances(clientFactory.getLocalSession( ).getSession( ), 0, ids, new AsyncCallback<ArrayList<String>>( ) {
+  	      @Override
+  	      public void onFailure( Throwable caught ) {
+  	        ActivityUtil.logoutForInvalidSession( clientFactory, caught );
+  	        // Log
+  	      }
+  	      @Override
+  	      public void onSuccess( ArrayList<String> arg ) {
+  	    	  clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "正在关闭虚拟机...", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+  	    	  InstanceActivity.this.reloadCurrentRange();
+  	    	// Log
+  	      }
+  	});
+  	
+  }
+  
+  @Override
+  public void onRunInstance() {
+    this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "获取信息中...", 0 );
+    mImages = new ArrayList<String>();
+    mKeypairs = new ArrayList<String>();
+    this.clientFactory.getBackendAwsService().lookupKeypair(clientFactory.getLocalSession( ).getSession( ), 0, "", new SearchRange(), new AsyncCallback<SearchResult> () {
+  
+      @Override
+      public void onFailure(Throwable caught) {
+        // TODO Auto-generated method stub
+        
+      }
+  
+      @Override
+      public void onSuccess(SearchResult result) {
+        for (SearchResultRow r : result.getRows()) 
+          mKeypairs.add(r.getField(0));
+        InstanceActivity.this.clientFactory.getBackendAwsService().lookupImage(clientFactory.getLocalSession( ).getSession( ), 0, "machine", new SearchRange(), new AsyncCallback<SearchResult>() {
+  
+          @Override
+          public void onFailure(Throwable caught) {
+            // TODO Auto-generated method stub
+            
+          }
+  
+          @Override
+          public void onSuccess(SearchResult result) {
+            for (SearchResultRow r : result.getRows()) 
+              mImages.add(r.getField(0));
+            clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+            _onRunInstance();
+          }     
+        });
+      }
+      
+    });
+    
+  }
+  
+  private void _onRunInstance() {
+    final RunInstanceView dialog = this.clientFactory.createRunInstanceView();
+    dialog.setPresenter(this);
+    dialog.display();  
+  }
+  
+  @Override
+  public void processRun(String image, String keypair, String vmtype, String group) {
+    this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "虚拟机创建中...", 0 );
+    this.clientFactory.getBackendAwsService().runInstance(clientFactory.getLocalSession( ).getSession( ), 0, image, keypair, vmtype, group, new AsyncCallback<String>() {
+    //this.clientFactory.getBackendAwsService().runInstance(clientFactory.getLocalSession( ).getSession( ), image, keypair, new AsyncCallback<String>() {
+  
+      @Override
+      public void onFailure(Throwable caught) {
+        // TODO Auto-generated method stub
+        
+      }
+  
+      @Override
+      public void onSuccess(String result) {
+        clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "虚拟机 " + result + " 已创建", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+        reloadCurrentRange();
+      }
     
   });
+  }
   
-}
-
-private void _onRunInstance() {
-  final RunInstanceView dialog = this.clientFactory.createRunInstanceView();
-  dialog.setPresenter(this);
-  dialog.display();  
-}
-
-@Override
-public void processRun(String image, String keypair, String vmtype, String group) {
-  this.clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.LOADING, "虚拟机创建中...", 0 );
-  this.clientFactory.getBackendAwsService().runInstance(clientFactory.getLocalSession( ).getSession( ), 0, image, keypair, vmtype, group, new AsyncCallback<String>() {
-  //this.clientFactory.getBackendAwsService().runInstance(clientFactory.getLocalSession( ).getSession( ), image, keypair, new AsyncCallback<String>() {
-
-    @Override
-    public void onFailure(Throwable caught) {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void onSuccess(String result) {
-      clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "虚拟机 " + result + " 已创建", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-      reloadCurrentRange();
-    }
+  @Override
+  public List<String> getImages() {
+    // TODO Auto-generated method stub
+    return mImages;
+  }
   
-});
-}
-
-@Override
-public List<String> getImages() {
-  // TODO Auto-generated method stub
-  return mImages;
-}
-
-@Override
-public List<String> getKeypairs() {
-  // TODO Auto-generated method stub
-  return mKeypairs;
-}
+  @Override
+  public List<String> getKeypairs() {
+    // TODO Auto-generated method stub
+    return mKeypairs;
+  }
+  
+  @Override
+  public void onClick(int rowIndex, int colIndex, SearchResultRow row) {
+    // TODO Auto-generated method stub
+    Window.alert(row.getLink(colIndex));
+  }
 }

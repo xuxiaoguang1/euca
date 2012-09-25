@@ -101,5 +101,11 @@ public class InstanceViewImpl extends Composite implements InstanceView {
   public void clearSelection( ) {
     selectionModel.clear( );
   }
+  
+  @Override
+  public void setCellClickProc(SearchTableCellClickHandler clickHandler) {
+    // TODO Auto-generated method stub
+    this.table.setCellClickHandler(clickHandler);
+  }
 
 }

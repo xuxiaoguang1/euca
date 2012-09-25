@@ -13,4 +13,5 @@ public enum EnumService {
 	KEY_SRV,
 	KEYPAIR_SRV,
 	CPU_STAT_SRV,
+	INSTANCE_SRV,
 }

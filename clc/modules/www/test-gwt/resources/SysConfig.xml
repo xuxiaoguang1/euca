@@ -539,6 +539,248 @@
 				<db_field>vit_ver</db_field>
 			</col>
 		</service>
+		<service name="INSTANCE_SRV">
+		    <col>
+				<title language="ENGLISH">Check All</title>
+				<title language="CHINESE">全选</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>BOOLEAN</text>
+				<editable>true</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+			</col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">所有者</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">实例ID</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">镜像ID</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">内核ID</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">虚拟内存ID</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">状态</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">公共DNS</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">私有DNS</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">私有IP</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">公共IP</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">密钥组</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">安全组</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">原因</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">类型</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">根设备</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">启动时间</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">供应区</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">标签</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		    <col>
+		        <title language="ENGLISH"></title>
+		        <title language="CHINESE">平台</title>
+				<sortable>false</sortable>
+				<width>5%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>NULL</db_field>
+		    </col>
+		</service>
 	</searchtable_content>
 	
 	<searchtable_size><!--searchtable_size in View-->
@@ -600,8 +842,11 @@
 		<view>
 			<service_name>CPU_STAT_SRV</service_name>
 			<size>15</size>
-		</view>,
-		
+		</view>
+		<view>
+		    <service_name>INSTANCE_SRV</service_name>
+		    <size>15</size>
+		</view>
 	</searchtable_size>
 
 	<links>
