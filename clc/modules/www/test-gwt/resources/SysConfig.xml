@@ -10,6 +10,10 @@
 		<usr>root</usr>
 		<pwd>root</pwd>
 	</db>
+	
+	<ws>
+		<url>http://166.111.134.30:8773/services/Eucalyptus</url>
+	</ws>
 				
 	<searchtable_content>
 		<service name="ACCOUNT_SRV">

@@ -63,6 +63,8 @@ public class SysConfParser {
 				parseLanguageConf(parent);
 			else if (tag.equalsIgnoreCase(SysConfParser.TAG_DB))
 				parseDBConf(parent);
+			else if (tag.equalsIgnoreCase(SysConfParser.TAG_WS))
+				parseWSConf(parent);
 			else if (tag.equalsIgnoreCase(TAG_LINKS))
 				parseLinks(parent);
 			else if (tag.equalsIgnoreCase(TAG_LINKCONFIG))
@@ -119,6 +121,26 @@ public class SysConfParser {
 		
 		if (url != null && usr != null && pwd != null) {
 			DBConfig.instance().set(url.toString(), usr.toString(), pwd.toString());
+		}
+	}
+	
+	private void parseWSConf(Element node) {
+		List<?> childs = node.elements();
+		
+		Iterator<?> childIter = childs.iterator();
+		
+		Object url = null;
+		
+		while (childIter.hasNext()) {
+			Element child = (Element) childIter.next();
+			
+			if (child.getName().equalsIgnoreCase(TAG_WS_URL)) {
+				url = child.getData();
+			}
+		}
+		
+		if (url != null) {
+			WSConfig.instance().set(url.toString());
 		}
 	}
 	
@@ -378,7 +400,10 @@ public class SysConfParser {
 	private static String TAG_DB_URL = "url";
 	private static String TAG_DB_USR = "usr";
 	private static String TAG_DB_PWD = "pwd";
-
+	
+	private static String TAG_WS = "ws";
+	private static String TAG_WS_URL = "url";
+	
 	private static String TAG_TABLECOL = "searchtable_content";
 	private static String TAG_TABLECOL_SRV = "service";
 	private static String TAG_TABLECOL_SRV_PROP_NAME = "name";
