@@ -24,6 +24,7 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
+import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
 import com.eucalyptus.webui.shared.resource.device.MemoryInfo;
 import com.eucalyptus.webui.shared.resource.device.MemoryServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.status.MemoryState;
@@ -58,59 +59,60 @@ public class DeviceMemoryService {
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("", "名称"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "服务器"),
+            new SearchResultFieldDesc(false, "8%", new ClientMessage("", "描述"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("", "总大小(MB)"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "设备创建时间"),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "此项大小(MB)"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "设备修改时间"),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "服务器"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "创建时间"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "修改时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("", "账户"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("", "用户"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "描述"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "大小(MB)"),
+            new SearchResultFieldDesc(false, "8%", new ClientMessage("", "描述"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("", "开始时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("", "结束时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "剩余时间"),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "剩余(天)"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("", "状态"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "服务创建时间"),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "创建时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "服务修改时间"),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "修改时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false));
-    
-    private final int SERVICE_LIFE_COLUMN = 15;
     
     private DBTableColumn getSortColumn(SearchRange range) {
         switch (range.getSortField()) {
-        case 4: return DBTable.MEMORY.MEMORY_NAME;
-        case 5: return DBTable.SERVER.SERVER_NAME;
-        case 6: return DBTable.MEMORY.MEMORY_TOTAL;
-        case 7: return DBTable.MEMORY.MEMORY_CREATIONTIME;
-        case 8: return DBTable.MEMORY.MEMORY_MODIFIEDTIME;
-        case 9: return DBTable.ACCOUNT.ACCOUNT_NAME;
-        case 10: return DBTable.USER.USER_NAME;
-        case 11: return DBTable.MEMORY_SERVICE.MEMORY_SERVICE_DESC;
-        case 12: return DBTable.MEMORY_SERVICE.MEMORY_SERVICE_USED;
-        case 13: return DBTable.MEMORY_SERVICE.MEMORY_SERVICE_STARTTIME;
-        case 14: return DBTable.MEMORY_SERVICE.MEMORY_SERVICE_ENDTIME;
-        case 16: return DBTable.MEMORY_SERVICE.MEMORY_SERVICE_STATE;
-        case 17: return DBTable.MEMORY_SERVICE.MEMORY_SERVICE_CREATIONTIME;
-        case 18: return DBTable.MEMORY_SERVICE.MEMORY_SERVICE_MODIFIEDTIME;
+        case CellTableColumns.MEMORY.MEMORY_NAME: return DBTable.MEMORY.MEMORY_NAME;
+        case CellTableColumns.MEMORY.MEMORY_SERVICE_USED: return DBTable.MEMORY_SERVICE.MEMORY_SERVICE_USED;
+        case CellTableColumns.MEMORY.MEMORY_TOTAL: return DBTable.MEMORY.MEMORY_TOTAL;
+        case CellTableColumns.MEMORY.SERVER_NAME: return DBTable.SERVER.SERVER_NAME;
+        case CellTableColumns.MEMORY.MEMORY_CREATIONTIME: return DBTable.MEMORY.MEMORY_CREATIONTIME;
+        case CellTableColumns.MEMORY.MEMORY_MODIFIEDTIME: return DBTable.MEMORY.MEMORY_MODIFIEDTIME;
+        case CellTableColumns.MEMORY.ACCOUNT_NAME: return DBTable.ACCOUNT.ACCOUNT_NAME;
+        case CellTableColumns.MEMORY.USER_NAME: return DBTable.USER.USER_NAME;
+        case CellTableColumns.MEMORY.MEMORY_SERVICE_STARTTIME: return DBTable.MEMORY_SERVICE.MEMORY_SERVICE_STARTTIME;
+        case CellTableColumns.MEMORY.MEMORY_SERVICE_ENDTIME: return DBTable.MEMORY_SERVICE.MEMORY_SERVICE_ENDTIME;
+        case CellTableColumns.MEMORY.MEMORY_SERVICE_STATE: return DBTable.MEMORY_SERVICE.MEMORY_SERVICE_STATE;
+        case CellTableColumns.MEMORY.MEMORY_SERVICE_CREATIONTIME: return DBTable.MEMORY_SERVICE.MEMORY_SERVICE_CREATIONTIME;
+        case CellTableColumns.MEMORY.MEMORY_SERVICE_MODIFIEDTIME: return DBTable.MEMORY_SERVICE.MEMORY_SERVICE_MODIFIEDTIME;
         }
         return null;
     }
     
     private int getLife(Date starttime, Date endtime) {
-        return (int)((endtime.getTime() - starttime.getTime()) / (1000L *24 *3600));
+    	final long div = 1000L * 24 * 3600;
+    	long start = starttime.getTime() / div, end = endtime.getTime() / div;
+    	return start <= end ? (int)(start - end) + 1 : 0;
     }
     
     private static final long MEMORY_UNIT = 1024 * 1024;
@@ -135,10 +137,12 @@ public class DeviceMemoryService {
             DBTableServer SERVER = DBTable.SERVER;
             DBTableMemory MEMORY = DBTable.MEMORY;
             DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
+            Date today = new Date();
             for (int index = 1; rs.next(); index ++) {
                 int memory_id = DBData.getInt(rs, MEMORY.MEMORY_ID);
                 int ms_id = DBData.getInt(rs, MEMORY_SERVICE.MEMORY_SERVICE_ID);
                 String memory_name = DBData.getString(rs, MEMORY.MEMORY_NAME);
+                String memory_desc = DBData.getString(rs, MEMORY.MEMORY_DESC);
                 String server_name = DBData.getString(rs, SERVER.SERVER_NAME);
                 long memory_total = DBData.getLong(rs, MEMORY.MEMORY_TOTAL) / MEMORY_UNIT;
                 Date memory_creationtime = DBData.getDate(rs, MEMORY.MEMORY_CREATIONTIME);
@@ -147,7 +151,7 @@ public class DeviceMemoryService {
                 String account_name = null;
                 String user_name = null;
                 String ms_desc = null;
-                String ms_used = null;
+                long ms_used = DBData.getLong(rs, MEMORY_SERVICE.MEMORY_SERVICE_USED) / MEMORY_UNIT;
                 Date ms_starttime = null;
                 Date ms_endtime = null;
                 String ms_life = null;
@@ -157,27 +161,27 @@ public class DeviceMemoryService {
                     account_name = DBData.getString(rs, ACCOUNT.ACCOUNT_NAME);
                     user_name = DBData.getString(rs, USER.USER_NAME);
                     ms_desc = DBData.getString(rs, MEMORY_SERVICE.MEMORY_SERVICE_DESC);
-                    ms_used = Long.toString(DBData.getLong(rs, MEMORY_SERVICE.MEMORY_SERVICE_USED) / MEMORY_UNIT);
                     ms_starttime = DBData.getDate(rs, MEMORY_SERVICE.MEMORY_SERVICE_STARTTIME);
                     ms_endtime = DBData.getDate(rs, MEMORY_SERVICE.MEMORY_SERVICE_ENDTIME);
-                    ms_life = Integer.toString(getLife(ms_starttime, ms_endtime));
+                    ms_life = Integer.toString(Math.min(getLife(ms_starttime, ms_endtime), getLife(today, ms_endtime)));
                     ms_creationtime = DBData.getDate(rs, MEMORY_SERVICE.MEMORY_SERVICE_CREATIONTIME);
                     ms_modifiedtime = DBData.getDate(rs, MEMORY_SERVICE.MEMORY_SERVICE_MODIFIEDTIME);
                 }
-                List<String> list = Arrays.asList(Integer.toString(memory_id), Integer.toString(ms_id), "", Integer.toString(index ++),
-                        memory_name, server_name, Long.toString(memory_total),
-                        DBData.format(memory_creationtime), DBData.format(memory_modifiedtime), account_name, user_name, ms_desc, ms_used,
+                List<String> list = Arrays.asList(Integer.toString(ms_id), Integer.toString(memory_id), "", Integer.toString(index ++),
+                        memory_name, memory_desc, Long.toString(memory_total), Long.toString(ms_used), server_name, 
+                        DBData.format(memory_creationtime), DBData.format(memory_modifiedtime), account_name, user_name, ms_desc,
                         DBData.format(ms_starttime), DBData.format(ms_endtime), ms_life, memory_state.toString(),
                         DBData.format(ms_creationtime), DBData.format(ms_modifiedtime));
                 rows.add(new SearchResultRow(list));
             }
-            if (range.getSortField() == SERVICE_LIFE_COLUMN) {
+            final int col_life = CellTableColumns.MEMORY.MEMORY_SERVICE_LIFE;
+            if (range.getSortField() == col_life) {
                 final boolean isAscending = range.isAscending();
                 Collections.sort(rows, new Comparator<SearchResultRow>() {
 
                     @Override
                     public int compare(SearchResultRow arg0, SearchResultRow arg1) {
-                        String life0 = arg0.getField(SERVICE_LIFE_COLUMN), life1 = arg1.getField(SERVICE_LIFE_COLUMN);
+                        String life0 = arg0.getField(col_life), life1 = arg1.getField(col_life);
                         int result;
                         if (life0.length() == 0) {
                             result = life1.length() == 0 ? 0 : -1;
@@ -224,7 +228,7 @@ public class DeviceMemoryService {
         }
     }
     
-    public synchronized Map<Integer, Integer> lookupMemoryCountsGroupByState(Session session, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+    public synchronized Map<Integer, Long> lookupMemoryCountsGroupByState(Session session) throws EucalyptusServiceException {
         ResultSetWrapper rsw = null;
         try {
             LoginUserProfile user = getUser(session);
@@ -238,15 +242,15 @@ public class DeviceMemoryService {
                 rsw = dbproc.lookupMemoryCountsGroupByState(user.getAccountId(), user.getUserId());
             }
             ResultSet rs = rsw.getResultSet();
-            Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+            Map<Integer, Long> map = new HashMap<Integer, Long>();
             long sum = 0;
             while (rs.next()) {
                 int memory_state = rs.getInt(1);
                 long memory_total = rs.getLong(2);
                 sum += memory_total;
-                map.put(memory_state, (int)(memory_total / MEMORY_UNIT));
+                map.put(memory_state, memory_total / MEMORY_UNIT);
             }
-            map.put(-1, (int)(sum / MEMORY_UNIT));
+            map.put(-1, sum / MEMORY_UNIT);
             return map;
         }
         catch (Exception e) {
@@ -265,12 +269,15 @@ public class DeviceMemoryService {
         }
     }
     
-    public synchronized void addMemory(Session session, String memory_name, String memory_desc, int memory_size, String server_name) throws Exception { 
+    public synchronized void addMemory(Session session, String memory_name, String memory_desc, long memory_size, String server_name) throws EucalyptusServiceException { 
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
         }
         if (isEmpty(memory_name)) {
             throw new EucalyptusServiceException(new ClientMessage("", "无效的内存名称"));
+        }
+        if (memory_size <= 0) {
+            throw new EucalyptusServiceException(new ClientMessage("", "无效的内存大小"));
         }
         if (isEmpty(server_name)) {
             throw new EucalyptusServiceException(new ClientMessage("", "无效的服务器名称"));
@@ -288,8 +295,7 @@ public class DeviceMemoryService {
         }
     }
     
-    public synchronized void addMemoryService(Session session, String ms_desc, int ms_size, Date ms_starttime, Date ms_endtime, 
-            MemoryState memory_state, int memory_id, String account_name, String user_name) throws EucalyptusServiceException {
+    public synchronized void addMemoryService(Session session, String ms_desc, long ms_size, Date ms_starttime, Date ms_endtime, int memory_id, String account_name, String user_name) throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
         }
@@ -299,8 +305,8 @@ public class DeviceMemoryService {
         if (getLife(ms_starttime, ms_endtime) <= 0) {
             throw new EucalyptusServiceException(new ClientMessage("", "无效的服务期限"));
         }
-        if (memory_state != MemoryState.INUSE && memory_state != MemoryState.STOP) {
-            throw new EucalyptusServiceException(new ClientMessage("", "无效的服务状态"));
+        if (ms_size <= 0) {
+            throw new EucalyptusServiceException(new ClientMessage("", "无效的内存大小"));
         }
         if (isEmpty(account_name) || isEmpty(user_name)) {
             throw new EucalyptusServiceException(new ClientMessage("", "无效的账户名称"));
@@ -310,7 +316,7 @@ public class DeviceMemoryService {
         }
         long memory_used = ms_size * MEMORY_UNIT;
         try {
-            dbproc.createMemoryService(ms_desc, memory_used, ms_starttime, ms_endtime, memory_state, memory_id, account_name, user_name);
+            dbproc.createMemoryService(ms_desc, memory_used, ms_starttime, ms_endtime, memory_id, account_name, user_name);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -333,7 +339,6 @@ public class DeviceMemoryService {
         }
     }
     
-    
     public synchronized void deleteMemoryService(Session session, List<Integer> ms_ids) throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
@@ -349,19 +354,73 @@ public class DeviceMemoryService {
         }
     }
     
-    public synchronized void modifyMemory(Session session, int memory_id, String memory_desc) throws EucalyptusServiceException {
+    public synchronized void modifyMemory(Session session, int memory_id, String memory_desc, long memory_size) throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
+        }
+        if (memory_size <= 0) {
+            throw new EucalyptusServiceException(new ClientMessage("", "无效的内存大小"));
         }
         if (memory_desc == null) {
             memory_desc = "";
         }
+        long memory_total = memory_size * MEMORY_UNIT;
+        ResultSetWrapper rsw = null;
+        long total = 0;
+        long reserved = 0;
         try {
-            dbproc.modifyMemory(memory_id, memory_desc);
+            rsw = dbproc.getMemoryResizeInfo(memory_id);
+            ResultSet rs = rsw.getResultSet();
+            rs.next();
+            total = rs.getLong(1);
+            reserved = rs.getLong(2);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EucalyptusServiceException(new ClientMessage("", "获取内存大小失败"));
+        }
+        finally {
+            if (rsw != null) {
+                try {
+                    rsw.close();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (memory_total < total - reserved) {
+            throw new EucalyptusServiceException(new ClientMessage("", "无效的内存大小：已使用 " + (total - reserved)));
+        }
+        try {
+            dbproc.modifyMemory(memory_id, memory_desc, memory_total - total);
         }
         catch (Exception e) {
             e.printStackTrace();
             throw new EucalyptusServiceException(new ClientMessage("", "修改内存失败"));
+        }
+    }
+    
+    public synchronized void modifyMemoryService(Session session, int ms_id, String ms_desc,
+            Date ms_starttime, Date ms_endtime) throws EucalyptusServiceException {
+        if (!getUser(session).isSystemAdmin()) {
+            throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
+        }
+        if (ms_starttime == null || ms_endtime == null) {
+            throw new EucalyptusServiceException(new ClientMessage("", "无效的服务日期"));
+        }
+        if (getLife(ms_starttime, ms_endtime) <= 0) {
+            throw new EucalyptusServiceException(new ClientMessage("", "无效的服务期限"));
+        }
+        if (ms_desc == null) {
+            ms_desc = "";
+        }
+        try {
+            dbproc.modifyMemoryService(ms_id, ms_desc, ms_starttime, ms_endtime);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EucalyptusServiceException(new ClientMessage("", "修改内存服务失败"));
         }
     }
     
@@ -422,7 +481,7 @@ public class DeviceMemoryService {
             DBTableMemory MEMORY = DBTable.MEMORY;
             String memory_name = DBData.getString(rs, MEMORY.MEMORY_NAME);
             String memory_desc = DBData.getString(rs, MEMORY.MEMORY_DESC);
-            long memory_total = DBData.getLong(rs, MEMORY.MEMORY_TOTAL);
+            long memory_total = DBData.getLong(rs, MEMORY.MEMORY_TOTAL) / MEMORY_UNIT;
             Date memory_creationtime = DBData.getDate(rs, MEMORY.MEMORY_CREATIONTIME);
             Date memory_modifiedtime = DBData.getDate(rs, MEMORY.MEMORY_MODIFIEDTIME);
             int server_id = DBData.getInt(rs, MEMORY.SERVER_ID);
@@ -452,7 +511,7 @@ public class DeviceMemoryService {
             rs.next();
             DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
             String ms_desc = DBData.getString(rs, MEMORY_SERVICE.MEMORY_SERVICE_DESC);
-            long ms_used = DBData.getLong(rs, MEMORY_SERVICE.MEMORY_SERVICE_USED);
+            long ms_used = DBData.getLong(rs, MEMORY_SERVICE.MEMORY_SERVICE_USED) / MEMORY_UNIT;
             Date ms_starttime = DBData.getDate(rs, MEMORY_SERVICE.MEMORY_SERVICE_STARTTIME);
             Date ms_endtime = DBData.getDate(rs, MEMORY_SERVICE.MEMORY_SERVICE_ENDTIME);
             MemoryState memory_state = MemoryState.getMemoryState(DBData.getInt(rs, MEMORY_SERVICE.MEMORY_SERVICE_STATE));
@@ -537,24 +596,21 @@ class DeviceMemoryDBProcWrapper {
         DBTableServer SERVER = DBTable.SERVER;
         DBTableMemory MEMORY = DBTable.MEMORY;
         DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
-        DBTableAlias A = DBTable.getDBTableAlias("A");
         DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ").append(MEMORY.ANY).append(", ").append(MEMORY_SERVICE.ANY).append(", ").append(SERVER.SERVER_NAME).append(", ").append(A).append(" FROM ");
-        sb.append("(SELECT ").append(ACCOUNT.ACCOUNT_NAME).append(", ").append(USER.USER_NAME).append(" FROM ");
-        sb.append(USER).append(" LEFT JOIN ").append(ACCOUNT).append(" ON ").append(USER.ACCOUNT_ID).append(" = ").append(ACCOUNT.ACCOUNT_ID).append(" WHERE 1=1");
-        if (account_id != 0) {
-            sb.append(" AND ").append(ACCOUNT.ACCOUNT_ID).append(" = ").append(account_id);
+        sb.append("SELECT ").append(MEMORY.ANY).append(", ").append(MEMORY_SERVICE.ANY).append(", ").append(SERVER.SERVER_NAME).append(", ").append(ACCOUNT.ACCOUNT_NAME).append(", ").append(USER.USER_NAME).append(" FROM ");
+        sb.append(MEMORY_SERVICE).append(" LEFT JOIN ").append(USER).append(" ON ").append(MEMORY_SERVICE.USER_ID).append(" = ").append(USER.USER_ID);
+        sb.append(" LEFT JOIN ").append(ACCOUNT).append(" ON ").append(USER.ACCOUNT_ID).append(" = ").append(ACCOUNT.ACCOUNT_ID);
+        sb.append(" LEFT JOIN ").append(MEMORY).append(" ON ").append(MEMORY_SERVICE.MEMORY_ID).append(" = ").append(MEMORY.MEMORY_ID);
+        sb.append(" LEFT JOIN ").append(SERVER).append(" ON ").append(MEMORY.SERVER_ID).append(" = ").append(SERVER.SERVER_ID);
+        sb.append(" WHERE ").append(MEMORY_SERVICE.MEMORY_SERVICE_USED).append(" != ").append(0);
+        if (memory_state != null) {
+            sb.append(" AND ").append(MEMORY_SERVICE.MEMORY_SERVICE_STATE).append(" = ").append(memory_state.getValue());
         }
         if (user_id != 0) {
             sb.append(" AND ").append(USER.USER_ID).append(" = ").append(user_id);
         }
-        sb.append(") as ").append(A).append(" RIGHT JOIN ").append(MEMORY_SERVICE);
-        sb.append(" ON ").append(MEMORY_SERVICE.USER_ID).append(" = ").append(A.getColumn(USER.USER_ID));
-        sb.append(" LEFT JOIN ").append(MEMORY).append(" ON ").append(MEMORY_SERVICE.MEMORY_ID).append(" = ").append(MEMORY.MEMORY_ID);
-        sb.append(" LEFT JOIN ").append(SERVER).append(" ON ").append(MEMORY.SERVER_ID).append(" = ").append(SERVER.SERVER_ID);
-        sb.append(" WHERE 1=1");
-        if (memory_state != null) {
-            sb.append(" AND ").append(MEMORY_SERVICE.MEMORY_SERVICE_STATE).append(" = ").append(memory_state.getValue());
+        if (account_id != 0) {
+            sb.append(" AND ").append(ACCOUNT.ACCOUNT_ID).append(" = ").append(account_id);
         }
         if (dateBegin != null || dateEnd != null) {
             sb.append(" AND (");
@@ -613,16 +669,29 @@ class DeviceMemoryDBProcWrapper {
         
         sb = new DBStringBuilder();
         sb.append("INSERT INTO ").append(MEMORY_SERVICE).append(" (");
+        sb.append(MEMORY_SERVICE.MEMORY_SERVICE_DESC).append(", ");
+        sb.append(MEMORY_SERVICE.MEMORY_SERVICE_USED).append(", ");
+        sb.append(MEMORY_SERVICE.MEMORY_SERVICE_STARTTIME).append(", ");
+        sb.append(MEMORY_SERVICE.MEMORY_SERVICE_ENDTIME).append(", ");
         sb.append(MEMORY_SERVICE.MEMORY_SERVICE_STATE).append(", ");
+        sb.append(MEMORY_SERVICE.MEMORY_SERVICE_CREATIONTIME).append(", ");
+        sb.append(MEMORY_SERVICE.MEMORY_SERVICE_MODIFIEDTIME).append(", ");
         sb.append(MEMORY_SERVICE.MEMORY_ID).append(", ");
         sb.append(MEMORY_SERVICE.USER_ID);
         sb.append(") VALUES (");
+        sb.appendString(null).append(", ");
+        sb.append(mem_total).append(", ");
+        sb.appendNull().append(", ");
+        sb.appendNull().append(", ");
         sb.append(MemoryState.RESERVED.getValue()).append(", ");
-        sb.append("(SELECT MAX(").append(MEMORY.MEMORY_ID).append(") FROM ").append(MEMORY).append(" WHERE 1=1)").append(", -1").append(")");
+        sb.appendNull().append(", ");
+        sb.appendNull().append(", ");
+        sb.append("(SELECT MAX(").append(MEMORY.MEMORY_ID).append(") FROM ").append(MEMORY).append(" WHERE 1=1)").append(", ");
+        sb.appendNull().append(")");
         doUpdate(sb.toString());
     }
     
-    public void createMemoryService(String ms_desc, long ms_used, Date ms_starttime, Date ms_endtime, MemoryState memory_state, int mem_id, String account_name, String user_name) throws Exception {
+    public void createMemoryService(String ms_desc, long ms_used, Date ms_starttime, Date ms_endtime, int mem_id, String account_name, String user_name) throws Exception {
         DBTableAccount ACCOUNT = DBTable.ACCOUNT;
         DBTableUser USER = DBTable.USER;
         DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
@@ -642,12 +711,14 @@ class DeviceMemoryDBProcWrapper {
         sb.append(ms_used).append(", ");
         sb.appendDate(ms_starttime).append(", ");
         sb.appendDate(ms_endtime).append(", ");
-        sb.append(memory_state.getValue()).append(", ");
+        sb.append(MemoryState.STOP.getValue()).append(", ");
         sb.appendDate(new Date()).append(", ");
         sb.append("(SELECT ").append(USER.USER_ID).append(" FROM ").append(USER).append(" LEFT JOIN ").append(ACCOUNT).append(" ON ").append(USER.ACCOUNT_ID).append(" = ").append(ACCOUNT.ACCOUNT_ID).append(" WHERE ");
         sb.append(USER.USER_NAME).append(" = ").appendString(user_name).append(" AND ").append(ACCOUNT.ACCOUNT_NAME).append(" = ").appendString(account_name).append(")").append(", ");
         sb.append(mem_id).append(")");
         doUpdate(sb.toString());
+        
+        int ms_id = getMaxMemoryServiceID();
         
         DBTableAlias A = DBTable.getDBTableAlias("A");
         DBTableAlias B = DBTable.getDBTableAlias("B");
@@ -657,14 +728,50 @@ class DeviceMemoryDBProcWrapper {
         sb.append("UPDATE ").append(MEMORY_SERVICE).append(" ").append(A).append(", ").append(MEMORY_SERVICE).append(" ").append(B).append(" SET ");
         sb.append(A_USED).append(" = ").append(ms_used).append(", ");
         sb.append(B_USED).append(" = ").append("(").append(B_USED).append(" - ").append(ms_used).append(")");
-        sb.append(" WHERE ").append(A.getColumn(MEMORY_SERVICE.MEMORY_SERVICE_ID)).append(" = ");
-        sb.append("(SELECT MAX(").append(MEMORY_SERVICE.MEMORY_SERVICE_ID).append(") FROM ").append(MEMORY_SERVICE).append(")");
+        sb.append(" WHERE ").append(A.getColumn(MEMORY_SERVICE.MEMORY_SERVICE_ID)).append(" = ").append(ms_id);
         sb.append(" AND ").append(A.getColumn(MEMORY_SERVICE.MEMORY_ID)).append(" = ").append(B.getColumn(MEMORY_SERVICE.MEMORY_ID));
         sb.append(" AND ").append(B.getColumn(MEMORY_SERVICE.MEMORY_SERVICE_STATE)).append(" = ").append(MemoryState.RESERVED.getValue());
         sb.append(" AND ").append(B.getColumn(MEMORY_SERVICE.MEMORY_SERVICE_USED)).append(" >= ").append(ms_used);
         doUpdate(sb.toString());
         
         doCleanup();
+    }
+    
+    private int getMaxMemoryServiceID() throws Exception {
+        DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
+        DBStringBuilder sb = new DBStringBuilder();
+        sb.append("SELECT MAX(").append(MEMORY_SERVICE.MEMORY_SERVICE_ID).append(") FROM ").append(MEMORY_SERVICE).append(" WHERE 1=1");
+        ResultSetWrapper rsw = null;
+        try {
+            rsw = doQuery(sb.toString());
+            ResultSet rs = rsw.getResultSet();
+            rs.next();
+            return rs.getInt(1);
+        }
+        catch (Exception e) {
+            throw e;
+        }
+        finally {
+            if (rsw != null) {
+                try {
+                    rsw.close();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
+    public ResultSetWrapper getMemoryResizeInfo(int memory_id) throws Exception {
+        DBTableMemory MEMORY = DBTable.MEMORY;
+        DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
+        DBStringBuilder sb = new DBStringBuilder();
+        sb.append("SELECT ").append(MEMORY.MEMORY_TOTAL).append(", ").append(MEMORY_SERVICE.MEMORY_SERVICE_USED).append(" FROM ").append(MEMORY_SERVICE);
+        sb.append(" LEFT JOIN ").append(MEMORY).append(" ON ").append(MEMORY_SERVICE.MEMORY_ID).append(" = ").append(MEMORY.MEMORY_ID);
+        sb.append(" WHERE ").append(MEMORY_SERVICE.MEMORY_ID).append(" = ").append(memory_id);
+        sb.append(" AND ").append(MEMORY_SERVICE.MEMORY_SERVICE_STATE).append(" = ").append(MemoryState.RESERVED.getValue());
+        return doQuery(sb.toString());
     }
     
     public void deleteMemory(List<Integer> mem_ids) throws Exception {
@@ -723,31 +830,35 @@ class DeviceMemoryDBProcWrapper {
         doCleanup();
     }
     
-    public void modifyMemory(int mem_id, String mem_desc) throws Exception {
+    public void modifyMemory(int mem_id, String mem_desc, long mem_resize) throws Exception {
         DBTableMemory MEMORY = DBTable.MEMORY;
+        DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
         DBStringBuilder sb = new DBStringBuilder();
-        sb.append("UPDATE ").append(MEMORY).append(" SET ");
+        sb.append("UPDATE ").append(MEMORY).append(" LEFT JOIN ").append(MEMORY_SERVICE).append(" ON ").append(MEMORY.MEMORY_ID).append(" = ").append(MEMORY_SERVICE.MEMORY_ID).append(" SET ");
         sb.append(MEMORY.MEMORY_DESC).append(" = ").appendString(mem_desc).append(", ");
+        sb.append(MEMORY.MEMORY_TOTAL).append(" = (").append(MEMORY.MEMORY_TOTAL).append(" + ").append(mem_resize).append("), ");
         sb.append(MEMORY.MEMORY_MODIFIEDTIME).append(" = ").appendDate(new Date()).append(", ");
+        sb.append(MEMORY_SERVICE.MEMORY_SERVICE_USED).append(" = (").append(MEMORY_SERVICE.MEMORY_SERVICE_USED).append(" + ").append(mem_resize).append(")");
         sb.append(" WHERE ").append(MEMORY.MEMORY_ID).append(" = ").append(mem_id);
+        sb.append(" AND ").append(MEMORY_SERVICE.MEMORY_SERVICE_STATE).append(" = ").append(MemoryState.RESERVED.getValue());
+        sb.append(" AND ").append("(").append(MEMORY_SERVICE.MEMORY_SERVICE_USED).append(" + ").append(mem_resize).append(")").append(" >= 0");
         doUpdate(sb.toString());
     }
     
-    public void modifyMemoryService(int ms_id, String ms_desc, Date ms_starttime, Date ms_endtime, MemoryState memory_state) throws Exception {
-        DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
+    public void modifyMemoryService(int ms_id, String ms_desc, Date ms_starttime, Date ms_endtime) throws Exception {
+    	DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
         DBStringBuilder sb = new DBStringBuilder();
         sb.append("UPDATE ").append(MEMORY_SERVICE).append(" SET ");
         sb.append(MEMORY_SERVICE.MEMORY_SERVICE_DESC).append(" = ").appendString(ms_desc).append(", ");
         sb.append(MEMORY_SERVICE.MEMORY_SERVICE_STARTTIME).append(" = ").appendDate(ms_starttime).append(", ");
         sb.append(MEMORY_SERVICE.MEMORY_SERVICE_ENDTIME).append(" = ").appendDate(ms_endtime).append(", ");
-        sb.append(MEMORY_SERVICE.MEMORY_SERVICE_STATE).append(" = ").append(memory_state.getValue()).append(", ");
         sb.append(MEMORY_SERVICE.MEMORY_SERVICE_MODIFIEDTIME).append(" = ").appendDate(new Date());
         sb.append(" WHERE ").append(MEMORY_SERVICE.MEMORY_SERVICE_ID).append(" = ").append(ms_id);
         doUpdate(sb.toString());
     }
     
     public void updateMemoryServiceState(int ms_id, MemoryState memory_state) throws Exception {
-        DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
+    	DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
         DBStringBuilder sb = new DBStringBuilder();
         sb.append("UPDATE ").append(MEMORY_SERVICE).append(" SET ");
         sb.append(MEMORY_SERVICE.MEMORY_SERVICE_STATE).append(" = ").append(memory_state.getValue());
@@ -756,12 +867,13 @@ class DeviceMemoryDBProcWrapper {
     }
     
     public ResultSetWrapper lookupMemoryNamesByServerName(String server_name) throws Exception {
-        DBTableServer SERVER = DBTable.SERVER;
+    	DBTableServer SERVER = DBTable.SERVER;
         DBTableMemory MEMORY = DBTable.MEMORY;
         DBStringBuilder sb = new DBStringBuilder();
         sb.append("SELECT DISTINCT(").append(MEMORY.MEMORY_NAME).append(") FROM");
         sb.append(MEMORY).append(" LEFT JOIN ").append(SERVER).append(" ON ").append(MEMORY.SERVER_ID).append(" = ").append(SERVER.SERVER_ID);
         sb.append(" WHERE ").append(SERVER.SERVER_NAME).append(" = ").appendString(server_name);
+        sb.append(" ORDER BY ").append(MEMORY.MEMORY_NAME);
         return doQuery(sb.toString());
     }
     

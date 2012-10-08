@@ -1,11 +1,12 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.List;
+import java.util.Date;
 import java.util.Set;
 
-import com.eucalyptus.webui.client.activity.device.DeviceMemoryActivity.MemoryState;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
+import com.eucalyptus.webui.shared.resource.device.status.MemoryState;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -16,7 +17,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.user.client.ui.DeckPanel;
+import com.google.gwt.view.client.SelectionChangeEvent;
 
 public class DeviceMemoryViewImpl extends Composite implements DeviceMemoryView {
 
@@ -24,254 +25,256 @@ public class DeviceMemoryViewImpl extends Composite implements DeviceMemoryView 
 
 	interface MemoryViewImplUiBinder extends UiBinder<Widget, DeviceMemoryViewImpl> {
 	}
-
-	@UiField
-	LayoutPanel resultPanel;
-	@UiField
-	Anchor labelAll;
-	@UiField
-	Anchor labelReserved;
-	@UiField
-	Anchor labelInuse;
-	@UiField
-	Anchor labelStop;
 	
-	private static final long DIV_UNIT = 1024;
+	@UiField LayoutPanel resultPanel;
+    @UiField Anchor buttonAddMemory;
+    @UiField Anchor buttonDeleteMemory;
+    @UiField Anchor buttonModifyMemory;
+    @UiField Anchor buttonAddMemoryService;
+    @UiField Anchor buttonDeleteMemoryService;
+    @UiField Anchor buttonModifyMemoryService;
+    @UiField Anchor buttonClearSelection;
+    @UiField DeviceDateBox dateBegin;
+    @UiField DeviceDateBox dateEnd;
+    @UiField Anchor buttonClearDate;
+    @UiField Anchor labelAll;
+    @UiField Anchor labelStop;
+    @UiField Anchor labelInuse;
+    @UiField Anchor labelReserved;
+    
+    private Presenter presenter;
+    private MultiSelectionModel<SearchResultRow> selection;
+    private DBSearchResultTable table;
+    private DevicePopupPanel popup = new DevicePopupPanel();
+    
+    public DeviceMemoryViewImpl() {
+        initWidget(uiBinder.createAndBindUi(this));
+        selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
+        selection.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
 
-	private String getLabel(boolean highlight, String msg) {
-		StringBuilder sb = new StringBuilder();
-		String color = isMirrorMode() ? "#AAAAAA" : highlight ? "red" : "darkblue";
-		sb.append("<font color='").append(color).append("'>").append(msg).append("</font>");
-		return sb.toString();
-	}
+            @Override
+            public void onSelectionChange(SelectionChangeEvent event) {
+                updateSearchResultButtonStatus();
+                presenter.onSelectionChange(selection.getSelectedSet());
+            }
+            
+        });
+        updateSearchResultButtonStatus();
+        
+        popup.setAutoHideEnabled(true);
+        
+        for (final DeviceDateBox dateBox : new DeviceDateBox[]{dateBegin, dateEnd}) {
+            dateBox.setErrorHandler(new Handler() {
 
-	@Override
-	public void updateLabels() {
-		final String[] prefix = {"全部内存数量： ", "预留内存数量： ", "使用中内存数量： ", "未使用内存数量： "};
-		final String suffix = " GB";
-		final MemoryState[] states = {null, MemoryState.RESERVED, MemoryState.INUSE, MemoryState.STOP};
-		MemoryState state = presenter.getQueryState();
-		Anchor[] labels = new Anchor[]{labelAll, labelReserved, labelInuse, labelStop};
-		for (int i = 0; i < labels.length; i ++) {
-			if (labels[i] != null) {
-				double value = (double)presenter.getCounts(states[i]) / DIV_UNIT;
-				labels[i].setHTML(getLabel(state == states[i], prefix[i] + stringValue(value) + suffix));
-			}
-		}
-	}
-	
-	private String stringValue(double v) {
-		StringBuilder sb = new StringBuilder();
-		long i = (long)v;
-		int j = (int)((long)(v * 100) - i * 100) % 100;
-		sb.append(i).append(".");
-		if (j < 10) {
-			sb.append("0");
-		}
-		sb.append(j);
-		return sb.toString();
-	}
+                @Override
+                public void onErrorHappens() {
+                    updateDateButtonStatus();
+                    int x = dateBox.getAbsoluteLeft();
+                    int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
+                    popup.setHTML(x, y, "15EM", "3EM", DeviceDateBox.getDateErrorHTML(dateBox));
+                }
 
-	private void updatePanel() {
-		updateLabels();
-		if (!isMirrorMode()) {
-			if (mirrorTable != null) {
-				resultPanel.remove(mirrorTable);
-			}
-			if (table != null) {
-				resultPanel.add(table);
-			}
-			deckPanel.showWidget(0);
-		}
-		else {
-			if (table != null) {
-				resultPanel.remove(table);
-			}
-			if (mirrorTable != null) {
-				resultPanel.add(mirrorTable);
-			}
-			switch (getMirrorModeType()) {
-			case ADD_SERVICE:
-				deckPanel.showWidget(1);
-				break;
-			case MODIFY_SERVICE:
-				deckPanel.showWidget(2);
-				break;
-			case DELETE_SERVICE:
-				deckPanel.showWidget(3);
-				break;
-			case DELETE_DEVICE:
-				deckPanel.showWidget(4);
-				break;
-			}
-		}
-	}
+                @Override
+                public void onValueChanged() {
+                    updateDateButtonStatus();
+                    int x = dateBox.getAbsoluteLeft();
+                    int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
+                    DeviceDateBox pair;
+                    pair = (dateBox != dateBegin ? dateBegin : dateEnd);
+                    if (!pair.hasError()) {
+                        Date date0 = dateBegin.getValue(), date1 = dateEnd.getValue();
+                        if (date0 != null && date1 != null) {
+                            if (date0.getTime() > date1.getTime()) {
+                                popup.setHTML(x, y, "12EM", "2EM", DeviceDateBox.getDateErrorHTML(dateBegin, dateEnd));
+                                return;
+                            }
+                        }
+                        updateSearchRange();
+                    }
+                }
+            });
+        }
+        
+        updateDateButtonStatus();
+    }
+    
+    private String getLabel(boolean highlight, String msg) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<font color='").append(highlight ? "red" : "darkblue").append("'>").append(msg).append("</font>");
+        return sb.toString();
+    }
+    
+    private static final long MEMORY_UNIT = 1024;
 
-	@UiHandler("labelAll")
-	void handleLabelAll(ClickEvent event) {
-		presenter.setQueryState(null);
-	}
+    @Override
+    public void updateLabels() {
+        final String[] prefix = {"全部内存数量： ", "预留内存数量： ", "使用中内存数量： ", "未使用内存数量： "};
+        final String suffix = " GB";
+        final MemoryState[] states = {null, MemoryState.RESERVED, MemoryState.INUSE, MemoryState.STOP};
+        MemoryState state = presenter.getQueryState();
+        Anchor[] labels = new Anchor[]{labelAll, labelReserved, labelInuse, labelStop};
+        for (int i = 0; i < labels.length; i ++) {
+            if (labels[i] != null) {
+                double value = (double)presenter.getCounts(states[i]) / MEMORY_UNIT;
+                labels[i].setHTML(getLabel(state == states[i], prefix[i] + value + suffix));
+            }
+        }
+    }
+    
+    private void updateSearchResultButtonStatus() {
+        int size = selection.getSelectedSet().size();
+        buttonAddMemory.setEnabled(true);
+        buttonAddMemoryService.setEnabled(size == 1 && presenter.canAddMemoryService());
+        buttonDeleteMemory.setEnabled(size != 0 && presenter.canDeleteMemory());
+        buttonDeleteMemoryService.setEnabled(size != 0 && presenter.canDeleteMemoryService());
+        buttonModifyMemory.setEnabled(size == 1 && presenter.canModifyMemory());
+        buttonModifyMemoryService.setEnabled(size == 1 && presenter.canModifyMemoryService());
+        buttonClearSelection.setEnabled(size != 0);
+    }
+    
+    private void updateDateButtonStatus() {
+        if (isEmpty(dateBegin.getText()) && isEmpty(dateEnd.getText())) {
+            buttonClearDate.setEnabled(false);
+        }
+        else {
+            buttonClearDate.setEnabled(true);
+        }
+    }
+    
+    public boolean isEmpty(String s) {
+        return s == null || s.length() == 0;
+    }
+    
+    private void updateSearchRange() {
+        if (!dateBegin.hasError() && !dateEnd.hasError()) {
+            presenter.updateSearchResult(dateBegin.getValue(), dateEnd.getValue());
+        }
+    }
+    
+    @UiHandler("labelAll")
+    void handleLabelAll(ClickEvent event) {
+        presenter.setQueryState(null);
+    }
 
-	@UiHandler("labelReserved")
-	void handleLabelReserved(ClickEvent event) {
-		presenter.setQueryState(MemoryState.RESERVED);
-	}
+    @UiHandler("labelStop")
+    void handleLabelReserved(ClickEvent event) {
+        presenter.setQueryState(MemoryState.STOP);
+    }
 
-	@UiHandler("labelInuse")
-	void handleLabelInuse(ClickEvent event) {
-		presenter.setQueryState(MemoryState.INUSE);
-	}
+    @UiHandler("labelInuse")
+    void handleLabelInuse(ClickEvent event) {
+        presenter.setQueryState(MemoryState.INUSE);
+    }
 
-	@UiHandler("labelStop")
-	void handleLabelStop(ClickEvent event) {
-		presenter.setQueryState(MemoryState.STOP);
-	}
+    @UiHandler("labelReserved")
+    void handleLabelStop(ClickEvent event) {
+        presenter.setQueryState(MemoryState.RESERVED);
+    }
+    
+    @Override
+    public Set<SearchResultRow> getSelectedSet() {
+        return selection.getSelectedSet();
+    }
+    
+    @Override
+    public void setSelectedRow(SearchResultRow row) {
+        clearSelection();
+        if (row != null) {
+            selection.setSelected(row, true);
+        }
+        updateSearchResultButtonStatus();
+    }
+    
+    @Override
+    public void showSearchResult(SearchResult result) {
+        if (table == null) {
+            table = new DBSearchResultTable(result.getDescs(), selection);
+            table.setRangeChangeHandler(presenter);
+            table.setClickHandler(presenter);
+            table.load();
+            resultPanel.add(table);
+        }
+        table.setData(result);
+    }
+    
+    @Override
+    public int getPageSize() {
+        return table.getPageSize();
+    }
 
-	public DeviceMemoryViewImpl() {
-		initWidget(uiBinder.createAndBindUi(this));
-		selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
-	}
+    @Override
+    public void clear() {
+        resultPanel.clear();
+        table = null;
+    }
+    
+    @Override
+    public void clearSelection() {
+        selection.clear();
+    }
 
-	private Presenter presenter;
-
-	private MultiSelectionModel<SearchResultRow> selection;
-
-	private SearchResultTable table;
-	private DeviceMirrorSearchResultTable mirrorTable;
-
-	@Override
-	public Set<SearchResultRow> getSelectedSet() {
-		return selection.getSelectedSet();
-	}
-
-	@Override
-	public void showSearchResult(SearchResult result) {
-		if (table == null) {
-			// int pageSize = presenter.getPageSize();
-			table = new SearchResultTable(DEFAULT_PAGESIZE, result.getDescs(), presenter, selection);
-			table.load();
-			updatePanel();
-		}
-		if (mirrorTable == null) {
-			mirrorTable = new DeviceMirrorSearchResultTable(DEFAULT_PAGESIZE, result.getDescs(), presenter);
-			mirrorTable.load();
-			updatePanel();
-		}
-		table.setData(result);
-	}
-
-	@Override
-	public void clear() {
-		resultPanel.clear();
-		table = null;
-		mirrorTable = null;
-	}
-
-	@Override
-	public void clearSelection() {
-		selection.clear();
-	}
-
-	@Override
-	public void setPresenter(Presenter presenter) {
-		this.presenter = presenter;
-	}
-
-	@UiField
-	DeckPanel deckPanel;
-	
-	@UiHandler("buttonAddDevice")
-	void onButtonAddDevice(ClickEvent event) {
-		presenter.onAddDevice();
-	}
-	
-	@UiHandler("buttonDeleteDevice")
-	void onButtonDeleteDevice(ClickEvent event) {
-		presenter.onDeleteDevice();
-	}
-	
-	@UiHandler("buttonAddService")
-	void handleButtonAddService(ClickEvent event) {
-		presenter.onAddService();
-	}
-
-	@UiHandler("buttonModifyService")
-	void handleButtonModifyService(ClickEvent event) {
-		presenter.onModifyService();
-	}
-
-	@UiHandler("buttonDeleteService")
-	void handleButtonDeleteService(ClickEvent event) {
-		presenter.onDeleteService();
-	}
-
-	@UiHandler("clearSelection")
-	void handleButtonClearSelection(ClickEvent event) {
-		presenter.onClearSelection();
-	}
-	
-	@UiHandler("mirrorAddServiceBack")
-	void handleMirrorAddServiceBack(ClickEvent event) {
-		presenter.onMirrorBack();
-	}
-
-	@UiHandler("mirrorModifyServiceBack")
-	void handleMirrorModifyServiceBack(ClickEvent event) {
-		presenter.onMirrorBack();
-	}
-	
-	@UiHandler("mirrorDeleteServiceBack")
-	void handleMirrorDeleteServiceBack(ClickEvent event) {
-		presenter.onMirrorBack();
-	}
-	
-	@UiHandler("mirrorDeleteServiceDeleteAll")
-	void handleMirrorDeleteServiceDeleteAll(ClickEvent event) {
-		presenter.onMirrorDeleteAll();
-	}
-	
-	@UiHandler("mirrorDeleteDeviceBack")
-	void handleMirrorDeleteDeviceBack(ClickEvent event) {
-		presenter.onMirrorBack();
-	}
-	
-	@UiHandler("mirrorDeleteDeviceDeleteAll")
-	void handleMirrorDeleteDeviceDeleteAll(ClickEvent event) {
-		presenter.onMirrorDeleteAll();
-	}
-	
-	private MirrorModeType mirrorModeType = null;
-
-	@Override
-	public boolean isMirrorMode() {
-		return mirrorModeType != null;
-	}
-
-	@Override
-	public void openMirrorMode(MirrorModeType type, List<SearchResultRow> data) {
-		assert (!isMirrorMode() && type != null);
-		clearSelection();
-		mirrorModeType = type;
-		mirrorTable.setData(data);
-		updatePanel();
-	}
-
-	@Override
-	public void closeMirrorMode() {
-		assert (isMirrorMode());
-		mirrorModeType = null;
-		mirrorTable.clearSelection();
-		updatePanel();
-	}
-
-	@Override
-	public DeviceMirrorSearchResultTable getMirrorTable() {
-		return mirrorTable;
-	}
-
-	@Override
-	public MirrorModeType getMirrorModeType() {
-		return mirrorModeType;
-	}
-
+    @Override
+    public void setPresenter(Presenter presenter) {
+        this.presenter = presenter;
+    }
+    
+    @UiHandler("buttonAddMemory")
+    void onButtonAddMemory(ClickEvent event) {
+        if (buttonAddMemory.isEnabled()) {
+            presenter.onAddMemory();
+        }
+    }
+    
+    @UiHandler("buttonAddMemoryService")
+    void onButtonAddMemoryService(ClickEvent event) {
+        if (buttonAddMemoryService.isEnabled()) {
+            presenter.onAddMemoryService();
+        }
+    }
+    
+    @UiHandler("buttonDeleteMemory")
+    void onButtonDeleteMemory(ClickEvent event) {
+        if (buttonDeleteMemory.isEnabled()) {
+            presenter.onDeleteMemory();
+        }
+    }
+    
+    @UiHandler("buttonDeleteMemoryService")
+    void onButtonDeleteMemoryService(ClickEvent event) {
+        if (buttonDeleteMemoryService.isEnabled()) {
+            presenter.onDeleteMemoryService();
+        }
+    }
+    
+    @UiHandler("buttonModifyMemory")
+    void handleButtonModifyMemory(ClickEvent event) {
+        if (buttonModifyMemory.isEnabled()) {
+            presenter.onModifyMemory();
+        }
+    }
+    
+    @UiHandler("buttonModifyMemoryService")
+    void handleButtonModifyMemoryService(ClickEvent event) {
+        if (buttonModifyMemoryService.isEnabled()) {
+            presenter.onModifyMemoryService();
+        }
+    }
+    
+    @UiHandler("buttonClearSelection")
+    void handleButtonClearSelection(ClickEvent event) {
+        if (buttonClearSelection.isEnabled()) {
+            clearSelection();
+        }
+    }
+    
+    @UiHandler("buttonClearDate")
+    void handleButtonClearDate(ClickEvent event) {
+        if (buttonClearDate.isEnabled()) {
+            dateBegin.setValue(null);
+            dateEnd.setValue(null);
+            updateDateButtonStatus();
+            updateSearchRange();
+        }
+    }
+    
 }

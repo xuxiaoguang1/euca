@@ -28,7 +28,7 @@ public class MemoryState implements Serializable {
         return value;
     }
     
-    public MemoryState parse(String state) {
+    public static MemoryState parse(String state) {
         if (state.equals(INUSE.toString())) {
             return INUSE;
         }

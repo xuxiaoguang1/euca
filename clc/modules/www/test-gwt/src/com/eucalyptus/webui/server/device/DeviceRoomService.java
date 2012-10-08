@@ -414,9 +414,10 @@ class DeviceRoomDBProcWrapper {
 		DBTableArea AREA = DBTable.AREA;
 		DBTableRoom ROOM = DBTable.ROOM;
 		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT ").append(ROOM.ROOM_NAME).append(" FROM ");
+		sb.append("SELECT DISTINCT(").append(ROOM.ROOM_NAME).append(") FROM ");
 		sb.append(ROOM).append(" LEFT JOIN ").append(AREA).append(" ON ").append(ROOM.AREA_ID).append(" = ").append(AREA.AREA_ID);
 		sb.append(" WHERE ").append(AREA.AREA_NAME).append(" = ").appendString(area_name);
+		sb.append(" ORDER BY ").append(ROOM.ROOM_NAME);
 		return doQuery(sb.toString());
 	}
 	

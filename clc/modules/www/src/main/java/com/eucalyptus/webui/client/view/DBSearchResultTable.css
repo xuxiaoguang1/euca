@@ -28,11 +28,13 @@
 	color: #4b4a4a;
 	text-shadow: #ddf 1px 1px 0;
 	overflow: hidden;
+	white-space:nowrap;
 }
 
 .cellTableCell {
 	padding: 2px 2px;
 	overflow: hidden;
+	white-space:nowrap;
 }
 
 .cellTableFirstColumnFooter {
@@ -69,7 +71,6 @@
 }
 
 .cellTableEvenRow {
-	
 }
 
 .cellTableEvenRowCell {

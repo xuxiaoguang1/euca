@@ -1,51 +1,36 @@
 package com.eucalyptus.webui.client.view;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.view.DBSearchResultTable.DBSearchResultTableClickHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceTemplateView extends IsWidget, CanDisplaySearchResult, Clearable, SelectionController {
 	
-	public static final int DEFAULT_PAGESIZE = 20;
+    public void setPresenter(Presenter presenter);
+    
+    public Set<SearchResultRow> getSelectedSet();
+    
+    public void setSelectedRow(SearchResultRow row);
+    
+    public int getPageSize();
 	
-	void setPresenter(Presenter presenter);
-	
-	void openMirrorMode(MirrorModeType type, List<SearchResultRow> data);
-	
-	void closeMirrorMode();
-	
-	DeviceMirrorSearchResultTable getMirrorTable();
-	
-	boolean isMirrorMode();
-	
-	MirrorModeType getMirrorModeType();
-	
-	Set<SearchResultRow> getSelectedSet();
-	
-	enum MirrorModeType {
-		MODIFY_TEMPLATE,
-		DELETE_TEMPLATE,
-	}
-	
-	public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceMirrorSearchResultTable.Presenter {
-		
-		void onAddTemplate();
-		
-		void onModifyTemplate();
-		
-		void onDeleteTemplate();
-		
-		void onClearSelection();
-		
-		void onMirrorBack();
-		
-		void onMirrorDeleteAll();
-		
-		void onSearch(Date starttime, Date endtime);
-		
+    public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DBSearchResultTableClickHandler {
+        
+        public void onAddTemplate();
+        
+        public void onModifyTemplate();
+        
+        public void onDeleteTemplate();
+        
+        public boolean canDeleteTemplate();
+        
+        public boolean canModifyTemplate();
+        
+        public void updateSearchResult(Date dateBegin, Date dateEnd);
+        
 	}
 
 }

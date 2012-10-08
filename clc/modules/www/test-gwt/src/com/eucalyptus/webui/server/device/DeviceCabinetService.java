@@ -384,9 +384,10 @@ class DeviceCabinetDBProcWrapper {
 	    DBTableRoom ROOM = DBTable.ROOM;
 	    DBTableCabinet CABINET = DBTable.CABINET;
 	    DBStringBuilder sb = new DBStringBuilder();
-	    sb.append("SELECT ").append(CABINET.CABINET_NAME).append(" FROM ");
+	    sb.append("SELECT DISTINCT(").append(CABINET.CABINET_NAME).append(") FROM ");
 	    sb.append(CABINET).append(" LEFT JOIN ").append(ROOM).append(" ON ").append(CABINET.ROOM_ID).append(" = ").append(ROOM.ROOM_ID);
 	    sb.append(" WHERE ").append(ROOM.ROOM_NAME).append(" = ").appendString(room_name);
+	    sb.append(" ORDER BY ").append(CABINET.CABINET_NAME);
 	    return doQuery(sb.toString());
     }
 

@@ -60,7 +60,7 @@ public class DeviceServiceSimpleModifyViewImpl extends DialogBox implements Devi
 	}
 
 	@UiHandler("buttonOK")
-	void handleButtonOk(ClickEvent event) {
+	void handleButtonOK(ClickEvent event) {
 		Date endtime = picker.getValue();
 		if (presenter.onOK(selected, starttime, endtime)) {
 			this.hide();

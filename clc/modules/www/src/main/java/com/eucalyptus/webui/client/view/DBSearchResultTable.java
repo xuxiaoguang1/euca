@@ -78,7 +78,7 @@ public class DBSearchResultTable extends Composite {
 	
 	private final ArrayList<Integer> tableColIdx = new ArrayList<Integer>();
 	
-	private static final int DEFAULT_PAGESIZE = 5;
+	private static final int DEFAULT_PAGESIZE = 10;
 	
 	public DBSearchResultTable(ArrayList<SearchResultFieldDesc> descs, final SelectionModel<SearchResultRow> selection) {
 		CellTable.Resources resources = GWT.create(TableResources.class);
@@ -159,7 +159,7 @@ public class DBSearchResultTable extends Composite {
 									}
 									
 								};
-								timer.schedule(150);
+								timer.schedule(250);
 							}
 							else {
 								timer.cancel();
@@ -241,6 +241,7 @@ public class DBSearchResultTable extends Composite {
 					int height = cellTable.getParent().getParent().getOffsetHeight() - cellTable.getHeaderHeight();
 					if (height > 0) {
 						pageSize = Math.max(DEFAULT_PAGESIZE, height / (container.getClientHeight() / container.getChildCount()));
+						pageSize = (pageSize + DEFAULT_PAGESIZE - 1) / DEFAULT_PAGESIZE * DEFAULT_PAGESIZE;
 						cellTable.setPageSize(pageSize);
 					}
 				}

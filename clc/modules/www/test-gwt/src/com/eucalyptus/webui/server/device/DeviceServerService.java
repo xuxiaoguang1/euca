@@ -508,9 +508,10 @@ class DeviceServerDBProcWrapper {
 		DBTableCabinet CABINET = DBTable.CABINET;
 		DBTableServer SERVER = DBTable.SERVER;
 	    DBStringBuilder sb = new DBStringBuilder();
-	    sb.append("SELECT ").append(SERVER.SERVER_NAME).append(" FROM ");
+	    sb.append("SELECT DISTINCT(").append(SERVER.SERVER_NAME).append(") FROM ");
 	    sb.append(SERVER).append(" LEFT JOIN ").append(CABINET).append(" ON ").append(SERVER.CABINET_ID).append(" = ").append(CABINET.CABINET_ID);
 	    sb.append(" WHERE ").append(CABINET.CABINET_NAME).append(" = ").appendString(cabinet_name);
+	    sb.append(" ORDER BY ").append(SERVER.SERVER_NAME);
 	    return doQuery(sb.toString());
 	}
 	

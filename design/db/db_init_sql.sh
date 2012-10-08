@@ -147,8 +147,8 @@ for ((i=0;i<40;i++)) do
         vendor="amd"
     fi
     let cache="2 << $i % 5";
-    command insert into cpu \(cpu_name, cpu_desc, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, cpu_creationtime, cpu_modifiedtime, server_id\) \
-        values \(\"cpu$i\", \"\", \"$vendor\", \"model$j\", \"2.$j\", \"$cache\", \"2012-02-0$j\", \"\", \"$id\"\)
+    command insert into cpu \(cpu_name, cpu_desc, cpu_total, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, cpu_creationtime, cpu_modifiedtime, server_id\) \
+        values \(\"cpu$i\", \"\", \"10\", \"$vendor\", \"model$j\", \"2.$j\", \"$cache\", \"2012-02-0$j\", \"\", \"$id\"\)
 done
 
 # insert cpu_service
@@ -159,12 +159,14 @@ for ((i=0;i<40;i++)) do
     let d="10+$i%20";
     let x="$i%3";
     if [ $x -ne 2 ]; then
-        command insert into cpu_service \(cs_desc, cs_starttime, cs_endtime, cs_state, \
+        command insert into cpu_service \(cs_desc, cs_used, cs_starttime, cs_endtime, cs_state, \
             cs_creationtime, cs_modifiedtime, cpu_id, user_id\) \
-            values \(\"\", \"2012-03-$d\", \"2012-04-$d\", \"$x\", \"2012-02-$d\", \"\", \"$cpuid\", \"$userid\"\)
+            values \(\"\", \"10\", \"2012-03-$d\", \"2012-04-$d\", \"$x\", \"2012-01-$d\", \"\", \"$cpuid\", \"$userid\"\)
+        command insert into cpu_service \(cs_desc, cs_used, cs_state, cpu_id\) \
+            values \(\"\", \"0\", \"2\", \"$cpuid\"\)
     else
-        command insert into cpu_service \(cs_state, cpu_id, user_id\) \
-            values \(\"$x\", \"$cpuid\", \"$userid\"\)
+        command insert into cpu_service \(cs_desc, cs_used, cs_state, cpu_id\) \
+            values \(\"\", \"10\", \"$x\", \"$cpuid\"\)
     fi
 done
 
@@ -173,10 +175,10 @@ done
 for ((i=0;i<20;i++)) do
     let j="$i%5";
     let x="$i%3";
-    let size="(1024 + i * 10) * 1024";
+    let size="($i + 1) * 2 * 1024 * 1024";
     id=`getvalue server server_id server_name name$x`
     command insert into memory \(mem_name, mem_desc, mem_total, mem_creationtime, server_id\) \
-        values \(\"memory$i\", \"desc$i\", $size, \"2012-09-18\", \"$id\"\)
+        values \(\"memory$i\", \"desc$i\", $size, \"2012-07-9\", \"$id\"\)
 done
 
 # insert mem_service
@@ -185,14 +187,14 @@ for ((i=0;i<20;i++)) do
     memid=`getvalue memory mem_id mem_name memory$i`
     total=`getvalue memory mem_total mem_name memory$i`
     userid=`getvalue user user_id user_name admin`
-    let used="(- $i * 10 + 512) * 1024"
+    let used="($i + 1) * 1024 * 1024"
     let remain="$total - $used"
-    let d="10+$i%10";
-    command insert into mem_service \(ms_used, ms_state, mem_id, user_id\) \
-        values \(\"$remain\", \"2\", \"$memid\", \"$userid\"\)
-    let x="$i%2";
-    command insert into mem_service \(ms_used, ms_starttime, ms_life, ms_state, mem_id, user_id\) \
-        values \(\"$used\", \"2012-07-$d\", \"32\", \"$x\", \"$memid\", \"$userid\"\)
+    let d="10+$i%20";
+    command insert into mem_service \(ms_desc, ms_used, ms_starttime, ms_endtime, ms_state, \
+        ms_creationtime, ms_modifiedtime, mem_id, user_id\) \
+        values \(\"\", \"$used\", \"2012-07-$d\", \"2012-08-$d\", \"0\", \"2012-07-9\", \"\", \"$memid\", \"$userid\"\)
+    command insert into mem_service \(ms_desc, ms_used, ms_state, mem_id\) \
+        values \(\"\", \"$remain\", \"2\", \"$memid\"\)
 done
 
 # insert disk
@@ -200,10 +202,10 @@ done
 for ((i=0;i<20;i++)) do
     let j="$i%5";
     let x="$i%3";
-    let size="(1000 + i * 10) * 1000";
+    let size="($i + 1) * 2 * 1000 * 1000";
     id=`getvalue server server_id server_name name$x`
-    command insert into disk \(disk_name, disk_total, server_id\) \
-        values \(\"disk$i\", $size, \"$id\"\)
+    command insert into disk \(disk_name, disk_desc, disk_total, disk_creationtime, server_id\) \
+        values \(\"disk$i\", \"desc$i\", $size, \"2012-08-9\", \"$id\"\)
 done
 
 # insert disk_service
@@ -212,14 +214,14 @@ for ((i=0;i<20;i++)) do
     diskid=`getvalue disk disk_id disk_name disk$i`
     total=`getvalue disk disk_total disk_name disk$i`
     userid=`getvalue user user_id user_name admin`
-    let used="(- $i * 10 + 500) * 1000"
+    let used="($i + 1) * 1024 * 1024"
     let remain="$total - $used"
-    let d="10+$i%10";
-    command insert into disk_service \(ds_used, ds_state, disk_id, user_id\) \
-        values \(\"$remain\", \"2\", \"$diskid\", \"$userid\"\)
-    let x="$i%2";
-    command insert into disk_service \(ds_used, ds_starttime, ds_life, ds_state, disk_id, user_id\) \
-        values \(\"$used\", \"2012-07-$d\", \"32\", \"$x\", \"$diskid\", \"$userid\"\)
+    let d="10+$i%20";
+    command insert into disk_service \(ds_desc, ds_used, ds_starttime, ds_endtime, ds_state, \
+        ds_creationtime, ds_modifiedtime, disk_id, user_id\) \
+        values \(\"\", \"$used\", \"2012-08-$d\", \"2012-09-$d\", \"0\", \"2012-08-9\", \"\", \"$diskid\", \"$userid\"\)
+    command insert into disk_service \(ds_desc, ds_used, ds_state, disk_id\) \
+        values \(\"\", \"$remain\", \"2\", \"$diskid\"\)
 done
 
 # insert vm/vm_service
@@ -237,45 +239,51 @@ vmid=`getvalue vm vm_id vm_mark vmware0`
 # insert ip/ip_service/bw_service
 
 for ((i=0;i<32;i++)) do
-    let d="10+$i%10";
     let x="$i%2";
-    command insert into ip \(ip_addr, ip_type\) \
-        values \(\"166.111.0.$i\", 0\);
+    command insert into ip \(ip_addr, ip_type, ip_creationtime\) \
+        values \(\"166.111.0.$i\", 0, \"2012-10-01\"\);
     ipid=`getvalue ip ip_id ip_addr 166.111.0.$i`
-    command insert into ip_service \(is_starttime, is_life, is_state, user_id, vm_id, ip_id\) \
-        values \(\"2012-07-$d\", \"32\", \"$x\", \"$userid\", \"$vmid\", \"$ipid\"\)
-    command insert into ip \(ip_addr, ip_type\) \
-        values \(\"192.168.0.$i\", 1\);
-    command insert into bw_service \(bs_starttime, bs_life, ip_id, user_id, bs_bw\) \
-        values \(\"2012-07-$d\", 32, \"$ipid\", \"$userid\", \"$d\"\)
+    command insert into ip_service \(is_desc, is_starttime, is_endtime,  is_state, is_creationtime, user_id, ip_id\) \
+        values \(\"\", \"2012-10-$d\", \"2012-11-13\", \"$x\", \"2012-10-01\",  \"$userid\", \"$ipid\"\)
+    command insert into bw_service \(bs_desc, bs_starttime, bs_endtime, bs_bw_max, bs_creationtime, ip_id\) \
+        values \(\"\", \"2012-10-$d\", \"2012-11-01\", 100, \"2012-10-01\", \"$ipid\"\)
+    command insert into ip \(ip_addr, ip_type, ip_creationtime\) \
+        values \(\"192.168.0.$i\", 1, \"2012-10-01\"\);
     ipid=`getvalue ip ip_id ip_addr 192.168.0.$i`
-    command insert into ip_service \(is_starttime, is_life, is_state, user_id, vm_id, ip_id\) \
-        values \(\"2012-07-$d\", \"32\", \"$x\", \"$userid\", \"$vmid\", \"$ipid\"\)
+    command insert into ip_service \(is_desc, is_starttime, is_endtime,  is_state, is_creationtime, user_id, ip_id\) \
+        values \(\"\", \"2012-11-$d\", \"2012-12-13\", \"$x\", \"2012-11-01\",  \"$userid\", \"$ipid\"\)
 done
+
+exit
 
 # insert template
 for ((i=0;i<10;i++)) do
-    let d="10+$i%10";
+    let mem="($i + 1) * 1024"
+    let disk="($i + 10) * 1000"
     command insert into template \( \
         template_name, \
+        template_desc, \
         template_cpu, \
+        template_ncpus, \
         template_mem, \
         template_disk, \
         template_bw, \
         template_image, \
-        template_starttime, \
-        template_ncpus\) \
+        template_creationtime, \
+        template_modifiedtime\)
         values \( \
         \"name$i\", \
+        \"\", \
         \"cpu0\", \
-        \"2$i""000000\", \
-        \"3$i""000000\", \
-        \"4$i""000\", \
+        2, \
+        $mem, \
+        $disk, \
+        32, \
         \"image$i\", \
-        \"2012-07-$d\", \
-        \"1\" \
-        \)
+        \"2012-07-10\"\)
 done
+
+exit
 
 for ((i=0;i<5;i++)) do
     let d="10+$i%10";

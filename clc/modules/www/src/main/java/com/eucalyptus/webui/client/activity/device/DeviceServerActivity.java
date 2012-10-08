@@ -219,7 +219,7 @@ public class DeviceServerActivity extends AbstractSearchActivity implements Devi
 							}
 							catch (Exception e) {
 								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "带宽数值非法")).append(" = '").append(server_bw).append("' ");
+								sb.append(new ClientMessage("", "带宽数值非法")).append(" = '").append(bandwidth).append("' ");
 								sb.append(new ClientMessage("", "请重新选择带宽"));
 								Window.alert(sb.toString());
 								return false;

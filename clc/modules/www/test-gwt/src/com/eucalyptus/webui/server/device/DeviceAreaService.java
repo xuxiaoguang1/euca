@@ -365,7 +365,8 @@ class DeviceAreaDBProcWrapper {
 	public ResultSetWrapper lookupAreaNames() throws Exception {
 		DBTableArea AREA = DBTable.AREA;
 		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT ").append(AREA.AREA_NAME).append(" FROM ").append(AREA).append(" WHERE 1=1");
+		sb.append("SELECT DISTINCT(").append(AREA.AREA_NAME).append(") FROM ").append(AREA).append(" WHERE 1=1");
+		sb.append(" ORDER BY ").append(AREA.AREA_NAME);
 		return doQuery(sb.toString());
 	}
 	

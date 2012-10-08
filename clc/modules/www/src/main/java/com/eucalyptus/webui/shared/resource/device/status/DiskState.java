@@ -28,7 +28,7 @@ public class DiskState implements Serializable {
         return value;
     }
     
-    public DiskState parse(String state) {
+    public static DiskState parse(String state) {
         if (state.equals(INUSE.toString())) {
             return INUSE;
         }

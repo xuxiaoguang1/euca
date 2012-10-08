@@ -43,6 +43,10 @@ public class DBData {
 		return rs.getString(column.toString());
 	}
 	
+	public static String getString(ResultSet rs, String name) throws SQLException {
+		return rs.getString(name);
+	}
+	
 	public static double getDouble(ResultSet rs, DBTableColumn column) throws SQLException {
 		return rs.getDouble(column.toString());
 	}

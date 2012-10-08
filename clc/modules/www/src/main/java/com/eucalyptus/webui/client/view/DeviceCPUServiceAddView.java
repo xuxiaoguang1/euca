@@ -1,33 +1,27 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.Date;
 import java.util.List;
 
-import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceCPUServiceAddView extends IsWidget {
 	
-	void setPresenter(Presenter presenter);
+	public void setPresenter(Presenter presenter);
 	
-	void setValue(SearchResultRow row, Date starttime, Date endtime, String state);
+	public void popup(int cpu_id, String cpu_name, String server_name, int cs_reserved);
 	
-	void setAccountList(List<String> accountList);
+	public void setAccountNameList(List<String> account_name_list);
 	
-	void setUserList(String account, List<String> userList);
-	
-	void clearCache();
+	public void setUserNameList(String account_name, List<String> user_name_list);
 	
 	public interface Presenter {
 		
-		boolean onOK(SearchResultRow row, String account, String user, Date starttime, Date endtime, String state);
+		public boolean onOK(int cpu_id, String cs_desc, int cs_used, String cs_starttime, String cs_endtime, String account_name, String user_name);
 		
-		void lookupAccounts();
+		public void lookupAccountNames();
 		
-		void lookupUserByAccount(String account);
-		
-		void onCancel();
+		public void lookupUserNamesByAccountName(String account_name);
 		
 	}
-
+	
 }

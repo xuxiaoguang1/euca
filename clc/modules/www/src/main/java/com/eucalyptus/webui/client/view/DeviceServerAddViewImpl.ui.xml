@@ -92,7 +92,7 @@
 						<g:ListBox ui:field="cabinetNameList" height="1.8EM" width="32.5EM"/>
 					</g:at>
 					<g:at left="30" top="95">
-						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">服务器</g:Anchor>
+						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">服务器名称</g:Anchor>
 					</g:at>
 					<g:at left="120" top="92">
 						<g:TextBox ui:field="serverName" maxLength="50" height="1.4EM" width="32EM"/>

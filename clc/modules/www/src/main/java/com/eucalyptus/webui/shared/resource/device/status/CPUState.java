@@ -28,7 +28,7 @@ public class CPUState implements Serializable {
         return value;
     }
     
-    public CPUState parse(String state) {
+    public static CPUState parse(String state) {
         if (state.equals(INUSE.toString())) {
             return INUSE;
         }

@@ -1,23 +1,17 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.List;
-
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceTemplateAddView extends IsWidget {
 	
-	void setPresenter(Presenter presenter);
+	public void setPresenter(Presenter presenter);
 	
-	void popup();
-	
-	void setCPUNameList(List<String> list);
+	public void popup();
 	
 	public interface Presenter {
 		
-		boolean onOK(String mark, String cpu, int ncpus, String mem, String disk, String bw, String image);
-		
-		void lookupCPUNames();
+		public boolean onOK(String template_name, String template_desc, String template_cpu, int template_ncpus, String template_mem, String template_disk, String template_bw, String template_image);
 		
 	}
-
+	
 }

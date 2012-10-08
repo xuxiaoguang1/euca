@@ -21,6 +21,11 @@ public class DBStringBuilder {
 		return this;
 	}
 	
+	public DBStringBuilder appendNull() {
+		sb.append("null");
+		return this;
+	}
+	
 	public DBStringBuilder append(double v) {
 		sb.append(v);
 		return this;

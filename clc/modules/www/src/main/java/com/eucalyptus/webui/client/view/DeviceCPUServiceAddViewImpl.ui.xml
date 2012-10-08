@@ -1,6 +1,8 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p1="urn:import:com.google.gwt.user.datepicker.client">
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:p1="urn:import:com.google.gwt.user.datepicker.client"
+	xmlns:d="urn:import:com.eucalyptus.webui.client.view">
 
 	<ui:style>
 		.title {
@@ -24,142 +26,129 @@
 			border-left: 2px solid #AAAAAA;
 			border-right: 2px solid #AAAAAA;
 		}
-		
-		.content {
-			font-size: 90%;
-			border-top: 1px solid #AAAAAA;
+
+		.textArea {
+			resize:none;
 		}
+		
+		.textBoxStyle-readonly {
+            background-color:lightgray;
+        }
 	</ui:style>
 
 	<ui:with field="global"
 		type="com.eucalyptus.webui.client.view.GlobalResources" />
-
-	<g:VerticalPanel horizontalAlignment="ALIGN_LEFT"
-		width="610px" height="260px" styleName="{style.background}"
-		verticalAlignment="ALIGN_TOP">
-		<g:HTMLPanel width="610px">
-			<table>
-				<colgroup width="30px" />
-				<colgroup width="550px" />
-				<colgroup width="30px" />
-				<tbody>
-					<tr height="10px" />
-					<tr>
-						<td />
-						<td>
-							<g:HTMLPanel>
-								<table>
-									<colgroup width="20px" />
-									<colgroup width="510px" />
-									<colgroup width="20px" />
-									<tbody class="{style.title}">
-										<tr>
-											<td />
-											<td>添加服务：</td>
-											<td />
-										</tr>
-										<tr height="5px">
-											<td />
-											<td />
-											<td />
-										</tr>
-									</tbody>
-								</table>
-							</g:HTMLPanel>
-						</td>
-						<td />
-					</tr>
-					<tr height="10px" />
-				</tbody>
-			</table>
-		</g:HTMLPanel>
-		<g:AbsolutePanel height="275px" width="610px">
-			<g:at left="40" top="0">
-				<g:Label text="开始时间" width="240px" height="16px"
-					horizontalAlignment="ALIGN_CENTER" />
-			</g:at>
-			<g:at left="330" top="0">
-				<g:Label text="结束时间" width="240px" height="16px"
-					horizontalAlignment="ALIGN_CENTER" />
-			</g:at>
-			<g:at left="40" top="20">
-				<p1:DatePicker width="240px" height="160px"
-					ui:field="datePickerStarttime" />
-			</g:at>
-			<g:at left="330" top="20">
-				<p1:DatePicker width="240px" height="160px"
-					ui:field="datePickerEndtime" />
-			</g:at>
-			<g:at left="40" top="185">
-				<g:ListBox visibleItemCount="1" width="60px" height="20px"
-					selectedIndex="0" ui:field="yearListStarttime" />
-			</g:at>
-			<g:at left="110" top="185">
-				<g:ListBox visibleItemCount="1" width="50px" height="20px"
-					selectedIndex="0" ui:field="monthListStarttime" />
-			</g:at>
-			<g:at left="170" top="185">
-				<g:ListBox visibleItemCount="1" width="50px" height="20px"
-					selectedIndex="0" ui:field="dayListStarttime" />
-			</g:at>
-			<g:at left="330" top="185">
-				<g:ListBox width="60px" height="20px" selectedIndex="0"
-					visibleItemCount="1" ui:field="yearListEndtime" />
-			</g:at>
-			<g:at left="400" top="185">
-				<g:ListBox width="50px" height="20px" selectedIndex="0"
-					visibleItemCount="1" ui:field="monthListEndtime" />
-			</g:at>
-			<g:at left="460" top="185">
-				<g:ListBox width="50px" height="20px" selectedIndex="0"
-					visibleItemCount="1" ui:field="dayListEndtime" />
-			</g:at>
-			<g:at left="40" top="210">
-				<g:HTMLPanel>
+		
+	<g:DockLayoutPanel width="614px" height="275px">
+		<g:center>
+			<g:VerticalPanel horizontalAlignment="ALIGN_LEFT" styleName="{style.background}" verticalAlignment="ALIGN_TOP">
+				<g:HTMLPanel width="610px">
 					<table>
-						<tbody class="{style.content}">
+						<colgroup width="30px" />
+						<colgroup width="550px" />
+						<colgroup width="30px" />
+						<tbody>
+							<tr height="10px" />
 							<tr>
+								<td />
 								<td>
-									<g:AbsolutePanel height="60px" width="530px">
-										<g:at left="15" top="5">
-											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="60px">账&nbsp;户</g:Anchor>
-										</g:at>
-										<g:at left="10" top="25">
-											<g:ListBox visibleItemCount="1" width="100px"
-												height="20px" selectedIndex="0" ui:field="accountList" />
-										</g:at>
-										<g:at left="135" top="5">
-											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="60px">用&nbsp;户</g:Anchor>
-										</g:at>
-										<g:at left="130" top="25">
-											<g:ListBox visibleItemCount="1" width="100px"
-												height="20px" selectedIndex="0" ui:field="userList" />
-										</g:at>
-										<g:at left="255" top="5">
-											<g:Anchor horizontalAlignment="ALIGN_LEFT" width="80px">服务状态</g:Anchor>
-										</g:at>
-										<g:at left="250" top="25">
-											<g:ListBox visibleItemCount="1" width="80px"
-												height="20px" selectedIndex="0" ui:field="stateList" />
-										</g:at>
-									</g:AbsolutePanel>
+									<g:HTMLPanel>
+										<table>
+											<colgroup width="20px" />
+											<colgroup width="510px" />
+											<colgroup width="20px" />
+											<tbody class="{style.title}">
+												<tr>
+													<td />
+													<td>添加CPU服务：</td>
+													<td />
+												</tr>
+												<tr height="5px">
+													<td />
+													<td />
+													<td />
+												</tr>
+											</tbody>
+										</table>
+									</g:HTMLPanel>
 								</td>
+								<td />
 							</tr>
+							<tr height="10px" />
 						</tbody>
 					</table>
 				</g:HTMLPanel>
-			</g:at>
-			<g:at left="420" top="233" style="font-size:90%;">
-				<g:Anchor styleName="{global.buttonCss.button}"
-					horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonOK">确&nbsp;定
-				</g:Anchor>
-			</g:at>
-			<g:at left="500" top="233" style="font-size:90%;">
-				<g:Anchor styleName="{global.buttonCss.button}"
-					horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonCancel">取&nbsp;消
-				</g:Anchor>
-			</g:at>
-		</g:AbsolutePanel>
-	</g:VerticalPanel>
+				<g:AbsolutePanel height="228px" width="610px">
+					<g:at left="30" top="5">
+						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">所属服务器</g:Anchor>
+					</g:at>
+					<g:at left="120" top="2">
+						<g:TextBox ui:field="serverName" maxLength="50" height="1.4EM" width="32EM" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
+					</g:at>
+					<g:at left="30" top="35">
+						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">CPU名称</g:Anchor>
+					</g:at>
+					<g:at left="120" top="32">
+						<g:TextBox ui:field="cpuName" maxLength="50" height="1.4EM" width="32EM" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
+					</g:at>
+					<g:at left="30" top="65">
+						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">账户</g:Anchor>
+					</g:at>
+					<g:at left="120" top="60">
+						<g:ListBox ui:field="accountNameList" height="1.8EM" width="12EM"/>
+					</g:at>
+					<g:at left="335" top="65">
+						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">用户</g:Anchor>
+					</g:at>
+					<g:at left="405" top="60">
+						<g:ListBox ui:field="userNameList" height="1.8EM" width="12EM"/>
+					</g:at>
+					<g:at left="30" top="95">
+						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">服务描述</g:Anchor>
+					</g:at>
+					<g:at left="120" top="92">
+						<g:TextArea styleName="{style.textArea}" height="2.4EM" width="32EM" ui:field="cpuDesc"/>
+					</g:at>
+					<g:at left="30" top="140">
+						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">开始时间</g:Anchor>
+					</g:at>
+					<g:at left="120" top="137">
+						<d:DeviceDateBox ui:field="dateBegin" height="1.4EM" width="8EM"/>
+					</g:at>
+					<g:at left="30" top="170">
+						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">结束时间</g:Anchor>
+					</g:at>
+					<g:at left="120" top="167">
+						<d:DeviceDateBox ui:field="dateEnd" height="1.4EM" width="8EM"/>
+					</g:at>
+					<g:at left="250" top="155">
+						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">剩余</g:Anchor>
+					</g:at>
+					<g:at left="290" top="152">
+						<g:IntegerBox ui:field="dateLife" height="1.4EM" width="4EM" readOnly="true" styleName="{style.textBoxStyle-readonly}" alignment="RIGHT"/>
+					</g:at>
+					<g:at left="355" top="155">
+						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">(天)</g:Anchor>
+					</g:at>
+					<g:at left="400" top="140">
+						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">数量</g:Anchor>
+					</g:at>
+					<g:at left="460" top="135">
+						<g:ListBox ui:field="numList" height="1.8EM" width="8EM"/>
+					</g:at>
+					<g:at left="400" top="180" style="font-size:90%;">
+						<g:Anchor styleName="{global.buttonCss.button}"
+							horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonOK">确&nbsp;定
+						</g:Anchor>
+					</g:at>
+					<g:at left="480" top="180" style="font-size:90%;">
+						<g:Anchor styleName="{global.buttonCss.button}"
+							horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonCancel">取&nbsp;消
+						</g:Anchor>
+					</g:at>
+				</g:AbsolutePanel>
+			</g:VerticalPanel>
+		</g:center>
+	</g:DockLayoutPanel>
 
 </ui:UiBinder> 

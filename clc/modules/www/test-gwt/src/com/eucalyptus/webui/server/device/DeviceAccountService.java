@@ -117,7 +117,7 @@ class DeviceAccountDBProcWrapper {
     public ResultSetWrapper lookupAccountNames() throws Exception {
         DBTableAccount ACCOUNT = DBTable.ACCOUNT;
         DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ").append(ACCOUNT.ACCOUNT_NAME).append(" FROM ").append(ACCOUNT).append(" WHERE 1=1");
+        sb.append("SELECT DISTINCT(").append(ACCOUNT.ACCOUNT_NAME).append(") FROM ").append(ACCOUNT).append(" WHERE 1=1");
         return doQuery(sb.toString());
     }
     
@@ -125,8 +125,8 @@ class DeviceAccountDBProcWrapper {
         DBTableAccount ACCOUNT = DBTable.ACCOUNT;
         DBTableUser USER = DBTable.USER;
         DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ").append(USER.USER_NAME).append(" FROM ");
-        sb.append(ACCOUNT).append(" LEFT JOIN ").append(USER).append(" ON ").append(ACCOUNT.ACCOUNT_ID).append(" = ").append(USER.ACCOUNT_ID);
+        sb.append("SELECT DISTINCT(").append(USER.USER_NAME).append(") FROM ");
+        sb.append(USER).append(" LEFT JOIN ").append(ACCOUNT).append(" ON ").append(USER.ACCOUNT_ID).append(" = ").append(ACCOUNT.ACCOUNT_ID);
         sb.append(" WHERE ").append(ACCOUNT.ACCOUNT_NAME).append(" = ").appendString(account_name);
         return doQuery(sb.toString());
     }

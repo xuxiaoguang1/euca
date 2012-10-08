@@ -80,7 +80,7 @@ public class DeviceServiceModifyViewImpl extends DialogBox implements DeviceServ
 	}
 
 	@UiHandler("buttonOK")
-	void handleButtonOk(ClickEvent event) {
+	void handleButtonOK(ClickEvent event) {
 		Date endtime = picker.getValue();
 		String state = stateList.getItemText(stateList.getSelectedIndex());
 		if (presenter.onOK(selected, starttime, endtime, state)) {

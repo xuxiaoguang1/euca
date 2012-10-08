@@ -1,11 +1,12 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.List;
+import java.util.Date;
 import java.util.Set;
 
-import com.eucalyptus.webui.client.activity.device.DeviceDiskActivity.DiskState;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
+import com.eucalyptus.webui.shared.resource.device.status.DiskState;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -16,7 +17,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.user.client.ui.DeckPanel;
+import com.google.gwt.view.client.SelectionChangeEvent;
 
 public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
 
@@ -24,254 +25,256 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
 
 	interface DiskViewImplUiBinder extends UiBinder<Widget, DeviceDiskViewImpl> {
 	}
-
-	@UiField
-	LayoutPanel resultPanel;
-	@UiField
-	Anchor labelAll;
-	@UiField
-	Anchor labelReserved;
-	@UiField
-	Anchor labelInuse;
-	@UiField
-	Anchor labelStop;
-
-	private String getLabel(boolean highlight, String msg) {
-		StringBuilder sb = new StringBuilder();
-		String color = isMirrorMode() ? "#AAAAAA" : highlight ? "red" : "darkblue";
-		sb.append("<font color='").append(color).append("'>").append(msg).append("</font>");
-		return sb.toString();
-	}
 	
-	private static final long DIV_UNIT = 1000;
+	@UiField LayoutPanel resultPanel;
+    @UiField Anchor buttonAddDisk;
+    @UiField Anchor buttonDeleteDisk;
+    @UiField Anchor buttonModifyDisk;
+    @UiField Anchor buttonAddDiskService;
+    @UiField Anchor buttonDeleteDiskService;
+    @UiField Anchor buttonModifyDiskService;
+    @UiField Anchor buttonClearSelection;
+    @UiField DeviceDateBox dateBegin;
+    @UiField DeviceDateBox dateEnd;
+    @UiField Anchor buttonClearDate;
+    @UiField Anchor labelAll;
+    @UiField Anchor labelStop;
+    @UiField Anchor labelInuse;
+    @UiField Anchor labelReserved;
+    
+    private Presenter presenter;
+    private MultiSelectionModel<SearchResultRow> selection;
+    private DBSearchResultTable table;
+    private DevicePopupPanel popup = new DevicePopupPanel();
+    
+    public DeviceDiskViewImpl() {
+        initWidget(uiBinder.createAndBindUi(this));
+        selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
+        selection.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
 
-	@Override
-	public void updateLabels() {
-		final String[] prefix = {"全部磁盘数量： ", "预留磁盘数量： ", "使用中磁盘数量： ", "未使用磁盘数量： "};
-		final String suffix = " GB";
-		final DiskState[] states = {null, DiskState.RESERVED, DiskState.INUSE, DiskState.STOP};
-		DiskState state = presenter.getQueryState();
-		Anchor[] labels = new Anchor[]{labelAll, labelReserved, labelInuse, labelStop};
-		for (int i = 0; i < labels.length; i ++) {
-			if (labels[i] != null) {
-				double value = (double)presenter.getCounts(states[i]) / DIV_UNIT;
-				labels[i].setHTML(getLabel(state == states[i], prefix[i] + stringValue(value) + suffix));
-			}
-		}
-	}
-	
-	private String stringValue(double v) {
-		StringBuilder sb = new StringBuilder();
-		long i = (long)v;
-		int j = (int)((long)(v * 100) - i * 100) % 100;
-		sb.append(i).append(".");
-		if (j < 10) {
-			sb.append("0");
-		}
-		sb.append(j);
-		return sb.toString();
-	}
+            @Override
+            public void onSelectionChange(SelectionChangeEvent event) {
+                updateSearchResultButtonStatus();
+                presenter.onSelectionChange(selection.getSelectedSet());
+            }
+            
+        });
+        updateSearchResultButtonStatus();
+        
+        popup.setAutoHideEnabled(true);
+        
+        for (final DeviceDateBox dateBox : new DeviceDateBox[]{dateBegin, dateEnd}) {
+            dateBox.setErrorHandler(new Handler() {
 
-	private void updatePanel() {
-		updateLabels();
-		if (!isMirrorMode()) {
-			if (mirrorTable != null) {
-				resultPanel.remove(mirrorTable);
-			}
-			if (table != null) {
-				resultPanel.add(table);
-			}
-			deckPanel.showWidget(0);
-		}
-		else {
-			if (table != null) {
-				resultPanel.remove(table);
-			}
-			if (mirrorTable != null) {
-				resultPanel.add(mirrorTable);
-			}
-			switch (getMirrorModeType()) {
-			case ADD_SERVICE:
-				deckPanel.showWidget(1);
-				break;
-			case MODIFY_SERVICE:
-				deckPanel.showWidget(2);
-				break;
-			case DELETE_SERVICE:
-				deckPanel.showWidget(3);
-				break;
-			case DELETE_DEVICE:
-				deckPanel.showWidget(4);
-				break;
-			}
-		}
-	}
+                @Override
+                public void onErrorHappens() {
+                    updateDateButtonStatus();
+                    int x = dateBox.getAbsoluteLeft();
+                    int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
+                    popup.setHTML(x, y, "15EM", "3EM", DeviceDateBox.getDateErrorHTML(dateBox));
+                }
 
-	@UiHandler("labelAll")
-	void handleLabelAll(ClickEvent event) {
-		presenter.setQueryState(null);
-	}
+                @Override
+                public void onValueChanged() {
+                    updateDateButtonStatus();
+                    int x = dateBox.getAbsoluteLeft();
+                    int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
+                    DeviceDateBox pair;
+                    pair = (dateBox != dateBegin ? dateBegin : dateEnd);
+                    if (!pair.hasError()) {
+                        Date date0 = dateBegin.getValue(), date1 = dateEnd.getValue();
+                        if (date0 != null && date1 != null) {
+                            if (date0.getTime() > date1.getTime()) {
+                                popup.setHTML(x, y, "12EM", "2EM", DeviceDateBox.getDateErrorHTML(dateBegin, dateEnd));
+                                return;
+                            }
+                        }
+                        updateSearchRange();
+                    }
+                }
+            });
+        }
+        
+        updateDateButtonStatus();
+    }
+    
+    private String getLabel(boolean highlight, String msg) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<font color='").append(highlight ? "red" : "darkblue").append("'>").append(msg).append("</font>");
+        return sb.toString();
+    }
+    
+    private static final long DISK_UNIT = 1000;
 
-	@UiHandler("labelReserved")
-	void handleLabelReserved(ClickEvent event) {
-		presenter.setQueryState(DiskState.RESERVED);
-	}
+    @Override
+    public void updateLabels() {
+        final String[] prefix = {"全部硬盘数量： ", "预留硬盘数量： ", "使用中硬盘数量： ", "未使用硬盘数量： "};
+        final String suffix = " GB";
+        final DiskState[] states = {null, DiskState.RESERVED, DiskState.INUSE, DiskState.STOP};
+        DiskState state = presenter.getQueryState();
+        Anchor[] labels = new Anchor[]{labelAll, labelReserved, labelInuse, labelStop};
+        for (int i = 0; i < labels.length; i ++) {
+            if (labels[i] != null) {
+                double value = (double)presenter.getCounts(states[i]) / DISK_UNIT;
+                labels[i].setHTML(getLabel(state == states[i], prefix[i] + value + suffix));
+            }
+        }
+    }
+    
+    private void updateSearchResultButtonStatus() {
+        int size = selection.getSelectedSet().size();
+        buttonAddDisk.setEnabled(true);
+        buttonAddDiskService.setEnabled(size == 1 && presenter.canAddDiskService());
+        buttonDeleteDisk.setEnabled(size != 0 && presenter.canDeleteDisk());
+        buttonDeleteDiskService.setEnabled(size != 0 && presenter.canDeleteDiskService());
+        buttonModifyDisk.setEnabled(size == 1 && presenter.canModifyDisk());
+        buttonModifyDiskService.setEnabled(size == 1 && presenter.canModifyDiskService());
+        buttonClearSelection.setEnabled(size != 0);
+    }
+    
+    private void updateDateButtonStatus() {
+        if (isEmpty(dateBegin.getText()) && isEmpty(dateEnd.getText())) {
+            buttonClearDate.setEnabled(false);
+        }
+        else {
+            buttonClearDate.setEnabled(true);
+        }
+    }
+    
+    public boolean isEmpty(String s) {
+        return s == null || s.length() == 0;
+    }
+    
+    private void updateSearchRange() {
+        if (!dateBegin.hasError() && !dateEnd.hasError()) {
+            presenter.updateSearchResult(dateBegin.getValue(), dateEnd.getValue());
+        }
+    }
+    
+    @UiHandler("labelAll")
+    void handleLabelAll(ClickEvent event) {
+        presenter.setQueryState(null);
+    }
 
-	@UiHandler("labelInuse")
-	void handleLabelInuse(ClickEvent event) {
-		presenter.setQueryState(DiskState.INUSE);
-	}
+    @UiHandler("labelStop")
+    void handleLabelReserved(ClickEvent event) {
+        presenter.setQueryState(DiskState.STOP);
+    }
 
-	@UiHandler("labelStop")
-	void handleLabelStop(ClickEvent event) {
-		presenter.setQueryState(DiskState.STOP);
-	}
+    @UiHandler("labelInuse")
+    void handleLabelInuse(ClickEvent event) {
+        presenter.setQueryState(DiskState.INUSE);
+    }
 
-	public DeviceDiskViewImpl() {
-		initWidget(uiBinder.createAndBindUi(this));
-		selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
-	}
+    @UiHandler("labelReserved")
+    void handleLabelStop(ClickEvent event) {
+        presenter.setQueryState(DiskState.RESERVED);
+    }
+    
+    @Override
+    public Set<SearchResultRow> getSelectedSet() {
+        return selection.getSelectedSet();
+    }
+    
+    @Override
+    public void setSelectedRow(SearchResultRow row) {
+        clearSelection();
+        if (row != null) {
+            selection.setSelected(row, true);
+        }
+        updateSearchResultButtonStatus();
+    }
+    
+    @Override
+    public void showSearchResult(SearchResult result) {
+        if (table == null) {
+            table = new DBSearchResultTable(result.getDescs(), selection);
+            table.setRangeChangeHandler(presenter);
+            table.setClickHandler(presenter);
+            table.load();
+            resultPanel.add(table);
+        }
+        table.setData(result);
+    }
+    
+    @Override
+    public int getPageSize() {
+        return table.getPageSize();
+    }
 
-	private Presenter presenter;
+    @Override
+    public void clear() {
+        resultPanel.clear();
+        table = null;
+    }
+    
+    @Override
+    public void clearSelection() {
+        selection.clear();
+    }
 
-	private MultiSelectionModel<SearchResultRow> selection;
-
-	private SearchResultTable table;
-	private DeviceMirrorSearchResultTable mirrorTable;
-
-	@Override
-	public Set<SearchResultRow> getSelectedSet() {
-		return selection.getSelectedSet();
-	}
-
-	@Override
-	public void showSearchResult(SearchResult result) {
-		if (table == null) {
-			// int pageSize = presenter.getPageSize();
-			table = new SearchResultTable(DEFAULT_PAGESIZE, result.getDescs(), presenter, selection);
-			table.load();
-			updatePanel();
-		}
-		if (mirrorTable == null) {
-			mirrorTable = new DeviceMirrorSearchResultTable(DEFAULT_PAGESIZE, result.getDescs(), presenter);
-			mirrorTable.load();
-			updatePanel();
-		}
-		table.setData(result);
-	}
-
-	@Override
-	public void clear() {
-		resultPanel.clear();
-		table = null;
-		mirrorTable = null;
-	}
-
-	@Override
-	public void clearSelection() {
-		selection.clear();
-	}
-
-	@Override
-	public void setPresenter(Presenter presenter) {
-		this.presenter = presenter;
-	}
-
-	@UiField
-	DeckPanel deckPanel;
-	
-	@UiHandler("buttonAddDevice")
-	void onButtonAddDevice(ClickEvent event) {
-		presenter.onAddDevice();
-	}
-	
-	@UiHandler("buttonDeleteDevice")
-	void onButtonDeleteDevice(ClickEvent event) {
-		presenter.onDeleteDevice();
-	}
-	
-	@UiHandler("buttonAddService")
-	void handleButtonAddService(ClickEvent event) {
-		presenter.onAddService();
-	}
-
-	@UiHandler("buttonModifyService")
-	void handleButtonModifyService(ClickEvent event) {
-		presenter.onModifyService();
-	}
-
-	@UiHandler("buttonDeleteService")
-	void handleButtonDeleteService(ClickEvent event) {
-		presenter.onDeleteService();
-	}
-
-	@UiHandler("clearSelection")
-	void handleButtonClearSelection(ClickEvent event) {
-		presenter.onClearSelection();
-	}
-	
-	@UiHandler("mirrorAddServiceBack")
-	void handleMirrorAddServiceBack(ClickEvent event) {
-		presenter.onMirrorBack();
-	}
-
-	@UiHandler("mirrorModifyServiceBack")
-	void handleMirrorModifyServiceBack(ClickEvent event) {
-		presenter.onMirrorBack();
-	}
-	
-	@UiHandler("mirrorDeleteServiceBack")
-	void handleMirrorDeleteServiceBack(ClickEvent event) {
-		presenter.onMirrorBack();
-	}
-	
-	@UiHandler("mirrorDeleteServiceDeleteAll")
-	void handleMirrorDeleteServiceDeleteAll(ClickEvent event) {
-		presenter.onMirrorDeleteAll();
-	}
-	
-	@UiHandler("mirrorDeleteDeviceBack")
-	void handleMirrorDeleteDeviceBack(ClickEvent event) {
-		presenter.onMirrorBack();
-	}
-	
-	@UiHandler("mirrorDeleteDeviceDeleteAll")
-	void handleMirrorDeleteDeviceDeleteAll(ClickEvent event) {
-		presenter.onMirrorDeleteAll();
-	}
-	
-	private MirrorModeType mirrorModeType = null;
-
-	@Override
-	public boolean isMirrorMode() {
-		return mirrorModeType != null;
-	}
-
-	@Override
-	public void openMirrorMode(MirrorModeType type, List<SearchResultRow> data) {
-		assert (!isMirrorMode() && type != null);
-		clearSelection();
-		mirrorModeType = type;
-		mirrorTable.setData(data);
-		updatePanel();
-	}
-
-	@Override
-	public void closeMirrorMode() {
-		assert (isMirrorMode());
-		mirrorModeType = null;
-		mirrorTable.clearSelection();
-		updatePanel();
-	}
-
-	@Override
-	public DeviceMirrorSearchResultTable getMirrorTable() {
-		return mirrorTable;
-	}
-
-	@Override
-	public MirrorModeType getMirrorModeType() {
-		return mirrorModeType;
-	}
-
+    @Override
+    public void setPresenter(Presenter presenter) {
+        this.presenter = presenter;
+    }
+    
+    @UiHandler("buttonAddDisk")
+    void onButtonAddDisk(ClickEvent event) {
+        if (buttonAddDisk.isEnabled()) {
+            presenter.onAddDisk();
+        }
+    }
+    
+    @UiHandler("buttonAddDiskService")
+    void onButtonAddDiskService(ClickEvent event) {
+        if (buttonAddDiskService.isEnabled()) {
+            presenter.onAddDiskService();
+        }
+    }
+    
+    @UiHandler("buttonDeleteDisk")
+    void onButtonDeleteDisk(ClickEvent event) {
+        if (buttonDeleteDisk.isEnabled()) {
+            presenter.onDeleteDisk();
+        }
+    }
+    
+    @UiHandler("buttonDeleteDiskService")
+    void onButtonDeleteDiskService(ClickEvent event) {
+        if (buttonDeleteDiskService.isEnabled()) {
+            presenter.onDeleteDiskService();
+        }
+    }
+    
+    @UiHandler("buttonModifyDisk")
+    void handleButtonModifyDisk(ClickEvent event) {
+        if (buttonModifyDisk.isEnabled()) {
+            presenter.onModifyDisk();
+        }
+    }
+    
+    @UiHandler("buttonModifyDiskService")
+    void handleButtonModifyDiskService(ClickEvent event) {
+        if (buttonModifyDiskService.isEnabled()) {
+            presenter.onModifyDiskService();
+        }
+    }
+    
+    @UiHandler("buttonClearSelection")
+    void handleButtonClearSelection(ClickEvent event) {
+        if (buttonClearSelection.isEnabled()) {
+            clearSelection();
+        }
+    }
+    
+    @UiHandler("buttonClearDate")
+    void handleButtonClearDate(ClickEvent event) {
+        if (buttonClearDate.isEnabled()) {
+            dateBegin.setValue(null);
+            dateEnd.setValue(null);
+            updateDateButtonStatus();
+            updateSearchRange();
+        }
+    }
+    
 }

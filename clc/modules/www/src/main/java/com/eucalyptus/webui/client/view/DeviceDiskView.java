@@ -1,63 +1,57 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.List;
+import java.util.Date;
 import java.util.Set;
 
-import com.eucalyptus.webui.client.activity.device.DeviceDiskActivity.DiskState;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.view.DBSearchResultTable.DBSearchResultTableClickHandler;
+import com.eucalyptus.webui.shared.resource.device.status.DiskState;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceDiskView extends IsWidget, CanDisplaySearchResult, Clearable, SelectionController {
 	
-	public static final int DEFAULT_PAGESIZE = 20;
+    public void setPresenter(Presenter presenter);
+    
+    public Set<SearchResultRow> getSelectedSet();
+    
+    public void setSelectedRow(SearchResultRow row);
+    
+    public void updateLabels();
+    
+    public int getPageSize();
 	
-	void setPresenter(Presenter presenter);
-	
-	void updateLabels();
-	
-	void openMirrorMode(MirrorModeType type, List<SearchResultRow> data);
-	
-	void closeMirrorMode();
-	
-	DeviceMirrorSearchResultTable getMirrorTable();
-	
-	boolean isMirrorMode();
-	
-	MirrorModeType getMirrorModeType();
-	
-	Set<SearchResultRow> getSelectedSet();
-	
-	enum MirrorModeType {
-		MODIFY_SERVICE,
-		DELETE_SERVICE,
-		DELETE_DEVICE,
-		ADD_SERVICE,
-	}
-	
-	public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceMirrorSearchResultTable.Presenter {
-		
-		void onAddService();
-		
-		void onModifyService();
-		
-		void onDeleteService();
-		
-		void onDeleteDevice();
-		
-		void onAddDevice();
-		
-		void onClearSelection();
-		
-		void onMirrorBack();
-		
-		void onMirrorDeleteAll();
-		
-		long getCounts(DiskState state);
-		
-		void setQueryState(DiskState state);
-		
-		DiskState getQueryState();
-		
+    public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DBSearchResultTableClickHandler {
+        
+        public void onAddDisk();
+        
+        public void onModifyDisk();
+        
+        public void onDeleteDisk();
+        
+        public void onAddDiskService();
+        
+        public void onModifyDiskService();
+        
+        public void onDeleteDiskService();
+        
+        public boolean canDeleteDisk();
+        
+        public boolean canModifyDisk();
+        
+        public boolean canAddDiskService();
+        
+        public boolean canDeleteDiskService();
+        
+        public boolean canModifyDiskService();
+        
+        public void updateSearchResult(Date dateBegin, Date dateEnd);
+        
+        public DiskState getQueryState();
+        
+        public long getCounts(DiskState state);
+        
+        public void setQueryState(DiskState state);
+
 	}
 
 }

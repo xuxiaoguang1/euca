@@ -1,20 +1,22 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.List;
+import java.util.Date;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.user.client.ui.DeckPanel;
+import com.google.gwt.view.client.SelectionChangeEvent;
 
 public class DeviceBWViewImpl extends Composite implements DeviceBWView {
 
@@ -22,158 +24,181 @@ public class DeviceBWViewImpl extends Composite implements DeviceBWView {
 
 	interface BWViewImplUiBinder extends UiBinder<Widget, DeviceBWViewImpl> {
 	}
-
-	@UiField
-	LayoutPanel resultPanel;
-
-	private void updatePanel() {
-		if (!isMirrorMode()) {
-			if (mirrorTable != null) {
-				resultPanel.remove(mirrorTable);
-			}
-			if (table != null) {
-				resultPanel.add(table);
-			}
-			deckPanel.showWidget(0);
-		}
-		else {
-			if (table != null) {
-				resultPanel.remove(table);
-			}
-			if (mirrorTable != null) {
-				resultPanel.add(mirrorTable);
-			}
-			switch (getMirrorModeType()) {
-			case MODIFY_SERVICE:
-				deckPanel.showWidget(1);
-				break;
-			case DELETE_SERVICE:
-				deckPanel.showWidget(2);
-				break;
-			}
-		}
-	}
-
-	public DeviceBWViewImpl() {
-		initWidget(uiBinder.createAndBindUi(this));
-		selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
-	}
-
-	private Presenter presenter;
-
-	private MultiSelectionModel<SearchResultRow> selection;
-
-	private SearchResultTable table;
-	private DeviceMirrorSearchResultTable mirrorTable;
-
-	@Override
-	public Set<SearchResultRow> getSelectedSet() {
-		return selection.getSelectedSet();
-	}
-
-	@Override
-	public void showSearchResult(SearchResult result) {
-		if (table == null) {
-			// int pageSize = presenter.getPageSize();
-			table = new SearchResultTable(DEFAULT_PAGESIZE, result.getDescs(), presenter, selection);
-			table.load();
-			updatePanel();
-		}
-		if (mirrorTable == null) {
-			mirrorTable = new DeviceMirrorSearchResultTable(DEFAULT_PAGESIZE, result.getDescs(), presenter);
-			mirrorTable.load();
-			updatePanel();
-		}
-		table.setData(result);
-	}
-
-	@Override
-	public void clear() {
-		resultPanel.clear();
-		table = null;
-		mirrorTable = null;
-	}
-
-	@Override
-	public void clearSelection() {
-		selection.clear();
-	}
-
-	@Override
-	public void setPresenter(Presenter presenter) {
-		this.presenter = presenter;
-	}
-
-	@UiField
-	DeckPanel deckPanel;
 	
-	@UiHandler("buttonAddService")
-	void handleButtonAddService(ClickEvent event) {
-		presenter.onAddService();
-	}
+	@UiField LayoutPanel resultPanel;
+    @UiField Anchor buttonAddBWService;
+    @UiField Anchor buttonDeleteBWService;
+    @UiField Anchor buttonModifyBWService;
+    @UiField Anchor buttonClearSelection;
+    @UiField DeviceDateBox dateBegin;
+    @UiField DeviceDateBox dateEnd;
+    @UiField Anchor buttonClearDate;
+    
+    private Presenter presenter;
+    private MultiSelectionModel<SearchResultRow> selection;
+    private DBSearchResultTable table;
+    private DevicePopupPanel popup = new DevicePopupPanel();
+    
+    public DeviceBWViewImpl() {
+        initWidget(uiBinder.createAndBindUi(this));
+        selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
+        selection.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
 
-	@UiHandler("buttonModifyService")
-	void handleButtonModifyService(ClickEvent event) {
-		presenter.onModifyService();
-	}
+            @Override
+            public void onSelectionChange(SelectionChangeEvent event) {
+                updateSearchResultButtonStatus();
+                presenter.onSelectionChange(selection.getSelectedSet());
+            }
+            
+        });
+        updateSearchResultButtonStatus();
+        
+        popup.setAutoHideEnabled(true);
+        
+        for (final DeviceDateBox dateBox : new DeviceDateBox[]{dateBegin, dateEnd}) {
+            dateBox.setErrorHandler(new Handler() {
 
-	@UiHandler("buttonDeleteService")
-	void handleButtonDeleteService(ClickEvent event) {
-		presenter.onDeleteService();
-	}
+                @Override
+                public void onErrorHappens() {
+                    updateDateButtonStatus();
+                    int x = dateBox.getAbsoluteLeft();
+                    int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
+                    popup.setHTML(x, y, "15EM", "3EM", DeviceDateBox.getDateErrorHTML(dateBox));
+                }
 
-	@UiHandler("clearSelection")
-	void handleButtonClearSelection(ClickEvent event) {
-		presenter.onClearSelection();
-	}
-	
-	@UiHandler("mirrorModifyServiceBack")
-	void handleMirrorModifyServiceBack(ClickEvent event) {
-		presenter.onMirrorBack();
-	}
-	
-	@UiHandler("mirrorDeleteServiceBack")
-	void handleMirrorDeleteServiceBack(ClickEvent event) {
-		presenter.onMirrorBack();
-	}
-	
-	@UiHandler("mirrorDeleteServiceDeleteAll")
-	void handleMirrorDeleteServiceDeleteAll(ClickEvent event) {
-		presenter.onMirrorDeleteAll();
-	}
-	
-	private MirrorModeType mirrorModeType = null;
+                @Override
+                public void onValueChanged() {
+                    updateDateButtonStatus();
+                    int x = dateBox.getAbsoluteLeft();
+                    int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
+                    DeviceDateBox pair;
+                    pair = (dateBox != dateBegin ? dateBegin : dateEnd);
+                    if (!pair.hasError()) {
+                        Date date0 = dateBegin.getValue(), date1 = dateEnd.getValue();
+                        if (date0 != null && date1 != null) {
+                            if (date0.getTime() > date1.getTime()) {
+                                popup.setHTML(x, y, "12EM", "2EM", DeviceDateBox.getDateErrorHTML(dateBegin, dateEnd));
+                                return;
+                            }
+                        }
+                        updateSearchRange();
+                    }
+                }
+            });
+        }
+        
+        updateDateButtonStatus();
+    }
+    
+    private void updateSearchResultButtonStatus() {
+        int size = selection.getSelectedSet().size();
+        buttonAddBWService.setEnabled(true);
+        buttonDeleteBWService.setEnabled(size != 0 && presenter.canDeleteBWService());
+        buttonModifyBWService.setEnabled(size == 1 && presenter.canModifyBWService());
+        buttonClearSelection.setEnabled(size != 0);
+    }
+    
+    private void updateDateButtonStatus() {
+        if (isEmpty(dateBegin.getText()) && isEmpty(dateEnd.getText())) {
+            buttonClearDate.setEnabled(false);
+        }
+        else {
+            buttonClearDate.setEnabled(true);
+        }
+    }
+    
+    public boolean isEmpty(String s) {
+        return s == null || s.length() == 0;
+    }
+    
+    private void updateSearchRange() {
+        if (!dateBegin.hasError() && !dateEnd.hasError()) {
+            presenter.updateSearchResult(dateBegin.getValue(), dateEnd.getValue());
+        }
+    }
+    
+    public Set<SearchResultRow> getSelectedSet() {
+        return selection.getSelectedSet();
+    }
+    
+    @Override
+    public void setSelectedRow(SearchResultRow row) {
+        clearSelection();
+        if (row != null) {
+            selection.setSelected(row, true);
+        }
+        updateSearchResultButtonStatus();
+    }
+    
+    @Override
+    public void showSearchResult(SearchResult result) {
+        if (table == null) {
+            table = new DBSearchResultTable(result.getDescs(), selection);
+            table.setRangeChangeHandler(presenter);
+            table.setClickHandler(presenter);
+            table.load();
+            resultPanel.add(table);
+        }
+        table.setData(result);
+    }
+    
+    @Override
+    public int getPageSize() {
+        return table.getPageSize();
+    }
 
-	@Override
-	public boolean isMirrorMode() {
-		return mirrorModeType != null;
-	}
+    @Override
+    public void clear() {
+        resultPanel.clear();
+        table = null;
+    }
+    
+    @Override
+    public void clearSelection() {
+        selection.clear();
+    }
 
-	@Override
-	public void openMirrorMode(MirrorModeType type, List<SearchResultRow> data) {
-		assert (!isMirrorMode() && type != null);
-		clearSelection();
-		mirrorModeType = type;
-		mirrorTable.setData(data);
-		updatePanel();
-	}
-
-	@Override
-	public void closeMirrorMode() {
-		assert (isMirrorMode());
-		mirrorModeType = null;
-		mirrorTable.clearSelection();
-		updatePanel();
-	}
-
-	@Override
-	public DeviceMirrorSearchResultTable getMirrorTable() {
-		return mirrorTable;
-	}
-
-	@Override
-	public MirrorModeType getMirrorModeType() {
-		return mirrorModeType;
-	}
-
+    @Override
+    public void setPresenter(Presenter presenter) {
+        this.presenter = presenter;
+    }
+    
+    @UiHandler("buttonAddBWService")
+    void onButtonAddBWService(ClickEvent event) {
+        if (buttonAddBWService.isEnabled()) {
+            presenter.onAddBWService();
+        }
+    }
+    
+    @UiHandler("buttonDeleteBWService")
+    void onButtonDeleteBWService(ClickEvent event) {
+        if (buttonDeleteBWService.isEnabled()) {
+            presenter.onDeleteBWService();
+        }
+    }
+    
+    @UiHandler("buttonModifyBWService")
+    void handleButtonModifyBWService(ClickEvent event) {
+        if (buttonModifyBWService.isEnabled()) {
+            presenter.onModifyBWService();
+        }
+    }
+    
+    @UiHandler("buttonClearSelection")
+    void handleButtonClearSelection(ClickEvent event) {
+        if (buttonClearSelection.isEnabled()) {
+            clearSelection();
+        }
+    }
+    
+    @UiHandler("buttonClearDate")
+    void handleButtonClearDate(ClickEvent event) {
+        if (buttonClearDate.isEnabled()) {
+            dateBegin.setValue(null);
+            dateEnd.setValue(null);
+            updateDateButtonStatus();
+            updateSearchRange();
+        }
+    }
+    
 }

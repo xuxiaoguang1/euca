@@ -66,7 +66,7 @@ public class DeviceDatePickerViewImpl extends DialogBox implements DeviceDatePic
 	}
 
 	@UiHandler("buttonOK")
-	void handleButtonOk(ClickEvent event) {
+	void handleButtonOK(ClickEvent event) {
 		label.setText(DeviceServiceDatePicker.format(picker.getValue()));
 		this.hide();
 		if (presenter != null) {

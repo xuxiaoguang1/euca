@@ -17,7 +17,7 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
-import com.eucalyptus.webui.server.device.DeviceTemplateServiceProcImpl;
+import com.eucalyptus.webui.server.device.DeviceTemplateService;
 import com.eucalyptus.webui.server.dictionary.DBTableColName;
 import com.eucalyptus.webui.server.user.UserAppDBProcWrapper;
 import com.eucalyptus.webui.server.user.UserAppSyncException;
@@ -44,7 +44,7 @@ public class UserAppServiceProcImpl {
 		  long srvDuration = userApp.getSrvEndingTime().getTime() - userApp.getSrvStartingTime().getTime();
 		  try {
 			  //update device state by user application
-			  deviceTemDBProc.actionTemplate(session, userApp.getUserId(), userApp.getTemplateId(), (int)srvDuration);
+			  DeviceTemplateService.getInstance().actionTemplate(session, userApp.getUserId(), userApp.getTemplateId(), (int)srvDuration);
 			  
 			  userAppDBProc.addUserApp(userApp);
 		  }
@@ -126,7 +126,7 @@ public class UserAppServiceProcImpl {
 			  if (vit != null)
 				  euca_vit_id = vit.getEucaVITId();
 			  
-			  Template template = deviceTemDBProc.lookupTemplateByID(session, templateId);
+			  Template template = DeviceTemplateService.getInstance().lookupTemplateByID(session, templateId);
 			  
 			  if (keyPair != null && securityGroup != null && euca_vit_id != null) {
 				  String euca_vi_key = EucaServiceWrapper.getInstance().runVM(session, template, keyPair, securityGroup, euca_vit_id);
@@ -268,7 +268,6 @@ public class UserAppServiceProcImpl {
 	  
 	  
 	  private UserAppDBProcWrapper userAppDBProc = new UserAppDBProcWrapper();
-	  private DeviceTemplateServiceProcImpl deviceTemDBProc = new DeviceTemplateServiceProcImpl();
 	  private VITDBProcWrapper vitDBProc = new VITDBProcWrapper();
 	  
 	  private static List<SearchResultRow> DATA = null;

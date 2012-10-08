@@ -1,18 +1,20 @@
 package com.eucalyptus.webui.client.service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
-import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
 import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.resource.VMImageType;
+import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
 import com.eucalyptus.webui.shared.resource.device.status.CPUState;
+import com.eucalyptus.webui.shared.resource.device.status.DiskState;
+import com.eucalyptus.webui.shared.resource.device.status.IPState;
+import com.eucalyptus.webui.shared.resource.device.status.IPType;
+import com.eucalyptus.webui.shared.resource.device.status.MemoryState;
 import com.eucalyptus.webui.shared.resource.device.status.ServerState;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
@@ -191,17 +193,56 @@ public interface EucalyptusServiceAsync {
     void lookupDeviceServerNamesByCabinetName(Session session, String cabinet_name, AsyncCallback<List<String>> callback);
     
     void lookupDeviceCPUByDate(Session session, SearchRange range, CPUState cpu_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
-    void lookupDeviceCPUCounts(Session session, Date dateBegin, Date dateEnd, AsyncCallback<Map<Integer, Integer>> callback);
-    void addDeviceCPU(Session session, String cpu_name, String cpu_desc, String cpu_vendor, String cpu_model,
-            double cpu_ghz, double cpu_cache, int num, String server_name, AsyncCallback<Void> callback);
-    void addDeviceCPUService(Session session, String cs_desc, Date cs_starttime, Date cs_endtime, CPUState cpu_state, int cpu_id, String account_name, String user_name, AsyncCallback<Void> callback);
-    void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, String cpu_vendor, String cpu_model,
-            double cpu_ghz, double cpu_cache, AsyncCallback<Void> callback);
-    void modifyDeviceCPUService(Session session, int cs_id, String cs_desc, Date cs_starttime, Date cs_endtime, CPUState cpu_state, AsyncCallback<Void> callback);
+    void lookupDeviceCPUCounts(Session session, AsyncCallback<Map<Integer, Integer>> callback);
+    void addDeviceCPU(Session session, String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, String server_name, AsyncCallback<Void> callback);
+    void addDeviceCPUService(Session session, String cs_desc, int cs_size, Date cs_starttime, Date cs_endtime, int cpu_id, String account_name, String user_name, AsyncCallback<Void> callback);
+    void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, AsyncCallback<Void> callback);
+    void modifyDeviceCPUService(Session session, int cs_id, String cs_desc, Date cs_starttime, Date cs_endtime, AsyncCallback<Void> callback);
     void deleteDeviceCPU(Session session, List<Integer> cpu_ids, AsyncCallback<Void> callback);
     void deleteDeviceCPUService(Session session, List<Integer> cs_ids, AsyncCallback<Void> callback);
     void lookupDeviceCPUNamesByServerName(Session session, String server_name, AsyncCallback<List<String>> callback);
+    
+    void lookupDeviceMemoryByDate(Session session, SearchRange range, MemoryState memory_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
+    void lookupDeviceMemoryCounts(Session session, AsyncCallback<Map<Integer, Long>> callback);
+    void addDeviceMemory(Session session, String memory_name, String memory_desc, long memory_size, String server_name, AsyncCallback<Void> callback);
+    void addDeviceMemoryService(Session session, String ms_desc, long ms_size, Date ms_starttime, Date ms_endtime, int memory_id, String account_name, String user_name, AsyncCallback<Void> callback);
+    void modifyDeviceMemory(Session session, int memory_id, String memory_desc, long memory_size, AsyncCallback<Void> callback);
+    void modifyDeviceMemoryService(Session session, int ms_id, String ms_desc, Date ms_starttime, Date ms_endtime, AsyncCallback<Void> callback);
+    void deleteDeviceMemory(Session session, List<Integer> memory_ids, AsyncCallback<Void> callback);
+    void deleteDeviceMemoryService(Session session, List<Integer> ms_ids, AsyncCallback<Void> callback);
+    void lookupDeviceMemoryNamesByServerName(Session session, String server_name, AsyncCallback<List<String>> callback);
+    
+    void lookupDeviceDiskByDate(Session session, SearchRange range, DiskState disk_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
+    void lookupDeviceDiskCounts(Session session, AsyncCallback<Map<Integer, Long>> callback);
+    void addDeviceDisk(Session session, String disk_name, String disk_desc, long disk_size, String server_name, AsyncCallback<Void> callback);
+    void addDeviceDiskService(Session session, String ds_desc, long ds_size, Date ds_starttime, Date ds_endtime, int disk_id, String account_name, String user_name, AsyncCallback<Void> callback);
+    void modifyDeviceDisk(Session session, int disk_id, String disk_desc, long disk_size, AsyncCallback<Void> callback);
+    void modifyDeviceDiskService(Session session, int ds_id, String ds_desc, Date ds_starttime, Date ds_endtime, AsyncCallback<Void> callback);
+    void deleteDeviceDisk(Session session, List<Integer> disk_ids, AsyncCallback<Void> callback);
+    void deleteDeviceDiskService(Session session, List<Integer> ds_ids, AsyncCallback<Void> callback);
+    void lookupDeviceDiskNamesByServerName(Session session, String server_name, AsyncCallback<List<String>> callback);
 
+    void lookupDeviceIPByDate(Session session, SearchRange range, IPType ip_type, IPState ip_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
+	void lookupDeviceIPCounts(Session session, IPType ip_type, AsyncCallback<Map<Integer, Integer>> callback);
+	void addDeviceIP(Session session, String ip_addr, String ip_desc, IPType ip_type, AsyncCallback<Void> callback);
+	void addDeviceIPService(Session session, String is_desc, Date is_starttime, Date is_endtime, int ip_id, String account_name, String user_name, AsyncCallback<Void> callback);
+	void modifyDeviceIPService(Session session, int is_id, String is_desc, Date is_starttime, Date is_endtime, AsyncCallback<Void> callback);
+	void modifyDeviceIP(Session session, int ip_id, String ip_desc, IPType ip_type, AsyncCallback<Void> callback);
+	void deleteDeviceIP(Session session, List<Integer> ip_ids, AsyncCallback<Void> callback);
+	void deleteDeviceIPService(Session session, List<Integer> is_ids, AsyncCallback<Void> callback);
+	void lookupDeviceUnusedIPAddrByIPType(Session session, IPType ip_type, AsyncCallback<List<String>> callback);
+	
+	void lookupDeviceBWByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
+	void addDeviceBWService(Session session, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, String ip_addr, AsyncCallback<Void> callback);
+	void modifyDeviceBWService(Session session, int bs_id, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, AsyncCallback<Void> callback);
+	void deleteDeviceBWService(Session session, List<Integer> bs_ids, AsyncCallback<Void> callback);
+	void lookupDeviceUnusedIPAddrForBWService(Session session, String account_name, String user_name, AsyncCallback<List<String>> callback);
+	
+	void lookupDeviceTemplateByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
+	void addDeviceTemplateService(Session session, String template_name, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image, AsyncCallback<Void> callback);
+	void modifyDeviceTemplateService(Session session, int template_id, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image, AsyncCallback<Void> callback);
+	void deleteDeviceTemplateService(Session session, List<Integer> template_ids, AsyncCallback<Void> callback);
+	
 	void lookupDeviceCPUPriceByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd, AsyncCallback<SearchResult> callback);
 	void addDeviceCPUPrice(Session session, String cpu_name, String cpu_price_desc, double cpu_price, AsyncCallback<Void> callback);
 	void modifyDeviceCPUPrice(Session session, int cpu_price_id, String cpu_price_desc, double cpu_price, AsyncCallback<Void> callback);
@@ -228,77 +269,9 @@ public interface EucalyptusServiceAsync {
     void createDeviceTemplatePriceByID(Session session, int template_id, String template_price_desc,
             double template_price_cpu, double template_price_mem, double template_price_disk, double template_price_bw,
             AsyncCallback<Void> callback);
-	void lookupDeviceTemplateByName(Session session, String template_name, AsyncCallback<Template> callback);
 
-	void lookupDeviceMemory(Session session, String search, SearchRange range, int queryState,
-	        AsyncCallback<SearchResult> callback);
-	void getDeviceMemoryCounts(Session session,
-			AsyncCallback<Map<Integer, Long>> callback);
-	void modifyDeviceMemoryService(Session session, SearchResultRow row, String endtime, int state,
-	        AsyncCallback<SearchResultRow> callback);
-	void deleteDeviceMemoryService(Session session, List<SearchResultRow> list,
-	        AsyncCallback<List<SearchResultRow>> callback);
-	void deleteDeviceMemoryDevice(Session session, List<SearchResultRow> list,
-	        AsyncCallback<List<SearchResultRow>> callback);
-	void addDeviceMemoryService(Session session, SearchResultRow row, String account, String user,
-			long used, String starttime, int life, int state, AsyncCallback<SearchResultRow> callback);
-	void addDeviceMemoryDevice(Session session, String serverMark, String name, long total, int num, AsyncCallback<Boolean> callback);
-	void lookupDeviceMemoryInfo(Session session, AsyncCallback<DeviceMemoryDeviceAddView.DataCache> callback);
-	void listDeviceMemoryAccounts(Session session, AsyncCallback<List<String>> callback);
-	void listDeviceMemoryUsersByAccount(Session session, String account, AsyncCallback<List<String>> callback);
-	
-	void lookupDeviceDisk(Session session, String search, SearchRange range, int queryState,
-	        AsyncCallback<SearchResult> callback);
-	void getDeviceDiskCounts(Session session,
-			AsyncCallback<Map<Integer, Long>> callback);
-	void modifyDeviceDiskService(Session session, SearchResultRow row, String endtime, int state,
-	        AsyncCallback<SearchResultRow> callback);
-	void deleteDeviceDiskService(Session session, List<SearchResultRow> list,
-	        AsyncCallback<List<SearchResultRow>> callback);
-	void deleteDeviceDiskDevice(Session session, List<SearchResultRow> list,
-	        AsyncCallback<List<SearchResultRow>> callback);
-	void addDeviceDiskService(Session session, SearchResultRow row, String account, String user,
-			long used, String starttime, int life, int state, AsyncCallback<SearchResultRow> callback);
-	void addDeviceDiskDevice(Session session, String serverMark, String name, long total, int num, AsyncCallback<Boolean> callback);
-	void lookupDeviceDiskInfo(Session session, AsyncCallback<DeviceDiskDeviceAddView.DataCache> callback);
-	void listDeviceDiskAccounts(Session session, AsyncCallback<List<String>> callback);
-	void listDeviceDiskUsersByAccount(Session session, String account, AsyncCallback<List<String>> callback);
-	
-	void lookupDeviceIP(Session session, String search, SearchRange range, int queryState, int queryType,
-            AsyncCallback<SearchResult> callback);
-	void getDeviceIPCounts(Session session, int queryType, AsyncCallback<Map<Integer, Integer>> callback);
-	void modifyDeviceIPService(Session session, SearchResultRow row, String endtime, int state,
-	        AsyncCallback<SearchResultRow> callback);
-	void deleteDeviceIPService(Session session, List<SearchResultRow> list,
-	        AsyncCallback<List<SearchResultRow>> callback);
-	void deleteDeviceIPDevice(Session session, List<SearchResultRow> list,
-	        AsyncCallback<List<SearchResultRow>> callback);
-	void addDeviceIPService(Session session, SearchResultRow row, String account, String user, String vmMark,
-			String starttime, int life, int state, AsyncCallback<SearchResultRow> callback);
-	void addDeviceIPDevice(Session session, List<String> publicList, List<String> privateList, AsyncCallback<Boolean> callback);
-	void listDeviceIPAccounts(Session session, AsyncCallback<List<String>> callback);
-	void listDeviceIPUsersByAccount(Session session, String account, AsyncCallback<List<String>> callback);
 	void listDeviceVMsByUser(Session session, String account, String user, AsyncCallback<List<String>> callback);
-	
-	void lookupDeviceBW(Session session, String search, SearchRange range, AsyncCallback<SearchResult> callback);
-	void modifyDeviceBWService(Session session, SearchResultRow row, String endtime,
-	        AsyncCallback<SearchResultRow> callback);
-	void deleteDeviceBWService(Session session, List<SearchResultRow> list,
-	        AsyncCallback<List<SearchResultRow>> callback);
-	void addDeviceBWService(Session session, String account, String user, String starttime,
-	        int life, String ip, long bandwidth, AsyncCallback<Boolean> callback);
-	void listDeviceBWAccounts(Session session, AsyncCallback<List<String>> callback);
-	void listDeviceBWUsersByAccount(Session session, String account, AsyncCallback<List<String>> callback);
-	void listDeviceIPsByUser(Session session, String account, String user, AsyncCallback<List<String>> callback);
 
-	void lookupDeviceTemplate(Session session, String search, SearchRange range, Date starttime, Date endtime,
-	        AsyncCallback<SearchResult> callback);
-	void deleteDeviceTemplate(Session session, List<SearchResultRow> list,
-	        AsyncCallback<List<SearchResultRow>> callback);
-	void addDeviceTemplate(Session session, String mark, String cpu, int ncpus, String mem, String disk, String bw, String image, AsyncCallback<Boolean> callback);
-	void modifyDeviceTempate(Session session, SearchResultRow row, String cpu, int ncpus, String mem, String disk, String bw, String image, AsyncCallback<SearchResultRow> callback);
-	void listDeviceTemplateCPUNames(Session session, AsyncCallback<List<String>> callback);
-	
 	void lookupDeviceVM(Session session, String search, SearchRange range, int queryState, AsyncCallback<SearchResult> callback);
 	
 	void addUserApp(Session session, UserApp userApp, AsyncCallback<Void> callback);
@@ -319,5 +292,8 @@ public interface EucalyptusServiceAsync {
 	void modifyPolicy(Session session, String policyId, String name, String content, AsyncCallback<Void> callback);
 	
 	void lookupHistory(Session session, String search, SearchRange range, AsyncCallback<SearchResult> callback);
+
+	void lookupDeviceTemplateInfoByName(Session session,
+			String template_name, AsyncCallback<TemplateInfo> callback);
 
 }

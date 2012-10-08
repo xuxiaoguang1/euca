@@ -156,7 +156,7 @@ public class DeviceServerAddViewImpl extends DialogBox implements DeviceServerAd
     }
 
 	@UiHandler("buttonOK")
-	void handleButtonOk(ClickEvent event) {
+	void handleButtonOK(ClickEvent event) {
 		if (presenter.onOK(getServerName(), getServerDesc(), getServerIP(), getServerBW(),
 				serverStateValue[serverStateList.getSelectedIndex()], getCabinetName())) {
 			hide();

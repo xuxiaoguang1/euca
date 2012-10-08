@@ -253,21 +253,21 @@ public class DeviceServerViewImpl extends Composite implements DeviceServerView 
 	}
 
 	@UiHandler("buttonAddServer")
-	void onButtonAddDevice(ClickEvent event) {
+	void onButtonAddServer(ClickEvent event) {
 		if (buttonAddServer.isEnabled()) {
 			presenter.onAddServer();
 		}
 	}
 	
 	@UiHandler("buttonDeleteServer")
-	void onButtonDeleteDevice(ClickEvent event) {
+	void onButtonDeleteServer(ClickEvent event) {
 		if (buttonDeleteServer.isEnabled()) {
 			presenter.onDeleteServer();
 		}
 	}
 	
 	@UiHandler("buttonModifyServer")
-	void handleButtonModifyDevice(ClickEvent event) {
+	void handleButtonModifyServer(ClickEvent event) {
 		if (buttonModifyServer.isEnabled()) {
 			presenter.onModifyServer();
 		}

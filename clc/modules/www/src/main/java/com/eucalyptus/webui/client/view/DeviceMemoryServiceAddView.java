@@ -1,34 +1,27 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.Date;
 import java.util.List;
 
-import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceMemoryServiceAddView extends IsWidget {
 	
-	void setPresenter(Presenter presenter);
+	public void setPresenter(Presenter presenter);
 	
-	void setValue(SearchResultRow row, Date starttime, Date endtime, String state, String used);
+	public void popup(int memory_id, String memory_name, String server_name, long ms_reserved);
 	
-	void setAccountList(List<String> accountList);
+	public void setAccountNameList(List<String> account_name_list);
 	
-	void setUserList(String account, List<String> userList);
-	
-	void clearCache();
+	public void setUserNameList(String account_name, List<String> user_name_list);
 	
 	public interface Presenter {
 		
-		boolean onOK(SearchResultRow row, String account, String user, Date starttime, Date endtime, String state,
-				long used, long max);
+		public boolean onOK(int memory_id, String ms_desc, String ms_used, String ms_starttime, String ms_endtime, String account_name, String user_name);
 		
-		void lookupAccounts();
+		public void lookupAccountNames();
 		
-		void lookupUserByAccount(String account);
-		
-		void onCancel();
+		public void lookupUserNamesByAccountName(String account_name);
 		
 	}
-
+	
 }

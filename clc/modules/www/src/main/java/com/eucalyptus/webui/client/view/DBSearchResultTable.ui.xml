@@ -42,9 +42,9 @@
         </g:south>
         <g:center>
             <g:ScrollPanel addStyleNames="{style.scroll}">
-                <g:FlowPanel addStyleNames="{style.tableBox}">
-                    <c:CellTable addStyleNames="{style.cellTable}" ui:field="cellTable" />
-                </g:FlowPanel>
+            	<g:FlowPanel addStyleNames="{style.tableBox}">
+	            	<c:CellTable addStyleNames="{style.cellTable}" ui:field="cellTable" />
+            	</g:FlowPanel>
             </g:ScrollPanel>
         </g:center>
     </g:DockLayoutPanel>

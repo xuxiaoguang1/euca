@@ -246,34 +246,36 @@ public class DeviceTemplatePriceActivity extends AbstractSearchActivity implemen
 						
 						@Override
 						public void lookupTemplateDetailByName(String template_name) {
-							getBackendService().lookupDeviceTemplateByName(getSession(), template_name, new AsyncCallback<Template>() {
-
-								@Override
-								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
-									}
-								}
-
-								@Override
-								public void onSuccess(Template template) {
-									try {
-										int template_id = Integer.parseInt(template.getID());
-										String cpu_name = template.getCPU();
-										if (cpu_name == null) {
-											cpu_name = "";
-										}
-										int ncpus = Integer.parseInt(template.getNCPUs());
-										double mem_size = formatDouble((double)Long.parseLong(template.getMem()) / DIV_MEM);
-										double disk_size = formatDouble((double)Long.parseLong(template.getDisk()) / DIV_DISK);
-										double bw_size = formatDouble((double)Long.parseLong(template.getBw()) / DIV_BW);
-										templatePriceAddView.setTemplateDetails(template_id, template.getName(), cpu_name, ncpus, mem_size, disk_size, bw_size);
-									}
-									catch (Exception e) {
-									}
-								}
-								
-							});
+							throw new RuntimeException(" not finish yet!!");
+							
+//							getBackendService().lookupDeviceTemplateByName(getSession(), template_name, new AsyncCallback<Template>() {
+//
+//								@Override
+//								public void onFailure(Throwable caught) {
+//									if (caught instanceof EucalyptusServiceException) {
+//										onBackendServiceFailure((EucalyptusServiceException)caught);
+//									}
+//								}
+//
+//								@Override
+//								public void onSuccess(Template template) {
+//									try {
+//										int template_id = Integer.parseInt(template.getID());
+//										String cpu_name = template.getCPU();
+//										if (cpu_name == null) {
+//											cpu_name = "";
+//										}
+//										int ncpus = Integer.parseInt(template.getNCPUs());
+//										double mem_size = formatDouble((double)Long.parseLong(template.getMem()) / DIV_MEM);
+//										double disk_size = formatDouble((double)Long.parseLong(template.getDisk()) / DIV_DISK);
+//										double bw_size = formatDouble((double)Long.parseLong(template.getBw()) / DIV_BW);
+//										templatePriceAddView.setTemplateDetails(template_id, template.getName(), cpu_name, ncpus, mem_size, disk_size, bw_size);
+//									}
+//									catch (Exception e) {
+//									}
+//								}
+//								
+//							});
 						}
 						
 					});
