@@ -44,7 +44,7 @@ public class DeviceMemoryViewImpl extends Composite implements DeviceMemoryView 
     
     private Presenter presenter;
     private MultiSelectionModel<SearchResultRow> selection;
-    private DBSearchResultTable table;
+    private DeviceSearchResultTable table;
     private DevicePopupPanel popup = new DevicePopupPanel();
     
     public DeviceMemoryViewImpl() {
@@ -105,6 +105,10 @@ public class DeviceMemoryViewImpl extends Composite implements DeviceMemoryView 
     }
     
     private static final long MEMORY_UNIT = 1024;
+    
+    private double format(double value) {
+        return (double)(int)(value * 1000) / 1000;
+    }
 
     @Override
     public void updateLabels() {
@@ -115,7 +119,7 @@ public class DeviceMemoryViewImpl extends Composite implements DeviceMemoryView 
         Anchor[] labels = new Anchor[]{labelAll, labelReserved, labelInuse, labelStop};
         for (int i = 0; i < labels.length; i ++) {
             if (labels[i] != null) {
-                double value = (double)presenter.getCounts(states[i]) / MEMORY_UNIT;
+                double value = format((double)presenter.getCounts(states[i]) / MEMORY_UNIT);
                 labels[i].setHTML(getLabel(state == states[i], prefix[i] + value + suffix));
             }
         }
@@ -188,7 +192,7 @@ public class DeviceMemoryViewImpl extends Composite implements DeviceMemoryView 
     @Override
     public void showSearchResult(SearchResult result) {
         if (table == null) {
-            table = new DBSearchResultTable(result.getDescs(), selection);
+            table = new DeviceSearchResultTable(result.getDescs(), selection);
             table.setRangeChangeHandler(presenter);
             table.setClickHandler(presenter);
             table.load();

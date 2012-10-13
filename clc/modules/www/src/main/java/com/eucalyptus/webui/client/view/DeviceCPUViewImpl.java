@@ -44,7 +44,7 @@ public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
 	
 	private Presenter presenter;
 	private MultiSelectionModel<SearchResultRow> selection;
-	private DBSearchResultTable table;
+	private DeviceSearchResultTable table;
 	private DevicePopupPanel popup = new DevicePopupPanel();
 	
 	public DeviceCPUViewImpl() {
@@ -186,7 +186,7 @@ public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
 	@Override
 	public void showSearchResult(SearchResult result) {
 		if (table == null) {
-			table = new DBSearchResultTable(result.getDescs(), selection);
+			table = new DeviceSearchResultTable(result.getDescs(), selection);
 			table.setRangeChangeHandler(presenter);
 			table.setClickHandler(presenter);
 			table.load();

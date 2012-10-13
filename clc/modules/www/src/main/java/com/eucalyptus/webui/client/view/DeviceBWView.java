@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.view.DBSearchResultTable.DBSearchResultTableClickHandler;
+import com.eucalyptus.webui.client.view.DeviceSearchResultTable.DeviceSearchResultTableClickHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceBWView extends IsWidget, CanDisplaySearchResult, Clearable, SelectionController {
@@ -17,7 +17,7 @@ public interface DeviceBWView extends IsWidget, CanDisplaySearchResult, Clearabl
     
     public int getPageSize();
 	
-    public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DBSearchResultTableClickHandler {
+    public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceSearchResultTableClickHandler {
         
         public void onAddBWService();
         

@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.view.DBSearchResultTable.DBSearchResultTableClickHandler;
+import com.eucalyptus.webui.client.view.DeviceSearchResultTable.DeviceSearchResultTableClickHandler;
 import com.eucalyptus.webui.shared.resource.device.status.MemoryState;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -20,7 +20,7 @@ public interface DeviceMemoryView extends IsWidget, CanDisplaySearchResult, Clea
     
     public int getPageSize();
 	
-    public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DBSearchResultTableClickHandler {
+    public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceSearchResultTableClickHandler {
         
         public void onAddMemory();
         

@@ -423,7 +423,7 @@ public class DeviceTemplatePriceActivity extends AbstractSearchActivity implemen
     	this.creationtimeEnd = creationtimeEnd;
     	this.modifiedtimeBegin = modifiedtimeBegin;
     	this.modifiedtimeEnd = modifiedtimeEnd;
-    	range = new SearchRange(0, DeviceTemplatePriceView.DEFAULT_PAGESIZE, -1, true);
+    	range = new SearchRange(0, getView().getPageSize(), -1, true);
     	reloadCurrentRange();
     }
 	

@@ -356,7 +356,7 @@ public class DeviceCPUPriceActivity extends AbstractSearchActivity implements De
     	this.creationtimeEnd = creationtimeEnd;
     	this.modifiedtimeBegin = modifiedtimeBegin;
     	this.modifiedtimeEnd = modifiedtimeEnd;
-    	range = new SearchRange(0, DeviceCPUPriceView.DEFAULT_PAGESIZE, -1, true);
+    	range = new SearchRange(0, getView().getPageSize(), -1, true);
     	reloadCurrentRange();
     }
 	

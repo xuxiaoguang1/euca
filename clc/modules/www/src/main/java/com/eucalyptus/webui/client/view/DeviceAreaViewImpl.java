@@ -39,7 +39,7 @@ public class DeviceAreaViewImpl extends Composite implements DeviceAreaView {
 	
 	private Presenter presenter;
 	private MultiSelectionModel<SearchResultRow> selection;
-	private DBSearchResultTable table;
+	private DeviceSearchResultTable table;
 	private DevicePopupPanel popup = new DevicePopupPanel();
 	
 	public DeviceAreaViewImpl() {
@@ -163,7 +163,7 @@ public class DeviceAreaViewImpl extends Composite implements DeviceAreaView {
 	@Override
 	public void showSearchResult(SearchResult result) {
 		if (table == null) {
-			table = new DBSearchResultTable(result.getDescs(), selection);
+			table = new DeviceSearchResultTable(result.getDescs(), selection);
 			table.setRangeChangeHandler(presenter);
 			table.setClickHandler(presenter);
 			table.load();

@@ -44,7 +44,7 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
     
     private Presenter presenter;
     private MultiSelectionModel<SearchResultRow> selection;
-    private DBSearchResultTable table;
+    private DeviceSearchResultTable table;
     private DevicePopupPanel popup = new DevicePopupPanel();
     
     public DeviceDiskViewImpl() {
@@ -105,6 +105,10 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
     }
     
     private static final long DISK_UNIT = 1000;
+    
+    private double format(double value) {
+        return (double)(int)(value * 1000) / 1000;
+    }
 
     @Override
     public void updateLabels() {
@@ -115,7 +119,7 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
         Anchor[] labels = new Anchor[]{labelAll, labelReserved, labelInuse, labelStop};
         for (int i = 0; i < labels.length; i ++) {
             if (labels[i] != null) {
-                double value = (double)presenter.getCounts(states[i]) / DISK_UNIT;
+                double value = format((double)presenter.getCounts(states[i]) / DISK_UNIT);
                 labels[i].setHTML(getLabel(state == states[i], prefix[i] + value + suffix));
             }
         }
@@ -188,7 +192,7 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
     @Override
     public void showSearchResult(SearchResult result) {
         if (table == null) {
-            table = new DBSearchResultTable(result.getDescs(), selection);
+            table = new DeviceSearchResultTable(result.getDescs(), selection);
             table.setRangeChangeHandler(presenter);
             table.setClickHandler(presenter);
             table.load();

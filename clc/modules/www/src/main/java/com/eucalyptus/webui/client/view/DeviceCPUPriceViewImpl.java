@@ -41,7 +41,7 @@ public class DeviceCPUPriceViewImpl extends Composite implements DeviceCPUPriceV
 	
 	private Presenter presenter;
 	private MultiSelectionModel<SearchResultRow> selection;
-	private DBSearchResultTable table;
+	private DeviceSearchResultTable table;
 	private DevicePopupPanel popup = new DevicePopupPanel();
 	
 	private DeviceDateBox[] dateBoxList;
@@ -180,7 +180,7 @@ public class DeviceCPUPriceViewImpl extends Composite implements DeviceCPUPriceV
 	@Override
 	public void showSearchResult(SearchResult result) {
 		if (table == null) {
-			table = new DBSearchResultTable(DEFAULT_PAGESIZE, result.getDescs(), selection);
+			table = new DeviceSearchResultTable(result.getDescs(), selection);
 			table.setRangeChangeHandler(presenter);
 			table.setClickHandler(presenter);
 			table.load();
@@ -188,6 +188,11 @@ public class DeviceCPUPriceViewImpl extends Composite implements DeviceCPUPriceV
 		}
 		table.setData(result);
 	}
+	
+	@Override
+    public int getPageSize() {
+        return table.getPageSize();
+    }
 
 	@Override
 	public void clear() {

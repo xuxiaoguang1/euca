@@ -35,7 +35,7 @@ public class DeviceCPUPriceServiceProcImpl {
 	
 	private List<SearchResultFieldDesc> FIELDS_DESC = Arrays.asList(
 			new SearchResultFieldDesc("0%", false, null),
-			new SearchResultFieldDesc("4%", false, new ClientMessage("", "")),
+			new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
 			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "序号"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
 			new SearchResultFieldDesc(false, "8%", new ClientMessage("", "CPU名称"),

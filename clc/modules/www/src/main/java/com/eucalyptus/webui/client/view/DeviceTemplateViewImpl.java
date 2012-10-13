@@ -36,7 +36,7 @@ public class DeviceTemplateViewImpl extends Composite implements DeviceTemplateV
     
     private Presenter presenter;
     private MultiSelectionModel<SearchResultRow> selection;
-    private DBSearchResultTable table;
+    private DeviceSearchResultTable table;
     private DevicePopupPanel popup = new DevicePopupPanel();
     
     public DeviceTemplateViewImpl() {
@@ -133,7 +133,7 @@ public class DeviceTemplateViewImpl extends Composite implements DeviceTemplateV
     @Override
     public void showSearchResult(SearchResult result) {
         if (table == null) {
-            table = new DBSearchResultTable(result.getDescs(), selection);
+            table = new DeviceSearchResultTable(result.getDescs(), selection);
             table.setRangeChangeHandler(presenter);
             table.setClickHandler(presenter);
             table.load();

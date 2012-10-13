@@ -47,7 +47,7 @@ public class DeviceTemplateService {
     
     private static final List<SearchResultFieldDesc> FIELDS_DESC = Arrays.asList(
 		    new SearchResultFieldDesc(null, "0%",false),
-		    new SearchResultFieldDesc("4%", false, new ClientMessage("", "")),
+		    new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
 		    new SearchResultFieldDesc(false, "8%", new ClientMessage("", "序号"),
 		            TableDisplay.MANDATORY, Type.TEXT, false, false),
 		    new SearchResultFieldDesc(true, "8%", new ClientMessage("", "名称"),

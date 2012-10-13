@@ -91,7 +91,7 @@
 						</g:center>
 					</g:DockLayoutPanel>
 				</g:center>
-				<g:south size="3">
+				<g:south size="2.5">
 					<g:HTMLPanel styleName="border-top:1px solid #AAAAAA;">
 						<table class="{style.bottom}">
 							<tbody>

@@ -44,7 +44,7 @@ public class DeviceServerViewImpl extends Composite implements DeviceServerView 
 	
 	private Presenter presenter;
 	private MultiSelectionModel<SearchResultRow> selection;
-	private DBSearchResultTable table;
+	private DeviceSearchResultTable table;
 	private DevicePopupPanel popup = new DevicePopupPanel();
 	
 	public DeviceServerViewImpl() {
@@ -222,7 +222,7 @@ public class DeviceServerViewImpl extends Composite implements DeviceServerView 
 	@Override
 	public void showSearchResult(SearchResult result) {
 		if (table == null) {
-			table = new DBSearchResultTable(result.getDescs(), selection);
+			table = new DeviceSearchResultTable(result.getDescs(), selection);
 			table.setRangeChangeHandler(presenter);
 			table.setClickHandler(presenter);
 			table.load();

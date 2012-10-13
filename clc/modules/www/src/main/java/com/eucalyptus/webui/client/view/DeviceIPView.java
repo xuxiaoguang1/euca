@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.view.DBSearchResultTable.DBSearchResultTableClickHandler;
+import com.eucalyptus.webui.client.view.DeviceSearchResultTable.DeviceSearchResultTableClickHandler;
 import com.eucalyptus.webui.shared.resource.device.status.IPState;
 import com.eucalyptus.webui.shared.resource.device.status.IPType;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -21,7 +21,7 @@ public interface DeviceIPView extends IsWidget, CanDisplaySearchResult, Clearabl
     
     public int getPageSize();
 	
-    public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DBSearchResultTableClickHandler {
+    public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceSearchResultTableClickHandler {
         
         public void onAddIP();
         

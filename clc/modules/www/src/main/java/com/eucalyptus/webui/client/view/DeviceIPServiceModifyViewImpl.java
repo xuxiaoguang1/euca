@@ -90,7 +90,7 @@ public class DeviceIPServiceModifyViewImpl extends DialogBox implements DeviceIP
     private int getLife(Date starttime, Date endtime) {
     	final long div = 1000L * 24 * 3600;
     	long start = starttime.getTime() / div, end = endtime.getTime() / div;
-    	return start <= end ? (int)(start - end) + 1 : 0;
+    	return start <= end ? (int)(end - start) + 1 : 0;
     }
 	
 	public void updateDateLife() {

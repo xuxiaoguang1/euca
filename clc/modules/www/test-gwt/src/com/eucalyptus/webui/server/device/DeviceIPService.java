@@ -55,7 +55,7 @@ public class DeviceIPService {
     private static final List<SearchResultFieldDesc> FIELDS_DESC = Arrays.asList(
             new SearchResultFieldDesc(null, "0%",false),
             new SearchResultFieldDesc(null, "0%",false),
-            new SearchResultFieldDesc("4%", false, new ClientMessage("", "")),
+            new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
             new SearchResultFieldDesc(false, "8%", new ClientMessage("", "序号"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("", "IP地址"),
@@ -107,7 +107,7 @@ public class DeviceIPService {
     private int getLife(Date starttime, Date endtime) {
     	final long div = 1000L * 24 * 3600;
     	long start = starttime.getTime() / div, end = endtime.getTime() / div;
-    	return start <= end ? (int)(start - end) + 1 : 0;
+    	return start <= end ? (int)(end - start) + 1 : 0;
     }
 	
     public synchronized SearchResult lookupIPByDate(Session session, SearchRange range, IPType ip_type, IPState ip_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
