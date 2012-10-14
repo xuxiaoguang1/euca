@@ -80,8 +80,8 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
 		return getInputText(diskDesc);
 	}
 	
-	private String getDiskSize() {
-		return getInputText(diskSize);
+	private long getDiskSize() {
+		return diskSize.getValue();
 	}
 	
 	private String getAreaName() {
@@ -116,14 +116,6 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
 		return text;
 	}
 	
-	private String getInputText(LongBox textbox) {
-		String text = textbox.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
 	private String getSelectedText(ListBox listbox) {
 	    int index = listbox.getSelectedIndex();
 	    if (index == -1) {
@@ -145,9 +137,9 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
 	
 	@Override
     public void popup() {
-		diskName.setText("");
-		diskDesc.setText("");
-		diskSize.setText("");
+		diskName.setValue("");
+		diskDesc.setValue("");
+		diskSize.setValue(0L);
 		areaNameList.clear();
 		roomNameList.clear();
 		cabinetNameList.clear();

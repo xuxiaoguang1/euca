@@ -27,7 +27,6 @@ public class DBTable {
 	public static final DBTableMemoryService MEMORY_SERVICE = new DBTableMemoryService();
 	public static final DBTableDisk DISK = new DBTableDisk();
     public static final DBTableDiskService DISK_SERVICE = new DBTableDiskService();
-    public static final DBTableIP IP = new DBTableIP();
     public static final DBTableIPService IP_SERVICE = new DBTableIPService();
     public static final DBTableBWService BW_SERVICE = new DBTableBWService();
 	
@@ -50,6 +49,10 @@ class DBTableColumn {
 	private DBTable table;
 	private String name;
 	
+	public DBTableColumn(String name) {
+		this(null, name);
+	}
+	
 	public DBTableColumn(DBTable table, String name) {
 		this.table = table;
 		this.name = name;
@@ -57,6 +60,9 @@ class DBTableColumn {
 	
 	@Override
 	public String toString() {
+		if (table == null) {
+			return getName();
+		}
 		return table + "." + getName();
 	}
 	
@@ -198,6 +204,7 @@ class DBTableCPUService extends DBTable {
     public final DBTableColumn CPU_SERVICE_USED = new DBTableColumn(this, "cs_used");
     public final DBTableColumn CPU_SERVICE_STARTTIME = new DBTableColumn(this, "cs_starttime");
     public final DBTableColumn CPU_SERVICE_ENDTIME = new DBTableColumn(this, "cs_endtime");
+    public final DBTableColumn CPU_SERVICE_LIFE = new DBTableColumn(null, "cs_life");
     public final DBTableColumn CPU_SERVICE_STATE = new DBTableColumn(this, "cs_state");
     public final DBTableColumn CPU_SERVICE_CREATIONTIME = new DBTableColumn(this, "cs_creationtime");
     public final DBTableColumn CPU_SERVICE_MODIFIEDTIME = new DBTableColumn(this, "cs_modifiedtime");
@@ -233,6 +240,7 @@ class DBTableMemoryService extends DBTable {
     public final DBTableColumn MEMORY_SERVICE_USED = new DBTableColumn(this, "ms_used");
     public final DBTableColumn MEMORY_SERVICE_STARTTIME = new DBTableColumn(this, "ms_starttime");
     public final DBTableColumn MEMORY_SERVICE_ENDTIME = new DBTableColumn(this, "ms_endtime");
+    public final DBTableColumn MEMORY_SERVICE_LIFE = new DBTableColumn(null, "ms_life");
     public final DBTableColumn MEMORY_SERVICE_STATE = new DBTableColumn(this, "ms_state");
     public final DBTableColumn MEMORY_SERVICE_CREATIONTIME = new DBTableColumn(this, "ms_creationtime");
     public final DBTableColumn MEMORY_SERVICE_MODIFIEDTIME = new DBTableColumn(this, "ms_modifiedtime");
@@ -268,26 +276,12 @@ class DBTableDiskService extends DBTable {
     public final DBTableColumn DISK_SERVICE_USED = new DBTableColumn(this, "ds_used");
     public final DBTableColumn DISK_SERVICE_STARTTIME = new DBTableColumn(this, "ds_starttime");
     public final DBTableColumn DISK_SERVICE_ENDTIME = new DBTableColumn(this, "ds_endtime");
+    public final DBTableColumn DISK_SERVICE_LIFE = new DBTableColumn(null, "ds_life");
     public final DBTableColumn DISK_SERVICE_STATE = new DBTableColumn(this, "ds_state");
     public final DBTableColumn DISK_SERVICE_CREATIONTIME = new DBTableColumn(this, "ds_creationtime");
     public final DBTableColumn DISK_SERVICE_MODIFIEDTIME = new DBTableColumn(this, "ds_modifiedtime");
     public final DBTableColumn DISK_ID = new DBTableColumn(this, "disk_id");
     public final DBTableColumn USER_ID = new DBTableColumn(this, "user_id");
-    
-}
-
-class DBTableIP extends DBTable {
-    
-    public DBTableIP() {
-        super("ip");
-    }
-    
-    public final DBTableColumn IP_ID = new DBTableColumn(this, "ip_id");
-    public final DBTableColumn IP_DESC = new DBTableColumn(this, "ip_desc");
-    public final DBTableColumn IP_ADDR = new DBTableColumn(this, "ip_addr");
-    public final DBTableColumn IP_TYPE = new DBTableColumn(this, "ip_type");
-    public final DBTableColumn IP_CREATIONTIME = new DBTableColumn(this, "ip_creationtime");
-    public final DBTableColumn IP_MODIFIEDTIME = new DBTableColumn(this, "ip_modifiedtime");
     
 }
 
@@ -297,14 +291,19 @@ class DBTableIPService extends DBTable {
         super("ip_service");
     }
     
-    public final DBTableColumn IP_SERVICE_ID = new DBTableColumn(this, "is_id");
+    public final DBTableColumn IP_ID = new DBTableColumn(this, "ip_id");
+    public final DBTableColumn IP_ADDR = new DBTableColumn(this, "ip_addr");
+    public final DBTableColumn IP_TYPE = new DBTableColumn(this, "ip_type");
+    public final DBTableColumn IP_DESC = new DBTableColumn(this, "ip_desc");
+    public final DBTableColumn IP_CREATIONTIME = new DBTableColumn(this, "ip_creationtime");
+    public final DBTableColumn IP_MODIFIEDTIME = new DBTableColumn(this, "ip_modifiedtime");
     public final DBTableColumn IP_SERVICE_DESC = new DBTableColumn(this, "is_desc");
     public final DBTableColumn IP_SERVICE_STARTTIME = new DBTableColumn(this, "is_starttime");
     public final DBTableColumn IP_SERVICE_ENDTIME = new DBTableColumn(this, "is_endtime");
+    public final DBTableColumn IP_SERVICE_LIFE = new DBTableColumn(null, "is_life");
     public final DBTableColumn IP_SERVICE_STATE = new DBTableColumn(this, "is_state");
     public final DBTableColumn IP_SERVICE_CREATIONTIME = new DBTableColumn(this, "is_creationtime");
     public final DBTableColumn IP_SERVICE_MODIFIEDTIME = new DBTableColumn(this, "is_modifiedtime");
-    public final DBTableColumn IP_ID = new DBTableColumn(this, "ip_id");
     public final DBTableColumn USER_ID = new DBTableColumn(this, "user_id");
     
 }
@@ -319,6 +318,7 @@ class DBTableBWService extends DBTable {
 	public final DBTableColumn BW_SERVICE_DESC = new DBTableColumn(this, "bs_desc");
 	public final DBTableColumn BW_SERVICE_STARTTIME = new DBTableColumn(this, "bs_starttime");
 	public final DBTableColumn BW_SERVICE_ENDTIME = new DBTableColumn(this, "bs_endtime");
+	public final DBTableColumn BW_SERVICE_LIFE = new DBTableColumn(null, "bs_life");
 	public final DBTableColumn BW_SERVICE_BW = new DBTableColumn(this, "bs_bw");
 	public final DBTableColumn BW_SERVICE_BW_MAX = new DBTableColumn(this, "bs_bw_max");
 	public final DBTableColumn BW_SERVICE_CREATIONTIME = new DBTableColumn(this, "bs_creationtime");

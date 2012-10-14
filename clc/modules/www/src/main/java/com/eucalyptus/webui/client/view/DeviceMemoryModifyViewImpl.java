@@ -34,20 +34,12 @@ public class DeviceMemoryModifyViewImpl extends DialogBox implements DeviceMemor
 		return getInputText(memoryDesc);
 	}
 	
-	private String getMemorySize() {
-		return getInputText(memorySize);
+	private long getMemorySize() {
+		return memorySize.getValue();
 	}
 	
 	private String getInputText(TextArea textarea) {
 		String text = textarea.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
-	private String getInputText(LongBox textbox) {
-		String text = textbox.getText();
 		if (text == null) {
 			return "";
 		}
@@ -66,10 +58,10 @@ public class DeviceMemoryModifyViewImpl extends DialogBox implements DeviceMemor
 	@Override
 	public void popup(int memory_id, String memory_name, String memory_desc, long memory_size, String server_name) {
 		this.memory_id = memory_id;
-		memoryName.setText(memory_name);
-		memoryDesc.setText(memory_desc);
+		memoryName.setValue(memory_name);
+		memoryDesc.setValue(memory_desc);
 		memorySize.setValue(memory_size);
-		serverName.setText(server_name);
+		serverName.setValue(server_name);
 		show();
 	}
 	

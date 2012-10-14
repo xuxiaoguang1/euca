@@ -116,6 +116,14 @@
 								<table class="style.topContent">
 									<tbody>
 										<tr>
+											<td style="font-size:80%;">
+												<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" ui:field="columnButton" height="0.9EM" width="30px" text="查看"/>
+											</td>
+											<td width="10px">&nbsp;</td>
+											<td style="font-size:80%;">
+												<g:ListBox ui:field="pageSizeList" height="1.4EM" width="50px"/>
+											</td>
+											<td width="10px">&nbsp;</td>
 											<td>
 												<g:Anchor horizontalAlignment="ALIGN_CENTER" width="6EM">日期过滤：</g:Anchor>
 											</td>
@@ -149,26 +157,26 @@
 							<tbody>
 								<tr height="6px">
 									<td width="20px" />
-									<td width="80px" />
-									<td width="80px" />
-									<td width="80px" />
+									<td width="100px" />
+									<td width="100px" />
+									<td width="100px" />
 									<td width="40px" />
 									<td width="80px" />
 									<td width="80px" />
 									<td width="80px" />
 									<td width="40px" />
-									<td width="360px" />
+									<td width="300px" />
 								</tr>
 								<tr>
 									<td />
 									<td>
-										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonAddIP" text="添加IP地址"/>
+										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="90px" ui:field="buttonAddIP" text="添加IP地址"/>
 									</td>
 									<td>
-										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonDeleteIP" text="删除IP地址"/>
+										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="90px" ui:field="buttonDeleteIP" text="删除IP地址"/>
 									</td>
 									<td>
-										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonModifyIP" text="编辑IP地址"/>
+										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="90px" ui:field="buttonModifyIP" text="编辑IP地址"/>
 									</td>
 									<td />
 									<td>

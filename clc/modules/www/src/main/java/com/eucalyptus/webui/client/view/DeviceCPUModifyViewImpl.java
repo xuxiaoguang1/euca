@@ -47,12 +47,12 @@ public class DeviceCPUModifyViewImpl extends DialogBox implements DeviceCPUModif
 		return getInputText(cpuModel);
 	}
 	
-	private String getCPUGHz() {
-		return getInputText(cpuGHz);
+	private double getCPUGHz() {
+		return cpuGHz.getValue();
 	}
 	
-	private String getCPUCache() {
-		return getInputText(cpuCache);
+	private double getCPUCache() {
+		return cpuCache.getValue();
 	}
 	
 	private int getCPUTotal() {
@@ -75,14 +75,6 @@ public class DeviceCPUModifyViewImpl extends DialogBox implements DeviceCPUModif
 		return text;
 	}
 	
-	private String getInputText(DoubleBox textbox) {
-		String text = textbox.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
 	private DeviceCPUModifyView.Presenter presenter;
 	
 	@Override
@@ -93,15 +85,15 @@ public class DeviceCPUModifyViewImpl extends DialogBox implements DeviceCPUModif
 	private int cpu_id;
 
 	@Override
-	public void popup(int cpu_id, String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, String cpu_ghz, String cpu_cache, String server_name) {
+	public void popup(int cpu_id, String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, String server_name) {
 		this.cpu_id = cpu_id;
-		cpuName.setText(cpu_name);
-		cpuDesc.setText(cpu_desc);
-		cpuVendor.setText(cpu_vendor);
-		cpuModel.setText(cpu_model);
-		cpuGHz.setText(cpu_ghz);
-		cpuCache.setText(cpu_cache);
-		serverName.setText(server_name);
+		cpuName.setValue(cpu_name);
+		cpuDesc.setValue(cpu_desc);
+		cpuVendor.setValue(cpu_vendor);
+		cpuModel.setValue(cpu_model);
+		cpuGHz.setValue(cpu_ghz);
+		cpuCache.setValue(cpu_cache);
+		serverName.setValue(server_name);
 		numList.clear();
 		for (int i = 1; i <= Math.max(cpu_total, 64); i ++) {
 			numList.addItem(Integer.toString(i));

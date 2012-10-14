@@ -1,5 +1,6 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.Date;
 import java.util.List;
 
 import com.google.gwt.user.client.ui.IsWidget;
@@ -16,7 +17,7 @@ public interface DeviceCPUServiceAddView extends IsWidget {
 	
 	public interface Presenter {
 		
-		public boolean onOK(int cpu_id, String cs_desc, int cs_used, String cs_starttime, String cs_endtime, String account_name, String user_name);
+		public boolean onOK(int cpu_id, String cs_desc, int cs_used, Date cs_starttime, Date cs_endtime, String account_name, String user_name);
 		
 		public void lookupAccountNames();
 		

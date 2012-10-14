@@ -18,8 +18,6 @@ public interface DeviceCPUView extends IsWidget, CanDisplaySearchResult, Clearab
 	
 	public void updateLabels();
 	
-	public int getPageSize();
-
 	public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceSearchResultTableClickHandler {
 
 		public void onAddCPU();

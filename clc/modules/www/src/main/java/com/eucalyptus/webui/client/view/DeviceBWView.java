@@ -15,8 +15,6 @@ public interface DeviceBWView extends IsWidget, CanDisplaySearchResult, Clearabl
     
     public void setSelectedRow(SearchResultRow row);
     
-    public int getPageSize();
-	
     public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceSearchResultTableClickHandler {
         
         public void onAddBWService();

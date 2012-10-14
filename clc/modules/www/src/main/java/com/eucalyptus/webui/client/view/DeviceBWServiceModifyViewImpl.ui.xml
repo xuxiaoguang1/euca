@@ -119,7 +119,7 @@
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">剩余</g:Anchor>
 					</g:at>
 					<g:at left="290" top="122">
-						<g:IntegerBox ui:field="dateLife" height="1.4EM" width="4EM" readOnly="true" styleName="{style.textBoxStyle-readonly}" alignment="RIGHT"/>
+						<g:TextBox ui:field="dateLife" height="1.4EM" width="4EM" readOnly="true" styleName="{style.textBoxStyle-readonly}" alignment="RIGHT"/>
 					</g:at>
 					<g:at left="355" top="125">
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">(天)</g:Anchor>
@@ -128,7 +128,7 @@
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">带宽(KB)</g:Anchor>
 					</g:at>
 					<g:at left="470" top="105">
-						<g:IntegerBox ui:field="bwMax" maxLength="50" height="1.4EM" width="7EM" readOnly="true" styleName="{style.textBoxStyle-readonly}" alignment="RIGHT"/>
+						<g:IntegerBox ui:field="bwMax" maxLength="50" height="1.4EM" width="7EM" alignment="RIGHT"/>
 					</g:at>
 					<g:at left="400" top="150" style="font-size:90%;">
 						<g:Anchor styleName="{global.buttonCss.button}"

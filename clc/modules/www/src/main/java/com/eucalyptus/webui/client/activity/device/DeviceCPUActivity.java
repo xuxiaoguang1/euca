@@ -25,7 +25,6 @@ import com.eucalyptus.webui.client.view.DeviceCPUServiceAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceCPUServiceModifyView;
 import com.eucalyptus.webui.client.view.DeviceCPUServiceModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceCPUView;
-import com.eucalyptus.webui.client.view.DeviceDateBox;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.LogView;
@@ -49,9 +48,10 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 	private DeviceCPUModifyView cpuModifyView;
 	private DeviceCPUServiceAddView cpuServiceAddView;
 	private DeviceCPUServiceModifyView cpuServiceModifyView;
-
+	
 	public DeviceCPUActivity(SearchPlace place, ClientFactory clientFactory) {
 		super(place, clientFactory);
+		super.pageSize = DevicePageSize.getPageSize();
 	}
 	
 	private DeviceCPUView getView() {
@@ -193,7 +193,7 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 					cpuAddView.setPresenter(new DeviceCPUAddView.Presenter() {
 						
 						@Override
-						public boolean onOK(String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, String ghz, String cache, String server_name) {
+						public boolean onOK(String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, String server_name) {
 							if (isEmpty(cpu_name)) {
 								StringBuilder sb = new StringBuilder();
 								sb.append(new ClientMessage("", "CPU名称非法")).append(" = '").append(cpu_name).append("' ");
@@ -205,32 +205,6 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 								StringBuilder sb = new StringBuilder();
 								sb.append(new ClientMessage("", "服务器名称非法")).append(" = '").append(server_name).append("' ");
 								sb.append(new ClientMessage("", "请重新选择服务器"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							double cpu_ghz = 0;
-							try {
-								if (!isEmpty(ghz)) {
-									cpu_ghz = Double.parseDouble(ghz);
-								}
-							}
-							catch (Exception e) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "主频数值非法")).append(" = '").append(ghz).append("' ");
-								sb.append(new ClientMessage("", "请重新选择主频"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							double cpu_cache = 0;
-							try {
-								if (!isEmpty(cache)) {
-									cpu_cache = Double.parseDouble(cache);
-								}
-							}
-							catch (Exception e) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "缓存数值非法")).append(" = '").append(cache).append("' ");
-								sb.append(new ClientMessage("", "请重新选择缓存"));
 								Window.alert(sb.toString());
 								return false;
 							}
@@ -378,37 +352,11 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 				        cpuModifyView.setPresenter(new DeviceCPUModifyView.Presenter() {
                             
                             @Override
-                            public boolean onOK(int cpu_id, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, String ghz, String cache) {
+                            public boolean onOK(int cpu_id, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache) {
                                 if (cpu_total <= 0) {
                                     StringBuilder sb = new StringBuilder();
                                     sb.append(new ClientMessage("", "主频CPU数量非法")).append(" = '").append(cpu_total).append("' ");
                                     sb.append(new ClientMessage("", "请重新选择数量"));
-                                    Window.alert(sb.toString());
-                                    return false;
-                                }
-                                double cpu_ghz = 0;
-                                try {
-                                    if (!isEmpty(ghz)) {
-                                        cpu_ghz = Double.parseDouble(ghz);
-                                    }
-                                }
-                                catch (Exception e) {
-                                    StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("", "主频数值非法")).append(" = '").append(ghz).append("' ");
-                                    sb.append(new ClientMessage("", "请重新选择主频"));
-                                    Window.alert(sb.toString());
-                                    return false;
-                                }
-                                double cpu_cache = 0;
-                                try {
-                                    if (!isEmpty(cache)) {
-                                        cpu_cache = Double.parseDouble(cache);
-                                    }
-                                }
-                                catch (Exception e) {
-                                    StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("", "缓存数值非法")).append(" = '").append(cache).append("' ");
-                                    sb.append(new ClientMessage("", "请重新选择缓存"));
                                     Window.alert(sb.toString());
                                     return false;
                                 }
@@ -435,9 +383,16 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
                             
                         });
 				    }
-				    cpuModifyView.popup(Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_ID)), row.getField(CellTableColumns.CPU.CPU_NAME), row.getField(CellTableColumns.CPU.CPU_DESC), 
-				            Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_TOTAL)), row.getField(CellTableColumns.CPU.CPU_VENDOR), row.getField(CellTableColumns.CPU.CPU_MODEL),
-				            row.getField(CellTableColumns.CPU.CPU_GHZ), row.getField(CellTableColumns.CPU.CPU_CACHE), row.getField(CellTableColumns.CPU.SERVER_NAME));
+				    int cpu_id = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_ID));
+				    String cpu_name = row.getField(CellTableColumns.CPU.CPU_NAME);
+				    String cpu_desc = row.getField(CellTableColumns.CPU.CPU_DESC);
+				    int cpu_total = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_TOTAL));
+				    String cpu_vendor = row.getField(CellTableColumns.CPU.CPU_VENDOR);
+				    String cpu_model = row.getField(CellTableColumns.CPU.CPU_MODEL);
+				    double cpu_ghz = Double.parseDouble(row.getField(CellTableColumns.CPU.CPU_GHZ)); 
+				    double cpu_cache = Double.parseDouble(row.getField(CellTableColumns.CPU.CPU_CACHE));
+				    String server_name = row.getField(CellTableColumns.CPU.SERVER_NAME);
+				    cpuModifyView.popup(cpu_id, cpu_name, cpu_desc, cpu_total, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, server_name); 
 				}
 			}
 		}
@@ -497,7 +452,7 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 						cpuServiceAddView.setPresenter(new DeviceCPUServiceAddView.Presenter() {
 							
 							@Override
-							public boolean onOK(int cpu_id, String cs_desc, int cs_used, String starttime, String endtime, String account_name, String user_name) {
+							public boolean onOK(int cpu_id, String cs_desc, int cs_used, Date cs_starttime, Date cs_endtime, String account_name, String user_name) {
 								if (cs_used <= 0) {
                                     StringBuilder sb = new StringBuilder();
                                     sb.append(new ClientMessage("", "CPU数量非法")).append(" = '").append(cs_used).append("' ");
@@ -505,39 +460,12 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
                                     Window.alert(sb.toString());
                                     return false;
                                 }
-								Date cs_starttime = null;
-								try {
-									if (!isEmpty(starttime)) {
-										cs_starttime = DeviceDateBox.parse(starttime);
-									}
-								}
-								catch (Exception e) {
-								}
-								if (cs_starttime == null) {
+								if (cs_starttime == null || cs_endtime == null || DeviceDate.calcLife(cs_endtime, cs_starttime) <= 0) {
 									StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("", "非法的服务起始时间")).append(" = '").append(starttime).append("' ");
-                                    sb.append(new ClientMessage("", "请重新选择时间"));
-                                    Window.alert(sb.toString());
-                                    return false;
-								}
-								Date cs_endtime = null;
-								try {
-									if (!isEmpty(endtime)) {
-										cs_endtime = DeviceDateBox.parse(endtime);
-									}
-								}
-								catch (Exception e) {
-								}
-								if (cs_endtime == null) {
-									StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("", "非法的服务结束时间")).append(" = '").append(endtime).append("' ");
-                                    sb.append(new ClientMessage("", "请重新选择时间"));
-                                    Window.alert(sb.toString());
-                                    return false;
-								}
-								if (cs_starttime.getTime() >= cs_endtime.getTime()) {
-									StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("", "非法的服务时间")).append(" = '").append(cs_starttime).append("' >= '").append(cs_endtime).append("'");
+                                    sb.append(new ClientMessage("", "非法的服务时间"));
+                                    if (cs_starttime != null && cs_endtime != null) {
+                                    	sb.append(" = '").append(DeviceDate.format(cs_starttime)).append("' >= '").append(DeviceDate.format(cs_endtime)).append("'");
+                                    }
                                     sb.append(new ClientMessage("", "请重新选择时间"));
                                     Window.alert(sb.toString());
                                     return false;
@@ -626,8 +554,11 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 							
 						});
 					}
-					cpuServiceAddView.popup(Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_ID)), row.getField(CellTableColumns.CPU.CPU_NAME),
-					        row.getField(CellTableColumns.CPU.SERVER_NAME), Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_SERVICE_USED)));
+				    int cpu_id = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_ID));
+				    String cpu_name = row.getField(CellTableColumns.CPU.CPU_NAME);
+				    String server_name = row.getField(CellTableColumns.CPU.SERVER_NAME);
+				    int cs_used = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_SERVICE_USED));
+					cpuServiceAddView.popup(cpu_id, cpu_name, server_name, cs_used);
 				}
 			}
 		}
@@ -648,40 +579,13 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 						cpuServiceModifyView.setPresenter(new DeviceCPUServiceModifyView.Presenter() {
 							
 							@Override
-							public boolean onOK(int cs_id, String cs_desc, String starttime, String endtime) {
-								Date cs_starttime = null;
-								try {
-									if (!isEmpty(starttime)) {
-										cs_starttime = DeviceDateBox.parse(starttime);
-									}
-								}
-								catch (Exception e) {
-								}
-								if (cs_starttime == null) {
+							public boolean onOK(int cs_id, String cs_desc, Date cs_starttime, Date cs_endtime) {
+								if (cs_starttime == null || cs_endtime == null || DeviceDate.calcLife(cs_endtime, cs_starttime) <= 0) {
 									StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("", "非法的服务起始时间")).append(" = '").append(starttime).append("' ");
-                                    sb.append(new ClientMessage("", "请重新选择时间"));
-                                    Window.alert(sb.toString());
-                                    return false;
-								}
-								Date cs_endtime = null;
-								try {
-									if (!isEmpty(endtime)) {
-										cs_endtime = DeviceDateBox.parse(endtime);
-									}
-								}
-								catch (Exception e) {
-								}
-								if (cs_endtime == null) {
-									StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("", "非法的服务结束时间")).append(" = '").append(endtime).append("' ");
-                                    sb.append(new ClientMessage("", "请重新选择时间"));
-                                    Window.alert(sb.toString());
-                                    return false;
-								}
-								if (cs_starttime.getTime() >= cs_endtime.getTime()) {
-									StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("", "非法的服务时间")).append(" = '").append(cs_starttime).append("' >= '").append(cs_endtime).append("'");
+									sb.append(new ClientMessage("", "非法的服务时间"));
+									if (cs_starttime != null && cs_endtime != null) {
+                                    	sb.append(" = '").append(DeviceDate.format(cs_starttime)).append("' >= '").append(DeviceDate.format(cs_endtime)).append("'");
+                                    }
                                     sb.append(new ClientMessage("", "请重新选择时间"));
                                     Window.alert(sb.toString());
                                     return false;
@@ -708,9 +612,16 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 							}
 						});
 					}
-					cpuServiceModifyView.popup(Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_SERVICE_ID)), row.getField(CellTableColumns.CPU.CPU_NAME), row.getField(CellTableColumns.CPU.CPU_SERVICE_DESC),
-							Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_SERVICE_USED)), row.getField(CellTableColumns.CPU.CPU_SERVICE_STARTTIME), row.getField(CellTableColumns.CPU.CPU_SERVICE_ENDTIME),
-							row.getField(CellTableColumns.CPU.SERVER_NAME), row.getField(CellTableColumns.CPU.ACCOUNT_NAME), row.getField(CellTableColumns.CPU.USER_NAME));
+					int cs_id = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_SERVICE_ID));
+					String cs_desc = row.getField(CellTableColumns.CPU.CPU_SERVICE_DESC);
+				    String cpu_name = row.getField(CellTableColumns.CPU.CPU_NAME);
+				    int cs_used = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_SERVICE_USED));
+				    Date cs_starttime = DeviceDate.parse(row.getField(CellTableColumns.CPU.CPU_SERVICE_STARTTIME));
+				    Date cs_endtime = DeviceDate.parse(row.getField(CellTableColumns.CPU.CPU_SERVICE_ENDTIME));
+				    String server_name = row.getField(CellTableColumns.CPU.SERVER_NAME);
+				    String account_name = row.getField(CellTableColumns.CPU.ACCOUNT_NAME);
+				    String user_name = row.getField(CellTableColumns.CPU.USER_NAME);
+					cpuServiceModifyView.popup(cs_id, cpu_name, cs_desc, cs_used, cs_starttime, cs_endtime, server_name, account_name, user_name);
 				}
 			}
 		}
@@ -769,7 +680,7 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 		if (this.queryState != queryState) {
 	    	getView().clearSelection();
 			this.queryState = queryState;
-	    	range = new SearchRange(0, getView().getPageSize(), -1, true);
+	    	range = new SearchRange(0, DevicePageSize.getPageSize(), -1, true);
 	    	reloadCurrentRange();
 		}
 	}
@@ -788,7 +699,7 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
     	getView().clearSelection();
     	this.dateBegin = dateBegin;
     	this.dateEnd = dateEnd;
-    	range = new SearchRange(0, getView().getPageSize(), -1, true);
+    	range = new SearchRange(0, DevicePageSize.getPageSize(), -1, true);
     	reloadCurrentRange();
 	}
 

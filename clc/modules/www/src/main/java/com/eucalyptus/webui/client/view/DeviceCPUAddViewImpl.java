@@ -95,12 +95,12 @@ public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView 
 		return getInputText(cpuModel);
 	}
 	
-	private String getCPUGHz() {
-		return getInputText(cpuGHz);
+	private double getCPUGHz() {
+		return cpuGHz.getValue();
 	}
 	
-	private String getCPUCache() {
-		return getInputText(cpuCache);
+	private double getCPUCache() {
+		return cpuCache.getValue();
 	}
 	
 	private int getCPUTotal() {
@@ -139,14 +139,6 @@ public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView 
 		return text;
 	}
 	
-	private String getInputText(DoubleBox textbox) {
-		String text = textbox.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
 	private String getSelectedText(ListBox listbox) {
 	    int index = listbox.getSelectedIndex();
 	    if (index == -1) {
@@ -168,12 +160,13 @@ public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView 
 	
 	@Override
     public void popup() {
-		cpuName.setText("");
-		cpuDesc.setText("");
-		cpuVendor.setText("");
-		cpuModel.setText("");
-		cpuGHz.setText("");
-		cpuCache.setText("");
+		cpuName.setValue("");
+		cpuName.setValue("");
+		cpuDesc.setValue("");
+		cpuVendor.setValue("");
+		cpuModel.setValue("");
+		cpuGHz.setValue(0.0);
+		cpuCache.setValue(0.0);
 		areaNameList.clear();
 		roomNameList.clear();
 		cabinetNameList.clear();

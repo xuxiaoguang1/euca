@@ -3,6 +3,7 @@ package com.eucalyptus.webui.client.view;
 import java.util.Date;
 import java.util.List;
 
+import com.eucalyptus.webui.client.activity.device.DeviceDate;
 import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -12,7 +13,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.LongBox;
 import com.google.gwt.user.client.ui.TextArea;
@@ -34,7 +34,7 @@ public class DeviceDiskServiceAddViewImpl extends DialogBox implements DeviceDis
 	@UiField LongBox diskUsed;
 	@UiField DeviceDateBox dateBegin;
 	@UiField DeviceDateBox dateEnd;
-	@UiField IntegerBox dateLife;
+	@UiField TextBox dateLife;
 	
 	private DevicePopupPanel popup = new DevicePopupPanel();
 		
@@ -98,8 +98,8 @@ public class DeviceDiskServiceAddViewImpl extends DialogBox implements DeviceDis
 		return getInputText(diskDesc);
 	}
 	
-	private String getDiskUsed() {
-	    return getInputText(diskUsed);
+	private long getDiskUsed() {
+	    return diskUsed.getValue();
 	}
 	
 	private String getInputText(TextArea textarea) {
@@ -110,14 +110,6 @@ public class DeviceDiskServiceAddViewImpl extends DialogBox implements DeviceDis
 		return text;
 	}
 
-    private String getInputText(LongBox textbox) {
-        String text = textbox.getText();
-        if (text == null) {
-            return "";
-        }
-        return text;
-    }
-	
 	private String getSelectedText(ListBox listbox) {
 	    int index = listbox.getSelectedIndex();
 	    if (index == -1) {
@@ -130,24 +122,20 @@ public class DeviceDiskServiceAddViewImpl extends DialogBox implements DeviceDis
 	    return s == null || s.length() == 0;
 	}
 	
-    private int getLife(Date starttime, Date endtime) {
-    	final long div = 1000L * 24 * 3600;
-    	long start = starttime.getTime() / div, end = endtime.getTime() / div;
-    	return start <= end ? (int)(end - start) + 1 : 0;
-    }
-	
 	public void updateDateLife() {
 		dateLife.setText("");
 		try {
-			Date starttime = DeviceDateBox.parse(dateBegin.getText());
-			Date endtime = DeviceDateBox.parse(dateEnd.getText());
-			int days1 = getLife(starttime, endtime);
-			int days2 = getLife(new Date(), endtime);
-			if (days1 < days2) {
-				dateLife.setText(Integer.toString(days1));
-			}
-			else {
-				dateLife.setText(Integer.toString(days1) + "/" + Integer.toString(days2));
+			if (!isEmpty(dateBegin.getText()) && !isEmpty(dateEnd.getText())) {
+				int life = DeviceDate.calcLife(dateEnd.getText(), dateBegin.getText());
+				if (life > 0) {
+					int real = Math.max(0, Math.min(life, DeviceDate.calcLife(dateEnd.getText(), DeviceDate.today())));
+					if (real != life) {
+						dateLife.setText(Integer.toString(real) + "/" + Integer.toString(life));
+					}
+					else {
+						dateLife.setText(Integer.toString(life));
+					}
+				}
 			}
 		}
 		catch (Exception e) {
@@ -166,12 +154,12 @@ public class DeviceDiskServiceAddViewImpl extends DialogBox implements DeviceDis
 	@Override
 	public void popup(int disk_id, String disk_name, String server_name, long ds_reserved) {
 		this.disk_id = disk_id;
-		serverName.setText(server_name);
-		diskName.setText(disk_name);
-		diskDesc.setText("");
+		serverName.setValue(server_name);
+		diskName.setValue(disk_name);
+		diskDesc.setValue("");
 		diskUsed.setValue(ds_reserved);
 		dateBegin.setValue(new Date());
-		dateEnd.getTextBox().setText("");
+		dateEnd.setValue(new Date());
 		accountNameList.clear();
 		userNameList.clear();
 		presenter.lookupAccountNames();
@@ -181,7 +169,7 @@ public class DeviceDiskServiceAddViewImpl extends DialogBox implements DeviceDis
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(disk_id, getDiskDesc(), getDiskUsed(), dateBegin.getText(), dateEnd.getText(), getAccountName(), getUserName())) {
+		if (presenter.onOK(disk_id, getDiskDesc(), getDiskUsed(), dateBegin.getValue(), dateEnd.getValue(), getAccountName(), getUserName())) {
 			hide();
 		}
 	}

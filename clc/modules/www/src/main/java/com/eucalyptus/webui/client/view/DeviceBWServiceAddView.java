@@ -1,5 +1,6 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.Date;
 import java.util.List;
 
 import com.google.gwt.user.client.ui.IsWidget;
@@ -18,7 +19,7 @@ public interface DeviceBWServiceAddView extends IsWidget {
 	
 	public interface Presenter {
 		
-		public boolean onOK(String ip_addr, String bs_desc, String bs_bw_max, String bs_starttime, String bs_endtime);
+		public boolean onOK(String ip_addr, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime);
 		
 		public void lookupAccountNames();
 		

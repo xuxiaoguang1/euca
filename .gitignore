@@ -1,4 +1,5 @@
 clc/modules/gwt-unitCache/
+clc/modules/www/test-gwt/.gwt/
 clc/modules/www/WEB-INF/
 clc/modules/www/gwt-unitCache/
 clc/modules/www/test-gwt/WEB-INF/

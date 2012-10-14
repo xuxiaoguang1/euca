@@ -18,8 +18,6 @@ public interface DeviceMemoryView extends IsWidget, CanDisplaySearchResult, Clea
     
     public void updateLabels();
     
-    public int getPageSize();
-	
     public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceSearchResultTableClickHandler {
         
         public void onAddMemory();

@@ -2,6 +2,7 @@ package com.eucalyptus.webui.client.view;
 
 import java.util.Date;
 
+import com.eucalyptus.webui.client.activity.device.DeviceDate;
 import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -28,8 +29,8 @@ public class DeviceCPUServiceModifyViewImpl extends DialogBox implements DeviceC
 	@UiField TextArea cpuDesc;
 	@UiField DeviceDateBox dateBegin;
 	@UiField DeviceDateBox dateEnd;
-	@UiField TextBox cpuUsed;
-	@UiField IntegerBox dateLife;
+	@UiField IntegerBox cpuUsed;
+	@UiField TextBox dateLife;
 	
 	private DevicePopupPanel popup = new DevicePopupPanel();
 		
@@ -89,24 +90,24 @@ public class DeviceCPUServiceModifyViewImpl extends DialogBox implements DeviceC
 		this.presenter = presenter;
     }
 	
-    private int getLife(Date starttime, Date endtime) {
-    	final long div = 1000L * 24 * 3600;
-    	long start = starttime.getTime() / div, end = endtime.getTime() / div;
-    	return start <= end ? (int)(end - start) + 1 : 0;
-    }
+	private boolean isEmpty(String s) {
+	    return s == null || s.length() == 0;
+	}
 	
 	public void updateDateLife() {
 		dateLife.setText("");
 		try {
-			Date starttime = DeviceDateBox.parse(dateBegin.getText());
-			Date endtime = DeviceDateBox.parse(dateEnd.getText());
-			int days1 = getLife(starttime, endtime);
-			int days2 = getLife(new Date(), endtime);
-			if (days1 < days2) {
-				dateLife.setText(Integer.toString(days1));
-			}
-			else {
-				dateLife.setText(Integer.toString(days1) + "/" + Integer.toString(days2));
+			if (!isEmpty(dateBegin.getText()) && !isEmpty(dateEnd.getText())) {
+				int life = DeviceDate.calcLife(dateEnd.getText(), dateBegin.getText());
+				if (life > 0) {
+					int real = Math.max(0, Math.min(life, DeviceDate.calcLife(dateEnd.getText(), DeviceDate.today())));
+					if (real != life) {
+						dateLife.setText(Integer.toString(real) + "/" + Integer.toString(life));
+					}
+					else {
+						dateLife.setText(Integer.toString(life));
+					}
+				}
 			}
 		}
 		catch (Exception e) {
@@ -116,23 +117,23 @@ public class DeviceCPUServiceModifyViewImpl extends DialogBox implements DeviceC
 	private int cs_id;
 	
 	@Override
-	public void popup(int cs_id, String cpu_name, String cs_desc, int cs_used, String cs_starttime, String cs_endtime, String server_name, String account_name, String user_name) {
+	public void popup(int cs_id, String cpu_name, String cs_desc, int cs_used, Date cs_starttime, Date cs_endtime, String server_name, String account_name, String user_name) {
 		this.cs_id = cs_id;
-		serverName.setText(server_name);
-		cpuName.setText(cpu_name);
-		cpuDesc.setText(cs_desc);
-		dateBegin.getTextBox().setText(cs_starttime);
-		dateEnd.getTextBox().setText(cs_endtime);
-		cpuUsed.setText(Integer.toString(cs_used));
-		accountName.setText(account_name);
-		userName.setText(user_name);
+		serverName.setValue(server_name);
+		cpuName.setValue(cpu_name);
+		cpuDesc.setValue(cs_desc);
+		dateBegin.setValue(cs_starttime);
+		dateEnd.setValue(cs_endtime);
+		cpuUsed.setValue(cs_used);
+		accountName.setValue(account_name);
+		userName.setValue(user_name);
 		updateDateLife();
 		show();
 	}
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(cs_id, getCPUDesc(), dateBegin.getText(), dateEnd.getText())) {
+		if (presenter.onOK(cs_id, getCPUDesc(), dateBegin.getValue(), dateEnd.getValue())) {
 			hide();
 		}
 	}

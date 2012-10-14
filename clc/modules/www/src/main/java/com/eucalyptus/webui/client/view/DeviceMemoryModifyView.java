@@ -10,7 +10,7 @@ public interface DeviceMemoryModifyView extends IsWidget {
 	
 	public interface Presenter {
 		
-		public boolean onOK(int memory_id, String memory_desc, String memory_size);
+		public boolean onOK(int memory_id, String memory_desc, long memory_size);
 		
 	}
 

@@ -19,7 +19,6 @@ import com.eucalyptus.webui.client.view.DeviceBWServiceAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceBWServiceModifyView;
 import com.eucalyptus.webui.client.view.DeviceBWServiceModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceBWView;
-import com.eucalyptus.webui.client.view.DeviceDateBox;
 import com.eucalyptus.webui.client.view.FooterView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.LogView;
@@ -41,6 +40,7 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 
 	public DeviceBWActivity(SearchPlace place, ClientFactory clientFactory) {
 		super(place, clientFactory);
+		super.pageSize = DevicePageSize.getPageSize();
 	}
 	
 	private DeviceBWView getView() {
@@ -165,7 +165,7 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 					bwServiceAddView.setPresenter(new DeviceBWServiceAddView.Presenter() {
 						
 						@Override
-						public boolean onOK(String ip_addr, String bs_desc, String bw_max, String starttime, String endtime) {
+						public boolean onOK(String ip_addr, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime) {
 							if (isEmpty(ip_addr)) {
 								StringBuilder sb = new StringBuilder();
 								sb.append(new ClientMessage("", "非法的IP地址")).append(" = '").append(ip_addr).append("' ");
@@ -173,55 +173,22 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 								Window.alert(sb.toString());
 								return false;
 							}
-							int bs_bw_max = 0;
-							try {
-								if (!isEmpty(bw_max)) {
-									bs_bw_max = Integer.parseInt(bw_max);
-								}
-							}
-							catch (Exception e) {
+							if (bs_bw_max < 0) {
 								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的带宽")).append(" = '").append(bw_max).append("' ");
+								sb.append(new ClientMessage("", "非法的带宽")).append(" = '").append(bs_bw_max).append("' ");
 								sb.append(new ClientMessage("", "请重新选择带宽"));
 								Window.alert(sb.toString());
 								return false;
 							}
-							Date bs_starttime = null;
-							try {
-								if (!isEmpty(starttime)) {
-									bs_starttime = DeviceDateBox.parse(starttime);
-								}
-							}
-							catch (Exception e) {
-							}
-							if (bs_starttime == null) {
+							if (bs_starttime == null || bs_endtime == null || DeviceDate.calcLife(bs_endtime, bs_starttime) <= 0) {
 								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的服务起始时间")).append(" = '").append(starttime).append("' ");
-								sb.append(new ClientMessage("", "请重新选择时间"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							Date bs_endtime = null;
-							try {
-								if (!isEmpty(endtime)) {
-									bs_endtime = DeviceDateBox.parse(endtime);
-								}
-							}
-							catch (Exception e) {
-							}
-							if (bs_endtime == null) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的服务结束时间")).append(" = '").append(endtime).append("' ");
-								sb.append(new ClientMessage("", "请重新选择时间"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							if (bs_starttime.getTime() >= bs_endtime.getTime()) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的服务时间")).append(" = '").append(bs_starttime).append("' >= '").append(bs_endtime).append("'");
-								sb.append(new ClientMessage("", "请重新选择时间"));
-								Window.alert(sb.toString());
-								return false;
+                                sb.append(new ClientMessage("", "非法的服务时间"));
+                                if (bs_starttime != null && bs_endtime != null) {
+                                	sb.append(" = '").append(DeviceDate.format(bs_starttime)).append("' >= '").append(DeviceDate.format(bs_endtime)).append("'");
+                                }
+                                sb.append(new ClientMessage("", "请重新选择时间"));
+                                Window.alert(sb.toString());
+                                return false;
 							}
 							getBackendService().addDeviceBWService(getSession(), bs_desc, bs_bw_max, bs_starttime, bs_endtime, ip_addr, new AsyncCallback<Void>() {
 
@@ -332,56 +299,23 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 					bwServiceModifyView.setPresenter(new DeviceBWServiceModifyView.Presenter() {
 						
 						@Override
-						public boolean onOK(int bs_id, String bs_desc, String bw_max, String starttime, String endtime) {
-							int bs_bw_max = 0;
-							try {
-								if (!isEmpty(bw_max)) {
-									bs_bw_max = Integer.parseInt(bw_max);
-								}
-							}
-							catch (Exception e) {
+						public boolean onOK(int bs_id, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime) {
+							if (bs_bw_max < 0) {
 								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的带宽")).append(" = '").append(bw_max).append("' ");
+								sb.append(new ClientMessage("", "非法的带宽")).append(" = '").append(bs_bw_max).append("' ");
 								sb.append(new ClientMessage("", "请重新选择带宽"));
 								Window.alert(sb.toString());
 								return false;
 							}
-							Date bs_starttime = null;
-							try {
-								if (!isEmpty(starttime)) {
-									bs_starttime = DeviceDateBox.parse(starttime);
-								}
-							}
-							catch (Exception e) {
-							}
-							if (bs_starttime == null) {
+							if (bs_starttime == null || bs_endtime == null || DeviceDate.calcLife(bs_endtime, bs_starttime) <= 0) {
 								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的服务起始时间")).append(" = '").append(starttime).append("' ");
-								sb.append(new ClientMessage("", "请重新选择时间"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							Date bs_endtime = null;
-							try {
-								if (!isEmpty(endtime)) {
-									bs_endtime = DeviceDateBox.parse(endtime);
-								}
-							}
-							catch (Exception e) {
-							}
-							if (bs_endtime == null) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的服务结束时间")).append(" = '").append(endtime).append("' ");
-								sb.append(new ClientMessage("", "请重新选择时间"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							if (bs_starttime.getTime() >= bs_endtime.getTime()) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的服务时间")).append(" = '").append(bs_starttime).append("' >= '").append(bs_endtime).append("'");
-								sb.append(new ClientMessage("", "请重新选择时间"));
-								Window.alert(sb.toString());
-								return false;
+                                sb.append(new ClientMessage("", "非法的服务时间"));
+                                if (bs_starttime != null && bs_endtime != null) {
+                                	sb.append(" = '").append(DeviceDate.format(bs_starttime)).append("' >= '").append(DeviceDate.format(bs_endtime)).append("'");
+                                }
+                                sb.append(new ClientMessage("", "请重新选择时间"));
+                                Window.alert(sb.toString());
+                                return false;
 							}
 							getBackendService().modifyDeviceBWService(getSession(), bs_id, bs_desc, bs_bw_max, bs_starttime, bs_endtime, new AsyncCallback<Void>() {
 
@@ -406,9 +340,15 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
 
 					});
 				}
-				bwServiceModifyView.popup(Integer.parseInt(row.getField(CellTableColumns.BW.BW_SERVICE_ID)), row.getField(CellTableColumns.BW.IP_ADDR),
-						row.getField(CellTableColumns.BW.BW_SERVICE_DESC), row.getField(CellTableColumns.BW.BW_SERVICE_BW_MAX), row.getField(CellTableColumns.BW.BW_SERVICE_STARTTIME), row.getField(CellTableColumns.BW.BW_SERVICE_ENDTIME),
-						row.getField(CellTableColumns.BW.ACCOUNT_NAME), row.getField(CellTableColumns.BW.USER_NAME));
+				int bs_id = Integer.parseInt(row.getField(CellTableColumns.BW.BW_SERVICE_ID));
+				String ip_addr = row.getField(CellTableColumns.BW.IP_ADDR);
+				String bs_desc = row.getField(CellTableColumns.BW.BW_SERVICE_DESC);
+				int bs_bw_max = Integer.parseInt(row.getField(CellTableColumns.BW.BW_SERVICE_BW_MAX));
+				Date bs_starttime = DeviceDate.parse(row.getField(CellTableColumns.BW.BW_SERVICE_STARTTIME));
+			    Date bs_endtime = DeviceDate.parse(row.getField(CellTableColumns.BW.BW_SERVICE_ENDTIME));
+				String account_name = row.getField(CellTableColumns.BW.ACCOUNT_NAME);
+			    String user_name = row.getField(CellTableColumns.BW.USER_NAME);
+				bwServiceModifyView.popup(bs_id, ip_addr, bs_desc, bs_bw_max, bs_starttime, bs_endtime, account_name, user_name);
 			}
 		}
 		catch (Exception e) {
@@ -461,7 +401,7 @@ public class DeviceBWActivity extends AbstractSearchActivity implements DeviceBW
     	getView().clearSelection();
     	this.dateBegin = dateBegin;
     	this.dateEnd = dateEnd;
-    	range = new SearchRange(0, getView().getPageSize(), -1, true);
+    	range = new SearchRange(0, DevicePageSize.getPageSize(), -1, true);
     	reloadCurrentRange();
 	}
 

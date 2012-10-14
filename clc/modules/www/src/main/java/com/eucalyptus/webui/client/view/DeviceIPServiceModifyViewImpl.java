@@ -2,6 +2,7 @@ package com.eucalyptus.webui.client.view;
 
 import java.util.Date;
 
+import com.eucalyptus.webui.client.activity.device.DeviceDate;
 import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -9,7 +10,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,7 +27,7 @@ public class DeviceIPServiceModifyViewImpl extends DialogBox implements DeviceIP
 	@UiField TextArea ipDesc;
 	@UiField DeviceDateBox dateBegin;
 	@UiField DeviceDateBox dateEnd;
-	@UiField IntegerBox dateLife;
+	@UiField TextBox dateLife;
 	
 	private DevicePopupPanel popup = new DevicePopupPanel();
 		
@@ -87,39 +87,39 @@ public class DeviceIPServiceModifyViewImpl extends DialogBox implements DeviceIP
 		this.presenter = presenter;
     }
 	
-    private int getLife(Date starttime, Date endtime) {
-    	final long div = 1000L * 24 * 3600;
-    	long start = starttime.getTime() / div, end = endtime.getTime() / div;
-    	return start <= end ? (int)(end - start) + 1 : 0;
-    }
+	private boolean isEmpty(String s) {
+	    return s == null || s.length() == 0;
+	}
 	
 	public void updateDateLife() {
 		dateLife.setText("");
 		try {
-			Date starttime = DeviceDateBox.parse(dateBegin.getText());
-			Date endtime = DeviceDateBox.parse(dateEnd.getText());
-			int days1 = getLife(starttime, endtime);
-			int days2 = getLife(new Date(), endtime);
-			if (days1 < days2) {
-				dateLife.setText(Integer.toString(days1));
-			}
-			else {
-				dateLife.setText(Integer.toString(days1) + "/" + Integer.toString(days2));
+			if (!isEmpty(dateBegin.getText()) && !isEmpty(dateEnd.getText())) {
+				int life = DeviceDate.calcLife(dateEnd.getText(), dateBegin.getText());
+				if (life > 0) {
+					int real = Math.max(0, Math.min(life, DeviceDate.calcLife(dateEnd.getText(), DeviceDate.today())));
+					if (real != life) {
+						dateLife.setText(Integer.toString(real) + "/" + Integer.toString(life));
+					}
+					else {
+						dateLife.setText(Integer.toString(life));
+					}
+				}
 			}
 		}
 		catch (Exception e) {
 		}
 	}
 	
-	private int is_id;
+	private int ip_id;
 	
 	@Override
-	public void popup(int is_id, String ip_addr, String is_desc, String is_starttime, String is_endtime, String account_name, String user_name) {
-		this.is_id = is_id;
-		ipAddr.setText(ip_addr);
-		ipDesc.setText(is_desc);
-		dateBegin.getTextBox().setText(is_starttime);
-		dateEnd.getTextBox().setText(is_endtime);
+	public void popup(int ip_id, String ip_addr, String is_desc, Date is_starttime, Date is_endtime, String account_name, String user_name) {
+		this.ip_id = ip_id;
+		ipAddr.setValue(ip_addr);
+		ipDesc.setValue(is_desc);
+		dateBegin.setValue(is_starttime);
+		dateEnd.setValue(is_endtime);
 		accountName.setText(account_name);
 		userName.setText(user_name);
 		updateDateLife();
@@ -128,7 +128,7 @@ public class DeviceIPServiceModifyViewImpl extends DialogBox implements DeviceIP
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(is_id, getIPDesc(), dateBegin.getText(), dateEnd.getText())) {
+		if (presenter.onOK(ip_id, getIPDesc(), dateBegin.getValue(), dateEnd.getValue())) {
 			hide();
 		}
 	}

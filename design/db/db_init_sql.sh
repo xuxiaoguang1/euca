@@ -24,7 +24,6 @@ command 'delete from template_price where 1=1'
 command 'delete from template where 1=1'
 command 'delete from bw_service where 1=1'
 command 'delete from ip_service where 1=1'
-command 'delete from ip where 1=1'
 command 'delete from vm_service where 1=1'
 command 'delete from vm where 1=1'
 command 'delete from disk_service where 1=1'
@@ -161,7 +160,10 @@ for ((i=0;i<40;i++)) do
     if [ $x -ne 2 ]; then
         command insert into cpu_service \(cs_desc, cs_used, cs_starttime, cs_endtime, cs_state, \
             cs_creationtime, cs_modifiedtime, cpu_id, user_id\) \
-            values \(\"\", \"10\", \"2012-03-$d\", \"2012-04-$d\", \"$x\", \"2012-01-$d\", \"\", \"$cpuid\", \"$userid\"\)
+            values \(\"\", \"8\", \"2012-03-$d\", \"2012-04-$d\", \"$x\", \"2012-01-$d\", \"\", \"$cpuid\", \"$userid\"\)
+        command insert into cpu_service \(cs_desc, cs_used, cs_starttime, cs_endtime, cs_state, \
+            cs_creationtime, cs_modifiedtime, cpu_id, user_id\) \
+            values \(\"\", \"2\", \"2012-03-$d\", \"2012-04-$d\", \"$x\", \"2012-01-$d\", \"\", \"$cpuid\", \"$userid\"\)
         command insert into cpu_service \(cs_desc, cs_used, cs_state, cpu_id\) \
             values \(\"\", \"0\", \"2\", \"$cpuid\"\)
     else
@@ -175,7 +177,7 @@ done
 for ((i=0;i<20;i++)) do
     let j="$i%5";
     let x="$i%3";
-    let size="($i + 1) * 2 * 1024 * 1024";
+    let size="($i + 1) * 2 * 1024 * 1024 * 1024";
     id=`getvalue server server_id server_name name$x`
     command insert into memory \(mem_name, mem_desc, mem_total, mem_creationtime, server_id\) \
         values \(\"memory$i\", \"desc$i\", $size, \"2012-07-9\", \"$id\"\)
@@ -187,7 +189,7 @@ for ((i=0;i<20;i++)) do
     memid=`getvalue memory mem_id mem_name memory$i`
     total=`getvalue memory mem_total mem_name memory$i`
     userid=`getvalue user user_id user_name admin`
-    let used="($i + 1) * 1024 * 1024"
+    let used="($i + 1) * 1024 * 1024 * 1024"
     let remain="$total - $used"
     let d="10+$i%20";
     command insert into mem_service \(ms_desc, ms_used, ms_starttime, ms_endtime, ms_state, \
@@ -202,7 +204,7 @@ done
 for ((i=0;i<20;i++)) do
     let j="$i%5";
     let x="$i%3";
-    let size="($i + 1) * 2 * 1000 * 1000";
+    let size="($i + 1) * 2 * 1000 * 1000 * 1000";
     id=`getvalue server server_id server_name name$x`
     command insert into disk \(disk_name, disk_desc, disk_total, disk_creationtime, server_id\) \
         values \(\"disk$i\", \"desc$i\", $size, \"2012-08-9\", \"$id\"\)
@@ -214,7 +216,7 @@ for ((i=0;i<20;i++)) do
     diskid=`getvalue disk disk_id disk_name disk$i`
     total=`getvalue disk disk_total disk_name disk$i`
     userid=`getvalue user user_id user_name admin`
-    let used="($i + 1) * 1024 * 1024"
+    let used="($i + 1) * 1000 * 1000 * 1000"
     let remain="$total - $used"
     let d="10+$i%20";
     command insert into disk_service \(ds_desc, ds_used, ds_starttime, ds_endtime, ds_state, \
@@ -239,19 +241,10 @@ vmid=`getvalue vm vm_id vm_mark vmware0`
 # insert ip/ip_service/bw_service
 
 for ((i=0;i<32;i++)) do
-    let x="$i%2";
-    command insert into ip \(ip_addr, ip_type, ip_creationtime\) \
-        values \(\"166.111.0.$i\", 0, \"2012-10-01\"\);
-    ipid=`getvalue ip ip_id ip_addr 166.111.0.$i`
-    command insert into ip_service \(is_desc, is_starttime, is_endtime,  is_state, is_creationtime, user_id, ip_id\) \
-        values \(\"\", \"2012-10-$d\", \"2012-11-13\", \"$x\", \"2012-10-01\",  \"$userid\", \"$ipid\"\)
-    command insert into bw_service \(bs_desc, bs_starttime, bs_endtime, bs_bw_max, bs_creationtime, ip_id\) \
-        values \(\"\", \"2012-10-$d\", \"2012-11-01\", 100, \"2012-10-01\", \"$ipid\"\)
-    command insert into ip \(ip_addr, ip_type, ip_creationtime\) \
-        values \(\"192.168.0.$i\", 1, \"2012-10-01\"\);
-    ipid=`getvalue ip ip_id ip_addr 192.168.0.$i`
-    command insert into ip_service \(is_desc, is_starttime, is_endtime,  is_state, is_creationtime, user_id, ip_id\) \
-        values \(\"\", \"2012-11-$d\", \"2012-12-13\", \"$x\", \"2012-11-01\",  \"$userid\", \"$ipid\"\)
+    command insert into ip_service \(ip_addr, ip_type, ip_creationtime, is_state\) \
+        values \(\"166.111.0.$i\", 0, \"2012-10-01\", 2\);
+    command insert into ip_service \(ip_addr, ip_type, ip_creationtime, is_state\) \
+        values \(\"192.168.0.$i\", 1, \"2012-10-01\", 2\);
 done
 
 exit

@@ -65,8 +65,8 @@ public class DeviceIPModifyViewImpl extends DialogBox implements DeviceIPModifyV
 	@Override
 	public void popup(int ip_id, String ip_addr, String ip_desc, IPType ip_type) {
 		this.ip_id = ip_id;
-		ipAddr.setText(ip_addr);
-		ipDesc.setText(ip_desc);
+		ipAddr.setValue(ip_addr);
+		ipDesc.setValue(ip_desc);
 		if (ip_type == IPType.PUBLIC) {
 			ipType.setSelectedIndex(0);
 		}

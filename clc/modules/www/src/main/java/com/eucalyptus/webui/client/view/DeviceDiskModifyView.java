@@ -6,11 +6,11 @@ public interface DeviceDiskModifyView extends IsWidget {
 	
 	public void setPresenter(Presenter presenter);
 	
-	public void popup(int memory_id, String memory_name, String memory_desc, long memory_size, String server_name);
+	public void popup(int disk_id, String disk_name, String disk_desc, long disk_size, String server_name);
 	
 	public interface Presenter {
 		
-		public boolean onOK(int memory_id, String memory_desc, String memory_size);
+		public boolean onOK(int disk_id, String disk_desc, long disk_size);
 		
 	}
 

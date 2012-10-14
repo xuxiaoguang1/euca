@@ -3,6 +3,7 @@ package com.eucalyptus.webui.client.view;
 import java.util.Date;
 import java.util.List;
 
+import com.eucalyptus.webui.client.activity.device.DeviceDate;
 import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -15,6 +16,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWServiceAddView {
@@ -31,7 +33,7 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 	@UiField IntegerBox bwMax;
 	@UiField DeviceDateBox dateBegin;
 	@UiField DeviceDateBox dateEnd;
-	@UiField IntegerBox dateLife;
+	@UiField TextBox dateLife;
 	
 	private DevicePopupPanel popup = new DevicePopupPanel();
 		
@@ -45,6 +47,10 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 				String account_name = getAccountName();
 				if (!isEmpty(account_name)) {
 					presenter.lookupUserNamesByAccountName(account_name);
+				}
+				else {
+					userNameList.clear();
+					presenter.lookupAddrByUserName(getAccountName(), getUserName());
 				}
 			}
 			
@@ -107,16 +113,8 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 		return getInputText(bwDesc);
 	}
 	
-	private String getBWMax() {
-		return getInputText(bwMax);
-	}
-	
-	private String getInputText(IntegerBox textbox) {
-		String text = textbox.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
+	private int getBWMax() {
+		return bwMax.getValue();
 	}
 	
 	private String getInputText(TextArea textarea) {
@@ -139,24 +137,20 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 	    return s == null || s.length() == 0;
 	}
 	
-    private int getLife(Date starttime, Date endtime) {
-    	final long div = 1000L * 24 * 3600;
-    	long start = starttime.getTime() / div, end = endtime.getTime() / div;
-    	return start <= end ? (int)(end - start) + 1 : 0;
-    }
-	
 	public void updateDateLife() {
 		dateLife.setText("");
 		try {
-			Date starttime = DeviceDateBox.parse(dateBegin.getText());
-			Date endtime = DeviceDateBox.parse(dateEnd.getText());
-			int days1 = getLife(starttime, endtime);
-			int days2 = getLife(new Date(), endtime);
-			if (days1 < days2) {
-				dateLife.setText(Integer.toString(days1));
-			}
-			else {
-				dateLife.setText(Integer.toString(days1) + "/" + Integer.toString(days2));
+			if (!isEmpty(dateBegin.getText()) && !isEmpty(dateEnd.getText())) {
+				int life = DeviceDate.calcLife(dateEnd.getText(), dateBegin.getText());
+				if (life > 0) {
+					int real = Math.max(0, Math.min(life, DeviceDate.calcLife(dateEnd.getText(), DeviceDate.today())));
+					if (real != life) {
+						dateLife.setText(Integer.toString(real) + "/" + Integer.toString(life));
+					}
+					else {
+						dateLife.setText(Integer.toString(life));
+					}
+				}
 			}
 		}
 		catch (Exception e) {
@@ -173,9 +167,9 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 	@Override
 	public void popup() {
 		bwMax.setValue(0);
-		bwDesc.setText("");
+		bwDesc.setValue("");
 		dateBegin.setValue(new Date());
-		dateEnd.getTextBox().setText("");
+		dateEnd.setValue(new Date());
 		ipAddrList.clear();
 		accountNameList.clear();
 		userNameList.clear();
@@ -186,7 +180,7 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(getIPAddr(), getBWDesc(), getBWMax(), dateBegin.getText(), dateEnd.getText())) {
+		if (presenter.onOK(getIPAddr(), getBWDesc(), getBWMax(), dateBegin.getValue(), dateEnd.getValue())) {
 			hide();
 		}
 	}
@@ -228,10 +222,13 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
     private void setListBox(ListBox listbox, List<String> values, boolean hasEmpty) {
     	listbox.clear();
     	if (values != null && !values.isEmpty()) {
+    		if (hasEmpty) {
+    			listbox.addItem("");
+    		}
 	    	for (String value : values) {
 	    		listbox.addItem(value);
 	    	}
-	    	listbox.setSelectedIndex(hasEmpty ? -1 : 0);
+	    	listbox.setSelectedIndex(0);
     	}
     }
 

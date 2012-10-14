@@ -1,5 +1,6 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.Date;
 import java.util.List;
 
 import com.google.gwt.user.client.ui.IsWidget;
@@ -16,7 +17,7 @@ public interface DeviceDiskServiceAddView extends IsWidget {
 	
 	public interface Presenter {
 		
-		public boolean onOK(int disk_id, String ds_desc, String ds_used, String ds_starttime, String ds_endtime, String account_name, String user_name);
+		public boolean onOK(int disk_id, String ds_desc, long ds_used, Date ds_starttime, Date ds_endtime, String account_name, String user_name);
 		
 		public void lookupAccountNames();
 		

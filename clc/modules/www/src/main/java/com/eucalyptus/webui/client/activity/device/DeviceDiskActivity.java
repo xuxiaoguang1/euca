@@ -16,7 +16,6 @@ import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.client.view.DeviceDateBox;
 import com.eucalyptus.webui.client.view.DeviceDiskAddView;
 import com.eucalyptus.webui.client.view.DeviceDiskAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceDiskModifyView;
@@ -52,6 +51,7 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 	
 	public DeviceDiskActivity(SearchPlace place, ClientFactory clientFactory) {
 		super(place, clientFactory);
+		super.pageSize = DevicePageSize.getPageSize();
 	}
 	
 	private DeviceDiskView getView() {
@@ -193,7 +193,7 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                     diskAddView.setPresenter(new DeviceDiskAddView.Presenter() {
                         
                         @Override
-                        public boolean onOK(String disk_name, String disk_desc, String size, String server_name) {
+                        public boolean onOK(String disk_name, String disk_desc, long disk_size, String server_name) {
                             if (isEmpty(disk_name)) {
                                 StringBuilder sb = new StringBuilder();
                                 sb.append(new ClientMessage("", "硬盘名称非法")).append(" = '").append(disk_name).append("' ");
@@ -208,17 +208,9 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                                 Window.alert(sb.toString());
                                 return false;
                             }
-                            long disk_size = 0;
-                            try {
-                                if (!isEmpty(size)) {
-                                    disk_size = Long.parseLong(size);
-                                }
-                            }
-                            catch (Exception e) {
-                            }
                             if (disk_size <= 0) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "硬盘大小非法")).append(" = '").append(size).append("' ");
+                                sb.append(new ClientMessage("", "硬盘大小非法")).append(" = '").append(disk_size).append("' ");
                                 sb.append(new ClientMessage("", "请重新选择硬盘大小"));
                                 Window.alert(sb.toString());
                                 return false;
@@ -347,8 +339,8 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                         
                     });
                 }
+                diskAddView.popup();
             }
-            diskAddView.popup();
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -366,18 +358,10 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                     diskModifyView.setPresenter(new DeviceDiskModifyView.Presenter() {
                         
                         @Override
-                        public boolean onOK(int disk_id, String disk_desc, String size) {
-                            long disk_size = 0;
-                            try {
-                                if (!isEmpty(size)) {
-                                    disk_size = Long.parseLong(size);
-                                }
-                            }
-                            catch (Exception e) {
-                            }
+                        public boolean onOK(int disk_id, String disk_desc, long disk_size) {
                             if (disk_size <= 0) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "硬盘大小非法")).append(" = '").append(size).append("' ");
+                                sb.append(new ClientMessage("", "硬盘大小非法")).append(" = '").append(disk_size).append("' ");
                                 sb.append(new ClientMessage("", "请重新选择硬盘大小"));
                                 Window.alert(sb.toString());
                                 return false;
@@ -405,8 +389,12 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                         
                     });
                 }
-                diskModifyView.popup(Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_ID)), row.getField(CellTableColumns.DISK.DISK_NAME),
-                        row.getField(CellTableColumns.DISK.DISK_DESC), Long.parseLong(row.getField(CellTableColumns.DISK.DISK_TOTAL)), row.getField(CellTableColumns.DISK.SERVER_NAME));
+                int disk_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_ID));
+			    String disk_name = row.getField(CellTableColumns.DISK.DISK_NAME);
+			    String disk_desc = row.getField(CellTableColumns.DISK.DISK_DESC);
+			    long disk_size = Long.parseLong(row.getField(CellTableColumns.DISK.DISK_TOTAL));
+			    String server_name = row.getField(CellTableColumns.DISK.SERVER_NAME);
+			    diskModifyView.popup(disk_id, disk_name, disk_desc, disk_size, server_name);
             }
         }
         catch (Exception e) {
@@ -464,15 +452,7 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                     diskServiceAddView.setPresenter(new DeviceDiskServiceAddView.Presenter() {
                         
                         @Override
-                        public boolean onOK(int disk_id, String ds_desc, String used, String starttime, String endtime, String account_name, String user_name) {
-                            long ds_used = 0;
-                            try {
-                                if (!isEmpty(used)) {
-                                    ds_used = Long.parseLong(used);
-                                }
-                            }
-                            catch (Exception e) {
-                            }
+                        public boolean onOK(int disk_id, String ds_desc, long ds_used, Date ds_starttime, Date ds_endtime, String account_name, String user_name) {
                             if (ds_used <= 0) {
                                 StringBuilder sb = new StringBuilder();
                                 sb.append(new ClientMessage("", "硬盘数量非法")).append(" = '").append(ds_used).append("' ");
@@ -480,43 +460,16 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                                 Window.alert(sb.toString());
                                 return false;
                             }
-                            Date ds_starttime = null;
-                            try {
-                                if (!isEmpty(starttime)) {
-                                    ds_starttime = DeviceDateBox.parse(starttime);
+                            if (ds_starttime == null || ds_endtime == null || DeviceDate.calcLife(ds_endtime, ds_starttime) <= 0) {
+								StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("", "非法的服务时间"));
+                                if (ds_starttime != null && ds_endtime != null) {
+                                	sb.append(" = '").append(DeviceDate.format(ds_starttime)).append("' >= '").append(DeviceDate.format(ds_endtime)).append("'");
                                 }
-                            }
-                            catch (Exception e) {
-                            }
-                            if (ds_starttime == null) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "非法的服务起始时间")).append(" = '").append(starttime).append("' ");
                                 sb.append(new ClientMessage("", "请重新选择时间"));
                                 Window.alert(sb.toString());
                                 return false;
-                            }
-                            Date ds_endtime = null;
-                            try {
-                                if (!isEmpty(endtime)) {
-                                    ds_endtime = DeviceDateBox.parse(endtime);
-                                }
-                            }
-                            catch (Exception e) {
-                            }
-                            if (ds_endtime == null) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "非法的服务结束时间")).append(" = '").append(endtime).append("' ");
-                                sb.append(new ClientMessage("", "请重新选择时间"));
-                                Window.alert(sb.toString());
-                                return false;
-                            }
-                            if (ds_starttime.getTime() >= ds_endtime.getTime()) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "非法的服务时间")).append(" = '").append(ds_starttime).append("' >= '").append(ds_endtime).append("'");
-                                sb.append(new ClientMessage("", "请重新选择时间"));
-                                Window.alert(sb.toString());
-                                return false;
-                            }
+							}
                             if (isEmpty(account_name)) {
                                 StringBuilder sb = new StringBuilder();
                                 sb.append(new ClientMessage("", "非法的账户名称")).append(" = '").append(account_name).append("' ");
@@ -601,8 +554,11 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                         
                     });
                 }
-                diskServiceAddView.popup(Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_ID)), row.getField(CellTableColumns.DISK.DISK_NAME),
-                        row.getField(CellTableColumns.DISK.SERVER_NAME), Long.parseLong(row.getField(CellTableColumns.DISK.DISK_SERVICE_USED)));
+                int disk_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_ID));
+			    String disk_name = row.getField(CellTableColumns.DISK.DISK_NAME);
+			    String server_name = row.getField(CellTableColumns.DISK.SERVER_NAME);
+			    long ds_reserved = Long.parseLong(row.getField(CellTableColumns.DISK.DISK_SERVICE_USED));
+			    diskServiceAddView.popup(disk_id, disk_name, server_name, ds_reserved);
             }
         }
         catch (Exception e) {
@@ -621,44 +577,17 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                     diskServiceModifyView.setPresenter(new DeviceDiskServiceModifyView.Presenter() {
                         
                         @Override
-                        public boolean onOK(int ds_id, String ds_desc, String starttime, String endtime) {
-                            Date ds_starttime = null;
-                            try {
-                                if (!isEmpty(starttime)) {
-                                    ds_starttime = DeviceDateBox.parse(starttime);
+                        public boolean onOK(int ds_id, String ds_desc, Date ds_starttime, Date ds_endtime) {
+                        	if (ds_starttime == null || ds_endtime == null || DeviceDate.calcLife(ds_endtime, ds_starttime) <= 0) {
+								StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("", "非法的服务时间"));
+                                if (ds_starttime != null && ds_endtime != null) {
+                                	sb.append(" = '").append(DeviceDate.format(ds_starttime)).append("' >= '").append(DeviceDate.format(ds_endtime)).append("'");
                                 }
-                            }
-                            catch (Exception e) {
-                            }
-                            if (ds_starttime == null) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "非法的服务起始时间")).append(" = '").append(starttime).append("' ");
                                 sb.append(new ClientMessage("", "请重新选择时间"));
                                 Window.alert(sb.toString());
                                 return false;
-                            }
-                            Date ds_endtime = null;
-                            try {
-                                if (!isEmpty(endtime)) {
-                                    ds_endtime = DeviceDateBox.parse(endtime);
-                                }
-                            }
-                            catch (Exception e) {
-                            }
-                            if (ds_endtime == null) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "非法的服务结束时间")).append(" = '").append(endtime).append("' ");
-                                sb.append(new ClientMessage("", "请重新选择时间"));
-                                Window.alert(sb.toString());
-                                return false;
-                            }
-                            if (ds_starttime.getTime() >= ds_endtime.getTime()) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "非法的服务时间")).append(" = '").append(ds_starttime).append("' >= '").append(ds_endtime).append("'");
-                                sb.append(new ClientMessage("", "请重新选择时间"));
-                                Window.alert(sb.toString());
-                                return false;
-                            }
+							}
                             getBackendService().modifyDeviceDiskService(getSession(), ds_id, ds_desc, ds_starttime, ds_endtime, new AsyncCallback<Void>() {
 
                                 @Override
@@ -682,9 +611,16 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                         
                     });
                 }
-                diskServiceModifyView.popup(Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_SERVICE_ID)), row.getField(CellTableColumns.DISK.DISK_NAME), row.getField(CellTableColumns.DISK.DISK_DESC),
-                        Long.parseLong(row.getField(CellTableColumns.DISK.DISK_SERVICE_USED)), row.getField(CellTableColumns.DISK.DISK_SERVICE_STARTTIME), row.getField(CellTableColumns.DISK.DISK_SERVICE_ENDTIME),
-                        row.getField(CellTableColumns.DISK.SERVER_NAME), row.getField(CellTableColumns.DISK.ACCOUNT_NAME), row.getField(CellTableColumns.DISK.USER_NAME));
+				int ds_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_SERVICE_ID));
+				String ds_desc = row.getField(CellTableColumns.DISK.DISK_SERVICE_DESC);
+			    String disk_name = row.getField(CellTableColumns.DISK.DISK_NAME);
+			    int ds_used = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_SERVICE_USED));
+			    Date ds_starttime = DeviceDate.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STARTTIME));
+			    Date ds_endtime = DeviceDate.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_ENDTIME));
+			    String server_name = row.getField(CellTableColumns.DISK.SERVER_NAME);
+			    String account_name = row.getField(CellTableColumns.DISK.ACCOUNT_NAME);
+			    String user_name = row.getField(CellTableColumns.DISK.USER_NAME);
+			    diskServiceModifyView.popup(ds_id, disk_name, ds_desc, ds_used, ds_starttime, ds_endtime, server_name, account_name, user_name);
             }
         }
         catch (Exception e) {
@@ -742,7 +678,7 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 		if (this.queryState != queryState) {
 	    	getView().clearSelection();
 			this.queryState = queryState;
-	    	range = new SearchRange(0, getView().getPageSize(), -1, true);
+	    	range = new SearchRange(0, DevicePageSize.getPageSize(), -1, true);
 	    	reloadCurrentRange();
 		}
 	}
@@ -761,7 +697,7 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
     	getView().clearSelection();
     	this.dateBegin = dateBegin;
     	this.dateEnd = dateEnd;
-    	range = new SearchRange(0, getView().getPageSize(), -1, true);
+    	range = new SearchRange(0, DevicePageSize.getPageSize(), -1, true);
     	reloadCurrentRange();
 	}
 

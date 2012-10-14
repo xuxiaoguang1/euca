@@ -34,20 +34,12 @@ public class DeviceDiskModifyViewImpl extends DialogBox implements DeviceDiskMod
 		return getInputText(diskDesc);
 	}
 	
-	private String getDiskSize() {
-		return getInputText(diskSize);
+	private long getDiskSize() {
+		return diskSize.getValue();
 	}
 	
 	private String getInputText(TextArea textarea) {
 		String text = textarea.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
-	private String getInputText(LongBox textbox) {
-		String text = textbox.getText();
 		if (text == null) {
 			return "";
 		}
@@ -66,10 +58,10 @@ public class DeviceDiskModifyViewImpl extends DialogBox implements DeviceDiskMod
 	@Override
 	public void popup(int disk_id, String disk_name, String disk_desc, long disk_size, String server_name) {
 		this.disk_id = disk_id;
-		diskName.setText(disk_name);
-		diskDesc.setText(disk_desc);
+		diskName.setValue(disk_name);
+		diskDesc.setValue(disk_desc);
 		diskSize.setValue(disk_size);
-		serverName.setText(server_name);
+		serverName.setValue(server_name);
 		show();
 	}
 	

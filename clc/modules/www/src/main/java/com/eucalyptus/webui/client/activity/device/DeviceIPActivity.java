@@ -16,7 +16,6 @@ import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.client.view.DeviceDateBox;
 import com.eucalyptus.webui.client.view.DeviceIPAddView;
 import com.eucalyptus.webui.client.view.DeviceIPAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceIPModifyView;
@@ -54,6 +53,7 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 
 	public DeviceIPActivity(SearchPlace place, ClientFactory clientFactory) {
 		super(place, clientFactory);
+		super.pageSize = DevicePageSize.getPageSize();
 	}
 	
 	private DeviceIPView getView() {
@@ -283,8 +283,11 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 						
 					});
 				}
-				ipModifyView.popup(Integer.parseInt(row.getField(CellTableColumns.IP.IP_ID)), row.getField(CellTableColumns.IP.IP_ADDR),
-						row.getField(CellTableColumns.IP.IP_DESC), IPType.parse(row.getField(CellTableColumns.IP.IP_TYPE)));
+				int ip_id = Integer.parseInt(row.getField(CellTableColumns.IP.IP_ID));
+			    String ip_addr = row.getField(CellTableColumns.IP.IP_ADDR);
+			    String ip_desc = row.getField(CellTableColumns.IP.IP_DESC);
+			    IPType ip_type = IPType.parse(row.getField(CellTableColumns.IP.IP_TYPE));
+			    ipModifyView.popup(ip_id, ip_addr, ip_desc, ip_type);
 			}
 		}
 		catch (Exception e) {
@@ -342,43 +345,16 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 					ipServiceAddView.setPresenter(new DeviceIPServiceAddView.Presenter() {
 						
 						@Override
-						public boolean onOK(int ip_id, String is_desc, String starttime, String endtime, String account_name, String user_name) {
-							Date is_starttime = null;
-							try {
-								if (!isEmpty(starttime)) {
-									is_starttime = DeviceDateBox.parse(starttime);
-								}
-							}
-							catch (Exception e) {
-							}
-							if (is_starttime == null) {
+						public boolean onOK(int ip_id, String is_desc, Date is_starttime, Date is_endtime, String account_name, String user_name) {
+							if (is_starttime == null || is_endtime == null || DeviceDate.calcLife(is_endtime, is_starttime) <= 0) {
 								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的服务起始时间")).append(" = '").append(starttime).append("' ");
-								sb.append(new ClientMessage("", "请重新选择时间"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							Date is_endtime = null;
-							try {
-								if (!isEmpty(endtime)) {
-									is_endtime = DeviceDateBox.parse(endtime);
-								}
-							}
-							catch (Exception e) {
-							}
-							if (is_endtime == null) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的服务结束时间")).append(" = '").append(endtime).append("' ");
-								sb.append(new ClientMessage("", "请重新选择时间"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							if (is_starttime.getTime() >= is_endtime.getTime()) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的服务时间")).append(" = '").append(is_starttime).append("' >= '").append(is_endtime).append("'");
-								sb.append(new ClientMessage("", "请重新选择时间"));
-								Window.alert(sb.toString());
-								return false;
+                                sb.append(new ClientMessage("", "非法的服务时间"));
+                                if (is_starttime != null && is_endtime != null) {
+                                	sb.append(" = '").append(DeviceDate.format(is_starttime)).append("' >= '").append(DeviceDate.format(is_endtime)).append("'");
+                                }
+                                sb.append(new ClientMessage("", "请重新选择时间"));
+                                Window.alert(sb.toString());
+                                return false;
 							}
 							if (isEmpty(account_name)) {
 								StringBuilder sb = new StringBuilder();
@@ -464,7 +440,9 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 						
 					});
 				}
-				ipServiceAddView.popup(Integer.parseInt(row.getField(CellTableColumns.IP.IP_ID)), row.getField(CellTableColumns.IP.IP_ADDR));
+				int ip_id = Integer.parseInt(row.getField(CellTableColumns.IP.IP_ID));
+				String ip_addr = row.getField(CellTableColumns.IP.IP_ADDR);
+				ipServiceAddView.popup(ip_id, ip_addr);
 			}
 		}
 		catch (Exception e) {
@@ -483,45 +461,18 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 					ipServiceModifyView.setPresenter(new DeviceIPServiceModifyView.Presenter() {
 						
 						@Override
-						public boolean onOK(int is_id, String is_desc, String starttime, String endtime) {
-							Date is_starttime = null;
-							try {
-								if (!isEmpty(starttime)) {
-									is_starttime = DeviceDateBox.parse(starttime);
-								}
-							}
-							catch (Exception e) {
-							}
-							if (is_starttime == null) {
+						public boolean onOK(int ip_id, String is_desc, Date is_starttime, Date is_endtime) {
+							if (is_starttime == null || is_endtime == null || DeviceDate.calcLife(is_endtime, is_starttime) <= 0) {
 								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的服务起始时间")).append(" = '").append(starttime).append("' ");
-								sb.append(new ClientMessage("", "请重新选择时间"));
-								Window.alert(sb.toString());
-								return false;
+                                sb.append(new ClientMessage("", "非法的服务时间"));
+                                if (is_starttime != null && is_endtime != null) {
+                                	sb.append(" = '").append(DeviceDate.format(is_starttime)).append("' >= '").append(DeviceDate.format(is_endtime)).append("'");
+                                }
+                                sb.append(new ClientMessage("", "请重新选择时间"));
+                                Window.alert(sb.toString());
+                                return false;
 							}
-							Date is_endtime = null;
-							try {
-								if (!isEmpty(endtime)) {
-									is_endtime = DeviceDateBox.parse(endtime);
-								}
-							}
-							catch (Exception e) {
-							}
-							if (is_endtime == null) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的服务结束时间")).append(" = '").append(endtime).append("' ");
-								sb.append(new ClientMessage("", "请重新选择时间"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							if (is_starttime.getTime() >= is_endtime.getTime()) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的服务时间")).append(" = '").append(is_starttime).append("' >= '").append(is_endtime).append("'");
-								sb.append(new ClientMessage("", "请重新选择时间"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							getBackendService().modifyDeviceIPService(getSession(), is_id, is_desc, is_starttime, is_endtime, new AsyncCallback<Void>() {
+							getBackendService().modifyDeviceIPService(getSession(), ip_id, is_desc, is_starttime, is_endtime, new AsyncCallback<Void>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
@@ -544,8 +495,14 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 						
 					});
 				}
-				ipServiceModifyView.popup(Integer.parseInt(row.getField(CellTableColumns.IP.IP_SERVICE_ID)), row.getField(CellTableColumns.IP.IP_ADDR), row.getField(CellTableColumns.IP.IP_SERVICE_DESC),
-						row.getField(CellTableColumns.IP.IP_SERVICE_STARTTIME), row.getField(CellTableColumns.IP.IP_SERVICE_ENDTIME), row.getField(CellTableColumns.IP.ACCOUNT_NAME), row.getField(CellTableColumns.IP.USER_NAME));
+				int ip_id = Integer.parseInt(row.getField(CellTableColumns.IP.IP_ID));
+			    String ip_addr = row.getField(CellTableColumns.IP.IP_ADDR);
+				String is_desc = row.getField(CellTableColumns.IP.IP_SERVICE_DESC);
+			    Date is_starttime = DeviceDate.parse(row.getField(CellTableColumns.IP.IP_SERVICE_STARTTIME));
+			    Date is_endtime = DeviceDate.parse(row.getField(CellTableColumns.IP.IP_SERVICE_ENDTIME));
+			    String account_name = row.getField(CellTableColumns.IP.ACCOUNT_NAME);
+			    String user_name = row.getField(CellTableColumns.IP.USER_NAME);
+			    ipServiceModifyView.popup(ip_id, ip_addr, is_desc, is_starttime, is_endtime, account_name, user_name);
 			}
 		}
 		catch (Exception e) {
@@ -558,14 +515,14 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 	public void onDeleteIPService() {
 		try {
 			if (canDeleteIPService()) {
-				List<Integer> is_id_list = new ArrayList<Integer>();
+				List<Integer> ip_id_list = new ArrayList<Integer>();
 				for (SearchResultRow row : getView().getSelectedSet()) {
-					int is_id = Integer.parseInt(row.getField(CellTableColumns.IP.IP_SERVICE_ID));
-					is_id_list.add(is_id);
+					int ip_id = Integer.parseInt(row.getField(CellTableColumns.IP.IP_ID));
+					ip_id_list.add(ip_id);
 				}
-				if (!is_id_list.isEmpty()) {
+				if (!ip_id_list.isEmpty()) {
 					if (Window.confirm(new ClientMessage("", "确认删除所选择的IP地址服务").toString())) {
-						getBackendService().deleteDeviceIPService(getSession(), is_id_list, new AsyncCallback<Void>() {
+						getBackendService().deleteDeviceIPService(getSession(), ip_id_list, new AsyncCallback<Void>() {
 							
 							@Override
 							public void onFailure(Throwable caught) {
@@ -603,7 +560,7 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 		if (this.queryState != queryState) {
 	    	getView().clearSelection();
 			this.queryState = queryState;
-	    	range = new SearchRange(0, getView().getPageSize(), -1, true);
+	    	range = new SearchRange(0, DevicePageSize.getPageSize(), -1, true);
 	    	reloadCurrentRange();
 		}
 	}
@@ -613,7 +570,7 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 		if (this.queryType != queryType) {
 			getView().clearSelection();
 			this.queryType = queryType;
-			range = new SearchRange(0, getView().getPageSize(), -1, true);
+			range = new SearchRange(0, DevicePageSize.getPageSize(), -1, true);
 			reloadCurrentRange();
 		}
 	}
@@ -632,7 +589,7 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
     	getView().clearSelection();
     	this.dateBegin = dateBegin;
     	this.dateEnd = dateEnd;
-    	range = new SearchRange(0, getView().getPageSize(), -1, true);
+    	range = new SearchRange(0, DevicePageSize.getPageSize(), -1, true);
     	reloadCurrentRange();
 	}
 

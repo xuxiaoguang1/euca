@@ -74,8 +74,8 @@ public class DeviceIPAddViewImpl extends DialogBox implements DeviceIPAddView {
 	
 	@Override
     public void popup() {
-		ipAddr.setText("");
-		ipDesc.setText("");
+		ipAddr.setValue("");
+		ipDesc.setValue("");
 		ipType.setSelectedIndex(-1);
 		show();
     }

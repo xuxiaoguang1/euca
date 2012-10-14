@@ -80,8 +80,8 @@ public class DeviceMemoryAddViewImpl extends DialogBox implements DeviceMemoryAd
 		return getInputText(memoryDesc);
 	}
 	
-	private String getMemorySize() {
-		return getInputText(memorySize);
+	private long getMemorySize() {
+		return memorySize.getValue();
 	}
 	
 	private String getAreaName() {
@@ -116,14 +116,6 @@ public class DeviceMemoryAddViewImpl extends DialogBox implements DeviceMemoryAd
 		return text;
 	}
 	
-	private String getInputText(LongBox textbox) {
-		String text = textbox.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
 	private String getSelectedText(ListBox listbox) {
 	    int index = listbox.getSelectedIndex();
 	    if (index == -1) {
@@ -145,9 +137,9 @@ public class DeviceMemoryAddViewImpl extends DialogBox implements DeviceMemoryAd
 	
 	@Override
     public void popup() {
-		memoryName.setText("");
-		memoryDesc.setText("");
-		memorySize.setText("");
+		memoryName.setValue("");
+		memoryDesc.setValue("");
+		memorySize.setValue(0L);
 		areaNameList.clear();
 		roomNameList.clear();
 		cabinetNameList.clear();

@@ -1,20 +1,29 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
 
+import com.eucalyptus.webui.client.activity.device.ClientMessage;
+import com.eucalyptus.webui.client.activity.device.DevicePageSize;
 import com.eucalyptus.webui.client.service.SearchResult;
+import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
+import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
 import com.eucalyptus.webui.shared.resource.device.status.DiskState;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -41,6 +50,8 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
     @UiField Anchor labelStop;
     @UiField Anchor labelInuse;
     @UiField Anchor labelReserved;
+    @UiField Anchor columnButton;
+	@UiField ListBox pageSizeList;
     
     private Presenter presenter;
     private MultiSelectionModel<SearchResultRow> selection;
@@ -49,6 +60,23 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
     
     public DeviceDiskViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
+        
+        for (String pageSize : DevicePageSize.getPageSizeList()) {
+			pageSizeList.addItem(pageSize);
+		}
+		pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
+		pageSizeList.addChangeHandler(new ChangeHandler() {
+
+			@Override
+			public void onChange(ChangeEvent event) {
+				DevicePageSize.setPageSizeSelectedIndex(pageSizeList.getSelectedIndex());
+				if (table != null) {
+					table.setPageSize(DevicePageSize.getPageSize());
+				}
+			}
+			
+		});
+
         selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
         selection.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
 
@@ -182,11 +210,41 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
     
     @Override
     public void setSelectedRow(SearchResultRow row) {
-        clearSelection();
-        if (row != null) {
-            selection.setSelected(row, true);
-        }
-        updateSearchResultButtonStatus();
+    	boolean selected = true;
+		Set<SearchResultRow> set = selection.getSelectedSet();
+		if (set != null && set.contains(row)) {
+			selected = false;
+		}
+		clearSelection();
+		selection.setSelected(row, selected);
+		updateSearchResultButtonStatus();
+    }
+    
+    private DeviceColumnPopupPanel.Node addNode(ArrayList<SearchResultFieldDesc> descs, DeviceColumnPopupPanel.Node parent, ClientMessage msg, int column) {
+	    return parent.addNode(msg, column, DeviceSearchResultTable.isVisible(descs.get(column).getWidth()));
+	}
+    
+    private void initColumnPanel(ArrayList<SearchResultFieldDesc> descs, DeviceColumnPopupPanel panel) {
+    	DeviceColumnPopupPanel.Node account = panel.addNode(new ClientMessage("", "账户信息"));
+    	addNode(descs, account, new ClientMessage("", "账户名称"), CellTableColumns.DISK.ACCOUNT_NAME);
+        addNode(descs, account, new ClientMessage("", "用户名称"), CellTableColumns.DISK.USER_NAME);
+        DeviceColumnPopupPanel.Node service = panel.addNode(new ClientMessage("", "服务信息"));
+        addNode(descs, service, new ClientMessage("", "硬盘名称"), CellTableColumns.DISK.DISK_NAME);
+        addNode(descs, service, new ClientMessage("", "服务状态"), CellTableColumns.DISK.DISK_SERVICE_STATE);
+        addNode(descs, service, new ClientMessage("", "服务描述"), CellTableColumns.DISK.DISK_SERVICE_DESC);
+        addNode(descs, service, new ClientMessage("", "占用数量(MB)"), CellTableColumns.DISK.DISK_SERVICE_USED);
+        addNode(descs, service, new ClientMessage("", "开始时间"), CellTableColumns.DISK.DISK_SERVICE_STARTTIME);
+        addNode(descs, service, new ClientMessage("", "结束时间"), CellTableColumns.DISK.DISK_SERVICE_ENDTIME);
+        addNode(descs, service, new ClientMessage("", "剩余时间"), CellTableColumns.DISK.DISK_SERVICE_LIFE);
+        addNode(descs, service, new ClientMessage("", "添加时间"), CellTableColumns.DISK.DISK_SERVICE_CREATIONTIME);
+        addNode(descs, service, new ClientMessage("", "修改时间"), CellTableColumns.DISK.DISK_SERVICE_MODIFIEDTIME);
+        DeviceColumnPopupPanel.Node device = panel.addNode(new ClientMessage("", "设备信息"));
+        addNode(descs, device, new ClientMessage("", "总数量(MB)"), CellTableColumns.DISK.DISK_TOTAL);
+        addNode(descs, device, new ClientMessage("", "硬件描述"), CellTableColumns.DISK.DISK_DESC);
+        addNode(descs, device, new ClientMessage("", "所属服务器"), CellTableColumns.DISK.SERVER_NAME);
+        addNode(descs, device, new ClientMessage("", "添加时间"), CellTableColumns.DISK.DISK_CREATIONTIME);
+        addNode(descs, device, new ClientMessage("", "修改时间"), CellTableColumns.DISK.DISK_MODIFIEDTIME);
+    	panel.reload();
     }
     
     @Override
@@ -197,15 +255,33 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
             table.setClickHandler(presenter);
             table.load();
             resultPanel.add(table);
+            final DeviceColumnPopupPanel panel = new DeviceColumnPopupPanel(new DeviceColumnPopupPanel.Presenter() {
+	            
+	            @Override
+	            public void onValueChange(int column, boolean value) {
+	            	if (table != null) {
+	            		table.setVisible(column, value);
+	            	}
+	            }
+	            
+	        });
+			columnButton.addClickHandler(new ClickHandler() {
+
+                @Override
+                public void onClick(ClickEvent event) {
+                    panel.popup(columnButton);
+                }
+                
+            });
+			initColumnPanel(result.getDescs(), panel);
         }
         table.setData(result);
+        if (table.getPageSize() != DevicePageSize.getPageSize()) {
+			table.setPageSize(DevicePageSize.getPageSize());
+			pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
+		}
     }
     
-    @Override
-    public int getPageSize() {
-        return table.getPageSize();
-    }
-
     @Override
     public void clear() {
         resultPanel.clear();

@@ -1,5 +1,6 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.Date;
 import java.util.List;
 
 import com.google.gwt.user.client.ui.IsWidget;
@@ -16,7 +17,7 @@ public interface DeviceMemoryServiceAddView extends IsWidget {
 	
 	public interface Presenter {
 		
-		public boolean onOK(int memory_id, String ms_desc, String ms_used, String ms_starttime, String ms_endtime, String account_name, String user_name);
+		public boolean onOK(int memory_id, String ms_desc, long ms_used, Date ms_starttime, Date ms_endtime, String account_name, String user_name);
 		
 		public void lookupAccountNames();
 		

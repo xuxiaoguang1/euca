@@ -3,8 +3,6 @@ package com.eucalyptus.webui.server.device;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -27,6 +25,7 @@ import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
 import com.eucalyptus.webui.shared.resource.device.DiskInfo;
 import com.eucalyptus.webui.shared.resource.device.DiskServiceInfo;
+import com.eucalyptus.webui.shared.resource.device.CellTableColumns.CellTableColumnsRow;
 import com.eucalyptus.webui.shared.resource.device.status.DiskState;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
@@ -55,27 +54,23 @@ public class DeviceDiskService {
             new SearchResultFieldDesc(null, "0%",false),
             new SearchResultFieldDesc(null, "0%",false),
             new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
-            new SearchResultFieldDesc(false, "8%", new ClientMessage("", "序号"),
+            new SearchResultFieldDesc(false, "3EM", new ClientMessage("", "序号"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "名称"),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "硬盘名称"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(false, "8%", new ClientMessage("", "描述"),
+	        new SearchResultFieldDesc(true, "8%", new ClientMessage("", "所属服务器"),
+	                TableDisplay.MANDATORY, Type.TEXT, false, false),
+	        new SearchResultFieldDesc(true, "8%", new ClientMessage("", "服务状态"),
+	                TableDisplay.MANDATORY, Type.TEXT, false, false),
+	        new SearchResultFieldDesc(true, "8%", new ClientMessage("", "账户名称"),
+	                TableDisplay.MANDATORY, Type.TEXT, false, false),
+	        new SearchResultFieldDesc(true, "8%", new ClientMessage("", "用户名称"),
+	                TableDisplay.MANDATORY, Type.TEXT, false, false),
+	        new SearchResultFieldDesc(false, "0%", new ClientMessage("", "服务描述"),
+	                TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "总数量(MB)"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "总大小(MB)"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "此项大小(MB)"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "服务器"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "创建时间"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "修改时间"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "账户"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "用户"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(false, "8%", new ClientMessage("", "描述"),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "占用数量(MB)"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("", "开始时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
@@ -83,36 +78,35 @@ public class DeviceDiskService {
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("", "剩余(天)"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "状态"),
+            new SearchResultFieldDesc(true, "0%", new ClientMessage("", "添加时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "创建时间"),
+            new SearchResultFieldDesc(true, "0%", new ClientMessage("", "修改时间"),
+            		TableDisplay.MANDATORY, Type.TEXT, false, false),
+			new SearchResultFieldDesc(false, "0%", new ClientMessage("", "硬件描述"),
+	                TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "0%", new ClientMessage("", "硬件添加时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "修改时间"),
+            new SearchResultFieldDesc(true, "0%", new ClientMessage("", "硬件修改时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false));
     
     private DBTableColumn getSortColumn(SearchRange range) {
         switch (range.getSortField()) {
-        case CellTableColumns.DISK.DISK_NAME: return DBTable.DISK.DISK_NAME;
-        case CellTableColumns.DISK.DISK_SERVICE_USED: return DBTable.DISK_SERVICE.DISK_SERVICE_USED;
-        case CellTableColumns.DISK.DISK_TOTAL: return DBTable.DISK.DISK_TOTAL;
-        case CellTableColumns.DISK.SERVER_NAME: return DBTable.SERVER.SERVER_NAME;
-        case CellTableColumns.DISK.DISK_CREATIONTIME: return DBTable.DISK.DISK_CREATIONTIME;
-        case CellTableColumns.DISK.DISK_MODIFIEDTIME: return DBTable.DISK.DISK_MODIFIEDTIME;
         case CellTableColumns.DISK.ACCOUNT_NAME: return DBTable.ACCOUNT.ACCOUNT_NAME;
         case CellTableColumns.DISK.USER_NAME: return DBTable.USER.USER_NAME;
+        case CellTableColumns.DISK.SERVER_NAME: return DBTable.SERVER.SERVER_NAME;
+        case CellTableColumns.DISK.DISK_NAME: return DBTable.DISK.DISK_NAME;
+        case CellTableColumns.DISK.DISK_TOTAL: return DBTable.DISK.DISK_TOTAL;
+        case CellTableColumns.DISK.DISK_SERVICE_USED: return DBTable.DISK_SERVICE.DISK_SERVICE_USED;
+        case CellTableColumns.DISK.DISK_CREATIONTIME: return DBTable.DISK.DISK_CREATIONTIME;
+        case CellTableColumns.DISK.DISK_MODIFIEDTIME: return DBTable.DISK.DISK_MODIFIEDTIME;
         case CellTableColumns.DISK.DISK_SERVICE_STARTTIME: return DBTable.DISK_SERVICE.DISK_SERVICE_STARTTIME;
         case CellTableColumns.DISK.DISK_SERVICE_ENDTIME: return DBTable.DISK_SERVICE.DISK_SERVICE_ENDTIME;
+        case CellTableColumns.DISK.DISK_SERVICE_LIFE: return DBTable.DISK_SERVICE.DISK_SERVICE_LIFE;
         case CellTableColumns.DISK.DISK_SERVICE_STATE: return DBTable.DISK_SERVICE.DISK_SERVICE_STATE;
         case CellTableColumns.DISK.DISK_SERVICE_CREATIONTIME: return DBTable.DISK_SERVICE.DISK_SERVICE_CREATIONTIME;
         case CellTableColumns.DISK.DISK_SERVICE_MODIFIEDTIME: return DBTable.DISK_SERVICE.DISK_SERVICE_MODIFIEDTIME;
         }
         return null;
-    }
-    
-    private int getLife(Date starttime, Date endtime) {
-    	final long div = 1000L * 24 * 3600;
-    	long start = starttime.getTime() / div, end = endtime.getTime() / div;
-    	return start <= end ? (int)(end - start) + 1 : 0;
     }
     
     private static final long DISK_UNIT = 1000 * 1000;
@@ -137,80 +131,69 @@ public class DeviceDiskService {
             DBTableServer SERVER = DBTable.SERVER;
             DBTableDisk DISK = DBTable.DISK;
             DBTableDiskService DISK_SERVICE = DBTable.DISK_SERVICE;
-            Date today = new Date();
-            for (int index = 1; rs.next(); index ++) {
-                int disk_id = DBData.getInt(rs, DISK.DISK_ID);
-                int ds_id = DBData.getInt(rs, DISK_SERVICE.DISK_SERVICE_ID);
-                String disk_name = DBData.getString(rs, DISK.DISK_NAME);
-                String disk_desc = DBData.getString(rs, DISK.DISK_DESC);
-                String server_name = DBData.getString(rs, SERVER.SERVER_NAME);
-                long disk_total = DBData.getLong(rs, DISK.DISK_TOTAL) / DISK_UNIT;
-                Date disk_creationtime = DBData.getDate(rs, DISK.DISK_CREATIONTIME);
-                Date disk_modifiedtime = DBData.getDate(rs, DISK.DISK_MODIFIEDTIME);
-                disk_state = DiskState.getDiskState(DBData.getInt(rs, DISK_SERVICE.DISK_SERVICE_STATE));
-                String account_name = null;
-                String user_name = null;
-                String ds_desc = null;
-                long ds_used = DBData.getLong(rs, DISK_SERVICE.DISK_SERVICE_USED) / DISK_UNIT;
-                Date ds_starttime = null;
-                Date ds_endtime = null;
-                String ds_life = null;
-                Date ds_creationtime = null;
-                Date ds_modifiedtime = null;
-                if (disk_state != DiskState.RESERVED) {
-                    account_name = DBData.getString(rs, ACCOUNT.ACCOUNT_NAME);
-                    user_name = DBData.getString(rs, USER.USER_NAME);
-                    ds_desc = DBData.getString(rs, DISK_SERVICE.DISK_SERVICE_DESC);
-                    ds_starttime = DBData.getDate(rs, DISK_SERVICE.DISK_SERVICE_STARTTIME);
-                    ds_endtime = DBData.getDate(rs, DISK_SERVICE.DISK_SERVICE_ENDTIME);
-                    ds_life = Integer.toString(Math.min(getLife(ds_starttime, ds_endtime), getLife(today, ds_endtime)));
-                    ds_creationtime = DBData.getDate(rs, DISK_SERVICE.DISK_SERVICE_CREATIONTIME);
-                    ds_modifiedtime = DBData.getDate(rs, DISK_SERVICE.DISK_SERVICE_MODIFIEDTIME);
-                }
-                List<String> list = Arrays.asList(Integer.toString(ds_id), Integer.toString(disk_id), "", Integer.toString(index ++),
-                        disk_name, disk_desc, Long.toString(disk_total), Long.toString(ds_used), server_name,
-                        DBData.format(disk_creationtime), DBData.format(disk_modifiedtime), account_name, user_name, ds_desc,
-                        DBData.format(ds_starttime), DBData.format(ds_endtime), ds_life, disk_state.toString(),
-                        DBData.format(ds_creationtime), DBData.format(ds_modifiedtime));
-                rows.add(new SearchResultRow(list));
+            int index, start = range.getStart(), end = start + range.getLength();
+            for (index = 0; rs.next(); index ++) {
+            	if (start <= index && index < end) {
+	                int disk_id = DBData.getInt(rs, DISK.DISK_ID);
+	                int ds_id = DBData.getInt(rs, DISK_SERVICE.DISK_SERVICE_ID);
+	                String disk_name = DBData.getString(rs, DISK.DISK_NAME);
+	                String disk_desc = DBData.getString(rs, DISK.DISK_DESC);
+	                String server_name = DBData.getString(rs, SERVER.SERVER_NAME);
+	                long disk_total = DBData.getLong(rs, DISK.DISK_TOTAL) / DISK_UNIT;
+	                Date disk_creationtime = DBData.getDate(rs, DISK.DISK_CREATIONTIME);
+	                Date disk_modifiedtime = DBData.getDate(rs, DISK.DISK_MODIFIEDTIME);
+	                disk_state = DiskState.getDiskState(DBData.getInt(rs, DISK_SERVICE.DISK_SERVICE_STATE));
+	                String account_name = null;
+	                String user_name = null;
+	                String ds_desc = null;
+	                long ds_used = DBData.getLong(rs, DISK_SERVICE.DISK_SERVICE_USED) / DISK_UNIT;
+	                Date ds_starttime = null;
+	                Date ds_endtime = null;
+	                String ds_life = null;
+	                Date ds_creationtime = null;
+	                Date ds_modifiedtime = null;
+	                if (disk_state != DiskState.RESERVED) {
+	                    account_name = DBData.getString(rs, ACCOUNT.ACCOUNT_NAME);
+	                    user_name = DBData.getString(rs, USER.USER_NAME);
+	                    ds_desc = DBData.getString(rs, DISK_SERVICE.DISK_SERVICE_DESC);
+	                    ds_starttime = DBData.getDate(rs, DISK_SERVICE.DISK_SERVICE_STARTTIME);
+	                    ds_endtime = DBData.getDate(rs, DISK_SERVICE.DISK_SERVICE_ENDTIME);
+	                    ds_life = DBData.getString(rs, DISK_SERVICE.DISK_SERVICE_LIFE);
+	                    if (ds_life != null) {
+	                    	ds_life = Integer.toString(Math.max(0, Integer.parseInt(ds_life) + 1));
+	                    }
+	                    ds_creationtime = DBData.getDate(rs, DISK_SERVICE.DISK_SERVICE_CREATIONTIME);
+	                    ds_modifiedtime = DBData.getDate(rs, DISK_SERVICE.DISK_SERVICE_MODIFIEDTIME);
+	                }
+	            	CellTableColumnsRow row = new CellTableColumnsRow(CellTableColumns.DISK.COLUMN_SIZE);
+	            	row.setColumn(CellTableColumns.DISK.DISK_SERVICE_ID, ds_id);
+	            	row.setColumn(CellTableColumns.DISK.DISK_ID, disk_id);
+	            	row.setColumn(CellTableColumns.DISK.RESERVED_CHECKBOX, "");
+	            	row.setColumn(CellTableColumns.DISK.RESERVED_INDEX, index + 1);
+	            	row.setColumn(CellTableColumns.DISK.DISK_NAME, disk_name);
+	            	row.setColumn(CellTableColumns.DISK.SERVER_NAME, server_name);
+	            	row.setColumn(CellTableColumns.DISK.DISK_SERVICE_STATE, disk_state.toString());
+	            	row.setColumn(CellTableColumns.DISK.ACCOUNT_NAME, account_name);
+	            	row.setColumn(CellTableColumns.DISK.USER_NAME, user_name);
+	            	row.setColumn(CellTableColumns.DISK.DISK_SERVICE_DESC, ds_desc);
+	            	row.setColumn(CellTableColumns.DISK.DISK_TOTAL, disk_total);
+	            	row.setColumn(CellTableColumns.DISK.DISK_SERVICE_USED, ds_used);
+	            	row.setColumn(CellTableColumns.DISK.DISK_SERVICE_STARTTIME, ds_starttime);
+	            	row.setColumn(CellTableColumns.DISK.DISK_SERVICE_ENDTIME, ds_endtime);
+	            	row.setColumn(CellTableColumns.DISK.DISK_SERVICE_LIFE, ds_life);
+	            	row.setColumn(CellTableColumns.DISK.DISK_SERVICE_CREATIONTIME, ds_creationtime);
+	            	row.setColumn(CellTableColumns.DISK.DISK_SERVICE_MODIFIEDTIME, ds_modifiedtime);
+	            	row.setColumn(CellTableColumns.DISK.DISK_DESC, disk_desc);
+	            	row.setColumn(CellTableColumns.DISK.DISK_CREATIONTIME, disk_creationtime);
+	            	row.setColumn(CellTableColumns.DISK.DISK_MODIFIEDTIME, disk_modifiedtime);
+	                rows.add(new SearchResultRow(row.toList()));
+            	}
             }
-            final int col_life = CellTableColumns.DISK.DISK_SERVICE_LIFE;
-            if (range.getSortField() == col_life) {
-                final boolean isAscending = range.isAscending();
-                Collections.sort(rows, new Comparator<SearchResultRow>() {
-
-                    @Override
-                    public int compare(SearchResultRow arg0, SearchResultRow arg1) {
-                        String life0 = arg0.getField(col_life), life1 = arg1.getField(col_life);
-                        int result;
-                        if (life0.length() == 0) {
-                            result = life1.length() == 0 ? 0 : -1;
-                        }
-                        else {
-                            result = life1.length() == 0 ? 1 : Integer.parseInt(life0) - Integer.parseInt(life1);
-                        }
-                        if (!isAscending) {
-                            result = -result;
-                        }
-                        return result;
-                    }
-                    
-                });
-                int index = 1;
-                for (SearchResultRow row : rows) {
-                    row.setField(3, Integer.toString(index ++));
-                }
-            }
-            SearchResult result = new SearchResult(rows.size(), range, FIELDS_DESC);
-            int size = Math.min(range.getLength(), rows.size() - range.getStart());
-            int from = range.getStart(), to = range.getStart() + size;
-            if (from < to) {
-                result.setRows(rows.subList(from, to));
-            }
-            for (SearchResultRow row : result.getRows()) {
+            for (SearchResultRow row : rows) {
                 System.out.println(row);
             }
-            return result;
+            range.setLength(rows.size());
+            return new SearchResult(index, range, FIELDS_DESC, rows);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -299,11 +282,8 @@ public class DeviceDiskService {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
         }
-        if (ds_starttime == null || ds_endtime == null) {
+        if (ds_starttime == null || ds_endtime == null || DBData.calcLife(ds_endtime, ds_starttime) <= 0) {
             throw new EucalyptusServiceException(new ClientMessage("", "无效的服务日期"));
-        }
-        if (getLife(ds_starttime, ds_endtime) <= 0) {
-            throw new EucalyptusServiceException(new ClientMessage("", "无效的服务期限"));
         }
         if (ds_size <= 0) {
             throw new EucalyptusServiceException(new ClientMessage("", "无效的硬盘大小"));
@@ -390,7 +370,7 @@ public class DeviceDiskService {
             }
         }
         if (disk_total < total - reserved) {
-            throw new EucalyptusServiceException(new ClientMessage("", "无效的硬盘大小：已使用 " + (total - reserved)));
+            throw new EucalyptusServiceException(new ClientMessage("", "无效的硬盘大小：已使用 " + (total - reserved) / DISK_UNIT));
         }
         try {
             dbproc.modifyDisk(disk_id, disk_desc, disk_total - total);
@@ -406,11 +386,8 @@ public class DeviceDiskService {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
         }
-        if (ds_starttime == null || ds_endtime == null) {
+        if (ds_starttime == null || ds_endtime == null || DBData.calcLife(ds_endtime, ds_starttime) <= 0) {
             throw new EucalyptusServiceException(new ClientMessage("", "无效的服务日期"));
-        }
-        if (getLife(ds_starttime, ds_endtime) <= 0) {
-            throw new EucalyptusServiceException(new ClientMessage("", "无效的服务期限"));
         }
         if (ds_desc == null) {
             ds_desc = "";
@@ -590,6 +567,19 @@ class DeviceDiskDBProcWrapper {
         return sb;
     }
     
+    private DBStringBuilder appendServiceLife(DBStringBuilder sb, DBTableColumn start, DBTableColumn end, DBTableColumn alias) {
+		sb.append(" IF (");
+		sb.append("DATEDIFF(").append(end).append(", ").append(start).append(")");
+		sb.append(" < ");
+		sb.append("DATEDIFF(").append(end).append(", now())");
+		sb.append(", ");
+		sb.append("DATEDIFF(").append(end).append(", ").append(start).append(")");
+		sb.append(", ");
+		sb.append("DATEDIFF(").append(end).append(", now())");
+		sb.append(") AS ").append(alias);
+		return sb;
+	}
+    
     public ResultSetWrapper lookupDiskByDate(DiskState disk_state, Date dateBegin, Date dateEnd, DBTableColumn sort, boolean isAscending, int account_id, int user_id) throws Exception {
         DBTableAccount ACCOUNT = DBTable.ACCOUNT;
         DBTableUser USER = DBTable.USER;
@@ -597,7 +587,8 @@ class DeviceDiskDBProcWrapper {
         DBTableDisk DISK = DBTable.DISK;
         DBTableDiskService DISK_SERVICE = DBTable.DISK_SERVICE;
         DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ").append(DISK.ANY).append(", ").append(DISK_SERVICE.ANY).append(", ").append(SERVER.SERVER_NAME).append(", ").append(ACCOUNT.ACCOUNT_NAME).append(", ").append(USER.USER_NAME).append(" FROM ");
+        sb.append("SELECT ").append(DISK.ANY).append(", ").append(DISK_SERVICE.ANY).append(", ").append(SERVER.SERVER_NAME).append(", ").append(ACCOUNT.ACCOUNT_NAME).append(", ").append(USER.USER_NAME).append(", ");
+		appendServiceLife(sb, DISK_SERVICE.DISK_SERVICE_STARTTIME, DISK_SERVICE.DISK_SERVICE_ENDTIME, DISK_SERVICE.DISK_SERVICE_LIFE).append(" FROM ");
         sb.append(DISK_SERVICE).append(" LEFT JOIN ").append(USER).append(" ON ").append(DISK_SERVICE.USER_ID).append(" = ").append(USER.USER_ID);
         sb.append(" LEFT JOIN ").append(ACCOUNT).append(" ON ").append(USER.ACCOUNT_ID).append(" = ").append(ACCOUNT.ACCOUNT_ID);
         sb.append(" LEFT JOIN ").append(DISK).append(" ON ").append(DISK_SERVICE.DISK_ID).append(" = ").append(DISK.DISK_ID);
@@ -606,24 +597,25 @@ class DeviceDiskDBProcWrapper {
         if (disk_state != null) {
             sb.append(" AND ").append(DISK_SERVICE.DISK_SERVICE_STATE).append(" = ").append(disk_state.getValue());
         }
-        if (user_id != 0) {
+        if (user_id >= 0) {
             sb.append(" AND ").append(USER.USER_ID).append(" = ").append(user_id);
         }
-        if (account_id != 0) {
+        if (account_id >= 0) {
             sb.append(" AND ").append(ACCOUNT.ACCOUNT_ID).append(" = ").append(account_id);
         }
         if (dateBegin != null || dateEnd != null) {
             sb.append(" AND (");
-            appendBoundedDate(sb, DISK.DISK_CREATIONTIME, dateBegin, dateEnd).append(" OR ");
-            appendBoundedDate(sb, DISK.DISK_MODIFIEDTIME, dateBegin, dateEnd).append(" OR ");
-            appendBoundedDate(sb, DISK_SERVICE.DISK_SERVICE_CREATIONTIME, dateBegin, dateEnd).append(" OR ");
-            appendBoundedDate(sb, DISK_SERVICE.DISK_SERVICE_MODIFIEDTIME, dateBegin, dateEnd).append(" OR ");
             appendBoundedDate(sb, DISK_SERVICE.DISK_SERVICE_STARTTIME, dateBegin, dateEnd).append(" OR ");
             appendBoundedDate(sb, DISK_SERVICE.DISK_SERVICE_ENDTIME, dateBegin, dateEnd);
             sb.append(")");
         }
         if (sort != null) {
-            sb.append(" ORDER BY ").append(sort).append(isAscending ? " ASC" : " DESC");
+        	if (sort.belongsTo(ACCOUNT) || sort.belongsTo(USER)) {
+				sb.append(" ORDER BY ").append(sort.getName()).append(isAscending ? " ASC" : " DESC");
+			}
+			else {
+				sb.append(" ORDER BY ").append(sort).append(isAscending ? " ASC" : " DESC");
+			}
         }
         return doQuery(sb.toString());
     }
@@ -651,7 +643,6 @@ class DeviceDiskDBProcWrapper {
         DBTableServer SERVER = DBTable.SERVER;
         DBTableDisk DISK = DBTable.DISK;
         DBTableDiskService DISK_SERVICE = DBTable.DISK_SERVICE;
-        
         DBStringBuilder sb = new DBStringBuilder();
         sb.append("INSERT INTO ").append(DISK).append(" (");
         sb.append(DISK.DISK_NAME).append(", ");
@@ -689,6 +680,8 @@ class DeviceDiskDBProcWrapper {
         sb.append("(SELECT MAX(").append(DISK.DISK_ID).append(") FROM ").append(DISK).append(" WHERE 1=1)").append(", ");
         sb.appendNull().append(")");
         doUpdate(sb.toString());
+        
+        doCleanup();
     }
     
     public void createDiskService(String ds_desc, long ds_used, Date ds_starttime, Date ds_endtime, int disk_id, String account_name, String user_name) throws Exception {

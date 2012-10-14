@@ -3,8 +3,6 @@ package com.eucalyptus.webui.server.device;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -27,6 +25,7 @@ import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.shared.resource.device.CPUInfo;
 import com.eucalyptus.webui.shared.resource.device.CPUServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
+import com.eucalyptus.webui.shared.resource.device.CellTableColumns.CellTableColumnsRow;
 import com.eucalyptus.webui.shared.resource.device.status.CPUState;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
@@ -55,35 +54,23 @@ public class DeviceCPUService {
             new SearchResultFieldDesc(null, "0%",false),
             new SearchResultFieldDesc(null, "0%",false),
             new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
-            new SearchResultFieldDesc(false, "8%", new ClientMessage("", "序号"),
+            new SearchResultFieldDesc(false, "3EM", new ClientMessage("", "序号"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "名称"),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "CPU名称"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(false, "8%", new ClientMessage("", "描述"),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "所属服务器"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "服务状态"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "账户名称"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "用户名称"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(false, "0%", new ClientMessage("", "服务描述"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("", "总数量"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "此项大小"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),                    
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "服务器"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "厂家"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "型号"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "主频(GHz)"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "缓存(MB)"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "创建时间"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "修改时间"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "账户"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "用户"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(false, "8%", new ClientMessage("", "描述"),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "占用数量"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("", "开始时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
@@ -91,40 +78,47 @@ public class DeviceCPUService {
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("", "剩余(天)"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "状态"),
+            new SearchResultFieldDesc(true, "0%", new ClientMessage("", "添加时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "创建时间"),
+            new SearchResultFieldDesc(true, "0%", new ClientMessage("", "修改时间"),
+            		TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(false, "0%", new ClientMessage("", "硬件描述"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("", "修改时间"),
-            		TableDisplay.MANDATORY, Type.TEXT, false, false));
+            new SearchResultFieldDesc(true, "0%", new ClientMessage("", "生产厂家"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "0%", new ClientMessage("", "产品型号"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "0%", new ClientMessage("", "主频(GHz)"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "0%", new ClientMessage("", "缓存(MB)"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "0%", new ClientMessage("", "硬件添加时间"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "0%", new ClientMessage("", "硬件修改时间"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false));
     
     private DBTableColumn getSortColumn(SearchRange range) {
         switch (range.getSortField()) {
+        case CellTableColumns.CPU.ACCOUNT_NAME: return DBTable.ACCOUNT.ACCOUNT_NAME;
+        case CellTableColumns.CPU.USER_NAME: return DBTable.USER.USER_NAME;
+        case CellTableColumns.CPU.SERVER_NAME: return DBTable.SERVER.SERVER_NAME;
         case CellTableColumns.CPU.CPU_NAME: return DBTable.CPU.CPU_NAME;
         case CellTableColumns.CPU.CPU_TOTAL: return DBTable.CPU.CPU_TOTAL;
         case CellTableColumns.CPU.CPU_SERVICE_USED: return DBTable.CPU_SERVICE.CPU_SERVICE_USED;
-        case CellTableColumns.CPU.SERVER_NAME: return DBTable.SERVER.SERVER_NAME;
         case CellTableColumns.CPU.CPU_VENDOR: return DBTable.CPU.CPU_VENDOR;
         case CellTableColumns.CPU.CPU_MODEL: return DBTable.CPU.CPU_MODEL;
         case CellTableColumns.CPU.CPU_GHZ: return DBTable.CPU.CPU_GHZ;
         case CellTableColumns.CPU.CPU_CACHE: return DBTable.CPU.CPU_CACHE;
         case CellTableColumns.CPU.CPU_CREATIONTIME: return DBTable.CPU.CPU_CREATIONTIME;
         case CellTableColumns.CPU.CPU_MODIFIEDTIME: return DBTable.CPU.CPU_MODIFIEDTIME;
-        case CellTableColumns.CPU.ACCOUNT_NAME: return DBTable.ACCOUNT.ACCOUNT_NAME;
-        case CellTableColumns.CPU.USER_NAME: return DBTable.USER.USER_NAME;
         case CellTableColumns.CPU.CPU_SERVICE_STARTTIME: return DBTable.CPU_SERVICE.CPU_SERVICE_STARTTIME;
         case CellTableColumns.CPU.CPU_SERVICE_ENDTIME: return DBTable.CPU_SERVICE.CPU_SERVICE_ENDTIME;
+        case CellTableColumns.CPU.CPU_SERVICE_LIFE: return DBTable.CPU_SERVICE.CPU_SERVICE_LIFE;
         case CellTableColumns.CPU.CPU_SERVICE_STATE: return DBTable.CPU_SERVICE.CPU_SERVICE_STATE;
         case CellTableColumns.CPU.CPU_SERVICE_CREATIONTIME: return DBTable.CPU_SERVICE.CPU_SERVICE_CREATIONTIME;
         case CellTableColumns.CPU.CPU_SERVICE_MODIFIEDTIME: return DBTable.CPU_SERVICE.CPU_SERVICE_MODIFIEDTIME;
         }
         return null;
-    }
-    
-    private int getLife(Date starttime, Date endtime) {
-    	final long div = 1000L * 24 * 3600;
-    	long start = starttime.getTime() / div, end = endtime.getTime() / div;
-    	return start <= end ? (int)(end - start) + 1 : 0;
     }
     
     public synchronized SearchResult lookupCPUByDate(Session session, SearchRange range, CPUState cpu_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
@@ -147,84 +141,77 @@ public class DeviceCPUService {
             DBTableServer SERVER = DBTable.SERVER;
             DBTableCPU CPU = DBTable.CPU;
             DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-            Date today = new Date();
-            for (int index = 1; rs.next(); index ++) {
-            	int cpu_id = DBData.getInt(rs, CPU.CPU_ID);
-            	int cs_id = DBData.getInt(rs, CPU_SERVICE.CPU_SERVICE_ID);
-            	String cpu_name = DBData.getString(rs, CPU.CPU_NAME);
-            	String cpu_desc = DBData.getString(rs, CPU.CPU_DESC);
-            	int cpu_total = DBData.getInt(rs, CPU.CPU_TOTAL);
-            	String server_name = DBData.getString(rs, SERVER.SERVER_NAME);
-            	String cpu_vendor = DBData.getString(rs, CPU.CPU_VENDOR);
-            	String cpu_model = DBData.getString(rs, CPU.CPU_MODEL);
-            	double cpu_ghz = DBData.getDouble(rs, CPU.CPU_GHZ);
-            	double cpu_cache = DBData.getDouble(rs, CPU.CPU_CACHE);
-            	Date cpu_creationtime = DBData.getDate(rs, CPU.CPU_CREATIONTIME);
-            	Date cpu_modifiedtime = DBData.getDate(rs, CPU.CPU_MODIFIEDTIME);
-            	cpu_state = CPUState.getCPUState(DBData.getInt(rs, CPU_SERVICE.CPU_SERVICE_STATE));
-            	String account_name = null;
-            	String user_name = null;
-            	String cs_desc = null;
-            	int cs_used = DBData.getInt(rs, CPU_SERVICE.CPU_SERVICE_USED);
-            	Date cs_starttime = null;
-            	Date cs_endtime = null;
-            	String cs_life = null;
-            	Date cs_creationtime = null;
-            	Date cs_modifiedtime = null;
-            	if (cpu_state != CPUState.RESERVED) {
-            		account_name = DBData.getString(rs, ACCOUNT.ACCOUNT_NAME.getName());
-            		user_name = DBData.getString(rs, USER.USER_NAME.getName());
-            		cs_desc = DBData.getString(rs, CPU_SERVICE.CPU_SERVICE_DESC);
-            		cs_starttime = DBData.getDate(rs, CPU_SERVICE.CPU_SERVICE_STARTTIME);
-            		cs_endtime = DBData.getDate(rs, CPU_SERVICE.CPU_SERVICE_ENDTIME);
-            		cs_life = Integer.toString(Math.min(getLife(cs_starttime, cs_endtime), getLife(today, cs_endtime)));
-            		cs_creationtime = DBData.getDate(rs, CPU_SERVICE.CPU_SERVICE_CREATIONTIME);
-            		cs_modifiedtime = DBData.getDate(rs, CPU_SERVICE.CPU_SERVICE_MODIFIEDTIME);
+            int index, start = range.getStart(), end = start + range.getLength();
+            for (index = 0; rs.next(); index ++) {
+            	if (start <= index && index < end) {
+	            	int cpu_id = DBData.getInt(rs, CPU.CPU_ID);
+	            	int cs_id = DBData.getInt(rs, CPU_SERVICE.CPU_SERVICE_ID);
+	            	String cpu_name = DBData.getString(rs, CPU.CPU_NAME);
+	            	String cpu_desc = DBData.getString(rs, CPU.CPU_DESC);
+	            	int cpu_total = DBData.getInt(rs, CPU.CPU_TOTAL);
+	            	String server_name = DBData.getString(rs, SERVER.SERVER_NAME);
+	            	String cpu_vendor = DBData.getString(rs, CPU.CPU_VENDOR);
+	            	String cpu_model = DBData.getString(rs, CPU.CPU_MODEL);
+	            	double cpu_ghz = DBData.getDouble(rs, CPU.CPU_GHZ);
+	            	double cpu_cache = DBData.getDouble(rs, CPU.CPU_CACHE);
+	            	Date cpu_creationtime = DBData.getDate(rs, CPU.CPU_CREATIONTIME);
+	            	Date cpu_modifiedtime = DBData.getDate(rs, CPU.CPU_MODIFIEDTIME);
+	            	cpu_state = CPUState.getCPUState(DBData.getInt(rs, CPU_SERVICE.CPU_SERVICE_STATE));
+	            	String account_name = null;
+	            	String user_name = null;
+	            	String cs_desc = null;
+	            	int cs_used = DBData.getInt(rs, CPU_SERVICE.CPU_SERVICE_USED);
+	            	Date cs_starttime = null;
+	            	Date cs_endtime = null;
+	            	String cs_life = null;
+	            	Date cs_creationtime = null;
+	            	Date cs_modifiedtime = null;
+	            	if (cpu_state != CPUState.RESERVED) {
+	            		account_name = DBData.getString(rs, ACCOUNT.ACCOUNT_NAME.getName());
+	            		user_name = DBData.getString(rs, USER.USER_NAME.getName());
+	            		cs_desc = DBData.getString(rs, CPU_SERVICE.CPU_SERVICE_DESC);
+	            		cs_starttime = DBData.getDate(rs, CPU_SERVICE.CPU_SERVICE_STARTTIME);
+	            		cs_endtime = DBData.getDate(rs, CPU_SERVICE.CPU_SERVICE_ENDTIME);
+	            		cs_life = DBData.getString(rs, CPU_SERVICE.CPU_SERVICE_LIFE);
+	            		if (cs_life != null) {
+	            			cs_life = Integer.toString(Math.max(0, Integer.parseInt(cs_life) + 1));
+	            		}
+	            		cs_creationtime = DBData.getDate(rs, CPU_SERVICE.CPU_SERVICE_CREATIONTIME);
+	            		cs_modifiedtime = DBData.getDate(rs, CPU_SERVICE.CPU_SERVICE_MODIFIEDTIME);
+	            	}
+	            	CellTableColumnsRow row = new CellTableColumnsRow(CellTableColumns.CPU.COLUMN_SIZE);
+	            	row.setColumn(CellTableColumns.CPU.CPU_SERVICE_ID, cs_id);
+	            	row.setColumn(CellTableColumns.CPU.CPU_ID, cpu_id);
+	            	row.setColumn(CellTableColumns.CPU.RESERVED_CHECKBOX, "");
+	            	row.setColumn(CellTableColumns.CPU.RESERVED_INDEX, index + 1);
+	            	row.setColumn(CellTableColumns.CPU.CPU_NAME, cpu_name);
+	            	row.setColumn(CellTableColumns.CPU.SERVER_NAME, server_name);
+	            	row.setColumn(CellTableColumns.CPU.CPU_SERVICE_STATE, cpu_state.toString());
+	            	row.setColumn(CellTableColumns.CPU.ACCOUNT_NAME, account_name);
+	            	row.setColumn(CellTableColumns.CPU.USER_NAME, user_name);
+	            	row.setColumn(CellTableColumns.CPU.CPU_SERVICE_DESC, cs_desc);
+	            	row.setColumn(CellTableColumns.CPU.CPU_TOTAL, cpu_total);
+	            	row.setColumn(CellTableColumns.CPU.CPU_SERVICE_USED, cs_used);
+	            	row.setColumn(CellTableColumns.CPU.CPU_SERVICE_STARTTIME, cs_starttime);
+	            	row.setColumn(CellTableColumns.CPU.CPU_SERVICE_ENDTIME, cs_endtime);
+	            	row.setColumn(CellTableColumns.CPU.CPU_SERVICE_LIFE, cs_life);
+	            	row.setColumn(CellTableColumns.CPU.CPU_SERVICE_CREATIONTIME, cs_creationtime);
+	            	row.setColumn(CellTableColumns.CPU.CPU_SERVICE_MODIFIEDTIME, cs_modifiedtime);
+	            	row.setColumn(CellTableColumns.CPU.CPU_DESC, cpu_desc);
+	            	row.setColumn(CellTableColumns.CPU.CPU_VENDOR, cpu_vendor);
+	            	row.setColumn(CellTableColumns.CPU.CPU_MODEL, cpu_model);
+	            	row.setColumn(CellTableColumns.CPU.CPU_GHZ, cpu_ghz);
+	            	row.setColumn(CellTableColumns.CPU.CPU_CACHE, cpu_cache);
+	            	row.setColumn(CellTableColumns.CPU.CPU_CREATIONTIME, cpu_creationtime);
+	            	row.setColumn(CellTableColumns.CPU.CPU_MODIFIEDTIME, cpu_modifiedtime);
+	                rows.add(new SearchResultRow(row.toList()));
             	}
-            	List<String> list = Arrays.asList(Integer.toString(cs_id), Integer.toString(cpu_id), "", Integer.toString(index),
-            			cpu_name, cpu_desc, Integer.toString(cpu_total), Integer.toString(cs_used), server_name, cpu_vendor, cpu_model, Double.toString(cpu_ghz), Double.toString(cpu_cache),
-            			DBData.format(cpu_creationtime), DBData.format(cpu_modifiedtime), account_name, user_name, cs_desc,
-            			DBData.format(cs_starttime), DBData.format(cs_endtime), cs_life, cpu_state.toString(),
-            			DBData.format(cs_creationtime), DBData.format(cs_modifiedtime));
-                rows.add(new SearchResultRow(list));
             }
-            final int col_life = CellTableColumns.CPU.CPU_SERVICE_LIFE;
-            if (range.getSortField() == col_life) {
-                final boolean isAscending = range.isAscending();
-                Collections.sort(rows, new Comparator<SearchResultRow>() {
-
-                    @Override
-                    public int compare(SearchResultRow arg0, SearchResultRow arg1) {
-                        String life0 = arg0.getField(col_life), life1 = arg1.getField(col_life);
-                        int result;
-                        if (life0.length() == 0) {
-                            result = life1.length() == 0 ? 0 : -1;
-                        }
-                        else {
-                            result = life1.length() == 0 ? 1 : Integer.parseInt(life0) - Integer.parseInt(life1);
-                        }
-                        if (!isAscending) {
-                            result = -result;
-                        }
-                        return result;
-                    }
-                    
-                });
-                int index = 1;
-                for (SearchResultRow row : rows) {
-                    row.setField(3, Integer.toString(index ++));
-                }
-            }
-            SearchResult result = new SearchResult(rows.size(), range, FIELDS_DESC);
-            int size = Math.min(range.getLength(), rows.size() - range.getStart());
-            int from = range.getStart(), to = range.getStart() + size;
-            if (from < to) {
-                result.setRows(rows.subList(from, to));
-            }
-            for (SearchResultRow row : result.getRows()) {
+            for (SearchResultRow row : rows) {
                 System.out.println(row);
             }
-            return result;
+            range.setLength(rows.size());
+            return new SearchResult(index, range, FIELDS_DESC, rows);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -319,11 +306,8 @@ public class DeviceCPUService {
     	if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
         }
-    	if (cs_starttime == null || cs_endtime == null) {
+    	if (cs_starttime == null || cs_endtime == null || DBData.calcLife(cs_endtime, cs_starttime) <= 0) {
     		throw new EucalyptusServiceException(new ClientMessage("", "无效的服务日期"));
-    	}
-    	if (getLife(cs_starttime, cs_endtime) <= 0) {
-    		throw new EucalyptusServiceException(new ClientMessage("", "无效的服务期限"));
     	}
     	if (cs_size <= 0) {
     		throw new EucalyptusServiceException(new ClientMessage("", "无效的CPU数量"));
@@ -431,11 +415,8 @@ public class DeviceCPUService {
     	if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(new ClientMessage("", "权限不足 操作无效"));
         }
-       	if (cs_starttime == null || cs_endtime == null) {
+    	if (cs_starttime == null || cs_endtime == null || DBData.calcLife(cs_endtime, cs_starttime) <= 0) {
     		throw new EucalyptusServiceException(new ClientMessage("", "无效的服务日期"));
-    	}
-    	if (getLife(cs_starttime, cs_endtime) <= 0) {
-    		throw new EucalyptusServiceException(new ClientMessage("", "无效的服务期限"));
     	}
     	if (cs_desc == null) {
     		cs_desc = "";
@@ -619,6 +600,19 @@ class DeviceCPUDBProcWrapper {
         return sb;
     }
 	
+	private DBStringBuilder appendServiceLife(DBStringBuilder sb, DBTableColumn start, DBTableColumn end, DBTableColumn alias) {
+		sb.append(" IF (");
+		sb.append("DATEDIFF(").append(end).append(", ").append(start).append(")");
+		sb.append(" < ");
+		sb.append("DATEDIFF(").append(end).append(", now())");
+		sb.append(", ");
+		sb.append("DATEDIFF(").append(end).append(", ").append(start).append(")");
+		sb.append(", ");
+		sb.append("DATEDIFF(").append(end).append(", now())");
+		sb.append(") AS ").append(alias);
+		return sb;
+	}
+	
 	public ResultSetWrapper lookupCPUByDate(CPUState cpu_state, Date dateBegin, Date dateEnd, DBTableColumn sort, boolean isAscending, int account_id, int user_id) throws Exception {
 		DBTableAccount ACCOUNT = DBTable.ACCOUNT;
 		DBTableUser USER = DBTable.USER;
@@ -626,7 +620,8 @@ class DeviceCPUDBProcWrapper {
 		DBTableCPU CPU = DBTable.CPU;
 		DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
 		DBStringBuilder sb = new DBStringBuilder();
-		sb.append("SELECT ").append(CPU.ANY).append(", ").append(CPU_SERVICE.ANY).append(", ").append(SERVER.SERVER_NAME).append(", ").append(ACCOUNT.ACCOUNT_NAME).append(", ").append(USER.USER_NAME).append(" FROM ");
+		sb.append("SELECT ").append(CPU.ANY).append(", ").append(CPU_SERVICE.ANY).append(", ").append(SERVER.SERVER_NAME).append(", ").append(ACCOUNT.ACCOUNT_NAME).append(", ").append(USER.USER_NAME).append(", ");
+		appendServiceLife(sb, CPU_SERVICE.CPU_SERVICE_STARTTIME, CPU_SERVICE.CPU_SERVICE_ENDTIME, CPU_SERVICE.CPU_SERVICE_LIFE).append(" FROM "); 
 		sb.append(CPU_SERVICE).append(" LEFT JOIN ").append(USER).append(" ON ").append(CPU_SERVICE.USER_ID).append(" = ").append(USER.USER_ID);
 		sb.append(" LEFT JOIN ").append(ACCOUNT).append(" ON ").append(USER.ACCOUNT_ID).append(" = ").append(ACCOUNT.ACCOUNT_ID);
 		sb.append(" LEFT JOIN ").append(CPU).append(" ON ").append(CPU_SERVICE.CPU_ID).append(" = ").append(CPU.CPU_ID);
@@ -643,10 +638,6 @@ class DeviceCPUDBProcWrapper {
 		}
 		if (dateBegin != null || dateEnd != null) {
 			sb.append(" AND (");
-			appendBoundedDate(sb, CPU.CPU_CREATIONTIME, dateBegin, dateEnd).append(" OR ");
-			appendBoundedDate(sb, CPU.CPU_MODIFIEDTIME, dateBegin, dateEnd).append(" OR ");
-			appendBoundedDate(sb, CPU_SERVICE.CPU_SERVICE_CREATIONTIME, dateBegin, dateEnd).append(" OR ");
-			appendBoundedDate(sb, CPU_SERVICE.CPU_SERVICE_MODIFIEDTIME, dateBegin, dateEnd).append(" OR ");
 			appendBoundedDate(sb, CPU_SERVICE.CPU_SERVICE_STARTTIME, dateBegin, dateEnd).append(" OR ");
 			appendBoundedDate(sb, CPU_SERVICE.CPU_SERVICE_ENDTIME, dateBegin, dateEnd);
 			sb.append(")");

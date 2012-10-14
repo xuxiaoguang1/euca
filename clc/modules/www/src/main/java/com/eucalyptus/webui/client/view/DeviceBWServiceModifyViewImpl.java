@@ -2,6 +2,7 @@ package com.eucalyptus.webui.client.view;
 
 import java.util.Date;
 
+import com.eucalyptus.webui.client.activity.device.DeviceDate;
 import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -28,7 +29,7 @@ public class DeviceBWServiceModifyViewImpl extends DialogBox implements DeviceBW
 	@UiField IntegerBox bwMax;
 	@UiField DeviceDateBox dateBegin;
 	@UiField DeviceDateBox dateEnd;
-	@UiField IntegerBox dateLife;
+	@UiField TextBox dateLife;
 	
 	private DevicePopupPanel popup = new DevicePopupPanel();
 		
@@ -73,16 +74,8 @@ public class DeviceBWServiceModifyViewImpl extends DialogBox implements DeviceBW
 		return getInputText(bwDesc);
 	}
 	
-	private String getBWMax() {
-		return getInputText(bwMax);
-	}
-	
-	private String getInputText(IntegerBox textbox) {
-		String text = textbox.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
+	private int getBWMax() {
+		return bwMax.getValue();
 	}
 	
 	private String getInputText(TextArea textarea) {
@@ -93,24 +86,24 @@ public class DeviceBWServiceModifyViewImpl extends DialogBox implements DeviceBW
 		return text;
 	}
 	
-    private int getLife(Date starttime, Date endtime) {
-    	final long div = 1000L * 24 * 3600;
-    	long start = starttime.getTime() / div, end = endtime.getTime() / div;
-    	return start <= end ? (int)(end - start) + 1 : 0;
-    }
+	private boolean isEmpty(String s) {
+	    return s == null || s.length() == 0;
+	}
 	
 	public void updateDateLife() {
 		dateLife.setText("");
 		try {
-			Date starttime = DeviceDateBox.parse(dateBegin.getText());
-			Date endtime = DeviceDateBox.parse(dateEnd.getText());
-			int days1 = getLife(starttime, endtime);
-			int days2 = getLife(new Date(), endtime);
-			if (days1 < days2) {
-				dateLife.setText(Integer.toString(days1));
-			}
-			else {
-				dateLife.setText(Integer.toString(days1) + "/" + Integer.toString(days2));
+			if (!isEmpty(dateBegin.getText()) && !isEmpty(dateEnd.getText())) {
+				int life = DeviceDate.calcLife(dateEnd.getText(), dateBegin.getText());
+				if (life > 0) {
+					int real = Math.max(0, Math.min(life, DeviceDate.calcLife(dateEnd.getText(), DeviceDate.today())));
+					if (real != life) {
+						dateLife.setText(Integer.toString(real) + "/" + Integer.toString(life));
+					}
+					else {
+						dateLife.setText(Integer.toString(life));
+					}
+				}
 			}
 		}
 		catch (Exception e) {
@@ -127,22 +120,22 @@ public class DeviceBWServiceModifyViewImpl extends DialogBox implements DeviceBW
 	private int bs_id;
 	
 	@Override
-	public void popup(int bs_id, String ip_addr, String bs_desc, String bs_bw_max, String bs_starttime, String bs_endtime, String account_name, String user_name) {
+	public void popup(int bs_id, String ip_addr, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, String account_name, String user_name) {
 		this.bs_id = bs_id;
-		ipAddr.setText(ip_addr);
-		bwDesc.setText(bs_desc);
-		bwMax.setText(bs_bw_max);
-		dateBegin.getTextBox().setText(bs_starttime);
-		dateEnd.getTextBox().setText(bs_endtime);
-		accountName.setText(account_name);
-		userName.setText(user_name);
+		ipAddr.setValue(ip_addr);
+		bwDesc.setValue(bs_desc);
+		bwMax.setValue(bs_bw_max);
+		dateBegin.setValue(bs_starttime);
+		dateEnd.setValue(bs_endtime);
+		accountName.setValue(account_name);
+		userName.setValue(user_name);
 		updateDateLife();
 		show();
     }
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(bs_id, getBWDesc(), getBWMax(), dateBegin.getText(), dateEnd.getText())) {
+		if (presenter.onOK(bs_id, getBWDesc(), getBWMax(), dateBegin.getValue(), dateEnd.getValue())) {
 			hide();
 		}
 	}

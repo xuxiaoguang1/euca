@@ -6,7 +6,7 @@ public class ClientMessage implements Serializable {
 	
 	private static final long serialVersionUID = 6866391034179714369L;
 	
-	private static int LAN_SELECT = 1;
+	private transient static int LAN_SELECT = 1;
 	
 	private String[] text;
 	

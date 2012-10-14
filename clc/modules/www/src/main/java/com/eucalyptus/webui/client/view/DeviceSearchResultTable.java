@@ -12,18 +12,14 @@ import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.google.gwt.cell.client.AbstractCell;
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style.Cursor;
-import com.google.gwt.dom.client.Style.Position;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.dom.client.TableSectionElement;
@@ -115,8 +111,18 @@ public class DeviceSearchResultTable extends Composite {
 	
 	private static final int DEFAULT_PAGESIZE = 10;
 	private static final int MIN_WIDTH = 40;
+	private static final int MIN_TITLE_WIDTH = 80;
 	
 	private Map<Integer, ResizableHeader> resizableHeaders = new HashMap<Integer, ResizableHeader>();
+	
+	public static boolean isVisible(String width) {
+		if (width != null) {
+			if (!width.equals("0") && !width.equals("0px") && !width.equals("0%") && !width.equals("0EM")) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	public DeviceSearchResultTable(ArrayList<SearchResultFieldDesc> descs, final SelectionModel<SearchResultRow> selection) {
 	    CellTable.Resources resources = GWT.create(TableResources.class);
@@ -130,7 +136,8 @@ public class DeviceSearchResultTable extends Composite {
 				continue;
 			}
 			SearchResultFieldDesc.Type type = desc.getType();
-			if (type == SearchResultFieldDesc.Type.BOOLEAN) {
+            ResizableHeader header = new ResizableHeader(desc.getTitle(), index, isVisible(desc.getWidth()));
+            if (type == SearchResultFieldDesc.Type.BOOLEAN) {
 				Column<SearchResultRow, Boolean> column = new Column<SearchResultRow, Boolean>(new CheckboxCell(false, true)) {
 					
 					@Override
@@ -150,10 +157,10 @@ public class DeviceSearchResultTable extends Composite {
 					}
 					
 				});
-				column.setSortable(false);
                 column.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-				cellTable.addColumn(column, desc.getTitle());
-				cellTable.setColumnWidth(column, desc.getWidth());
+				column.setSortable(false);
+                cellTable.addColumn(column, header);
+                cellTable.setColumnWidth(column, desc.getWidth());
 			}
 			else {
 				Column<SearchResultRow, String> column = new TextColumn<SearchResultRow> () {
@@ -169,10 +176,9 @@ public class DeviceSearchResultTable extends Composite {
 					
 				};
 				column.setSortable(desc.getSortable());
-				ResizableHeader header = new ResizableHeader(desc.getTitle(), column, !isEmpty(desc.getWidth()));
 				cellTable.addColumn(column, header);
 				cellTable.setColumnWidth(column, desc.getWidth());
-				resizableHeaders.put(i, header);
+				resizableHeaders.put(index, header);
 			}
 			tableColIdx.add(i);
 		}
@@ -227,26 +233,54 @@ public class DeviceSearchResultTable extends Composite {
 			
 		});
 		
+		updateCellTableMinWidth();
+		
 		SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
-		pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
+		pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true) {
+			
+			@Override
+			public void previousPage() {
+				setPage(getPage() - 1);
+			}
+			
+			@Override
+			public void nextPage() {
+				setPage(getPage() + 1);
+			}
+			
+			@Override
+			public void firstPage() {
+				setPageStart(0);
+			}
+			
+			@Override
+			public void lastPage() {
+				lastPageStart();
+			}
+			
+		};
 		pager.setDisplay(cellTable);
 		
 		initWidget(uiBinder.createAndBindUi(this));
-		
-		updateCellTableMinWidth();
 	}
 	
-	private void resizeColumn(ResizableHeader header) {
-	    List<String> values = new LinkedList<String>();
-	    Column<SearchResultRow, String> column = header.getColumn();
-	    for (SearchResultRow row : cellTable.getVisibleItems()) {
-            SafeHtmlBuilder sb = new SafeHtmlBuilder();
-            Cell<String> cell = column.getCell();
-            cell.render(null, column.getValue(row), sb);
-            values.add(sb.toSafeHtml().asString());
-        }
-	    double width = Math.max(TextMeasure.getMaxTextWidth(values), header.getTitleWidth());
-	    cellTable.setColumnWidth(column, Math.max(MIN_WIDTH, width) + "px");
+	private void updateCellTableMinWidth() {
+	    int counts = 0;
+	    for (Map.Entry<Integer, ResizableHeader> entry : resizableHeaders.entrySet()) {
+	        if (entry.getValue().isVisible()) {
+	            counts ++;
+            }
+	    }
+	    int minWidth = (counts + 1) * MIN_TITLE_WIDTH;
+	    cellTable.getElement().getStyle().setProperty("minWidth", minWidth + "px");
+    }
+	
+	public void setVisible(int column, boolean visible) {
+	    ResizableHeader header = resizableHeaders.get(column);
+	    if (header != null && header.isVisible() != visible) {
+	        header.setVisible(visible);
+	        updateCellTableMinWidth();
+	    }
 	}
 	
     private class ResizableHeaderCell extends AbstractCell<String> {
@@ -264,17 +298,17 @@ public class DeviceSearchResultTable extends Composite {
     
 	private class ResizableHeader extends Header<String> {
 	    
-	    private Column<SearchResultRow, String> column;
-	    private boolean visiable;
 	    private String title = "";
+	    private int column;
+	    private boolean visible;
 	    
-	    public ResizableHeader(String title, Column<SearchResultRow, String> column, boolean visiable) {
+	    public ResizableHeader(String title, int column, boolean visible) {
 	        super(new ResizableHeaderCell());
 	        if (title != null) {
 	            this.title = title;
 	        }
 	        this.column = column;
-	        this.visiable = visiable;
+	        this.visible = visible;
 	    }
 	    
 	    @Override
@@ -282,33 +316,41 @@ public class DeviceSearchResultTable extends Composite {
 	        return title;
 	    }
 	    
-	    public double getTitleWidth() {
-	        SafeHtmlBuilder sb = new SafeHtmlBuilder();
-            getCell().render(null, getValue(), sb);
-            return TextMeasure.getTextWidth(sb.toSafeHtml().asString());
+	    public String getInnerHTML() {
+	        NodeList<TableCellElement> headers = cellTable.getHeadElement().getRows().getItem(0).getCells();
+	        return headers.getItem(column).getInnerHTML();
 	    }
 	    
-	    public boolean isVisiable() {
-	        return visiable;
+	    public boolean isVisible() {
+	        return visible;
 	    }
 	    
-	    public void setVisiable(boolean visiable) {
-	        this.visiable = visiable;
-	    }
-	    
-	    public Column<SearchResultRow, String> getColumn() {
-	        return column;
+	    public void setVisible(boolean visible) {
+	        if (this.visible != visible) {
+                this.visible = visible;
+                resize();
+	        }
 	    }
 	    
 	    public void resize() {
-	        resizeColumn(this);
+	        int width = 0;
+	        if (visible) {
+	            List<String> htmls = new LinkedList<String>();
+                htmls.add(getInnerHTML());
+                int i = 0;
+                TableRowElement row;
+                while (i < cellTable.getVisibleItemCount() && (row = cellTable.getRowElement(i ++)) != null) {
+                    htmls.add(row.getCells().getItem(column).getInnerHTML());
+                }
+                width = Math.max(MIN_WIDTH, DeviceMeasure.getMaxHTMLWidth(htmls));
+	        }
+	        cellTable.setColumnWidth(cellTable.getColumn(column), width + "px");
 	    }
 	    
 	    @Override
 	    public void onBrowserEvent(Context context, final Element target, NativeEvent event) {
 	        String eventType = event.getType();
 	        if (eventType.equals("mousemove")) {
-	            final ResizableHeader header = this;
 	            new NativePreviewHandler() {
 	                
 	                private HandlerRegistration handler = Event.addNativePreviewHandler(this);
@@ -327,38 +369,17 @@ public class DeviceSearchResultTable extends Composite {
                         
                         String eventType = nativeEvent.getType();
                         int clientX = nativeEvent.getClientX();
-                        
-                        Element x = nativeEvent.getEventTarget().cast();
-                        
-                        // System.out.println("a" + target + " " + header + " " + getCell() + " " + title);
-                        // System.out.println("b" + x + " " + target.getAbsoluteLeft() + " " + nativeEvent.getClientX());
-                        SafeHtmlBuilder sb = new SafeHtmlBuilder();
-                        getCell().render(null, getValue(), sb);
-                        NodeList<TableCellElement> list = cellTable.getRowElement(0).getCells();
-                        for (int i = 0; i < list.getLength(); i ++) {
-                            System.out.println(list.getItem(i).getInnerHTML());
-                            System.out.println(list.getItem(i).getInnerText());
-                        }
-                        list = cellTable.getHeadElement().getRows().getItem(0).getCells();
-                        for (int i = 0; i < list.getLength(); i ++) {
-                            System.out.println(list.getItem(i).getInnerHTML());
-                            System.out.println(list.getItem(i).getInnerText());
-                        }
-                        System.out.println(target.getInnerHTML());
-                        System.out.println(target.getInnerText());
-                        
                         if (eventType.equals("mousemove") && mousedown) {
                             int absoluteLeft = target.getAbsoluteLeft();
-                            double width = Math.max(clientX - absoluteLeft, getTitleWidth());
-                            cellTable.setColumnWidth(column, Math.max(MIN_WIDTH, width) + "px");
+                            int width = Math.max(clientX - absoluteLeft, DeviceMeasure.getHTMLWidth(getInnerHTML()));
+                            cellTable.setColumnWidth(cellTable.getColumn(column), Math.max(MIN_WIDTH, width) + "px");
                             return;
                         }
                         
                         if (eventType.equals("mousemove") || eventType.equals("mousedown")) {
-                            // Element ele = nativeEvent.getEventTarget().cast();
                             int absoluteLeft = target.getAbsoluteLeft();
                             int offsetWidth = target.getOffsetWidth();
-                            if (absoluteLeft + offsetWidth - clientX < (double)Math.min(MIN_WIDTH, offsetWidth) / 2) { 
+                            if (absoluteLeft + offsetWidth - clientX < Math.min(MIN_WIDTH, offsetWidth) / 2) { 
                                 if (eventType.equals("mousedown")) {
                                     mousedown = true;
                                 }
@@ -391,20 +412,6 @@ public class DeviceSearchResultTable extends Composite {
 	        }
 	    }
 	    
-	}
-	
-	private void updateCellTableMinWidth() {
-	    int columns = 0;
-	    for (Map.Entry<Integer, ResizableHeader> entry : resizableHeaders.entrySet()) {
-	        if (entry.getValue().isVisiable()) {
-	            columns ++;
-	        }
-	    }
-	    cellTable.getElement().getStyle().setProperty("minWidth", MIN_WIDTH * (columns + 1) + "px");
-	}
-	
-	private boolean isEmpty(String s) {
-	    return s == null || s.length() == 0;
 	}
 		
 	public void setPageSize(int pageSize) {
@@ -459,37 +466,4 @@ public class DeviceSearchResultTable extends Composite {
 		cellTable.addDomHandler(handler, DoubleClickEvent.getType());
 	}
 		
-}
-
-class TextMeasure {
-    
-    public static double getTextWidth(String text) {
-        Document document = Document.get();
-        Element element = document.createElement("div");
-        element.getStyle().setPosition(Position.ABSOLUTE);
-        element.getStyle().setLeft(-1000, Unit.PX);
-        element.getStyle().setTop(-1000, Unit.PX);
-        document.getBody().appendChild(element);
-        element.setInnerHTML(text);
-        double width = element.getOffsetWidth();
-        document.getBody().removeChild(element);
-        return width;
-    }
-    
-    public static double getMaxTextWidth(List<String> list) {
-        Document document = Document.get();
-        Element element = document.createElement("div");
-        element.getStyle().setPosition(Position.ABSOLUTE);
-        element.getStyle().setLeft(-1000, Unit.PX);
-        element.getStyle().setTop(-1000, Unit.PX);
-        document.getBody().appendChild(element);
-        double width = 0;
-        for (String text : list) {
-            element.setInnerHTML(text);
-            width = Math.max(width, element.getOffsetWidth());
-        }
-        document.getBody().removeChild(element);
-        return width;
-    }
-    
 }
