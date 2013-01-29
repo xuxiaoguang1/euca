@@ -2,8 +2,8 @@ package com.eucalyptus.webui.shared.resource.device.status;
 
 import java.io.Serializable;
 
-import com.eucalyptus.webui.client.activity.device.ClientMessage;
 import com.eucalyptus.webui.shared.checker.InvalidValueException;
+import com.eucalyptus.webui.shared.message.ClientMessage;
 
 public class CPUState implements Serializable {
     

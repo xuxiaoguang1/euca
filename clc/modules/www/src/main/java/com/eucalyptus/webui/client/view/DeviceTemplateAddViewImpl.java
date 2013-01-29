@@ -1,5 +1,7 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -22,7 +24,7 @@ public class DeviceTemplateAddViewImpl extends DialogBox implements DeviceTempla
 	
 	@UiField TextBox templateName;
 	@UiField TextArea templateDesc;
-	@UiField TextBox templateCPU;
+	@UiField ListBox templateCPU;
 	@UiField ListBox templateNCPUs;
 	@UiField LongBox templateMem;
 	@UiField LongBox templateDisk;
@@ -55,16 +57,16 @@ public class DeviceTemplateAddViewImpl extends DialogBox implements DeviceTempla
 		return templateNCPUs.getSelectedIndex() + 1;
 	}
 	
-	private String getTemplateMem() {
-		return getInputText(templateMem);
+	private long getTemplateMem() {
+		return templateMem.getValue();
 	}
 	
-	private String getTemplateDisk() {
-		return getInputText(templateDisk);
+	private long getTemplateDisk() {
+		return templateDisk.getValue();
 	}
 	
-	private String getTemplateBW() {
-		return getInputText(templateBW);
+	private int getTemplateBW() {
+		return templateBW.getValue();
 	}
 	
 	private String getTemplateImage() {
@@ -79,20 +81,12 @@ public class DeviceTemplateAddViewImpl extends DialogBox implements DeviceTempla
 		return text;
 	}
 	
-	private String getInputText(LongBox textbox) {
-		String text = textbox.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
-	private String getInputText(IntegerBox textbox) {
-		String text = textbox.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
+	private String getInputText(ListBox textbox) {
+	    String text = textbox.getValue(textbox.getSelectedIndex());
+	    if (text == null) {
+	        return "";
+	    }
+	    return text;
 	}
 	
 	private String getInputText(TextArea textarea) {
@@ -112,14 +106,14 @@ public class DeviceTemplateAddViewImpl extends DialogBox implements DeviceTempla
 	
 	@Override
 	public void popup() {
-		templateName.setText("");
-		templateDesc.setText("");
-		templateCPU.setText("");
+		templateName.setValue("");
+		templateDesc.setValue("");
+		templateCPU.clear();
 		templateNCPUs.setSelectedIndex(0);
-		templateMem.setText("");;
-		templateDisk.setText("");;
-		templateBW.setText("");;
-		templateImage.setText("");;
+		templateMem.setValue(0L);;
+		templateDisk.setValue(0L);;
+		templateBW.setValue(0);;
+		templateImage.setValue("");;
 		show();
     }
 
@@ -133,6 +127,11 @@ public class DeviceTemplateAddViewImpl extends DialogBox implements DeviceTempla
 	@UiHandler("buttonCancel")
 	void handleButtonCancel(ClickEvent event) {
 		hide();
+	}
+	
+	@Override
+	public void setCPUNameList(List<String> cpu_name_list) {
+		
 	}
 	
 }

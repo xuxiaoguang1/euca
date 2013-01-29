@@ -2,8 +2,8 @@ package com.eucalyptus.webui.client.view;
 
 import java.util.Date;
 
-import com.eucalyptus.webui.client.activity.device.ClientMessage;
 import com.eucalyptus.webui.client.activity.device.DeviceDate;
+import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.HTML;
@@ -133,7 +133,7 @@ public class DeviceDateBox extends DateBox {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("<div>");
 	    sb.append("<font color='").append("black").append("'>");
-	    sb.append(new ClientMessage("", "无效的日期格式: "));
+	    sb.append(new ClientMessage("Invalid Date", "无效的日期格式")).append(": ");
 	    sb.append("</font>");
 	    sb.append("<font color='").append("red").append("'>");
 	    sb.append("'").append(dateBox.getText()).append("'");
@@ -141,12 +141,12 @@ public class DeviceDateBox extends DateBox {
 	    sb.append("</div>");
 	    sb.append("<div>");
 	    sb.append("<font color='").append("black").append("'>");
-	    sb.append(new ClientMessage("", "请输入有效格式")).append(": 'YYYY-MM-DD'");
+	    sb.append(new ClientMessage("Please Enter a valid Date", "请输入有效格式")).append(": 'YYYY-MM-DD'");
 	    sb.append("</font>");
 	    sb.append("<div>");
 	    sb.append("</div>");
 	    sb.append("<font color='").append("black").append("'>");
-	    sb.append(new ClientMessage("", "例如: '2012-07-01'"));
+	    sb.append(new ClientMessage("for example", "例如")).append(": '2012-07-01'");
 	    sb.append("</font>");
 	    sb.append("</div>");
 	    return new HTML(sb.toString());
@@ -156,7 +156,7 @@ public class DeviceDateBox extends DateBox {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("<div>");
 	    sb.append("<font color='").append("black").append("'>");
-	    sb.append(new ClientMessage("", "无效的日期: "));
+	    sb.append(new ClientMessage("Invalid Date", "无效的日期格式")).append(": ");
 	    sb.append("</font>");
 	    sb.append("</div>");
 	    sb.append("<div>");

@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
 
-import com.eucalyptus.webui.client.activity.device.ClientMessage;
 import com.eucalyptus.webui.client.activity.device.DevicePageSize;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
+import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
 import com.eucalyptus.webui.shared.resource.device.status.MemoryState;
 import com.google.gwt.core.client.GWT;
@@ -99,7 +99,7 @@ public class DeviceMemoryViewImpl extends Composite implements DeviceMemoryView 
                     updateDateButtonStatus();
                     int x = dateBox.getAbsoluteLeft();
                     int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
-                    popup.setHTML(x, y, "15EM", "3EM", DeviceDateBox.getDateErrorHTML(dateBox));
+                    popup.setHTML(x, y, "30EM", "3EM", DeviceDateBox.getDateErrorHTML(dateBox));
                 }
 
                 @Override
@@ -113,7 +113,7 @@ public class DeviceMemoryViewImpl extends Composite implements DeviceMemoryView 
                         Date date0 = dateBegin.getValue(), date1 = dateEnd.getValue();
                         if (date0 != null && date1 != null) {
                             if (date0.getTime() > date1.getTime()) {
-                                popup.setHTML(x, y, "12EM", "2EM", DeviceDateBox.getDateErrorHTML(dateBegin, dateEnd));
+                                popup.setHTML(x, y, "20EM", "2EM", DeviceDateBox.getDateErrorHTML(dateBegin, dateEnd));
                                 return;
                             }
                         }

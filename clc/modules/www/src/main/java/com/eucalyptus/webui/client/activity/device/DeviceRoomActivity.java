@@ -4,31 +4,26 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.ClientFactory;
-import com.eucalyptus.webui.client.activity.AbstractSearchActivity;
 import com.eucalyptus.webui.client.place.SearchPlace;
-import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
-import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.client.view.FooterView;
-import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.client.view.DeviceRoomAddView;
 import com.eucalyptus.webui.client.view.DeviceRoomAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceRoomModifyView;
 import com.eucalyptus.webui.client.view.DeviceRoomModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceRoomView;
-import com.eucalyptus.webui.client.view.HasValueWidget;
-import com.eucalyptus.webui.client.view.LogView;
+import com.eucalyptus.webui.shared.message.ClientMessage;
+import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
+import com.eucalyptus.webui.shared.resource.device.RoomInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class DeviceRoomActivity extends AbstractSearchActivity implements DeviceRoomView.Presenter {
+public class DeviceRoomActivity extends DeviceActivity implements DeviceRoomView.Presenter {
 	
 	private static final ClientMessage title = new ClientMessage("Room", "机房");
 	
@@ -40,6 +35,7 @@ public class DeviceRoomActivity extends AbstractSearchActivity implements Device
 	
 	public DeviceRoomActivity(SearchPlace place, ClientFactory clientFactory) {
 		super(place, clientFactory);
+		super.pageSize = DevicePageSize.getPageSize();
 	}
 	
 	private DeviceRoomView getView() {
@@ -54,76 +50,20 @@ public class DeviceRoomActivity extends AbstractSearchActivity implements Device
 		return view;
 	}
 	
-	private EucalyptusServiceAsync getBackendService() {
-		return clientFactory.getBackendService();
-	}
-
-	private FooterView getFooterView() {
-		return clientFactory.getShellView().getFooterView();
-	}
-
-	private LogView getLogView() {
-		return clientFactory.getShellView().getLogView();
-	}
-
-	private Session getSession() {
-		return clientFactory.getLocalSession().getSession();
-	}
-	
-	private final static int ROOM_ID = 0;
-	private final static int ROOM_NAME = 3;
-	private final static int ROOM_DESC = 4;
-	
-	private boolean isEmpty(String s) {
-		return s == null || s.length() == 0;
-	}
-	
-	private void showStatus(ClientMessage msg) {
-		getFooterView().showStatus(StatusType.NONE, msg.toString(), FooterView.CLEAR_DELAY_SECOND * 3);
-		getLogView().log(LogType.INFO, msg.toString());
-	}
-	
-	private void onFrontendServiceFailure(Throwable caught) {
-		Window.alert(new ClientMessage("", "前端服务运行错误").toString());
-		getLogView().log(LogType.ERROR, caught.toString());
-	}
-	
-	private void onBackendServiceFailure(Throwable caught) {
-		if (caught instanceof EucalyptusServiceException) {
-			EucalyptusServiceException exception = (EucalyptusServiceException)caught;
-			ClientMessage msg = exception.getFrontendMessage();
-			if (msg == null) {
-				msg = new ClientMessage("Backend Service Failure", "后代服务运行错误");
-			}
-			Window.alert(msg.toString());
-			getLogView().log(LogType.ERROR, msg.toString() + " : " + caught.toString());
-		}
-		else {
-			getLogView().log(LogType.ERROR, caught.toString());
-		}
-	}
-	
-	@Override
-	public void saveValue(ArrayList<String> keys, ArrayList<HasValueWidget> values) {
-		/* do nothing */
-	}
-
 	@Override
 	protected void doSearch(String query, SearchRange range) {
 		getBackendService().lookupDeviceRoomByDate(getSession(), range, dateBegin, dateEnd, new AsyncCallback<SearchResult>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				if (caught instanceof EucalyptusServiceException) {
-					onBackendServiceFailure((EucalyptusServiceException)caught);
-				}
-				displayData(null);
-			}
+			    onBackendServiceFailure(caught);
+                displayData(null);
+            }
 
 			@Override
 			public void onSuccess(SearchResult result) {
-				showStatus(new ClientMessage("", "查询机房成功"));
-				displayData(result);
+                onBackendServiceFinished();
+                displayData(result);
 			}
 			
 		});
@@ -162,42 +102,40 @@ public class DeviceRoomActivity extends AbstractSearchActivity implements Device
 	@Override
 	public void onAdd() {
 		try {
-			if (Window.confirm(new ClientMessage("", "确认创建新机房").toString())) {
+		    if (Window.confirm(new ClientMessage("Create a new Room.", "确认创建新机房.").toString())) {
 				if (roomAddView == null) {
 					roomAddView = new DeviceRoomAddViewImpl();
 					roomAddView.setPresenter(new DeviceRoomAddView.Presenter() {
 						
 						@Override
-						public boolean onOK(String room_name, String room_desc, String area_name) {
-							if (isEmpty(room_name)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "机房名称非法")).append(" = '").append(room_name).append("' ");
-								sb.append(new ClientMessage("", "请重新选择机房"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							if (isEmpty(area_name)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "区域名称非法")).append(" = '").append(area_name).append("' ");
-								sb.append(new ClientMessage("", "请重新选择区域"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							getBackendService().addDeviceRoom(getSession(), room_name, room_desc, area_name, new AsyncCallback<Void>() {
+						public boolean onOK(String room_name, String room_desc, int area_id) {
+						    if (room_name == null || room_name.isEmpty()) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Room Name: ", "机房名称非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+						    if (area_id == -1) {
+						        StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Area Name.", "区域名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+						    }
+							getBackendService().createDeviceRoom(getSession(), room_name, room_desc, area_id, new AsyncCallback<Void>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
-									}
-									getView().clearSelection();
+								    onBackendServiceFailure(caught);
+                                    getView().clearSelection();
 								}
 
 								@Override
 								public void onSuccess(Void result) {
-									showStatus(new ClientMessage("", "添加机房成功"));
-									reloadCurrentRange();
-									getView().clearSelection();
+								    onBackendServiceFinished(new ClientMessage("Successfully create Room.", "机房添加成功."));
+                                    getView().clearSelection();
+                                    reloadCurrentRange();
 								}
 								
 							});
@@ -206,20 +144,18 @@ public class DeviceRoomActivity extends AbstractSearchActivity implements Device
 
 						@Override
 						public void lookupAreaNames() {
-							getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<List<String>>() {
+							getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<Map<String, Integer>>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
-									}
+								    onBackendServiceFailure(caught);
 								}
 
-								@Override
-								public void onSuccess(List<String> area_name_list) {
-									showStatus(new ClientMessage("", "获取区域列表成功"));
-									roomAddView.setAreaNameList(area_name_list);
-								}
+                                @Override
+                                public void onSuccess(Map<String, Integer> area_map) {
+                                    onBackendServiceFinished();
+                                    roomAddView.setAreaNames(area_map);
+                                }
 								
 							});
 						}
@@ -241,10 +177,7 @@ public class DeviceRoomActivity extends AbstractSearchActivity implements Device
 		try {
 			if (set != null && !set.isEmpty()) {
 				SearchResultRow row = new LinkedList<SearchResultRow>(set).getFirst();
-				if (Window.confirm(new ClientMessage("", "确认修改所选择的机房").toString())) {
-					int room_id = Integer.parseInt(row.getField(ROOM_ID));
-					String room_name = row.getField(ROOM_NAME);
-					String room_desc = row.getField(ROOM_DESC);
+				if (Window.confirm(new ClientMessage("Modify selected Room.", "确认修改所选择的机房.").toString())) {
 					if (roomModifyView == null) {
 						roomModifyView = new DeviceRoomModifyViewImpl();
 						roomModifyView.setPresenter(new DeviceRoomModifyView.Presenter() {
@@ -255,17 +188,15 @@ public class DeviceRoomActivity extends AbstractSearchActivity implements Device
 
 									@Override
 									public void onFailure(Throwable caught) {
-										if (caught instanceof EucalyptusServiceException) {
-											onBackendServiceFailure((EucalyptusServiceException)caught);
-										}
-										getView().clearSelection();
-									}
+									    onBackendServiceFailure(caught);
+                                        getView().clearSelection();
+                                    }
 
 									@Override
 									public void onSuccess(Void result) {
-										showStatus(new ClientMessage("", "修改机房成功"));
-										reloadCurrentRange();
-										getView().clearSelection();
+									    onBackendServiceFinished(new ClientMessage("Successfully modify selected Room.", "机房修改成功."));
+                                        reloadCurrentRange();
+                                        getView().clearSelection();
 									}
 									
 								});
@@ -274,7 +205,21 @@ public class DeviceRoomActivity extends AbstractSearchActivity implements Device
 							
 						});
 					}
-					roomModifyView.popup(room_id, room_name, room_desc);
+					int room_id = Integer.parseInt(row.getField(CellTableColumns.ROOM.ROOM_ID));
+					getBackendService().lookupDeviceRoomByID(getSession(), room_id, new AsyncCallback<RoomInfo>() {
+
+                        @Override
+                        public void onFailure(Throwable caught) {
+                            onBackendServiceFailure(caught);
+                            getView().clearSelection();
+                        }
+
+                        @Override
+                        public void onSuccess(RoomInfo info) {
+                            roomModifyView.popup(info.room_id, info.room_name, info.room_desc);
+                        }
+                        
+					});
 				}
 			}
 		}
@@ -289,28 +234,26 @@ public class DeviceRoomActivity extends AbstractSearchActivity implements Device
 		Set<SearchResultRow> set = getView().getSelectedSet();
 		try {
 			if (set != null && !set.isEmpty()) {
-				List<Integer> room_id_list = new ArrayList<Integer>();
+				List<Integer> room_ids = new ArrayList<Integer>();
 				for (SearchResultRow row : set) {
-					int room_id = Integer.parseInt(row.getField(ROOM_ID));
-					room_id_list.add(room_id);
+					int room_id = Integer.parseInt(row.getField(CellTableColumns.ROOM.ROOM_ID));
+					room_ids.add(room_id);
 				}
-				if (!room_id_list.isEmpty()) {
-					if (Window.confirm(new ClientMessage("", "确认删除所选择的机房").toString())) {
-						getBackendService().deleteDeviceRoom(getSession(), room_id_list, new AsyncCallback<Void>() {
+				if (!room_ids.isEmpty()) {
+				    if (Window.confirm(new ClientMessage("Delete selected Room(s).", "确认删除所选择的机房.").toString())) {
+						getBackendService().deleteDeviceRoom(getSession(), room_ids, new AsyncCallback<Void>() {
 		
 							@Override
 							public void onFailure(Throwable caught) {
-								if (caught instanceof EucalyptusServiceException) {
-									onBackendServiceFailure((EucalyptusServiceException)caught);
-								}
-								getView().clearSelection();
+							    onBackendServiceFailure(caught);
+                                getView().clearSelection();
 							}
 		
 							@Override
 							public void onSuccess(Void result) {
-								showStatus(new ClientMessage("", "删除机房成功"));
-								reloadCurrentRange();
-								getView().clearSelection();
+							    onBackendServiceFinished(new ClientMessage("Successfully delete selected Room(s).", "机房删除成功."));
+                                getView().clearSelection();
+                                reloadCurrentRange();
 							}
 							
 						});

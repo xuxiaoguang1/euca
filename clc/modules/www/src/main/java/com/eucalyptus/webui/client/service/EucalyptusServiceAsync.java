@@ -9,6 +9,10 @@ import java.util.Map;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.resource.VMImageType;
+import com.eucalyptus.webui.shared.resource.device.AreaInfo;
+import com.eucalyptus.webui.shared.resource.device.CabinetInfo;
+import com.eucalyptus.webui.shared.resource.device.RoomInfo;
+import com.eucalyptus.webui.shared.resource.device.ServerInfo;
 import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
 import com.eucalyptus.webui.shared.resource.device.status.CPUState;
 import com.eucalyptus.webui.shared.resource.device.status.DiskState;
@@ -163,34 +167,39 @@ public interface EucalyptusServiceAsync {
 	void getUserToken(Session session, AsyncCallback<String> callback);
 	
 
-    void lookupDeviceAccountNames(Session session, AsyncCallback<List<String>> callback);
-    void lookupDeviceUserNamesByAccountName(Session session, String account_name, AsyncCallback<List<String>> callback);
+    void lookupDeviceAccountNames(Session session, AsyncCallback<Map<Integer, String>> callback);
+    void lookupDeviceUserNamesByAccountName(Session session, String account_name,
+            AsyncCallback<Map<Integer, String>> callback);
 	
 	void lookupDeviceAreaByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
-	void addDeviceArea(Session session, String area_name, String area_desc, AsyncCallback<Void> callback);
+	void createDeviceArea(Session session, String area_name, String area_desc, AsyncCallback<Void> callback);
 	void modifyDeviceArea(Session session, int area_id, String area_desc, AsyncCallback<Void> callback);
 	void deleteDeviceArea(Session session, List<Integer> area_ids, AsyncCallback<Void> callback);
-	void lookupDeviceAreaNames(Session session, AsyncCallback<List<String>> callback);
+	void lookupDeviceAreaNames(Session session, AsyncCallback<Map<String, Integer>> callback);
+	void lookupDeviceAreaByID(Session session, int area_id, AsyncCallback<AreaInfo> callback);
 
 	void lookupDeviceRoomByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
-	void addDeviceRoom(Session session, String room_name, String room_desc, String area_name, AsyncCallback<Void> callback);
+	void createDeviceRoom(Session session, String room_name, String room_desc, int area_id, AsyncCallback<Void> callback);
 	void modifyDeviceRoom(Session session, int room_id, String room_desc, AsyncCallback<Void> callback);
 	void deleteDeviceRoom(Session session, List<Integer> room_ids, AsyncCallback<Void> callback);
-	void lookupDeviceRoomNamesByAreaName(Session session, String area_name, AsyncCallback<List<String>> callback);
+	void lookupDeviceRoomNamesByAreaID(Session session, int area_id, AsyncCallback<Map<String, Integer>> callback);
+	void lookupDeviceRoomByID(Session session, int room_id, AsyncCallback<RoomInfo> callback);
 	
 	void lookupDeviceCabinetByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
-	void addDeviceCabinet(Session session, String cabinet_name, String cabinet_desc, String room_name, AsyncCallback<Void> callback);
+	void createDeviceCabinet(Session session, String cabinet_name, String cabinet_desc, int room_id, AsyncCallback<Void> callback);
 	void modifyDeviceCabinet(Session session, int cabinet_id, String cabinet_desc, AsyncCallback<Void> callback);
 	void deleteDeviceCabinet(Session session, List<Integer> cabinet_ids, AsyncCallback<Void> callback);
-    void lookupCabinetNamesByRoomName(Session session, String room_name, AsyncCallback<List<String>> callback);
+    void lookupDeviceCabinetNamesByRoomID(Session session, int room_id, AsyncCallback<Map<String, Integer>> callback);
+    void lookupDeviceCabinetByID(Session session, int cabinet_id, AsyncCallback<CabinetInfo> callback);
     
     void lookupDeviceServerByDate(Session session, SearchRange range, ServerState server_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
     void lookupDeviceServerCounts(Session session, AsyncCallback<Map<Integer, Integer>> callback);
-    void addDeviceServer(Session session, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, String cabinet_name, AsyncCallback<Void> callback);
-    void modifyDeviceServer(Session session, int server_id, String server_desc, String server_ip, int server_bw, ServerState server_state, AsyncCallback<Void> callback);
+    void createDeviceServer(Session session, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, int cabinet_id, AsyncCallback<Void> callback);
+    void modifyDeviceServer(Session session, int server_id, String server_desc, String server_ip, int server_bw, AsyncCallback<Void> callback);
 	void modifyDeviceServerState(Session session, int server_id, ServerState server_state, AsyncCallback<Void> callback);
     void deleteDeviceServer(Session session, List<Integer> server_ids, AsyncCallback<Void> callback);
-    void lookupDeviceServerNamesByCabinetName(Session session, String cabinet_name, AsyncCallback<List<String>> callback);
+    void lookupDeviceServerNamesByCabinetID(Session session, int cabinet_id, AsyncCallback<Map<String, Integer>> callback);
+    void lookupDeviceServerByID(Session session, int server_id, AsyncCallback<ServerInfo> callback);
     
     void lookupDeviceCPUByDate(Session session, SearchRange range, CPUState cpu_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
     void lookupDeviceCPUCounts(Session session, AsyncCallback<Map<Integer, Integer>> callback);

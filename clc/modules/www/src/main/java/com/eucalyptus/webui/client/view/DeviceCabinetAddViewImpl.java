@@ -1,6 +1,10 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -27,6 +31,9 @@ public class DeviceCabinetAddViewImpl extends DialogBox implements DeviceCabinet
 	@UiField ListBox areaNameList;
 	@UiField ListBox roomNameList;
 	
+	private Map<String, Integer> areaMap = new HashMap<String, Integer>();
+	private Map<String, Integer> roomMap = new HashMap<String, Integer>();
+	
 	public DeviceCabinetAddViewImpl() {
 		super(false);
 		setWidget(uiBinder.createAndBindUi(this));
@@ -34,19 +41,15 @@ public class DeviceCabinetAddViewImpl extends DialogBox implements DeviceCabinet
 
 			@Override
 			public void onChange(ChangeEvent event) {
-				String area_name = getAreaName();
-				if (!isEmpty(area_name)) {
-					presenter.lookupRoomNamesByAreaName(area_name);
-				}
+			    int area_id = getAreaID();
+			    if (area_id != -1) {
+			        presenter.lookupRoomNamesByAreaID(area_id);
+			    }
 			}
 			
 		});
 		center();
 		hide();
-	}
-	
-	private boolean isEmpty(String s) {
-		return s == null || s.length() == 0;
 	}
 	
 	private DeviceCabinetAddView.Presenter presenter;
@@ -67,34 +70,41 @@ public class DeviceCabinetAddViewImpl extends DialogBox implements DeviceCabinet
 	}
 	
 	@Override
-	public void setAreaNameList(List<String> area_name_list) {
-		areaNameList.clear();
-		roomNameList.clear();
-		if (area_name_list != null && !area_name_list.isEmpty()) {
-			for (String area_name : area_name_list) {
-				areaNameList.addItem(area_name);
-			}
-			areaNameList.setSelectedIndex(0);
-			String area_name = getAreaName();
-			if (!isEmpty(area_name)) {
-				presenter.lookupRoomNamesByAreaName(getAreaName());
-			}
-		}
+	public void setAreaNames(Map<String, Integer> area_map) {
+	    areaNameList.clear();
+        roomNameList.clear();
+        areaMap.clear();
+        roomMap.clear();
+        if (area_map != null && !area_map.isEmpty()) {
+            List<String> list = new ArrayList<String>(area_map.keySet());
+            Collections.sort(list);
+            for (String area_name : list) {
+                areaNameList.addItem(area_name);
+            }
+            areaNameList.setSelectedIndex(0);
+            areaMap = area_map;
+            int area_id = getAreaID();
+            if (area_id != -1) {
+                presenter.lookupRoomNamesByAreaID(area_id);
+            }
+        }
 	}
 	
 	@Override
-	public void setRoomNameList(String area_name, List<String> room_name_list) {
-		if (getAreaName().equals(area_name)) {
-			roomNameList.clear();
-			if (room_name_list != null && !room_name_list.isEmpty()) {
-				if (!room_name_list.isEmpty()) {
-					for (String room_name : room_name_list) {
-						roomNameList.addItem(room_name);
-					}
-					roomNameList.setSelectedIndex(0);
-				}
-			}
-		}
+	public void setRoomNames(int area_id, Map<String, Integer> room_map) {
+	    if (getAreaID() == area_id) {
+	        roomNameList.clear();
+	        roomMap.clear();
+	        if (room_map != null && !room_map.isEmpty()) {
+	            List<String> list = new ArrayList<String>(room_map.keySet());
+	            Collections.sort(list);
+	            for (String room_name : list) {
+	                roomNameList.addItem(room_name);
+	            }
+	            roomNameList.setSelectedIndex(0);
+	            roomMap = room_map;
+	        }
+	    }
 	}
 	
 	private String getCabinetName() {
@@ -105,12 +115,23 @@ public class DeviceCabinetAddViewImpl extends DialogBox implements DeviceCabinet
 		return getInputText(cabinetDesc);
 	}
 	
-	private String getAreaName() {
-		return getSelectedText(areaNameList);
+	private int getID(Map<String, Integer> map, String name) {
+	    if (name == null || name.isEmpty()) {
+	        return -1;
+	    }
+	    Integer id = map.get(name);
+	    if (id == null) {
+	        return -1;
+	    }
+	    return id;
 	}
 	
-	private String getRoomName() {
-		return getSelectedText(roomNameList);
+	private int getAreaID() {
+	    return getID(areaMap, getSelectedText(areaNameList));
+	}
+	
+	private int getRoomID() {
+	    return getID(roomMap, getSelectedText(roomNameList));
 	}
 	
 	private String getInputText(TextBox textbox) {
@@ -139,7 +160,7 @@ public class DeviceCabinetAddViewImpl extends DialogBox implements DeviceCabinet
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(getCabinetName(), getCabinetDesc(), getRoomName())) {
+		if (presenter.onOK(getCabinetName(), getCabinetDesc(), getRoomID())) {
 			hide();
 		}
 	}

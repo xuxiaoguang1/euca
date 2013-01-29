@@ -3,19 +3,21 @@ package com.eucalyptus.webui.client.view;
 import java.util.Date;
 import java.util.Set;
 
-import com.eucalyptus.webui.client.activity.device.ClientMessage;
+import com.eucalyptus.webui.client.activity.device.DevicePageSize;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
@@ -35,6 +37,7 @@ public class DeviceCabinetViewImpl extends Composite implements DeviceCabinetVie
 	@UiField DeviceDateBox dateBegin;
 	@UiField DeviceDateBox dateEnd;
 	@UiField Anchor buttonClearDate;
+	@UiField ListBox pageSizeList;
 	
 	private Presenter presenter;
 	private MultiSelectionModel<SearchResultRow> selection;
@@ -43,6 +46,23 @@ public class DeviceCabinetViewImpl extends Composite implements DeviceCabinetVie
 	
 	public DeviceCabinetViewImpl() {
 		initWidget(uiBinder.createAndBindUi(this));
+		
+		for (String pageSize : DevicePageSize.getPageSizeList()) {
+            pageSizeList.addItem(pageSize);
+        }
+        pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
+        pageSizeList.addChangeHandler(new ChangeHandler() {
+
+            @Override
+            public void onChange(ChangeEvent event) {
+                DevicePageSize.setPageSizeSelectedIndex(pageSizeList.getSelectedIndex());
+                if (table != null) {
+                    table.setPageSize(DevicePageSize.getPageSize());
+                }
+            }
+            
+        });
+
 		selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
 		selection.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
 
@@ -65,7 +85,7 @@ public class DeviceCabinetViewImpl extends Composite implements DeviceCabinetVie
 					updateDateButtonStatus();
 					int x = dateBox.getAbsoluteLeft();
 		            int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
-					popup.setHTML(x, y, "15EM", "3EM", getDateErrorHTML(dateBox));
+					popup.setHTML(x, y, "30EM", "3EM", DeviceDateBox.getDateErrorHTML(dateBox));
 				}
 
 				@Override
@@ -79,7 +99,7 @@ public class DeviceCabinetViewImpl extends Composite implements DeviceCabinetVie
 	                	Date date0 = dateBegin.getValue(), date1 = dateEnd.getValue();
 	                	if (date0 != null && date1 != null) {
 	                		if (date0.getTime() > date1.getTime()) {
-	                			popup.setHTML(x, y, "12EM", "2EM", getDateErrorHTML(dateBegin, dateEnd));
+	                			popup.setHTML(x, y, "20EM", "2EM", DeviceDateBox.getDateErrorHTML(dateBegin, dateEnd));
 	                			return;
 	                		}
 	                	}
@@ -90,44 +110,6 @@ public class DeviceCabinetViewImpl extends Composite implements DeviceCabinetVie
 		}
 		
 		updateDateButtonStatus();
-	}
-	
-	private HTML getDateErrorHTML(DeviceDateBox dateBox) {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append("<div>");
-	    sb.append("<font color='").append("black").append("'>");
-	    sb.append(new ClientMessage("", "无效的日期格式: "));
-	    sb.append("</font>");
-	    sb.append("<font color='").append("red").append("'>");
-	    sb.append("'").append(dateBox.getText()).append("'");
-	    sb.append("</font>");
-	    sb.append("</div>");
-	    sb.append("<div>");
-	    sb.append("<font color='").append("black").append("'>");
-	    sb.append(new ClientMessage("", "请输入有效格式")).append(": 'YYYY-MM-DD'");
-	    sb.append("</font>");
-	    sb.append("<div>");
-	    sb.append("</div>");
-	    sb.append("<font color='").append("black").append("'>");
-	    sb.append(new ClientMessage("", "例如: '2012-07-01'"));
-	    sb.append("</font>");
-	    sb.append("</div>");
-	    return new HTML(sb.toString());
-	}
-	
-	private HTML getDateErrorHTML(DeviceDateBox box0, DeviceDateBox box1) {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append("<div>");
-	    sb.append("<font color='").append("black").append("'>");
-	    sb.append(new ClientMessage("", "无效的日期查询: "));
-	    sb.append("</font>");
-	    sb.append("</div>");
-	    sb.append("<div>");
-	    sb.append("<font color='").append("darkred").append("'>");
-	    sb.append("'").append(box0.getText()).append("' > '").append(box1.getText()).append("'");
-	    sb.append("</font>");
-	    sb.append("</div>");
-	    return new HTML(sb.toString());
 	}
 	
 	private void updateSearchResultButtonStatus() {
@@ -167,6 +149,10 @@ public class DeviceCabinetViewImpl extends Composite implements DeviceCabinetVie
 			resultPanel.add(table);
 		}
 		table.setData(result);
+		if (table.getPageSize() != DevicePageSize.getPageSize()) {
+            table.setPageSize(DevicePageSize.getPageSize());
+            pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
+        }
 	}
 	
 	@Override

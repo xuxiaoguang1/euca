@@ -1,6 +1,6 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -10,17 +10,17 @@ public interface DeviceCabinetAddView extends IsWidget {
 	
 	public void popup();
 	
-	public void setAreaNameList(List<String> area_name_list);
+	public void setAreaNames(Map<String, Integer> area_map);
 	
-	public void setRoomNameList(String area_name, List<String> room_name_list);
+	public void setRoomNames(int area_id, Map<String, Integer> room_map);
 	
 	public interface Presenter {
 		
-		public boolean onOK(String cabinet_name, String cabinet_desc, String room_name);
+		public boolean onOK(String cabinet_name, String cabinet_desc, int room_id);
 		
 		public void lookupAreaNames();
 		
-		public void lookupRoomNamesByAreaName(String area_name);
+		public void lookupRoomNamesByAreaID(int area_id);
 		
 	}
 

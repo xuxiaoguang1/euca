@@ -44,8 +44,10 @@ public class UserAppServiceProcImpl {
 		  long srvDuration = userApp.getSrvEndingTime().getTime() - userApp.getSrvStartingTime().getTime();
 		  try {
 			  //update device state by user application
-			  DeviceTemplateService.getInstance().actionTemplate(session, userApp.getUserId(), userApp.getTemplateId(), (int)srvDuration);
-			  
+			  // DeviceTemplateService.getInstance().actionTemplate(session, userApp.getUserId(), userApp.getTemplateId(), (int)srvDuration);
+		      System.err.println("not finish yet!!!");
+		      System.exit(0);
+		      
 			  userAppDBProc.addUserApp(userApp);
 		  }
 		  catch (UserAppSyncException e) {
@@ -126,7 +128,12 @@ public class UserAppServiceProcImpl {
 			  if (vit != null)
 				  euca_vit_id = vit.getEucaVITId();
 			  
-			  Template template = DeviceTemplateService.getInstance().lookupTemplateByID(session, templateId);
+			  System.err.println("not finish yet!!!");
+              System.exit(0);
+              
+              Template template = null;
+			  
+			  // Template template = DeviceTemplateService.getInstance().lookupTemplateByID(session, templateId);
 			  
 			  if (keyPair != null && securityGroup != null && euca_vit_id != null) {
 				  String euca_vi_key = EucaServiceWrapper.getInstance().runVM(session, template, keyPair, securityGroup, euca_vit_id);

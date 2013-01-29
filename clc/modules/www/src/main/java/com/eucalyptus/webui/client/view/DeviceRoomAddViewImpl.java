@@ -1,6 +1,10 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -23,6 +27,8 @@ public class DeviceRoomAddViewImpl extends DialogBox implements DeviceRoomAddVie
 	@UiField TextBox roomName;
 	@UiField TextArea roomDesc;
 	@UiField ListBox areaNameList;
+	
+	private Map<String, Integer> areaMap = new HashMap<String, Integer>();
 	
 	public DeviceRoomAddViewImpl() {
 		super(false);
@@ -47,15 +53,20 @@ public class DeviceRoomAddViewImpl extends DialogBox implements DeviceRoomAddVie
 		show();
 	}
 	
-	public void setAreaNameList(Collection<String> area_name_list) {
-		areaNameList.clear();
-		if (area_name_list != null && !area_name_list.isEmpty()) {
-			for (String area_name : area_name_list) {
-				areaNameList.addItem(area_name);
-			}
-			areaNameList.setSelectedIndex(0);
-		}
-	}
+    @Override
+    public void setAreaNames(Map<String, Integer> area_map) {
+        areaNameList.clear();
+        areaMap.clear();
+        if (area_map != null && !area_map.isEmpty()) {
+            List<String> list = new ArrayList<String>(area_map.keySet());
+            Collections.sort(list);
+            for (String area_name : list) {
+                areaNameList.addItem(area_name);
+            }
+            areaNameList.setSelectedIndex(0);
+            areaMap.putAll(area_map);
+        }
+    }
 	
 	private String getRoomName() {
 		return getInputText(roomName);
@@ -65,8 +76,16 @@ public class DeviceRoomAddViewImpl extends DialogBox implements DeviceRoomAddVie
 		return getInputText(roomDesc);
 	}
 	
-	private String getAreaName() {
-		return getSelectedText(areaNameList);
+	private int getAreaID() {
+	    String area_name = getSelectedText(areaNameList);
+	    if (area_name == null || area_name.isEmpty()) {
+	        return -1;
+	    }
+	    Integer id = areaMap.get(area_name);
+	    if (id == null) {
+	        return -1;
+	    }
+	    return id;
 	}
 	
 	private String getInputText(TextBox textbox) {
@@ -95,7 +114,7 @@ public class DeviceRoomAddViewImpl extends DialogBox implements DeviceRoomAddVie
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(getRoomName(), getRoomDesc(), getAreaName())) {
+		if (presenter.onOK(getRoomName(), getRoomDesc(), getAreaID())) {
 			hide();
 		}
 	}

@@ -4,31 +4,26 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.ClientFactory;
-import com.eucalyptus.webui.client.activity.AbstractSearchActivity;
 import com.eucalyptus.webui.client.place.SearchPlace;
-import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
-import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.client.view.FooterView;
-import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.client.view.DeviceCabinetAddView;
 import com.eucalyptus.webui.client.view.DeviceCabinetAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceCabinetModifyView;
 import com.eucalyptus.webui.client.view.DeviceCabinetModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceCabinetView;
-import com.eucalyptus.webui.client.view.HasValueWidget;
-import com.eucalyptus.webui.client.view.LogView;
+import com.eucalyptus.webui.shared.message.ClientMessage;
+import com.eucalyptus.webui.shared.resource.device.CabinetInfo;
+import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class DeviceCabinetActivity extends AbstractSearchActivity implements DeviceCabinetView.Presenter {
+public class DeviceCabinetActivity extends DeviceActivity implements DeviceCabinetView.Presenter {
 	
 	private static final ClientMessage title = new ClientMessage("Cabinet", "机柜");
 	
@@ -40,6 +35,7 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 	
 	public DeviceCabinetActivity(SearchPlace place, ClientFactory clientFactory) {
 		super(place, clientFactory);
+		super.pageSize = DevicePageSize.getPageSize();
 	}
 	
 	private DeviceCabinetView getView() {
@@ -54,76 +50,20 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 		return view;
 	}
 	
-	private EucalyptusServiceAsync getBackendService() {
-		return clientFactory.getBackendService();
-	}
-
-	private FooterView getFooterView() {
-		return clientFactory.getShellView().getFooterView();
-	}
-
-	private LogView getLogView() {
-		return clientFactory.getShellView().getLogView();
-	}
-
-	private Session getSession() {
-		return clientFactory.getLocalSession().getSession();
-	}
-	
-	private final static int CABINET_ID = 0;
-	private final static int CABINET_NAME = 3;
-	private final static int CABINET_DESC = 4;
-	
-	private boolean isEmpty(String s) {
-		return s == null || s.length() == 0;
-	}
-	
-	private void showStatus(ClientMessage msg) {
-		getFooterView().showStatus(StatusType.NONE, msg.toString(), FooterView.CLEAR_DELAY_SECOND * 3);
-		getLogView().log(LogType.INFO, msg.toString());
-	}
-	
-	private void onFrontendServiceFailure(Throwable caught) {
-		Window.alert(new ClientMessage("", "前端服务运行错误").toString());
-		getLogView().log(LogType.ERROR, caught.toString());
-	}
-	
-	private void onBackendServiceFailure(Throwable caught) {
-		if (caught instanceof EucalyptusServiceException) {
-			EucalyptusServiceException exception = (EucalyptusServiceException)caught;
-			ClientMessage msg = exception.getFrontendMessage();
-			if (msg == null) {
-				msg = new ClientMessage("Backend Service Failure", "后代服务运行错误");
-			}
-			Window.alert(msg.toString());
-			getLogView().log(LogType.ERROR, msg.toString() + " : " + caught.toString());
-		}
-		else {
-			getLogView().log(LogType.ERROR, caught.toString());
-		}
-	}
-	
-	@Override
-	public void saveValue(ArrayList<String> keys, ArrayList<HasValueWidget> values) {
-		/* do nothing */
-	}
-
 	@Override
 	protected void doSearch(String query, SearchRange range) {
 		getBackendService().lookupDeviceCabinetByDate(getSession(), range, dateBegin, dateEnd, new AsyncCallback<SearchResult>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				if (caught instanceof EucalyptusServiceException) {
-					onBackendServiceFailure((EucalyptusServiceException)caught);
-				}
-				displayData(null);
-			}
+			    onBackendServiceFailure(caught);
+                displayData(null);
+            }
 
 			@Override
 			public void onSuccess(SearchResult result) {
-				showStatus(new ClientMessage("", "查询机柜成功"));
-				displayData(result);
+			    onBackendServiceFinished();
+                displayData(result);
 			}
 			
 		});
@@ -162,42 +102,40 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 	@Override
 	public void onAdd() {
 		try {
-			if (Window.confirm(new ClientMessage("", "确认创建新机柜").toString())) {
+		    if (Window.confirm(new ClientMessage("Create a new Cabinet.", "确认创建新机柜.").toString())) {
 				if (cabinetAddView == null) {
 					cabinetAddView = new DeviceCabinetAddViewImpl();
 					cabinetAddView.setPresenter(new DeviceCabinetAddView.Presenter() {
 						
 						@Override
-						public boolean onOK(String cabinet_name, String cabinet_desc, String room_name) {
-							if (isEmpty(cabinet_name)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "机柜名称非法")).append(" = '").append(cabinet_name).append("' ");
-								sb.append(new ClientMessage("", "请重新选择机柜"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							if (isEmpty(room_name)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "机房名称非法")).append(" = '").append(room_name).append("' ");
-								sb.append(new ClientMessage("", "请重新选择机房"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							getBackendService().addDeviceCabinet(getSession(), cabinet_name, cabinet_desc, room_name, new AsyncCallback<Void>() {
+						public boolean onOK(String cabinet_name, String cabinet_desc, int room_id) {
+						    if (cabinet_name == null || cabinet_name.isEmpty()) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Cabinet Name: ", "机柜名称非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            if (room_id == -1) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Room Name.", "机房名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+							getBackendService().createDeviceCabinet(getSession(), cabinet_name, cabinet_desc, room_id, new AsyncCallback<Void>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
-									}
-									getView().clearSelection();
+								    onBackendServiceFailure(caught);
+                                    getView().clearSelection();
 								}
 
 								@Override
 								public void onSuccess(Void result) {
-									showStatus(new ClientMessage("", "添加机柜成功"));
-									reloadCurrentRange();
-									getView().clearSelection();
+								    onBackendServiceFinished(new ClientMessage("Successfully create Cabinet.", "机柜添加成功."));
+                                    getView().clearSelection();
+                                    reloadCurrentRange();
 								}
 								
 							});
@@ -206,46 +144,43 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 
 						@Override
 						public void lookupAreaNames() {
-							getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<List<String>>() {
+						    getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<Map<String, Integer>>() {
 
-								@Override
-								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
-									}
-								}
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    onBackendServiceFailure(caught);
+                                }
 
-								@Override
-								public void onSuccess(List<String> area_name_list) {
-									showStatus(new ClientMessage("", "获取区域列表成功"));
-									cabinetAddView.setAreaNameList(area_name_list);
-								}
-								
-							});
+                                @Override
+                                public void onSuccess(Map<String, Integer> area_map) {
+                                    onBackendServiceFinished();
+                                    cabinetAddView.setAreaNames(area_map);
+                                }
+                                
+                            });
 						}
 
 						@Override
-						public void lookupRoomNamesByAreaName(final String area_name) {
-							if (isEmpty(area_name)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "区域名称非法")).append(" = '").append(area_name).append("'");
-								Window.alert(sb.toString());
-							}
+						public void lookupRoomNamesByAreaID(final int area_id) {
+						    if (area_id == -1) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Area Name.", "区域名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                            }
 							else {
-								getBackendService().lookupDeviceRoomNamesByAreaName(getSession(), area_name, new AsyncCallback<List<String>>() {
+								getBackendService().lookupDeviceRoomNamesByAreaID(getSession(), area_id, new AsyncCallback<Map<String, Integer>>() {
 
 									@Override
 									public void onFailure(Throwable caught) {
-										if (caught instanceof EucalyptusServiceException) {
-											onBackendServiceFailure((EucalyptusServiceException)caught);
-										}
+									    onBackendServiceFailure(caught);
 									}
 
-									@Override
-									public void onSuccess(List<String> room_name_list) {
-										showStatus(new ClientMessage("", "获取机房列表成功"));
-										cabinetAddView.setRoomNameList(area_name, room_name_list);
-									}
+                                    @Override
+                                    public void onSuccess(Map<String, Integer> room_map) {
+                                        onBackendServiceFinished();
+                                        cabinetAddView.setRoomNames(area_id, room_map);
+                                    }
 									
 								});
 							}
@@ -268,10 +203,7 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 		try {
 			if (set != null && !set.isEmpty()) {
 				SearchResultRow row = new LinkedList<SearchResultRow>(set).getFirst();
-				if (Window.confirm(new ClientMessage("", "确认修改所选择的机柜").toString())) {
-					int cabinet_id = Integer.parseInt(row.getField(CABINET_ID));
-					String cabinet_name = row.getField(CABINET_NAME);
-					String cabinet_desc = row.getField(CABINET_DESC);
+				if (Window.confirm(new ClientMessage("Modify selected Cabinet.", "确认修改所选择的机柜.").toString())) {
 					if (cabinetModifyView == null) {
 						cabinetModifyView = new DeviceCabinetModifyViewImpl();
 						cabinetModifyView.setPresenter(new DeviceCabinetModifyView.Presenter() {
@@ -282,17 +214,15 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 
 									@Override
 									public void onFailure(Throwable caught) {
-										if (caught instanceof EucalyptusServiceException) {
-											onBackendServiceFailure((EucalyptusServiceException)caught);
-										}
-										getView().clearSelection();
+				                        onBackendServiceFailure(caught);
+                                        getView().clearSelection();
 									}
 
 									@Override
 									public void onSuccess(Void result) {
-										showStatus(new ClientMessage("", "修改机柜成功"));
-										reloadCurrentRange();
-										getView().clearSelection();
+									    onBackendServiceFinished(new ClientMessage("Successfully modify selected Cabinet.", "机柜修改成功."));
+                                        reloadCurrentRange();
+                                        getView().clearSelection();
 									}
 									
 								});
@@ -301,7 +231,21 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 							
 						});
 					}
-					cabinetModifyView.popup(cabinet_id, cabinet_name, cabinet_desc);
+					int cabinet_id = Integer.parseInt(row.getField(CellTableColumns.CABINET.CABINET_ID));
+					getBackendService().lookupDeviceCabinetByID(getSession(), cabinet_id, new AsyncCallback<CabinetInfo>() {
+
+                        @Override
+                        public void onFailure(Throwable caught) {
+                            onBackendServiceFailure(caught);
+                            getView().clearSelection();
+                        }
+
+                        @Override
+                        public void onSuccess(CabinetInfo info) {
+                            cabinetModifyView.popup(info.cabinet_id, info.cabinet_name, info.cabinet_desc);
+                        }
+                        
+					});
 				}
 			}
 		}
@@ -316,28 +260,26 @@ public class DeviceCabinetActivity extends AbstractSearchActivity implements Dev
 		Set<SearchResultRow> set = getView().getSelectedSet();
 		try {
 			if (set != null && !set.isEmpty()) {
-				List<Integer> cabinet_id_list = new ArrayList<Integer>();
+				List<Integer> cabinet_ids = new ArrayList<Integer>();
 				for (SearchResultRow row : set) {
-					int cabinet_id = Integer.parseInt(row.getField(CABINET_ID));
-					cabinet_id_list.add(cabinet_id);
+					int cabinet_id = Integer.parseInt(row.getField(CellTableColumns.CABINET.CABINET_ID));
+					cabinet_ids.add(cabinet_id);
 				}
-				if (!cabinet_id_list.isEmpty()) {
-					if (Window.confirm(new ClientMessage("", "确认删除所选择的机柜").toString())) {
-						getBackendService().deleteDeviceCabinet(getSession(), cabinet_id_list, new AsyncCallback<Void>() {
+				if (!cabinet_ids.isEmpty()) {
+				    if (Window.confirm(new ClientMessage("Delete selected Cabinet(s).", "确认删除所选择的机柜.").toString())) {
+						getBackendService().deleteDeviceCabinet(getSession(), cabinet_ids, new AsyncCallback<Void>() {
 		
 							@Override
 							public void onFailure(Throwable caught) {
-								if (caught instanceof EucalyptusServiceException) {
-									onBackendServiceFailure((EucalyptusServiceException)caught);
-								}
-								getView().clearSelection();
+							    onBackendServiceFailure(caught);
+                                getView().clearSelection();
 							}
 		
 							@Override
 							public void onSuccess(Void result) {
-								showStatus(new ClientMessage("", "删除机柜成功"));
-								reloadCurrentRange();
-								getView().clearSelection();
+							    onBackendServiceFinished(new ClientMessage("Successfully delete selected Cabinet(s).", "机柜删除成功."));
+                                getView().clearSelection();
+                                reloadCurrentRange();
 							}
 							
 						});

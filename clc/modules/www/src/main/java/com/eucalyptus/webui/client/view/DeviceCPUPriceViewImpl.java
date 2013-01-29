@@ -3,10 +3,10 @@ package com.eucalyptus.webui.client.view;
 import java.util.Date;
 import java.util.Set;
 
-import com.eucalyptus.webui.client.activity.device.ClientMessage;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
+import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -72,7 +72,7 @@ public class DeviceCPUPriceViewImpl extends Composite implements DeviceCPUPriceV
 					updateDateButtonStatus();
 					int x = dateBox.getAbsoluteLeft();
 		            int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
-					popup.setHTML(x, y, "15EM", "3EM", getDateErrorHTML(dateBox));
+					popup.setHTML(x, y, "30EM", "3EM", getDateErrorHTML(dateBox));
 				}
 
 				@Override
@@ -94,7 +94,7 @@ public class DeviceCPUPriceViewImpl extends Composite implements DeviceCPUPriceV
                     	Date date0 = box0.getValue(), date1 = box1.getValue();
                     	if (date0 != null && date1 != null) {
                     		if (date0.getTime() > date1.getTime()) {
-                    			popup.setHTML(x, y, "12EM", "2EM", getDateErrorHTML(box0, box1));
+                    			popup.setHTML(x, y, "20EM", "2EM", getDateErrorHTML(box0, box1));
                     			return;
                     		}
                     	}

@@ -15,6 +15,7 @@ public class RoomInfo implements Serializable {
     public int area_id;
     
     public RoomInfo() {
+        /* do nothing */
     }
     
     public RoomInfo(int room_id, String room_name, String room_desc, Date room_creationtime, Date room_modifiedtime, int area_id) {

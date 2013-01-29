@@ -8,6 +8,10 @@ import java.util.Map;
 
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.shared.resource.VMImageType;
+import com.eucalyptus.webui.shared.resource.device.AreaInfo;
+import com.eucalyptus.webui.shared.resource.device.CabinetInfo;
+import com.eucalyptus.webui.shared.resource.device.RoomInfo;
+import com.eucalyptus.webui.shared.resource.device.ServerInfo;
 import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
 import com.eucalyptus.webui.shared.resource.device.status.CPUState;
 import com.eucalyptus.webui.shared.resource.device.status.DiskState;
@@ -23,6 +27,7 @@ import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
 import com.eucalyptus.webui.shared.user.UserInfo;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -723,34 +728,38 @@ public interface EucalyptusService extends RemoteService {
 	public String getUserToken(Session session)
 			throws EucalyptusServiceException;
 	
-	List<String> lookupDeviceAccountNames(Session session) throws EucalyptusServiceException;
-	List<String> lookupDeviceUserNamesByAccountName(Session session, String account_name) throws EucalyptusServiceException;
+	Map<Integer, String> lookupDeviceAccountNames(Session session) throws EucalyptusServiceException;
+	Map<Integer, String> lookupDeviceUserNamesByAccountName(Session session, String account_name) throws EucalyptusServiceException;
 	
 	SearchResult lookupDeviceAreaByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException; 
 	void modifyDeviceArea(Session session, int area_id, String area_desc) throws EucalyptusServiceException;
 	void deleteDeviceArea(Session session, List<Integer> area_ids) throws EucalyptusServiceException;
-	void addDeviceArea(Session session, String area_name, String area_desc) throws EucalyptusServiceException;
-	List<String> lookupDeviceAreaNames(Session session) throws EucalyptusServiceException;
+	void createDeviceArea(Session session, String area_name, String area_desc) throws EucalyptusServiceException;
+	Map<String, Integer> lookupDeviceAreaNames(Session session) throws EucalyptusServiceException;
+	AreaInfo lookupDeviceAreaByID(Session session, int area_id) throws EucalyptusServiceException;
 	
 	SearchResult lookupDeviceRoomByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
-	void addDeviceRoom(Session session, String room_name, String room_desc, String area_name) throws EucalyptusServiceException;
+	void createDeviceRoom(Session session, String room_name, String room_desc, int area_id) throws EucalyptusServiceException;
 	void modifyDeviceRoom(Session session, int room_id, String room_desc) throws EucalyptusServiceException;
 	void deleteDeviceRoom(Session session, List<Integer> room_ids) throws EucalyptusServiceException;
-	List<String> lookupDeviceRoomNamesByAreaName(Session session, String area_name) throws EucalyptusServiceException;
+	Map<String, Integer> lookupDeviceRoomNamesByAreaID(Session session, int area_id) throws EucalyptusServiceException;
+	RoomInfo lookupDeviceRoomByID(Session session, int room_id) throws EucalyptusServiceException;
 	
 	SearchResult lookupDeviceCabinetByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
-	void addDeviceCabinet(Session session, String cabinet_name, String cabinet_desc, String room_name) throws EucalyptusServiceException;
+	void createDeviceCabinet(Session session, String cabinet_name, String cabinet_desc, int room_id) throws EucalyptusServiceException;
 	void modifyDeviceCabinet(Session session, int cabinet_id, String cabinet_desc) throws EucalyptusServiceException;
 	void deleteDeviceCabinet(Session session, List<Integer> cabinet_ids) throws EucalyptusServiceException;
-	List<String> lookupCabinetNamesByRoomName(Session session, String room_name) throws EucalyptusServiceException;
+	Map<String, Integer> lookupDeviceCabinetNamesByRoomID(Session session, int room_id) throws EucalyptusServiceException;
+	CabinetInfo lookupDeviceCabinetByID(Session session, int cabinet_id) throws EucalyptusServiceException;
 	
 	SearchResult lookupDeviceServerByDate(Session session, SearchRange range, ServerState server_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
 	Map<Integer, Integer> lookupDeviceServerCounts(Session session) throws EucalyptusServiceException;
-	void addDeviceServer(Session session, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, String cabinet_name) throws EucalyptusServiceException;
-	void modifyDeviceServer(Session session, int server_id, String server_desc, String server_ip, int server_bw, ServerState server_state) throws EucalyptusServiceException;
+	void createDeviceServer(Session session, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws EucalyptusServiceException;
+	void modifyDeviceServer(Session session, int server_id, String server_desc, String server_ip, int server_bw) throws EucalyptusServiceException;
 	void modifyDeviceServerState(Session session, int server_id, ServerState server_state) throws EucalyptusServiceException;
     void deleteDeviceServer(Session session, List<Integer> server_ids) throws EucalyptusServiceException;
-    List<String> lookupDeviceServerNamesByCabinetName(Session session, String cabinet_name) throws EucalyptusServiceException;
+    Map<String, Integer> lookupDeviceServerNamesByCabinetID(Session session, int cabinet_id) throws EucalyptusServiceException;
+    ServerInfo lookupDeviceServerByID(Session session, int server_id) throws EucalyptusServiceException;
     
     SearchResult lookupDeviceCPUByDate(Session session, SearchRange range, CPUState cpu_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
     Map<Integer, Integer> lookupDeviceCPUCounts(Session session) throws EucalyptusServiceException;

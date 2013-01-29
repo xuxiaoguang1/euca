@@ -3,7 +3,7 @@ package com.eucalyptus.webui.client.service;
 import java.io.Serializable;
 import java.util.List;
 
-import com.eucalyptus.webui.client.activity.device.ClientMessage;
+import com.eucalyptus.webui.shared.message.ClientMessage;
 
 public class SearchResultFieldDesc implements Serializable {
 	

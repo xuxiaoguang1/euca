@@ -8,6 +8,68 @@ import com.eucalyptus.webui.server.device.DBData;
 
 public class CellTableColumns {
     
+    public class AREA {
+        
+        public static final int AREA_ID = 0;
+        public static final int RESERVED_CHECKBOX = 1;
+        public static final int RESERVED_INDEX = 2;
+        public static final int AREA_NAME = 3;
+        public static final int AREA_DESC = 4;
+        public static final int AREA_CREATIONTIME = 5;
+        public static final int AREA_MODIFIEDTIME = 6;
+        
+        public static final int COLUMN_SIZE = 7;
+        
+    }
+    
+    public class ROOM {
+        
+        public static final int ROOM_ID = 0;
+        public static final int RESERVED_CHECKBOX = 1;
+        public static final int RESERVED_INDEX = 2;
+        public static final int ROOM_NAME = 3;
+        public static final int ROOM_DESC = 4;
+        public static final int AREA_NAME = 5;
+        public static final int ROOM_CREATIONTIME = 6;
+        public static final int ROOM_MODIFIEDTIME = 7;
+        
+        public static final int COLUMN_SIZE = 8;
+        
+    }
+    
+    public class CABINET {
+        
+        public static final int CABINET_ID = 0;
+        public static final int RESERVED_CHECKBOX = 1;
+        public static final int RESERVED_INDEX = 2;
+        public static final int CABINET_NAME = 3;
+        public static final int CABINET_DESC = 4;
+        public static final int ROOM_NAME = 5;
+        public static final int CABINET_CREATIONTIME = 6;
+        public static final int CABINET_MODIFIEDTIME = 7;
+        
+        public static final int COLUMN_SIZE = 8;
+        
+    }
+    
+    public class SERVER {
+        
+        public static final int SERVER_ID = 0;
+        public static final int RESERVED_CHECKBOX = 1;
+        public static final int RESERVED_INDEX = 2;
+        public static final int SERVER_NAME = 3;
+        public static final int SERVER_DESC = 4;
+        public static final int CABINET_NAME = 5;
+        public static final int SERVER_IP = 6;
+        public static final int SERVER_BW = 7;
+        public static final int SERVER_STATE = 8;
+        public static final int SERVER_CREATIONTIME = 9;
+        public static final int SERVER_MODIFIEDTIME = 10;
+        
+        public static final int COLUMN_SIZE = 11;
+        
+    }
+    
     public class CPU {
 
         public static final int CPU_SERVICE_ID = 0;
@@ -142,6 +204,8 @@ public class CellTableColumns {
     public class TEMPLATE {
     	
     	public static final int TEMPLATE_ID = 0;
+    	public static final int RESERVED_CHECKBOX = 1;
+        public static final int RESERVED_INDEX = 2;
     	public static final int TEMPLATE_NAME = 3;
     	public static final int TEMPLATE_DESC = 4;
     	public static final int TEMPLATE_CPU = 5;
@@ -153,6 +217,47 @@ public class CellTableColumns {
     	public static final int TEMPLATE_CREATIONTIME = 11;
     	public static final int TEMPLATE_MODIFIEDTIME = 12;
     	
+    	public static final int COLUMN_SIZE = 13;
+    	
+    }
+    
+    public class CPU_PRICE {
+        
+        public static final int CPU_PRICE_ID = 0;
+        public static final int RESERVED_CHECKBOX = 1;
+        public static final int RESERVED_INDEX = 2;
+        public static final int CPU_NAME = 3;
+        public static final int CPU_PRICE_DESC = 4;
+        public static final int CPU_PRICE = 5;
+        public static final int CPU_PRICE_CREATIONTIME = 6;
+        public static final int CPU_PRICE_MODIFIEDTIME = 7;
+        
+        public static final int COLUMN_SIZE = 8;
+        
+    }
+    
+    public class TEMPLATE_PRICE {
+    	
+    	public static final int TEMPLATE_PRICE_ID = 0;
+        public static final int RESERVED_CHECKBOX = 1;
+        public static final int RESERVED_INDEX = 2;
+        public static final int TEMPLATE_NAME = 3;
+        public static final int TEMPLATE_PRICE_DESC = 4;
+        public static final int TEMPLATE_PRICE_TOTAL = 5;
+        public static final int TEMPLATE_CPU_NAME = 6;
+        public static final int TEMPLATE_CPU_NCPUS = 7;
+        public static final int TEMPLATE_CPU_PRICE = 8; 
+        public static final int TEMPLATE_MEM_TOTAL = 9;
+        public static final int TEMPLATE_MEM_PRICE = 10;
+        public static final int TEMPLATE_DISK_TOTAL = 11;
+        public static final int TEMPLATE_DISK_PRICE = 12;
+        public static final int TEMPLATE_BW_TOTAL = 13;
+        public static final int TEMPLATE_BW_PRICE = 14;
+        public static final int TEMPLATE_PRICE_CREATIONTIME = 15;
+        public static final int TEMPLATE_PRICE_MODIFIEDTIME = 16;
+        
+        public static final int COLUMN_SIZE = 17;
+        
     }
     
     public static class CellTableColumnsRow {

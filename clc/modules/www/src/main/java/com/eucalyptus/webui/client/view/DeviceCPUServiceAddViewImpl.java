@@ -59,7 +59,7 @@ public class DeviceCPUServiceAddViewImpl extends DialogBox implements DeviceCPUS
 					updateDateLife();
 					int x = dateBox.getAbsoluteLeft();
 		            int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
-					popup.setHTML(x, y, "15EM", "3EM", DeviceDateBox.getDateErrorHTML(dateBox));
+					popup.setHTML(x, y, "30EM", "3EM", DeviceDateBox.getDateErrorHTML(dateBox));
 				}
 
 				@Override
@@ -73,7 +73,7 @@ public class DeviceCPUServiceAddViewImpl extends DialogBox implements DeviceCPUS
 	                	Date date0 = dateBegin.getValue(), date1 = dateEnd.getValue();
 	                	if (date0 != null && date1 != null) {
 	                		if (date0.getTime() > date1.getTime()) {
-	                			popup.setHTML(x, y, "12EM", "2EM", DeviceDateBox.getDateErrorHTML(dateBegin, dateEnd));
+	                			popup.setHTML(x, y, "20EM", "2EM", DeviceDateBox.getDateErrorHTML(dateBegin, dateEnd));
 	                			return;
 	                		}
 	                	}

@@ -21,4 +21,5 @@ public class ResultSetWrapper {
 	
 	private java.sql.Connection conn;
 	private ResultSet rs;
+	
 }

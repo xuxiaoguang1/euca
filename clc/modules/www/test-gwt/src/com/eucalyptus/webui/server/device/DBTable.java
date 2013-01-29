@@ -36,10 +36,6 @@ public class DBTable {
 	public static final DBTableOthersPrice OTHERS_PRICE = new DBTableOthersPrice();
 	public static final DBTableTemplatePrice TEMPLATE_PRICE = new DBTableTemplatePrice();
 	
-	public static DBTableAlias getDBTableAlias(String table) {
-	    return new DBTableAlias(table);
-	}
-	
 	public final DBTableColumn ANY = new DBTableColumn(this, "*"); 
 	
 }
@@ -61,31 +57,15 @@ class DBTableColumn {
 	@Override
 	public String toString() {
 		if (table == null) {
-			return getName();
+		    return name;
 		}
-		return table + "." + getName();
-	}
-	
-	public String getName() {
-		return name;
+		return table + "." + name;
 	}
 	
 	public boolean belongsTo(DBTable table) {
 		return this.table == table;
 	}
-				
-}
-
-class DBTableAlias extends DBTable {
-    
-    public DBTableAlias(String table) {
-        super(table);
-    }
-    
-    public DBTableColumn getColumn(DBTableColumn column) {
-        return new DBTableColumn(this, column.getName());
-    }
-    
+	
 }
 
 class DBTableAccount extends DBTable {

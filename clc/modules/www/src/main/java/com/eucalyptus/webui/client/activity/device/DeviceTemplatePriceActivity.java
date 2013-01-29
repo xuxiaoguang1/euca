@@ -25,6 +25,7 @@ import com.eucalyptus.webui.client.view.DeviceTemplatePriceModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceTemplatePriceView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.LogView;
+import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.eucalyptus.webui.shared.resource.Template;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;

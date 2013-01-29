@@ -1,8 +1,5 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.eucalyptus.webui.shared.resource.device.status.ServerState;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -11,7 +8,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.IntegerBox;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,10 +23,8 @@ public class DeviceServerModifyViewImpl extends DialogBox implements DeviceServe
 	@UiField TextArea serverDesc;
 	@UiField TextBox serverIP;
 	@UiField IntegerBox serverBW;
-	@UiField ListBox serverStateList;
+	@UiField TextBox serverState;
 	
-	private ServerState[] serverStateValue = new ServerState[]{ServerState.INUSE, ServerState.STOP, ServerState.ERROR};
-
 	public DeviceServerModifyViewImpl() {
 		super(false);
 		setWidget(uiBinder.createAndBindUi(this));
@@ -84,29 +78,19 @@ public class DeviceServerModifyViewImpl extends DialogBox implements DeviceServe
 	private int server_id;
 	
 	@Override
-	public void popup(int server_id, String server_name, String server_desc, String server_ip, String server_bw, ServerState server_state) {
+	public void popup(int server_id, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state) {
 		this.server_id = server_id;
 		serverName.setText(server_name);
 		serverDesc.setText(server_desc);
 		serverIP.setText(server_ip);
-		serverBW.setText(server_bw);
-		List<String> values = new LinkedList<String>();
-		for (int i = 0; i < serverStateValue.length; i ++) {
-			values.add(serverStateValue[i].toString());
-		}
-		setListBox(serverStateList, values);
-		for (int i = 0; i < serverStateValue.length; i ++) {
-			if (server_state == serverStateValue[i]) {
-				serverStateList.setSelectedIndex(i);
-			}
-		}
+		serverBW.setText(Integer.toString(server_bw));
+		serverState.setText(server_state == null ? "" : server_state.toString());
 		show();
 	}
 	
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(server_id, getServerDesc(), getServerIP(), getServerBW(),
-				serverStateValue[serverStateList.getSelectedIndex()])) {
+		if (presenter.onOK(server_id, getServerDesc(), getServerIP(), getServerBW())) {
 			hide();
 		}
 	}
@@ -116,14 +100,4 @@ public class DeviceServerModifyViewImpl extends DialogBox implements DeviceServe
 		hide();
 	}
 	
-    private void setListBox(ListBox listbox, List<String> values) {
-    	listbox.clear();
-    	if (values != null && !values.isEmpty()) {
-	    	for (String value : values) {
-	    		listbox.addItem(value);
-	    	}
-	    	listbox.setSelectedIndex(0);
-    	}
-    }
-    
 }

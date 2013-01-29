@@ -3,7 +3,7 @@ package com.eucalyptus.webui.client.view;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.eucalyptus.webui.client.activity.device.ClientMessage;
+import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;

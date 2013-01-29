@@ -20,6 +20,7 @@ public class ServerInfo implements Serializable {
 	public int cabinet_id;
 	
 	public ServerInfo() {
+	    /* do nothing */
 	}
 	
 	public ServerInfo(int server_id, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, Date server_creationtime, Date server_modifiedtime, int cabinet_id) {

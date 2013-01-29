@@ -105,7 +105,7 @@
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">状态</g:Anchor>
 					</g:at>
 					<g:at left="420" top="76">
-						<g:ListBox ui:field="serverStateList" height="1.8EM" width="11EM"/>
+						<g:TextBox ui:field="serverState" height="1.4EM" width="11EM" styleName="{style.textBoxStyle-readonly}" readOnly="true"/>
 					</g:at>
 					<g:at left="400" top="120" style="font-size:90%;">
 						<g:Anchor styleName="{global.buttonCss.button}"

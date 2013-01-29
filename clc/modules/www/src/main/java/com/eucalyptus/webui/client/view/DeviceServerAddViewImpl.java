@@ -1,7 +1,11 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import com.eucalyptus.webui.shared.resource.device.status.ServerState;
 import com.google.gwt.core.client.GWT;
@@ -34,6 +38,10 @@ public class DeviceServerAddViewImpl extends DialogBox implements DeviceServerAd
 	@UiField TextBox serverIP;
 	@UiField IntegerBox serverBW;
 	@UiField ListBox serverStateList;
+	
+	private Map<String, Integer> areaMap = new HashMap<String, Integer>();
+    private Map<String, Integer> roomMap = new HashMap<String, Integer>();
+    private Map<String, Integer> cabinetMap = new HashMap<String, Integer>();
 		
 	private ServerState[] serverStateValue = new ServerState[]{ServerState.INUSE, ServerState.STOP, ServerState.ERROR};
 
@@ -44,10 +52,10 @@ public class DeviceServerAddViewImpl extends DialogBox implements DeviceServerAd
 
 			@Override
 			public void onChange(ChangeEvent event) {
-				String area_name = getAreaName();
-				if (!isEmpty(area_name)) {
-					presenter.lookupRoomNamesByAreaName(area_name);
-				}
+			    int area_id = getAreaID();
+                if (area_id != -1) {
+                    presenter.lookupRoomNamesByAreaID(area_id);
+                }
 			}
 			
 		});
@@ -55,15 +63,78 @@ public class DeviceServerAddViewImpl extends DialogBox implements DeviceServerAd
 
             @Override
             public void onChange(ChangeEvent event) {
-                String room_name = getRoomName();
-                if (!isEmpty(room_name)) {
-                    presenter.lookupCabinetNamesByRoomName(room_name);
+                int room_id = getRoomID();
+                if (room_id != -1) {
+                    presenter.lookupCabinetNamesByRoomID(room_id);
                 }
             }
             
         });
 		center();
 		hide();
+	}
+	
+	@Override
+    public void setAreaNames(Map<String, Integer> area_map) {
+        areaNameList.clear();
+        roomNameList.clear();
+        cabinetNameList.clear();
+        areaMap.clear();
+        roomMap.clear();
+        cabinetMap.clear();
+        if (area_map != null && !area_map.isEmpty()) {
+            List<String> list = new ArrayList<String>(area_map.keySet());
+            Collections.sort(list);
+            for (String area_name : list) {
+                areaNameList.addItem(area_name);
+            }
+            areaNameList.setSelectedIndex(0);
+            areaMap = area_map;
+            int area_id = getAreaID();
+            if (area_id != -1) {
+                presenter.lookupRoomNamesByAreaID(area_id);
+            }
+        }
+    }
+	
+	@Override
+    public void setRoomNames(int area_id, Map<String, Integer> room_map) {
+        if (getAreaID() == area_id) {
+            roomNameList.clear();
+            cabinetNameList.clear();
+            roomMap.clear();
+            cabinetMap.clear();
+            if (room_map != null && !room_map.isEmpty()) {
+                List<String> list = new ArrayList<String>(room_map.keySet());
+                Collections.sort(list);
+                for (String room_name : list) {
+                    roomNameList.addItem(room_name);
+                }
+                roomNameList.setSelectedIndex(0);
+                roomMap = room_map;
+                int room_id = getRoomID();
+                if (room_id != -1) {
+                    presenter.lookupCabinetNamesByRoomID(room_id);
+                }
+            }
+        }
+    }
+	
+	@Override
+	public void setCabinetNames(int room_id, Map<String, Integer> cabinet_map) {
+	    if (getRoomID() == room_id) {
+	        cabinetNameList.clear();
+	        cabinetMap.clear();
+	        if (cabinet_map != null && !cabinet_map.isEmpty()) {
+	            List<String> list = new ArrayList<String>(cabinet_map.keySet());
+	            Collections.sort(list);
+                for (String cabinet_name : list) {
+                    cabinetNameList.addItem(cabinet_name);
+                }
+                cabinetNameList.setSelectedIndex(0);
+                cabinetMap = cabinet_map;
+	        }
+	    }
 	}
 	
 	private String getServerName() {
@@ -82,16 +153,27 @@ public class DeviceServerAddViewImpl extends DialogBox implements DeviceServerAd
 		return getInputText(serverBW);
 	}
 	
-	private String getAreaName() {
-		return getSelectedText(areaNameList); 
-	}
+	private int getID(Map<String, Integer> map, String name) {
+        if (name == null || name.isEmpty()) {
+            return -1;
+        }
+        Integer id = map.get(name);
+        if (id == null) {
+            return -1;
+        }
+        return id;
+    }
+    
+    private int getAreaID() {
+        return getID(areaMap, getSelectedText(areaNameList));
+    }
+    
+    private int getRoomID() {
+        return getID(roomMap, getSelectedText(roomNameList));
+    }
 	
-	private String getRoomName() {
-		return getSelectedText(roomNameList);
-	}
-	
-	private String getCabinetName() {
-	    return getSelectedText(cabinetNameList);
+	private int getCabinetID() {
+	    return getID(cabinetMap, getSelectedText(cabinetNameList));
 	}
 	
 	private String getInputText(TextBox textbox) {
@@ -126,10 +208,6 @@ public class DeviceServerAddViewImpl extends DialogBox implements DeviceServerAd
 	    return listbox.getItemText(index);
 	}
 	
-	private boolean isEmpty(String s) {
-	    return s == null || s.length() == 0;
-	}
-	
 	private DeviceServerAddView.Presenter presenter;
 	
 	@Override
@@ -157,8 +235,7 @@ public class DeviceServerAddViewImpl extends DialogBox implements DeviceServerAd
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(getServerName(), getServerDesc(), getServerIP(), getServerBW(),
-				serverStateValue[serverStateList.getSelectedIndex()], getCabinetName())) {
+		if (presenter.onOK(getServerName(), getServerDesc(), getServerIP(), getServerBW(), serverStateValue[serverStateList.getSelectedIndex()], getCabinetID())) {
 			hide();
 		}
 	}
@@ -168,36 +245,6 @@ public class DeviceServerAddViewImpl extends DialogBox implements DeviceServerAd
 		hide();
 	}
 
-    @Override
-    public void setAreaNameList(List<String> area_name_list) {
-    	setListBox(areaNameList, area_name_list);
-    	setListBox(roomNameList, null);
-    	setListBox(cabinetNameList, null);
-        String area_name = getAreaName();
-        if (!isEmpty(area_name)) {
-            presenter.lookupRoomNamesByAreaName(area_name);
-        }
-    }
-
-    @Override
-    public void setRoomNameList(String area_name, List<String> room_name_list) {
-        if (getAreaName().equals(area_name)) {
-	        setListBox(roomNameList, room_name_list);
-	        setListBox(cabinetNameList, null);
-	        String room_name = getRoomName();
-	        if (!isEmpty(room_name)) {
-	            presenter.lookupCabinetNamesByRoomName(room_name);
-	        }
-        }
-    }
-
-    @Override
-    public void setCabinetNameList(String room_name, List<String> cabinet_name_list) {
-        if (getRoomName().equals(room_name)) {
-        	setListBox(cabinetNameList, cabinet_name_list);
-        }
-    }
-    
     private void setListBox(ListBox listbox, List<String> values) {
     	listbox.clear();
     	if (values != null && !values.isEmpty()) {

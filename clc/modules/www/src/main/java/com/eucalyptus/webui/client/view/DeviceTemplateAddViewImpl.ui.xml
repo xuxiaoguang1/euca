@@ -42,13 +42,13 @@
 	<ui:with field="global"
 		type="com.eucalyptus.webui.client.view.GlobalResources" />
 
-	<g:DockLayoutPanel width="654px" height="340px">
+	<g:DockLayoutPanel width="642px" height="280px">
 		<g:center>
 		<g:VerticalPanel horizontalAlignment="ALIGN_LEFT" styleName="{style.background}" verticalAlignment="ALIGN_TOP">
-			<g:HTMLPanel width="650px">
+			<g:HTMLPanel width="640px">
 				<table>
 					<colgroup width="30px" />
-					<colgroup width="590px" />
+					<colgroup width="580px" />
 					<colgroup width="30px" />
 					<tbody>
 						<tr height="10px" />
@@ -98,7 +98,7 @@
 					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM" text="CPU名称"/>
 				</g:at>
 				<g:at left="150" top="77">
-					<g:TextBox height="1.4EM" width="12EM" ui:field="templateCPU"/>
+					<g:ListBox height="1.8EM" width="12.5EM" ui:field="templateCPU"/>
 				</g:at>
 				<g:at left="350" top="80">
 					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="9EM" text="x"/>

@@ -67,7 +67,7 @@
 													</td>
 													<td width="10px">&nbsp;</td>
 													<td>
-														<d:DeviceDateBox width="5EM" ui:field="dateBegin"/>
+														<d:DeviceDateBox width="6EM" ui:field="dateBegin"/>
 													</td>
 													<td width="8px">&nbsp;</td>
 													<td>
@@ -75,7 +75,7 @@
 													</td>
 													<td width="8px">&nbsp;</td>
 													<td>
-														<d:DeviceDateBox width="5EM" ui:field="dateEnd"/>
+														<d:DeviceDateBox width="6EM" ui:field="dateEnd"/>
 													</td>
 													<td width="40px">&nbsp;</td>
 													<td>

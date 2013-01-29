@@ -15,6 +15,7 @@ import com.eucalyptus.webui.client.view.DeviceOthersPriceModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceOthersPriceView;
 import com.eucalyptus.webui.client.view.LoadingAnimationView;
 import com.eucalyptus.webui.client.view.LogView;
+import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.google.gwt.activity.shared.AbstractActivity;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Window;

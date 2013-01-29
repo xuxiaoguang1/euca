@@ -30,6 +30,7 @@ import com.eucalyptus.webui.client.view.HasValueWidget;
 import com.eucalyptus.webui.client.view.LogView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
 import com.eucalyptus.webui.shared.resource.device.status.DiskState;
 import com.google.gwt.user.client.Window;
@@ -291,7 +292,7 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                                 Window.alert(sb.toString());
                             }
                             else {
-                                getBackendService().lookupCabinetNamesByRoomName(getSession(), room_name, new AsyncCallback<List<String>>() {
+                                getBackendService().lookupCabinetNamesByRoomID(getSession(), room_name, new AsyncCallback<List<String>>() {
 
                                     @Override
                                     public void onFailure(Throwable caught) {
@@ -507,22 +508,22 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                         
                         @Override
                         public void lookupAccountNames() {
-                            getBackendService().lookupDeviceAccountNames(getSession(), new AsyncCallback<List<String>>() {
-
-                                @Override
-                                public void onFailure(Throwable caught) {
-                                    if (caught instanceof EucalyptusServiceException) {
-                                        onBackendServiceFailure((EucalyptusServiceException)caught);
-                                    }
-                                }
-
-                                @Override
-                                public void onSuccess(List<String> account_name_list) {
-                                    showStatus(new ClientMessage("", "获取账户列表成功"));
-                                    diskServiceAddView.setAccountNameList(account_name_list);
-                                }
-                                
-                            });
+//                            getBackendService().lookupDeviceAccountNames(getSession(), new AsyncCallback<List<String>>() {
+//
+//                                @Override
+//                                public void onFailure(Throwable caught) {
+//                                    if (caught instanceof EucalyptusServiceException) {
+//                                        onBackendServiceFailure((EucalyptusServiceException)caught);
+//                                    }
+//                                }
+//
+//                                @Override
+//                                public void onSuccess(List<String> account_name_list) {
+//                                    showStatus(new SharedMessage("", "获取账户列表成功"));
+//                                    diskServiceAddView.setAccountNameList(account_name_list);
+//                                }
+//                                
+//                            });
                         }
                         
                         @Override
@@ -533,22 +534,22 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                                 Window.alert(sb.toString());
                             }
                             else {
-                                getBackendService().lookupDeviceUserNamesByAccountName(getSession(), account_name, new AsyncCallback<List<String>>() {
-
-                                    @Override
-                                    public void onFailure(Throwable caught) {
-                                        if (caught instanceof EucalyptusServiceException) {
-                                            onBackendServiceFailure((EucalyptusServiceException)caught);
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onSuccess(List<String> user_name_list) {
-                                        showStatus(new ClientMessage("", "获取用户列表成功"));
-                                        diskServiceAddView.setUserNameList(account_name, user_name_list);
-                                    }
-                                    
-                                });
+//                                getBackendService().lookupDeviceUserNamesByAccountName(getSession(), account_name, new AsyncCallback<List<String>>() {
+//
+//                                    @Override
+//                                    public void onFailure(Throwable caught) {
+//                                        if (caught instanceof EucalyptusServiceException) {
+//                                            onBackendServiceFailure((EucalyptusServiceException)caught);
+//                                        }
+//                                    }
+//
+//                                    @Override
+//                                    public void onSuccess(List<String> user_name_list) {
+//                                        showStatus(new SharedMessage("", "获取用户列表成功"));
+//                                        diskServiceAddView.setUserNameList(account_name, user_name_list);
+//                                    }
+//                                    
+//                                });
                             }
                         }
                         
