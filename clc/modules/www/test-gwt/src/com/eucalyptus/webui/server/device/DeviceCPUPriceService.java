@@ -214,10 +214,7 @@ public class DeviceCPUPriceService {
         }
 	}
 	
-	public List<String> lookupCPUsWithoutPrice(Session session) throws EucalyptusServiceException {
-	    if (!getUser(session).isSystemAdmin()) {
-            throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
-        }
+	public List<String> lookupCPUsWithoutPrice() throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -254,13 +251,12 @@ class DeviceCPUPriceDBProcWrapper {
         DBStringBuilder sb = new DBStringBuilder();
         sb.append("SELECT DISTINCT (").append(CPU.CPU_NAME).append(")");
         sb.append(" FROM ").append(CPU);
-        sb.append(" WHERE ").append(CPU.CPU_NAME).append(" IS NOT IN ").append("("); {
+        sb.append(" WHERE ").append(CPU.CPU_NAME).append(" NOT IN ").append("("); {
             sb.append("SELECT DISTINCT(").append(CPUPrice.CPU_NAME).append(")");
             sb.append(" FROM ").append(CPUPrice);
             sb.append(" WHERE 1=1");
         }
         sb.append(")");
-        
         ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
         List<String> result = new LinkedList<String>();
         while (rs.next()) {

@@ -19,13 +19,17 @@ public interface DeviceCPUPriceView extends IsWidget, CanDisplaySearchResult, Cl
 	
 	public interface Presenter extends MultiSelectionChangeHandler, KnowsPageSize, DeviceSearchResultTableClickHandler, SearchRangeChangeHandler {
 		
-		public void onAdd();
+		public void onAddCPUPrice();
 		
-		public void onModify();
+		public void onModifyCPUPrice();
 		
-		public void onDelete();
+		public void onDeleteCPUPrice();
 		
-		public void updateSearchResult(Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd);
+		public boolean canDeleteCPUPrice();
+        
+        public boolean canModifyCPUPrice();
+		
+        public void updateSearchResult(Date dateBegin, Date dateEnd);
 		
 	}
 	

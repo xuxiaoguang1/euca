@@ -1,6 +1,6 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -10,25 +10,25 @@ public interface DeviceDiskAddView extends IsWidget {
 	
 	public void popup();
 	
-	public void setAreaNameList(List<String> area_name_list);
-	
-	public void setRoomNameList(String area_name, List<String> room_name_list);
-	
-	public void setCabinetNameList(String room_name, List<String> cabinet_name_list);
-	
-	public void setServerNameList(String cabinet_name, List<String> server_name_list);
+    public void setAreaNames(Map<String, Integer> area_map);
+    
+    public void setRoomNames(int area_id, Map<String, Integer> room_map);
+    
+    public void setCabinetNames(int room_id, Map<String, Integer> cabinet_map);
+    
+    public void setServerNames(int cabinet_id, Map<String, Integer> server_map);
 	
 	public interface Presenter {
 		
-		public boolean onOK(String disk_name, String disk_desc, long disk_size, String server_name);
+		public boolean onOK(String disk_name, String disk_desc, long disk_size, int server_id);
 		
-		public void lookupAreaNames();
-		
-		public void lookupRoomNamesByAreaName(String area_name);
-		
-		public void lookupCabinetNamesByRoomName(String room_name);
-		
-		public void lookupServerNameByCabinetName(String cabinet_name);
+        public void lookupAreaNames();
+        
+        public void lookupRoomNamesByAreaID(int area_id);
+        
+        public void lookupCabinetNamesByRoomID(int room_id);
+        
+        public void lookupServerNamesByCabinetID(int cabinet_id);
 		
 	}
 	

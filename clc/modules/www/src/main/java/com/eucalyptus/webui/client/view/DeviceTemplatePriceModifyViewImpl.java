@@ -8,6 +8,8 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DoubleBox;
+import com.google.gwt.user.client.ui.IntegerBox;
+import com.google.gwt.user.client.ui.LongBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -24,11 +26,11 @@ public class DeviceTemplatePriceModifyViewImpl extends DialogBox implements Devi
 	@UiField TextArea templatePriceDesc;
 	@UiField TextBox cpuName;
 	@UiField DoubleBox cpuPrice;
-	@UiField DoubleBox memSize;
+	@UiField LongBox memSize;
 	@UiField DoubleBox memPrice;
-	@UiField DoubleBox diskSize;
+	@UiField LongBox diskSize;
 	@UiField DoubleBox diskPrice;
-	@UiField DoubleBox bwSize;
+	@UiField IntegerBox bwSize;
 	@UiField DoubleBox bwPrice;
 	@UiField DoubleBox totalPrice;
 	
@@ -64,50 +66,56 @@ public class DeviceTemplatePriceModifyViewImpl extends DialogBox implements Devi
 	private double disk_size;
 	private double bw_size;
 	
-	private boolean isEmpty(String s) {
-		return s == null || s.isEmpty();
-	}
-	
-	private double getPrice(String text) {
-		if (isEmpty(text)) {
-			return 0;
-		}
-		return Double.parseDouble(text);
-	}
-	
 	private void updateTotalPrice() {
-		try {
-			double total_price = getPrice(cpuPrice.getText()) * ncpus;
-			total_price += getPrice(memPrice.getText()) * mem_size;
-			total_price += getPrice(diskPrice.getText()) * disk_size;
-			total_price += getPrice(bwPrice.getText()) * bw_size;
-			totalPrice.setValue(total_price);
-		}
-		catch (Exception e) {
-			totalPrice.setText("INVALID VALUE");
-			e.printStackTrace();
-		}
+        try {
+            double sum = 0;
+            double value;
+            if ((value = cpuPrice.getValue()) < 0 || ncpus < 0) {
+                totalPrice.setText("INVALID VALUE");
+                return;
+            }
+            sum += value * ncpus;
+            if ((value = memPrice.getValue()) < 0 || mem_size < 0) {
+                totalPrice.setText("INVALID VALUE");
+                return;
+            }
+            sum += value * mem_size;
+            if ((value = diskPrice.getValue()) < 0 || disk_size < 0) {
+                totalPrice.setText("INVALID VALUE");
+                return;
+            }
+            sum += value * disk_size;
+            if ((value = bwPrice.getValue()) < 0 || bw_size < 0) {
+                totalPrice.setText("INVALID VALUE");
+                return;
+            }
+            sum += value * bw_size;
+            totalPrice.setValue(sum);
+        }
+        catch (Exception e) {
+            totalPrice.setText("INVALID VALUE");
+        }
 	}
 
     @Override
-    public void popup(int template_price_id, String template_name, String template_price_desc, String cpu_name,
-            int ncpus, double cpu_price, double mem_size, double mem_price, double disk_size, double disk_price,
-            double bw_size, double bw_price) {
-        this.template_price_id = template_price_id;
+    public void popup(int tp_id, String template_name, String tp_desc, String cpu_name,
+            int ncpus, double tp_cpu, long mem_size, double tp_mem, long disk_size, double tp_disk,
+            int bw_size, double bw_price) {
+        this.template_price_id = tp_id;
         this.ncpus = ncpus;
         this.mem_size = mem_size;
         this.disk_size = disk_size;
         this.bw_size = bw_size;
         templateName.setText(template_name);
-        templatePriceDesc.setText(template_price_desc);
+        templatePriceDesc.setText(tp_desc);
         StringBuilder sb = new StringBuilder();
         sb.append("CPU: ").append(cpu_name).append(" x ").append(ncpus);
         cpuName.setText(sb.toString());
-        cpuPrice.setValue(cpu_price);
+        cpuPrice.setValue(tp_cpu);
         memSize.setValue(mem_size);
-        memPrice.setValue(mem_price);
+        memPrice.setValue(tp_mem);
         diskSize.setValue(disk_size);
-        diskPrice.setValue(disk_price);
+        diskPrice.setValue(tp_disk);
         bwSize.setValue(bw_size);
         bwPrice.setValue(bw_price);
         updateTotalPrice();
@@ -122,41 +130,25 @@ public class DeviceTemplatePriceModifyViewImpl extends DialogBox implements Devi
     	return text;
     }
     
-    private String getCPUPrice() {
-    	String value = cpuPrice.getText();
-    	if (value == null) {
-    		return "";
-    	}
-    	return value;
+    private double getCPUPrice() {
+        return cpuPrice.getValue();
     }
     
-    private String getMemPrice() {
-    	String value = memPrice.getText();
-    	if (value == null) {
-    		return "";
-    	}
-    	return value;
+    private double getMemPrice() {
+    	return memPrice.getValue();
     }
 
-    private String getDiskPrice() {
-    	String value = diskPrice.getText();
-    	if (value == null) {
-    		return "";
-    	}
-    	return value;
+    private double getDiskPrice() {
+    	return diskPrice.getValue();
     }
     
-    private String getBWPrice() {
-    	String value = bwPrice.getText();
-    	if (value == null) {
-    		return "";
-    	}
-    	return value;
+    private double getBWPrice() {
+    	return bwPrice.getValue();
     }
     
     @UiHandler("buttonOK")
     void handleButtonOK(ClickEvent event) {
-    	if (presenter.onOK(template_price_id, getTemplatePriceDesc(),
+    	if (presenter.onOK(template_price_id, getTemplatePriceDesc(), 
     			getCPUPrice(), getMemPrice(), getDiskPrice(), getBWPrice())) {
     		hide();
     	}

@@ -107,7 +107,7 @@
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">服务描述</g:Anchor>
 					</g:at>
 					<g:at left="120" top="92">
-						<g:TextArea styleName="{style.textArea}" height="2.4EM" width="32EM" ui:field="cpuDesc"/>
+						<g:TextArea styleName="{style.textArea}" height="2.4EM" width="32EM" ui:field="csDesc"/>
 					</g:at>
 					<g:at left="30" top="140">
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">开始时间</g:Anchor>

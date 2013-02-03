@@ -21,7 +21,6 @@ import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.eucalyptus.webui.shared.resource.AppResources;
-import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
 import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns.CellTableColumnsRow;
@@ -173,23 +172,6 @@ public class DeviceTemplateService {
         throw new EucalyptusServiceException(new ClientMessage("Cannot find the corresponding Template.", "找不到指定的模板"));
     }
     
-    public Template lookupTemplateByID(int template_id) throws EucalyptusServiceException {
-        TemplateInfo info = lookupTemplateInfoByID(template_id);
-        if (info != null) {
-            Template template = new Template();
-            template.setID(Integer.toString(info.template_id));
-            template.setName(info.template_name);
-            template.setCPU(info.template_cpu);
-            template.setNCPUs(Integer.toString(info.template_ncpus));
-            template.setMem(Long.toString(info.template_mem));
-            template.setDisk(Long.toString(info.template_disk));
-            template.setBw(Integer.toString(info.template_bw));
-            template.setImage(info.template_image);
-            return template;
-        }
-        return null;
-    }
-    
     public void createTemplate(Session session, String template_name, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image) throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
@@ -263,13 +245,13 @@ public class DeviceTemplateService {
             throw new EucalyptusServiceException(ClientMessage.invalidValue("Number of CPU", "CPU数量"));
         }
         if (template_mem <= 0) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("Capacity of Memory", "内存数量"));
+            throw new EucalyptusServiceException(ClientMessage.invalidValue("Memory Size", "内存数量"));
         }
         if (template_disk <= 0) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("Capacity of Disk", "硬盘数量"));
+            throw new EucalyptusServiceException(ClientMessage.invalidValue("Disk Size", "硬盘数量"));
         }
         if (template_bw < 0) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("Capacity of Bandwidth", "带宽数量"));
+            throw new EucalyptusServiceException(ClientMessage.invalidValue("Bandwidth Value", "带宽数量"));
         }
         if (template_image == null || template_image.isEmpty()) {
             throw new EucalyptusServiceException(ClientMessage.invalidValue("Image Name", "镜像名称"));
@@ -292,6 +274,7 @@ public class DeviceTemplateService {
                 rs.updateString(TEMPLATE.TEMPLATE_IMAGE.toString(), template_image);
                 rs.updateString(TEMPLATE.TEMPLATE_DESC.toString(), template_desc);
                 rs.updateString(TEMPLATE.TEMPLATE_MODIFIEDTIME.toString(), DBStringBuilder.getDate());
+                rs.updateRow();
             }
             conn.commit();
         }
@@ -392,6 +375,7 @@ class DeviceTemplateDBProcWrapper {
         Statement stat = conn.createStatement();
         stat.executeUpdate(sb.toSql(log), new String[]{TEMPLATE.TEMPLATE_ID.toString()});
         ResultSet rs = stat.getGeneratedKeys();
+        rs.next();
         return rs.getInt(1);
     }
     

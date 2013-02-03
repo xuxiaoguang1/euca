@@ -189,7 +189,7 @@ public class DeviceIPService {
         }
     }
     
-    public Map<Integer, String> lookupIPAddrsReservedByIPType(Session session, IPType ip_type) throws EucalyptusServiceException {
+    public Map<String, Integer> lookupIPReservedByIPType(Session session, IPType ip_type) throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -225,6 +225,7 @@ public class DeviceIPService {
                 account_id = user.getAccountId();
                 user_id = user.getUserId();
             }
+            conn = DBProcWrapper.getConnection();
             return DeviceIPDBProcWrapper.lookupIPCountsByState(conn, ip_type, account_id, user_id);
         }
         catch (Exception e) {
@@ -340,6 +341,7 @@ public class DeviceIPService {
         rs.updateString(IP_SERVICE.IP_SERVICE_CREATIONTIME.toString(), DBStringBuilder.getDate());
         rs.updateNull(IP_SERVICE.IP_SERVICE_MODIFIEDTIME.toString());
         rs.updateInt(IP_SERVICE.USER_ID.toString(), user_id);
+        rs.updateRow();
     }
     
     public void createIPService(boolean force, Session session, String is_desc, IPState is_state, Date is_starttime, Date is_endtime, int ip_id, int user_id) throws EucalyptusServiceException {
@@ -581,10 +583,10 @@ class DeviceIPDBProcWrapper {
         return rs;
     }
     
-    public static Map<Integer, String> lookupIPsReservedByType(Connection conn, IPType type) throws Exception {
+    public static Map<String, Integer> lookupIPsReservedByType(Connection conn, IPType type) throws Exception {
         DBTableIPService IP_SERVICE = DBTable.IP_SERVICE;
         DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ").append(IP_SERVICE.IP_ID).append(", ").append(IP_SERVICE.IP_ADDR);
+        sb.append("SELECT ").append(IP_SERVICE.IP_ADDR).append(", ").append(IP_SERVICE.IP_ID);
         sb.append(" FROM ").append(IP_SERVICE);
         sb.append(" WHERE ").append(IP_SERVICE.IP_SERVICE_STATE).append(" = ").append(IPState.RESERVED.getValue());
         if (type != null) {
@@ -592,9 +594,9 @@ class DeviceIPDBProcWrapper {
         }
         
         ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        Map<Integer, String> result = new HashMap<Integer, String>();
+        Map<String, Integer> result = new HashMap<String, Integer>();
         while (rs.next()) {
-            result.put(rs.getInt(1), rs.getString(2));
+            result.put(rs.getString(1), rs.getInt(2));
         }
         return result;
     }

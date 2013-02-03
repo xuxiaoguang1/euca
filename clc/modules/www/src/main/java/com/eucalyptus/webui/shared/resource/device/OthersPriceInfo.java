@@ -7,10 +7,14 @@ public class OthersPriceInfo implements Serializable {
 
     private static final long serialVersionUID = -8523479379621055990L;
     
-    public final String op_name;
-    public final String op_desc;
-    public final double op_price;
-    public final Date op_modifiedtime;
+    public String op_name;
+    public String op_desc;
+    public double op_price;
+    public Date op_modifiedtime;
+    
+    public OthersPriceInfo() {
+        /* do nothing */
+    }
     
     public OthersPriceInfo(String op_name, String op_desc, double op_price, Date op_modifiedtime) {
         this.op_name = op_name;

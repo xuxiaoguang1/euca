@@ -23,13 +23,13 @@ public class DeviceMemoryServiceModifyViewImpl extends DialogBox implements Devi
 	}
 	
 	@UiField TextBox serverName;
-	@UiField TextBox memoryName;
+	@UiField TextBox memName;
 	@UiField TextBox accountName;
 	@UiField TextBox userName;
-	@UiField TextArea memoryDesc;
+	@UiField TextArea msDesc;
 	@UiField DeviceDateBox dateBegin;
 	@UiField DeviceDateBox dateEnd;
-	@UiField LongBox memoryUsed;
+	@UiField LongBox msUsed;
 	@UiField TextBox dateLife;
 	
 	private DevicePopupPanel popup = new DevicePopupPanel();
@@ -72,7 +72,7 @@ public class DeviceMemoryServiceModifyViewImpl extends DialogBox implements Devi
 	}
 	
 	private String getMemoryDesc() {
-		return getInputText(memoryDesc);
+		return getInputText(msDesc);
 	}
 	
 	private String getInputText(TextArea textarea) {
@@ -115,16 +115,20 @@ public class DeviceMemoryServiceModifyViewImpl extends DialogBox implements Devi
 	}
 	
 	private int ms_id;
+	private long ms_reserved;
+	private long ms_used;
 	
 	@Override
-	public void popup(int ms_id, String memory_name, String ms_desc, long ms_used, Date ms_starttime, Date ms_endtime, String server_name, String account_name, String user_name) {
+	public void popup(int ms_id, String mem_name, String ms_desc, long ms_reserved, long ms_used, Date ms_starttime, Date ms_endtime, String server_name, String account_name, String user_name) {
 		this.ms_id = ms_id;
+		this.ms_reserved = ms_reserved + ms_used;
+		this.ms_used = ms_used;
 		serverName.setValue(server_name);
-		memoryName.setValue(memory_name);
-		memoryDesc.setValue(ms_desc);
+		memName.setValue(mem_name);
+		msDesc.setValue(ms_desc);
 		dateBegin.setValue(ms_starttime);
 		dateEnd.setValue(ms_endtime);
-		memoryUsed.setValue(ms_used);
+		msUsed.setValue(ms_used);
 		accountName.setValue(account_name);
 		userName.setValue(user_name);
 		updateDateLife();
@@ -133,7 +137,7 @@ public class DeviceMemoryServiceModifyViewImpl extends DialogBox implements Devi
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(ms_id, getMemoryDesc(), dateBegin.getValue(), dateEnd.getValue())) {
+		if (presenter.onOK(ms_id, getMemoryDesc(), ms_reserved, ms_used, dateBegin.getValue(), dateEnd.getValue())) {
 			hide();
 		}
 	}

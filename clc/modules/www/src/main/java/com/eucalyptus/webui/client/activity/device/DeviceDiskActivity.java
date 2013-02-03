@@ -8,14 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.ClientFactory;
-import com.eucalyptus.webui.client.activity.AbstractSearchActivity;
 import com.eucalyptus.webui.client.place.SearchPlace;
-import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
-import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.DeviceDiskAddView;
 import com.eucalyptus.webui.client.view.DeviceDiskAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceDiskModifyView;
@@ -25,18 +21,15 @@ import com.eucalyptus.webui.client.view.DeviceDiskServiceAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceDiskServiceModifyView;
 import com.eucalyptus.webui.client.view.DeviceDiskServiceModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceDiskView;
-import com.eucalyptus.webui.client.view.FooterView;
-import com.eucalyptus.webui.client.view.HasValueWidget;
-import com.eucalyptus.webui.client.view.LogView;
-import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
+import com.eucalyptus.webui.shared.resource.device.DiskInfo;
+import com.eucalyptus.webui.shared.resource.device.DiskServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.status.DiskState;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class DeviceDiskActivity extends AbstractSearchActivity implements DeviceDiskView.Presenter {
+public class DeviceDiskActivity extends DeviceActivity implements DeviceDiskView.Presenter {
 	
 	private static final ClientMessage title = new ClientMessage("Disk", "硬盘");
 	
@@ -67,87 +60,33 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 		return view;
 	}
 	
-	private EucalyptusServiceAsync getBackendService() {
-		return clientFactory.getBackendService();
-	}
-
-	private FooterView getFooterView() {
-		return clientFactory.getShellView().getFooterView();
-	}
-
-	private LogView getLogView() {
-		return clientFactory.getShellView().getLogView();
-	}
-
-	private Session getSession() {
-		return clientFactory.getLocalSession().getSession();
-	}
-	
-	private boolean isEmpty(String s) {
-		return s == null || s.length() == 0;
-	}
-	
-    private void showStatus(ClientMessage msg) {
-        getFooterView().showStatus(StatusType.NONE, msg.toString(), FooterView.CLEAR_DELAY_SECOND * 3);
-        getLogView().log(LogType.INFO, msg.toString());
-    }
-    
-    private void onFrontendServiceFailure(Throwable caught) {
-        Window.alert(new ClientMessage("", "前端服务运行错误").toString());
-        getLogView().log(LogType.ERROR, caught.toString());
-    }
-    
-    private void onBackendServiceFailure(Throwable caught) {
-        if (caught instanceof EucalyptusServiceException) {
-            EucalyptusServiceException exception = (EucalyptusServiceException)caught;
-            ClientMessage msg = exception.getFrontendMessage();
-            if (msg == null) {
-                msg = new ClientMessage("Backend Service Failure", "后代服务运行错误");
-            }
-            Window.alert(msg.toString());
-            getLogView().log(LogType.ERROR, msg.toString() + " : " + caught.toString());
-        }
-        else {
-            getLogView().log(LogType.ERROR, caught.toString());
-        }
-    }
-    
-	@Override
-	public void saveValue(ArrayList<String> keys, ArrayList<HasValueWidget> values) {
-		/* do nothing */
-	}
-	
 	@Override
 	protected void doSearch(String query, SearchRange range) {
 		getBackendService().lookupDeviceDiskByDate(getSession(), range, queryState, dateBegin, dateEnd, new AsyncCallback<SearchResult>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				if (caught instanceof EucalyptusServiceException) {
-					onBackendServiceFailure((EucalyptusServiceException)caught);
-				}
-				displayData(null);
-			}
+            @Override
+            public void onFailure(Throwable caught) {
+                onBackendServiceFailure(caught);
+                displayData(null);
+            }
 
-			@Override
-			public void onSuccess(SearchResult result) {
-				showStatus(new ClientMessage("", "查询硬盘成功"));
-				displayData(result);
-			}
+            @Override
+            public void onSuccess(SearchResult result) {
+                onBackendServiceFinished();
+                displayData(result);
+            }
 			
 		});
 		getBackendService().lookupDeviceDiskCounts(getSession(), new AsyncCallback<Map<Integer, Long>>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				if (caught instanceof EucalyptusServiceException) {
-					onBackendServiceFailure((EucalyptusServiceException)caught);
-				}
+			    onBackendServiceFailure(caught);
 			}
 
 			@Override
 			public void onSuccess(Map<Integer, Long> result) {
-				showStatus(new ClientMessage("", "查询硬盘数量成功"));
+			    onBackendServiceFinished();
 				diskCounts = result;
 				getView().updateLabels();
 			}
@@ -188,96 +127,90 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
     @Override
     public void onAddDisk() {
         try {
-            if (Window.confirm(new ClientMessage("", "确认创建新硬盘设备").toString())) {
+            if (Window.confirm(new ClientMessage("Create a new Disk.", "确认创建新硬盘.").toString())) {
                 if (diskAddView == null) {
                     diskAddView = new DeviceDiskAddViewImpl();
                     diskAddView.setPresenter(new DeviceDiskAddView.Presenter() {
                         
                         @Override
-                        public boolean onOK(String disk_name, String disk_desc, long disk_size, String server_name) {
-                            if (isEmpty(disk_name)) {
+                        public boolean onOK(String disk_name, String disk_desc, long disk_size, int server_id) {
+                            if (disk_name == null || disk_name.isEmpty()) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "硬盘名称非法")).append(" = '").append(disk_name).append("' ");
-                                sb.append(new ClientMessage("", "请重新选择硬盘名称"));
-                                Window.alert(sb.toString());
-                                return false;
-                            }
-                            if (isEmpty(server_name)) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "服务器名称非法")).append(" = '").append(server_name).append("' ");
-                                sb.append(new ClientMessage("", "请重新选择服务器"));
+                                sb.append(new ClientMessage("Invalid Disk Name: ", "硬盘名称非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
                             }
                             if (disk_size <= 0) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "硬盘大小非法")).append(" = '").append(disk_size).append("' ");
-                                sb.append(new ClientMessage("", "请重新选择硬盘大小"));
+                                sb.append(new ClientMessage("Invalid Disk Size: ", "硬盘大小非法")).append(" = ").append(disk_size).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
                             }
-                            getBackendService().addDeviceDisk(getSession(), disk_name, disk_desc, disk_size, server_name, new AsyncCallback<Void>() {
+                            if (server_id == -1) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Server Name.", "服务器名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            getBackendService().createDeviceDisk(getSession(), disk_name, disk_desc, disk_size, server_id, new AsyncCallback<Void>() {
 
                                 @Override
                                 public void onFailure(Throwable caught) {
-                                    if (caught instanceof EucalyptusServiceException) {
-                                        onBackendServiceFailure((EucalyptusServiceException)caught);
-                                    }
+                                    onBackendServiceFailure(caught);
                                     getView().clearSelection();
                                 }
 
                                 @Override
                                 public void onSuccess(Void result) {
-                                    showStatus(new ClientMessage("", "添加硬盘成功"));
-                                    reloadCurrentRange();
+                                    onBackendServiceFinished(new ClientMessage("Successfully create Disk.", "硬盘添加成功."));
                                     getView().clearSelection();
+                                    reloadCurrentRange();
                                 }
-                                
                             });
                             return true;
                         }
                         
                         @Override
                         public void lookupAreaNames() {
-                            getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<List<String>>() {
+                            getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<Map<String, Integer>>() {
 
                                 @Override
                                 public void onFailure(Throwable caught) {
-                                    if (caught instanceof EucalyptusServiceException) {
-                                        onBackendServiceFailure((EucalyptusServiceException)caught);
-                                    }
+                                    onBackendServiceFailure(caught);
                                 }
 
                                 @Override
-                                public void onSuccess(List<String> area_name_list) {
-                                    showStatus(new ClientMessage("", "获取区域列表成功"));
-                                    diskAddView.setAreaNameList(area_name_list);
+                                public void onSuccess(Map<String, Integer> area_map) {
+                                    onBackendServiceFinished();
+                                    diskAddView.setAreaNames(area_map);
                                 }
                                 
                             });
                         }
                         
                         @Override
-                        public void lookupRoomNamesByAreaName(final String area_name) {
-                            if (isEmpty(area_name)) {
+                        public void lookupRoomNamesByAreaID(final int area_id) {
+                            if (area_id == -1) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "区域名称非法")).append(" = '").append(area_name).append("'");
+                                sb.append(new ClientMessage("Invalid Area Name.", "区域名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                             }
                             else {
-                                getBackendService().lookupDeviceRoomNamesByAreaName(getSession(), area_name, new AsyncCallback<List<String>>() {
-
+                                getBackendService().lookupDeviceRoomNamesByAreaID(getSession(), area_id, new AsyncCallback<Map<String, Integer>>() {
+    
                                     @Override
                                     public void onFailure(Throwable caught) {
-                                        if (caught instanceof EucalyptusServiceException) {
-                                            onBackendServiceFailure((EucalyptusServiceException)caught);
-                                        }
+                                        onBackendServiceFailure(caught);
                                     }
-
+    
                                     @Override
-                                    public void onSuccess(List<String> room_name_list) {
-                                        showStatus(new ClientMessage("", "获取机房列表成功"));
-                                        diskAddView.setRoomNameList(area_name, room_name_list);
+                                    public void onSuccess(Map<String, Integer> room_map) {
+                                        onBackendServiceFinished();
+                                        diskAddView.setRoomNames(area_id, room_map);
                                     }
                                     
                                 });
@@ -285,26 +218,25 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                         }
                         
                         @Override
-                        public void lookupCabinetNamesByRoomName(final String room_name) {
-                            if (isEmpty(room_name)) {
+                        public void lookupCabinetNamesByRoomID(final int room_id) {
+                            if (room_id == -1) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "机房名称非法")).append(" = '").append(room_name).append("'");
+                                sb.append(new ClientMessage("Invalid Room Name.", "机房名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                             }
                             else {
-                                getBackendService().lookupCabinetNamesByRoomID(getSession(), room_name, new AsyncCallback<List<String>>() {
+                                getBackendService().lookupDeviceCabinetNamesByRoomID(getSession(), room_id, new AsyncCallback<Map<String, Integer>>() {
 
                                     @Override
                                     public void onFailure(Throwable caught) {
-                                        if (caught instanceof EucalyptusServiceException) {
-                                            onBackendServiceFailure((EucalyptusServiceException)caught);
-                                        }
+                                        onBackendServiceFailure(caught);
                                     }
 
                                     @Override
-                                    public void onSuccess(List<String> cabinet_name_list) {
-                                        showStatus(new ClientMessage("", "获取机柜列表成功"));
-                                        diskAddView.setCabinetNameList(room_name, cabinet_name_list);
+                                    public void onSuccess(Map<String, Integer> cabinet_map) {
+                                        onBackendServiceFinished();
+                                        diskAddView.setCabinetNames(room_id, cabinet_map);
                                     }
                                     
                                 });
@@ -312,32 +244,31 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                         }
                         
                         @Override
-                        public void lookupServerNameByCabinetName(final String cabinet_name) {
-                            if (isEmpty(cabinet_name)) {
+                        public void lookupServerNamesByCabinetID(final int cabinet_id) {
+                            if (cabinet_id == -1) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "机房机柜非法")).append(" = '").append(cabinet_name).append("'");
+                                sb.append(new ClientMessage("Invalid Cabinet Name.", "机柜名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                             }
                             else {
-                                getBackendService().lookupDeviceServerNamesByCabinetName(getSession(), cabinet_name, new AsyncCallback<List<String>>() {
+                                getBackendService().lookupDeviceServerNamesByCabinetID(getSession(), cabinet_id, new AsyncCallback<Map<String, Integer>>() {
 
                                     @Override
                                     public void onFailure(Throwable caught) {
-                                        if (caught instanceof EucalyptusServiceException) {
-                                            onBackendServiceFailure((EucalyptusServiceException)caught);
-                                        }
+                                        onBackendServiceFailure(caught);
                                     }
 
                                     @Override
-                                    public void onSuccess(List<String> cabinet_name_list) {
-                                        showStatus(new ClientMessage("", "获取服务器列表成功"));
-                                        diskAddView.setServerNameList(cabinet_name, cabinet_name_list);
+                                    public void onSuccess(Map<String, Integer> server_map) {
+                                        onBackendServiceFinished();
+                                        diskAddView.setServerNames(cabinet_id, server_map);
                                     }
                                     
                                 });
                             }
                         }
-                        
+
                     });
                 }
                 diskAddView.popup();
@@ -352,18 +283,17 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
     @Override
     public void onModifyDisk() {
         try {
-            if (Window.confirm(new ClientMessage("", "确认修改所选择的硬盘").toString())) {
-                SearchResultRow row = getView().getSelectedSet().iterator().next();
+            if (Window.confirm(new ClientMessage("Modify selected Disk.", "确认修改所选择的硬盘.").toString())) {
                 if (diskModifyView == null) {
                     diskModifyView = new DeviceDiskModifyViewImpl();
                     diskModifyView.setPresenter(new DeviceDiskModifyView.Presenter() {
                         
                         @Override
-                        public boolean onOK(int disk_id, String disk_desc, long disk_size) {
-                            if (disk_size <= 0) {
+                        public boolean onOK(int disk_id, String disk_desc, long disk_size, long ds_used) {
+                            if (disk_size <= 0 || disk_size < ds_used) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "硬盘大小非法")).append(" = '").append(disk_size).append("' ");
-                                sb.append(new ClientMessage("", "请重新选择硬盘大小"));
+                                sb.append(new ClientMessage("Invalid Disk Size: ", "硬盘大小非法")).append(" = ").append(disk_size).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
                             }
@@ -371,15 +301,13 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 
                                 @Override
                                 public void onFailure(Throwable caught) {
-                                    if (caught instanceof EucalyptusServiceException) {
-                                        onBackendServiceFailure((EucalyptusServiceException)caught);
-                                    }
+                                    onBackendServiceFailure(caught);
                                     getView().clearSelection();
                                 }
 
                                 @Override
                                 public void onSuccess(Void result) {
-                                    showStatus(new ClientMessage("", "修改硬盘成功"));
+                                    onBackendServiceFinished(new ClientMessage("Successfully modify selected Disk.", "硬盘修改成功."));
                                     reloadCurrentRange();
                                     getView().clearSelection();
                                 }
@@ -390,12 +318,23 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                         
                     });
                 }
-                int disk_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_ID));
-			    String disk_name = row.getField(CellTableColumns.DISK.DISK_NAME);
-			    String disk_desc = row.getField(CellTableColumns.DISK.DISK_DESC);
-			    long disk_size = Long.parseLong(row.getField(CellTableColumns.DISK.DISK_TOTAL));
-			    String server_name = row.getField(CellTableColumns.DISK.SERVER_NAME);
-			    diskModifyView.popup(disk_id, disk_name, disk_desc, disk_size, server_name);
+                SearchResultRow row = getView().getSelectedSet().iterator().next();
+                final int disk_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_ID));
+                final String server_name = row.getField(CellTableColumns.DISK.SERVER_NAME);
+                getBackendService().lookupDeviceDiskByID(getSession(), disk_id, new AsyncCallback<DiskInfo>() {
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        onBackendServiceFailure(caught);
+                        getView().clearSelection();
+                    }
+
+                    @Override
+                    public void onSuccess(DiskInfo info) {
+                        diskModifyView.popup(disk_id, info.disk_name, info.disk_desc, info.disk_size, info.disk_size - info.ds_reserved, server_name);
+                    }
+                    
+                });
             }
         }
         catch (Exception e) {
@@ -408,28 +347,26 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
     public void onDeleteDisk() {
         try {
             if (canDeleteDisk()) {
-                List<Integer> disk_id_list = new ArrayList<Integer>();
+                List<Integer> disk_ids = new ArrayList<Integer>();
                 for (SearchResultRow row : getView().getSelectedSet()) {
                     int disk_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_ID));
-                    disk_id_list.add(disk_id);
+                    disk_ids.add(disk_id);
                 }
-                if (!disk_id_list.isEmpty()) {
-                    if (Window.confirm(new ClientMessage("", "确认删除所选择的硬盘").toString())) {
-                        getBackendService().deleteDeviceDisk(getSession(), disk_id_list, new AsyncCallback<Void>() {
+                if (!disk_ids.isEmpty()) {
+                    if (Window.confirm(new ClientMessage("Delete selected Disk(s).", "确认删除所选择的硬盘.").toString())) {
+                        getBackendService().deleteDeviceDisk(getSession(), disk_ids, new AsyncCallback<Void>() {
         
                             @Override
                             public void onFailure(Throwable caught) {
-                                if (caught instanceof EucalyptusServiceException) {
-                                    onBackendServiceFailure((EucalyptusServiceException)caught);
-                                }
+                                onBackendServiceFailure(caught);
                                 getView().clearSelection();
                             }
         
                             @Override
                             public void onSuccess(Void result) {
-                                showStatus(new ClientMessage("", "删除硬盘成功"));
-                                reloadCurrentRange();
+                                onBackendServiceFinished(new ClientMessage("Successfully delete selected Disk(s).", "硬盘删除成功."));
                                 getView().clearSelection();
+                                reloadCurrentRange();
                             }
                             
                         });
@@ -446,60 +383,62 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
     @Override
     public void onAddDiskService() {
         try {
-            if (Window.confirm(new ClientMessage("", "确认添加的硬盘服务").toString())) {
-                SearchResultRow row = getView().getSelectedSet().iterator().next();
+            if (Window.confirm(new ClientMessage("Create a new Disk Service.", "确认创建新硬盘服务.").toString())) {
                 if (diskServiceAddView == null) {
                     diskServiceAddView = new DeviceDiskServiceAddViewImpl();
                     diskServiceAddView.setPresenter(new DeviceDiskServiceAddView.Presenter() {
                         
                         @Override
-                        public boolean onOK(int disk_id, String ds_desc, long ds_used, Date ds_starttime, Date ds_endtime, String account_name, String user_name) {
-                            if (ds_used <= 0) {
+                        public boolean onOK(int disk_id, String ds_desc, long ds_reserved, long ds_used, Date ds_starttime, Date ds_endtime, int user_id) {
+                        	if (ds_used <= 0 || ds_used > ds_reserved) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "硬盘数量非法")).append(" = '").append(ds_used).append("' ");
-                                sb.append(new ClientMessage("", "请重新选择数量"));
+                                sb.append(new ClientMessage("Invalid Disk Size: ", "磁盘数量非法")).append(" = ").append(ds_used).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
                             }
-                            if (ds_starttime == null || ds_endtime == null || DeviceDate.calcLife(ds_endtime, ds_starttime) <= 0) {
-								StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "非法的服务时间"));
-                                if (ds_starttime != null && ds_endtime != null) {
-                                	sb.append(" = '").append(DeviceDate.format(ds_starttime)).append("' >= '").append(DeviceDate.format(ds_endtime)).append("'");
-                                }
-                                sb.append(new ClientMessage("", "请重新选择时间"));
-                                Window.alert(sb.toString());
-                                return false;
-							}
-                            if (isEmpty(account_name)) {
+                            if (ds_starttime == null) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "非法的账户名称")).append(" = '").append(account_name).append("' ");
-                                sb.append(new ClientMessage("", "请重新选择账户"));
+                                sb.append(new ClientMessage("Invalid Start Time: ", "开始时间非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
                             }
-                            if (isEmpty(user_name)) {
+                            if (ds_endtime == null) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "非法的用户名称")).append(" = '").append(user_name).append("' ");
-                                sb.append(new ClientMessage("", "请重新选择账户"));
+                                sb.append(new ClientMessage("Invalid End Time: ", "结束时间非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
                             }
-                            getBackendService().addDeviceDiskService(getSession(), ds_desc, ds_used, ds_starttime, ds_endtime, disk_id, account_name, user_name, new AsyncCallback<Void>() {
+                            int ds_life = DeviceDate.calcLife(ds_endtime, ds_starttime);
+                            if (ds_life <= 0) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Service Life Time: ", "服务期限非法")).append(" = ").append(ds_life).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            if (user_id == -1) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid User Name.", "用户名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            getBackendService().createDeviceDiskService(getSession(), ds_desc, ds_used, DiskState.STOP, ds_starttime, ds_endtime, disk_id, user_id, new AsyncCallback<Void>() {
 
                                 @Override
                                 public void onFailure(Throwable caught) {
-                                    if (caught instanceof EucalyptusServiceException) {
-                                        onBackendServiceFailure((EucalyptusServiceException)caught);
-                                    }
+                                    onBackendServiceFailure(caught);
                                     getView().clearSelection();
                                 }
 
                                 @Override
                                 public void onSuccess(Void result) {
-                                    showStatus(new ClientMessage("", "添加硬盘服务成功"));
-                                    reloadCurrentRange();
+                                    onBackendServiceFinished(new ClientMessage("Successfully create Disk Service.", "硬盘服务添加成功."));
                                     getView().clearSelection();
+                                    reloadCurrentRange();
                                 }
                                 
                             });
@@ -508,58 +447,67 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                         
                         @Override
                         public void lookupAccountNames() {
-//                            getBackendService().lookupDeviceAccountNames(getSession(), new AsyncCallback<List<String>>() {
-//
-//                                @Override
-//                                public void onFailure(Throwable caught) {
-//                                    if (caught instanceof EucalyptusServiceException) {
-//                                        onBackendServiceFailure((EucalyptusServiceException)caught);
-//                                    }
-//                                }
-//
-//                                @Override
-//                                public void onSuccess(List<String> account_name_list) {
-//                                    showStatus(new SharedMessage("", "获取账户列表成功"));
-//                                    diskServiceAddView.setAccountNameList(account_name_list);
-//                                }
-//                                
-//                            });
+                            getBackendService().lookupDeviceAccountNames(getSession(), new AsyncCallback<Map<String, Integer>>() {
+
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    onBackendServiceFailure(caught);
+                                }
+
+                                @Override
+                                public void onSuccess(Map<String, Integer> account_map) {
+                                    onBackendServiceFinished();
+                                    diskServiceAddView.setAccountNames(account_map);
+                                }
+                                
+                            });
                         }
                         
                         @Override
-                        public void lookupUserNamesByAccountName(final String account_name) {
-                            if (isEmpty(account_name)) {
+                        public void lookupUserNamesByAccountID(final int account_id) {
+                            if (account_id == -1) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "账户名称非法")).append(" = '").append(account_name).append("'");
+                                sb.append(new ClientMessage("Invalid Account Name.", "账户名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                             }
                             else {
-//                                getBackendService().lookupDeviceUserNamesByAccountName(getSession(), account_name, new AsyncCallback<List<String>>() {
-//
-//                                    @Override
-//                                    public void onFailure(Throwable caught) {
-//                                        if (caught instanceof EucalyptusServiceException) {
-//                                            onBackendServiceFailure((EucalyptusServiceException)caught);
-//                                        }
-//                                    }
-//
-//                                    @Override
-//                                    public void onSuccess(List<String> user_name_list) {
-//                                        showStatus(new SharedMessage("", "获取用户列表成功"));
-//                                        diskServiceAddView.setUserNameList(account_name, user_name_list);
-//                                    }
-//                                    
-//                                });
+                                getBackendService().lookupDeviceUserNamesByAccountID(getSession(), account_id, new AsyncCallback<Map<String, Integer>>() {
+    
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+                                        onBackendServiceFailure(caught);
+                                    }
+    
+                                    @Override
+                                    public void onSuccess(Map<String, Integer> user_map) {
+                                        onBackendServiceFinished();
+                                        diskServiceAddView.setUserNames(account_id, user_map);
+                                    }
+                                    
+                                });
                             }
-                        }
-                        
+                        }                   
+
                     });
                 }
-                int disk_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_ID));
-			    String disk_name = row.getField(CellTableColumns.DISK.DISK_NAME);
-			    String server_name = row.getField(CellTableColumns.DISK.SERVER_NAME);
-			    long ds_reserved = Long.parseLong(row.getField(CellTableColumns.DISK.DISK_SERVICE_USED));
-			    diskServiceAddView.popup(disk_id, disk_name, server_name, ds_reserved);
+                SearchResultRow row = getView().getSelectedSet().iterator().next();
+                final int disk_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_ID));
+			    final String server_name = row.getField(CellTableColumns.DISK.SERVER_NAME);
+			    getBackendService().lookupDeviceDiskByID(getSession(), disk_id, new AsyncCallback<DiskInfo>() {
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        onBackendServiceFailure(caught);
+                        getView().clearSelection();
+                    }
+
+                    @Override
+                    public void onSuccess(DiskInfo info) {
+                        diskServiceAddView.popup(disk_id, info.disk_name, info.ds_reserved, server_name);
+                    }
+                    
+			    });
             }
         }
         catch (Exception e) {
@@ -571,37 +519,53 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
     @Override
     public void onModifyDiskService() {
         try {
-            if (Window.confirm(new ClientMessage("", "确认修改所选择的硬盘服务").toString())) {
-                SearchResultRow row = getView().getSelectedSet().iterator().next();
+            if (Window.confirm(new ClientMessage("Modify selected Disk Service.", "确认修改所选择的硬盘服务.").toString())) {
                 if (diskServiceModifyView == null) {
                     diskServiceModifyView = new DeviceDiskServiceModifyViewImpl();
                     diskServiceModifyView.setPresenter(new DeviceDiskServiceModifyView.Presenter() {
                         
                         @Override
-                        public boolean onOK(int ds_id, String ds_desc, Date ds_starttime, Date ds_endtime) {
-                        	if (ds_starttime == null || ds_endtime == null || DeviceDate.calcLife(ds_endtime, ds_starttime) <= 0) {
-								StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "非法的服务时间"));
-                                if (ds_starttime != null && ds_endtime != null) {
-                                	sb.append(" = '").append(DeviceDate.format(ds_starttime)).append("' >= '").append(DeviceDate.format(ds_endtime)).append("'");
-                                }
-                                sb.append(new ClientMessage("", "请重新选择时间"));
+                        public boolean onOK(int ds_id, String ds_desc, long ds_reserved, long ds_used, Date ds_starttime, Date ds_endtime) {
+                            if (ds_used <= 0 || ds_used > ds_reserved) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Disk Size: ", "硬盘大小非法")).append(" = ").append(ds_used).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
-							}
-                            getBackendService().modifyDeviceDiskService(getSession(), ds_id, ds_desc, ds_starttime, ds_endtime, new AsyncCallback<Void>() {
+                            }
+                            if (ds_starttime == null) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Start Time: ", "开始时间非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            if (ds_endtime == null) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid End Time: ", "结束时间非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            int ds_life = DeviceDate.calcLife(ds_endtime, ds_starttime);
+                            if (ds_life <= 0) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Service Life Time: ", "服务期限非法")).append(" = ").append(ds_life).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            getBackendService().modifyDeviceDiskService(getSession(), ds_id, ds_desc, ds_used, ds_starttime, ds_endtime, new AsyncCallback<Void>() {
 
                                 @Override
                                 public void onFailure(Throwable caught) {
-                                    if (caught instanceof EucalyptusServiceException) {
-                                        onBackendServiceFailure((EucalyptusServiceException)caught);
-                                    }
+                                    onBackendServiceFailure(caught);
                                     getView().clearSelection();
                                 }
 
                                 @Override
                                 public void onSuccess(Void result) {
-                                    showStatus(new ClientMessage("", "变更硬盘服务成功"));
+                                    onBackendServiceFinished(new ClientMessage("Successfully modify selected Disk Service.", "硬盘服务修改成功."));
                                     reloadCurrentRange();
                                     getView().clearSelection();
                                 }
@@ -612,16 +576,39 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
                         
                     });
                 }
-				int ds_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_SERVICE_ID));
-				String ds_desc = row.getField(CellTableColumns.DISK.DISK_SERVICE_DESC);
-			    String disk_name = row.getField(CellTableColumns.DISK.DISK_NAME);
-			    int ds_used = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_SERVICE_USED));
-			    Date ds_starttime = DeviceDate.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STARTTIME));
-			    Date ds_endtime = DeviceDate.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_ENDTIME));
-			    String server_name = row.getField(CellTableColumns.DISK.SERVER_NAME);
-			    String account_name = row.getField(CellTableColumns.DISK.ACCOUNT_NAME);
-			    String user_name = row.getField(CellTableColumns.DISK.USER_NAME);
-			    diskServiceModifyView.popup(ds_id, disk_name, ds_desc, ds_used, ds_starttime, ds_endtime, server_name, account_name, user_name);
+                SearchResultRow row = getView().getSelectedSet().iterator().next();
+                final int disk_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_ID));
+				final int ds_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_SERVICE_ID));
+			    final String server_name = row.getField(CellTableColumns.DISK.SERVER_NAME);
+			    final String account_name = row.getField(CellTableColumns.DISK.ACCOUNT_NAME);
+			    final String user_name = row.getField(CellTableColumns.DISK.USER_NAME);
+			    getBackendService().lookupDeviceDiskServiceByID(getSession(), ds_id, new AsyncCallback<DiskServiceInfo>() {
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        onBackendServiceFailure(caught);
+                        getView().clearSelection();
+                    }
+
+                    @Override
+                    public void onSuccess(final DiskServiceInfo ds_info) {
+                        getBackendService().lookupDeviceDiskByID(getSession(), disk_id, new AsyncCallback<DiskInfo>() {
+
+                            @Override
+                            public void onFailure(Throwable caught) {
+                                onBackendServiceFailure(caught);
+                                getView().clearSelection();
+                            }
+
+                            @Override
+                            public void onSuccess(DiskInfo disk_info) {
+                                diskServiceModifyView.popup(ds_id, disk_info.disk_name, ds_info.ds_desc, disk_info.ds_reserved, ds_info.ds_used, ds_info.ds_starttime, ds_info.ds_endtime, server_name, account_name, user_name);
+                            }
+                            
+                        });
+                    }
+                    
+			    });
             }
         }
         catch (Exception e) {
@@ -634,28 +621,26 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
     public void onDeleteDiskService() {
         try {
             if (canDeleteDiskService()) {
-                List<Integer> ds_id_list = new ArrayList<Integer>();
+                List<Integer> ds_ids = new ArrayList<Integer>();
                 for (SearchResultRow row : getView().getSelectedSet()) {
                     int ds_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_SERVICE_ID));
-                    ds_id_list.add(ds_id);
+                    ds_ids.add(ds_id);
                 }
-                if (!ds_id_list.isEmpty()) {
-                    if (Window.confirm(new ClientMessage("", "确认删除所选择的硬盘服务").toString())) {
-                        getBackendService().deleteDeviceDiskService(getSession(), ds_id_list, new AsyncCallback<Void>() {
+                if (!ds_ids.isEmpty()) {
+                    if (Window.confirm(new ClientMessage("Delete selected Disk Service(s).", "确认删除所选择的硬盘服务.").toString())) {
+                        getBackendService().deleteDeviceDiskService(getSession(), ds_ids, new AsyncCallback<Void>() {
         
                             @Override
                             public void onFailure(Throwable caught) {
-                                if (caught instanceof EucalyptusServiceException) {
-                                    onBackendServiceFailure((EucalyptusServiceException)caught);
-                                }
+                                onBackendServiceFailure(caught);
                                 getView().clearSelection();
                             }
         
                             @Override
                             public void onSuccess(Void result) {
-                                showStatus(new ClientMessage("", "删除硬盘服务成功"));
-                                reloadCurrentRange();
+                                onBackendServiceFinished(new ClientMessage("Successfully delete selected Disk Service(s).", "硬盘服务删除成功."));
                                 getView().clearSelection();
+                                reloadCurrentRange();
                             }
                             
                         });
@@ -708,8 +693,8 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 		if (!set.isEmpty()) {
 			for (SearchResultRow row : set) {
 				try {
-					DiskState disk_state = DiskState.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STATE));
-					if (disk_state != DiskState.RESERVED) {
+					DiskState ds_state = DiskState.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STATE));
+					if (ds_state != DiskState.RESERVED) {
 						return false;
 					}
 					long disk_total = Long.parseLong(row.getField(CellTableColumns.DISK.DISK_TOTAL));
@@ -743,8 +728,8 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 		if (set.size() == 1) {
 			try {
 				SearchResultRow row = set.iterator().next();
-				DiskState disk_state = DiskState.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STATE));
-				if (disk_state != DiskState.RESERVED) {
+				DiskState ds_state = DiskState.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STATE));
+				if (ds_state != DiskState.RESERVED) {
 					return false;
 				}
 				long ds_used = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_SERVICE_USED));
@@ -767,8 +752,8 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 		if (!set.isEmpty()) {
 			for (SearchResultRow row : set) {
 				try {
-					DiskState disk_state = DiskState.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STATE));
-					if (disk_state != DiskState.INUSE && disk_state != DiskState.STOP) {
+					DiskState ds_state = DiskState.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STATE));
+					if (ds_state != DiskState.INUSE && ds_state != DiskState.STOP) {
 						return false;
 					}
 				}
@@ -788,8 +773,8 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 		if (set.size() == 1) {
 			try {
 				SearchResultRow row = set.iterator().next();
-				DiskState disk_state = DiskState.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STATE));
-				if (disk_state != DiskState.INUSE && disk_state != DiskState.STOP) {
+				DiskState ds_state = DiskState.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STATE));
+				if (ds_state != DiskState.INUSE && ds_state != DiskState.STOP) {
 					return false;
 				}
 			}

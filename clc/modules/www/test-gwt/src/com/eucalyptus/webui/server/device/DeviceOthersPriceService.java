@@ -34,10 +34,7 @@ public class DeviceOthersPriceService {
 	private static final String OTHERS_PRICE_DISK = "disk";
 	private static final String OTHERS_PRICE_BANDWIDTH = "bandwidth";
 	
-	private OthersPriceInfo lookupOthersPriceInfoByName(Session session, String op_name) throws EucalyptusServiceException {
-	    if (!getUser(session).isSystemAdmin()) {
-            throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
-        }
+	private OthersPriceInfo lookupOthersPriceInfoByName(String op_name) throws EucalyptusServiceException {
 	    Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -46,6 +43,7 @@ public class DeviceOthersPriceService {
             if (!rs.next()) {
                 DeviceOthersPriceDBProcWrapper.createOthersPrice(conn, op_name, "", 0);
                 rs = DeviceOthersPriceDBProcWrapper.lookupOthersPriceByName(conn, false, op_name);
+                rs.next();
             }
             String op_desc = DBData.getString(rs, OTHERS_PRICE.OTHERS_PRICE_DESC);
             double op_price = DBData.getDouble(rs, OTHERS_PRICE.OTHERS_PRICE);
@@ -61,16 +59,16 @@ public class DeviceOthersPriceService {
         }
 	}
 	
-	public OthersPriceInfo lookupOthersPriceMemory(Session session) throws EucalyptusServiceException {
-	    return lookupOthersPriceInfoByName(session, OTHERS_PRICE_NAME_MEMORY);
+	public OthersPriceInfo lookupOthersPriceMemory() throws EucalyptusServiceException {
+	    return lookupOthersPriceInfoByName(OTHERS_PRICE_NAME_MEMORY);
 	}
 	
-	public OthersPriceInfo lookupOthersPriceDisk(Session session) throws EucalyptusServiceException {
-	    return lookupOthersPriceInfoByName(session, OTHERS_PRICE_DISK);
+	public OthersPriceInfo lookupOthersPriceDisk() throws EucalyptusServiceException {
+	    return lookupOthersPriceInfoByName(OTHERS_PRICE_DISK);
 	}
 	
-	public OthersPriceInfo lookupOthersPriceBandwidth(Session session) throws EucalyptusServiceException {
-        return lookupOthersPriceInfoByName(session, OTHERS_PRICE_BANDWIDTH);
+	public OthersPriceInfo lookupOthersPriceBandwidth() throws EucalyptusServiceException {
+        return lookupOthersPriceInfoByName(OTHERS_PRICE_BANDWIDTH);
     }
 	
 	private void modifyOthersPriceByName(Session session, String op_name, String op_desc, double op_price) throws EucalyptusServiceException {
@@ -89,6 +87,7 @@ public class DeviceOthersPriceService {
             if (!rs.next()) {
                 DeviceOthersPriceDBProcWrapper.createOthersPrice(conn, op_name, "", 0);
                 rs = DeviceOthersPriceDBProcWrapper.lookupOthersPriceByName(conn, true, op_name);
+                rs.next();
             }
             rs.updateString(OTHERS_PRICE.OTHERS_PRICE_DESC.toString(), op_desc);
             rs.updateDouble(OTHERS_PRICE.OTHERS_PRICE.toString(), op_price);
@@ -128,9 +127,7 @@ class DeviceOthersPriceDBProcWrapper {
 	    DBStringBuilder sb = new DBStringBuilder();
         sb.append("SELECT * FROM ").append(OTHERS_PRICE);
         sb.append(" WHERE ").append(OTHERS_PRICE.OTHERS_PRICE_NAME).append(" = ").appendString(name);
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
-        rs.next();
-        return rs;
+        return DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
     }
 	
 	public static void createOthersPrice(Connection conn, String name, String desc, double price) throws Exception {

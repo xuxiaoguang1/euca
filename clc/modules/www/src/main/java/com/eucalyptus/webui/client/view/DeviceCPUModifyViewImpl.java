@@ -56,7 +56,7 @@ public class DeviceCPUModifyViewImpl extends DialogBox implements DeviceCPUModif
 	}
 	
 	private int getCPUTotal() {
-		return numList.getSelectedIndex() + 1;
+		return numList.getSelectedIndex() + cpu_total_base;
 	}
 	
 	private String getInputText(TextBox textbox) {
@@ -83,10 +83,14 @@ public class DeviceCPUModifyViewImpl extends DialogBox implements DeviceCPUModif
     }
 	
 	private int cpu_id;
+	private int cpu_total_base;
+	private int cs_used;
 
 	@Override
-	public void popup(int cpu_id, String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, String server_name) {
+	public void popup(int cpu_id, String cpu_name, String cpu_desc, int cpu_total, int cs_used, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, String server_name) {
 		this.cpu_id = cpu_id;
+		this.cpu_total_base = Math.max(1, cs_used);
+		this.cs_used = cs_used;
 		cpuName.setValue(cpu_name);
 		cpuDesc.setValue(cpu_desc);
 		cpuVendor.setValue(cpu_vendor);
@@ -95,16 +99,16 @@ public class DeviceCPUModifyViewImpl extends DialogBox implements DeviceCPUModif
 		cpuCache.setValue(cpu_cache);
 		serverName.setValue(server_name);
 		numList.clear();
-		for (int i = 1; i <= Math.max(cpu_total, 64); i ++) {
+		for (int i = cpu_total_base; i <= Math.max(cpu_total, 64); i ++) {
 			numList.addItem(Integer.toString(i));
 		}
-		numList.setSelectedIndex(cpu_total - 1);
+		numList.setSelectedIndex(cpu_total - cpu_total_base);
 		show();
 	}
 	
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(cpu_id, getCPUDesc(), getCPUTotal(), getCPUVendor(), getCPUModel(), getCPUGHz(), getCPUCache())) {
+		if (presenter.onOK(cpu_id, getCPUDesc(), getCPUTotal(), cs_used, getCPUVendor(), getCPUModel(), getCPUGHz(), getCPUCache())) {
 			hide();
 		}
 	}

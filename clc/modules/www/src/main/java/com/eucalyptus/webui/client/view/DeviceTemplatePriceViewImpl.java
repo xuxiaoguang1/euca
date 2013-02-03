@@ -6,7 +6,6 @@ import java.util.Set;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
-import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -14,10 +13,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 
@@ -29,22 +26,18 @@ public class DeviceTemplatePriceViewImpl extends Composite implements DeviceTemp
 	}
 	
 	@UiField LayoutPanel resultPanel;
-	@UiField Anchor buttonAdd;
-	@UiField Anchor buttonDelete;
-	@UiField Anchor buttonModify;
+	@UiField Anchor buttonAddTemplatePrice;
+	@UiField Anchor buttonDeleteTemplatePrice;
+	@UiField Anchor buttonModifyTemplatePrice;
 	@UiField Anchor buttonClearSelection;
-	@UiField DeviceDateBox creationtimeBegin;
-	@UiField DeviceDateBox creationtimeEnd;
-	@UiField DeviceDateBox modifiedtimeBegin;
-	@UiField DeviceDateBox modifiedtimeEnd;
+	@UiField DeviceDateBox dateBegin;
+    @UiField DeviceDateBox dateEnd;
 	@UiField Anchor buttonClearDate;
 	
 	private Presenter presenter;
 	private MultiSelectionModel<SearchResultRow> selection;
 	private DeviceSearchResultTable table;
 	private DevicePopupPanel popup = new DevicePopupPanel();
-	
-	private DeviceDateBox[] dateBoxList;
 	
 	public DeviceTemplatePriceViewImpl() {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -62,120 +55,67 @@ public class DeviceTemplatePriceViewImpl extends Composite implements DeviceTemp
 		
 		popup.setAutoHideEnabled(true);
         
-		dateBoxList = new DeviceDateBox[]{creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd};
-		
-		for (final DeviceDateBox dateBox : dateBoxList) {
-		    dateBox.setErrorHandler(new Handler() {
+		for (final DeviceDateBox dateBox : new DeviceDateBox[]{dateBegin, dateEnd}) {
+            dateBox.setErrorHandler(new Handler() {
 
-				@Override
-				public void onErrorHappens() {
-					updateDateButtonStatus();
-					int x = dateBox.getAbsoluteLeft();
-		            int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
-					popup.setHTML(x, y, "30EM", "3EM", getDateErrorHTML(dateBox));
-				}
+                @Override
+                public void onErrorHappens() {
+                    updateDateButtonStatus();
+                    int x = dateBox.getAbsoluteLeft();
+                    int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
+                    popup.setHTML(x, y, "30EM", "3EM", DeviceDateBox.getDateErrorHTML(dateBox));
+                }
 
-				@Override
-				public void onValueChanged() {
-					updateDateButtonStatus();
-                	int x = dateBox.getAbsoluteLeft();
-		            int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
-                    DeviceDateBox box0, box1, pair;
-                    if (dateBox == creationtimeBegin || dateBox == creationtimeEnd) {
-                        box0 = creationtimeBegin;
-                        box1 = creationtimeEnd;
-                    }
-                    else {
-                        box0 = modifiedtimeBegin;
-                        box1 = modifiedtimeEnd;
-                    }
-                    pair = (box0 != dateBox ? box0 : box1);
+                @Override
+                public void onValueChanged() {
+                    updateDateButtonStatus();
+                    int x = dateBox.getAbsoluteLeft();
+                    int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
+                    DeviceDateBox pair;
+                    pair = (dateBox != dateBegin ? dateBegin : dateEnd);
                     if (!pair.hasError()) {
-                    	Date date0 = box0.getValue(), date1 = box1.getValue();
-                    	if (date0 != null && date1 != null) {
-                    		if (date0.getTime() > date1.getTime()) {
-                    			popup.setHTML(x, y, "20EM", "2EM", getDateErrorHTML(box0, box1));
-                    			return;
-                    		}
-                    	}
-                    	updateSearchRange();
+                        Date date0 = dateBegin.getValue(), date1 = dateEnd.getValue();
+                        if (date0 != null && date1 != null) {
+                            if (date0.getTime() > date1.getTime()) {
+                                popup.setHTML(x, y, "20EM", "2EM", DeviceDateBox.getDateErrorHTML(dateBegin, dateEnd));
+                                return;
+                            }
+                        }
+                        updateSearchRange();
                     }
-				}
-				
-		    });
-		}
-		updateDateButtonStatus();
-	}
-	
-	private HTML getDateErrorHTML(DeviceDateBox dateBox) {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append("<div>");
-	    sb.append("<font color='").append("black").append("'>");
-	    sb.append(new ClientMessage("", "无效的日期格式: "));
-	    sb.append("</font>");
-	    sb.append("<font color='").append("red").append("'>");
-	    sb.append("'").append(dateBox.getText()).append("'");
-	    sb.append("</font>");
-	    sb.append("</div>");
-	    sb.append("<div>");
-	    sb.append("<font color='").append("black").append("'>");
-	    sb.append(new ClientMessage("", "请输入有效格式")).append(": 'YYYY-MM-DD'");
-	    sb.append("</font>");
-	    sb.append("<div>");
-	    sb.append("</div>");
-	    sb.append("<font color='").append("black").append("'>");
-	    sb.append(new ClientMessage("", "例如: '2012-07-01'"));
-	    sb.append("</font>");
-	    sb.append("</div>");
-	    return new HTML(sb.toString());
-	}
-	
-	private HTML getDateErrorHTML(DeviceDateBox box0, DeviceDateBox box1) {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append("<div>");
-	    sb.append("<font color='").append("black").append("'>");
-	    sb.append(new ClientMessage("", "无效的日期查询: "));
-	    sb.append("</font>");
-	    sb.append("</div>");
-	    sb.append("<div>");
-	    sb.append("<font color='").append("darkred").append("'>");
-	    sb.append("'").append(box0.getText()).append("' > '").append(box1.getText()).append("'");
-	    sb.append("</font>");
-	    sb.append("</div>");
-	    return new HTML(sb.toString());
+                }
+            });
+        }
+        
+        updateDateButtonStatus();
 	}
 	
 	private void updateSearchResultButtonStatus() {
-		int size = selection.getSelectedSet().size();
-		buttonAdd.setEnabled(true);
-		buttonDelete.setEnabled(size != 0);
-		buttonModify.setEnabled(size == 1);
-		buttonClearSelection.setEnabled(size != 0);
-	}
-	
-	private void updateDateButtonStatus() {
-	    for (DeviceDateBox dateBox : dateBoxList) {
-	    	if (!isEmpty(dateBox.getText())) {
-	            buttonClearDate.setEnabled(true);
-	            return;
-	        }
-	    }
-	    buttonClearDate.setEnabled(false);
-	}
+        int size = selection.getSelectedSet().size();
+        buttonAddTemplatePrice.setEnabled(true);
+        buttonDeleteTemplatePrice.setEnabled(size != 0 && presenter.canDeleteTemplatePrice());
+        buttonModifyTemplatePrice.setEnabled(size == 1 && presenter.canModifyTemplatePrice());
+        buttonClearSelection.setEnabled(size != 0);
+    }
+    
+    private void updateDateButtonStatus() {
+        if (isEmpty(dateBegin.getText()) && isEmpty(dateEnd.getText())) {
+            buttonClearDate.setEnabled(false);
+        }
+        else {
+            buttonClearDate.setEnabled(true);
+        }
+    }
 	
 	public boolean isEmpty(String s) {
 		return s == null || s.length() == 0;
 	}
 	
 	private void updateSearchRange() {
-		for (DeviceDateBox dateBox : dateBoxList) {
-			if (dateBox.hasError()) {
-				return;
-			}
-		}
-		presenter.updateSearchResult(creationtimeBegin.getValue(), creationtimeEnd.getValue(),
-				modifiedtimeBegin.getValue(), modifiedtimeEnd.getValue());
-	}
+        if (!dateBegin.hasError() && !dateEnd.hasError()) {
+            presenter.updateSearchResult(dateBegin.getValue(), dateEnd.getValue());
+        }
+    }
 	
 	@Override
 	public void showSearchResult(SearchResult result) {
@@ -224,24 +164,24 @@ public class DeviceTemplatePriceViewImpl extends Composite implements DeviceTemp
 		this.presenter = presenter;
 	}
 	
-	@UiHandler("buttonAdd")
+	@UiHandler("buttonAddTemplatePrice")
 	void handleButtonAdd(ClickEvent event) {
-		if (buttonAdd.isEnabled()) {
-			presenter.onAdd();
+		if (buttonAddTemplatePrice.isEnabled()) {
+			presenter.onAddTemplatePrice();
 		}
 	}
 	
-	@UiHandler("buttonDelete")
+	@UiHandler("buttonDeleteTemplatePrice")
 	void handleButtonDelete(ClickEvent event) {
-		if (buttonDelete.isEnabled()) {
-			presenter.onDelete();
+		if (buttonDeleteTemplatePrice.isEnabled()) {
+			presenter.onDeleteTemplatePrice();
 		}
 	}
 	
-	@UiHandler("buttonModify")
+	@UiHandler("buttonModifyTemplatePrice")
 	void handleButtonModify(ClickEvent event) {
-		if (buttonModify.isEnabled()) {
-			presenter.onModify();
+		if (buttonModifyTemplatePrice.isEnabled()) {
+			presenter.onModifyTemplatePrice();
 		}
 	}
 	
@@ -253,14 +193,13 @@ public class DeviceTemplatePriceViewImpl extends Composite implements DeviceTemp
 	}
 	
 	@UiHandler("buttonClearDate")
-	void handleButtonClearDate(ClickEvent event) {
-	    if (buttonClearDate.isEnabled()) {
-    	    for (DateBox dateBox : dateBoxList) {
-    	        dateBox.setValue(null);
-    	    }
-    	    updateDateButtonStatus();
-    	    updateSearchRange();
-	    }
-	}
+    void handleButtonClearDate(ClickEvent event) {
+        if (buttonClearDate.isEnabled()) {
+            dateBegin.setValue(null);
+            dateEnd.setValue(null);
+            updateDateButtonStatus();
+            updateSearchRange();
+        }
+    }
 	
 }

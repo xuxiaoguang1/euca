@@ -110,7 +110,7 @@
 					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM" text="内存(MB)"/>
 				</g:at>
 				<g:at left="150" top="107">
-					<g:DoubleBox height="1.4EM" width="10EM" ui:field="memSize" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
+					<g:LongBox height="1.4EM" width="10EM" ui:field="memSize" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
 				</g:at>
 				<g:at left="320" top="110">
 					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="9EM" text="单价(元/天)"/>
@@ -122,7 +122,7 @@
 					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM" text="硬盘(MB)"/>
 				</g:at>
 				<g:at left="150" top="137">
-					<g:DoubleBox height="1.4EM" width="10EM" ui:field="diskSize" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
+					<g:LongBox height="1.4EM" width="10EM" ui:field="diskSize" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
 				</g:at>
 				<g:at left="320" top="140">
 					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="9EM" text="单价(元/天)"/>
@@ -134,7 +134,7 @@
 					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM" text="带宽(KB)"/>
 				</g:at>
 				<g:at left="150" top="167">
-					<g:DoubleBox height="1.4EM" width="10EM" ui:field="bwSize" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
+					<g:IntegerBox height="1.4EM" width="10EM" ui:field="bwSize" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
 				</g:at>
 				<g:at left="320" top="170">
 					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="9EM" text="单价(元/天)"/>

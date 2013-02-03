@@ -107,7 +107,7 @@
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">服务描述</g:Anchor>
 					</g:at>
 					<g:at left="120" top="92">
-						<g:TextArea styleName="{style.textArea}" height="2.4EM" width="32EM" ui:field="diskDesc"/>
+						<g:TextArea styleName="{style.textArea}" height="2.4EM" width="32EM" ui:field="dsDesc"/>
 					</g:at>
 					<g:at left="30" top="140">
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">开始时间</g:Anchor>
@@ -134,7 +134,7 @@
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">容量(MB)</g:Anchor>
 					</g:at>
 					<g:at left="470" top="135">
-						<g:LongBox ui:field="diskUsed" maxLength="50" height="1.4EM" width="7EM" readOnly="true" styleName="{style.textBoxStyle-readonly}" alignment="RIGHT"/>
+						<g:LongBox ui:field="dsUsed" maxLength="50" height="1.4EM" width="7EM" readOnly="true" styleName="{style.textBoxStyle-readonly}" alignment="RIGHT"/>
 					</g:at>
 					<g:at left="400" top="180" style="font-size:90%;">
 						<g:Anchor styleName="{global.buttonCss.button}"

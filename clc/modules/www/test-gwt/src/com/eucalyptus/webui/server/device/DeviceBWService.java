@@ -126,7 +126,7 @@ public class DeviceBWService {
 	                String ip_addr = DBData.getString(rs, IP_SERVICE.IP_ADDR);
 	                IPType ip_type = IPType.getIPType(DBData.getInt(rs, IP_SERVICE.IP_TYPE));
 	                String bs_desc = DBData.getString(rs, BW_SERVICE.BW_SERVICE_DESC);
-	                int bs_bw_max = DBData.getInt(rs, BW_SERVICE.BW_SERVICE_BW_MAX);
+	                int bs_bw_max = DBData.getInt(rs, BW_SERVICE.BW_SERVICE_BW_MAX) / BW_UNIT;
 	                String account_name = DBData.getString(rs, ACCOUNT.ACCOUNT_NAME);
 	                String user_name = DBData.getString(rs, USER.USER_NAME);
 	                Date bs_starttime = DBData.getDate(rs, BW_SERVICE.BW_SERVICE_STARTTIME);
@@ -172,8 +172,8 @@ public class DeviceBWService {
         }
     }
     
-    public Map<Integer, String> lookupIPsWithoutBWService(Session session, IPType ip_type, int account_id, int user_id) throws EucalyptusServiceException {
-        if (!getUser(session).isSystemAdmin()) {
+    public Map<String, Integer> lookupIPsWithoutBWService(boolean force, Session session, IPType ip_type, int account_id, int user_id) throws EucalyptusServiceException {
+    	if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
         Connection conn = null;
@@ -234,7 +234,7 @@ public class DeviceBWService {
     }
     
     protected int createBWService(boolean force, Connection conn, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, int ip_id) throws Exception {
-        bs_bw_max = Math.max(0, bs_bw_max) / BW_UNIT;
+        bs_bw_max = Math.max(0, bs_bw_max) * BW_UNIT;
         return DeviceBWDBProcWrapper.createBWService(conn, bs_desc, bs_bw_max, bs_starttime, bs_endtime, ip_id);
     }
     
@@ -279,7 +279,7 @@ public class DeviceBWService {
         if (bs_desc == null) {
             bs_desc = "";
         }
-        bs_bw_max = Math.max(0, bs_bw_max) / BW_UNIT;
+        bs_bw_max = Math.max(0, bs_bw_max) * BW_UNIT;
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -305,7 +305,7 @@ public class DeviceBWService {
     }
     
     public void updateBWServiceBandwidth(int bs_id, int bs_bw) throws EucalyptusServiceException {
-        bs_bw = Math.max(0, bs_bw) / BW_UNIT;
+        bs_bw = Math.max(0, bs_bw) * BW_UNIT;
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -342,12 +342,12 @@ class DeviceBWDBProcWrapper {
         return rs;
     }
     
-    public static Map<Integer, String> lookupIPsWithoutBWService(Connection conn, IPType type, int account_id, int user_id) throws Exception {
+    public static Map<String, Integer> lookupIPsWithoutBWService(Connection conn, IPType type, int account_id, int user_id) throws Exception {
         DBTableUser USER = DBTable.USER;
         DBTableIPService IP_SERVICE = DBTable.IP_SERVICE;
         DBTableBWService BW_SERVICE = DBTable.BW_SERVICE;
         DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ").append(IP_SERVICE.IP_ID).append(", ").append(IP_SERVICE.IP_ADDR).append(" FROM "); {
+        sb.append("SELECT ").append(IP_SERVICE.IP_ADDR).append(", ").append(IP_SERVICE.IP_ID).append(" FROM "); {
             sb.append(IP_SERVICE);
             sb.append(" LEFT JOIN ").append(USER).append(" ON ").append(IP_SERVICE.USER_ID).append(" = ").append(USER.USER_ID);
         }
@@ -366,9 +366,9 @@ class DeviceBWDBProcWrapper {
             sb.append(" AND ").append(USER.ACCOUNT_ID).append(" = ").append(account_id);
         }
         ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        Map<Integer, String> result = new HashMap<Integer, String>();
+        Map<String, Integer> result = new HashMap<String, Integer>();
         while (rs.next()) {
-            result.put(rs.getInt(1), rs.getString(2));
+            result.put(rs.getString(1), rs.getInt(2));
         }
         return result;
     }
@@ -423,8 +423,8 @@ class DeviceBWDBProcWrapper {
         }
         sb.append(") VALUES ("); {
             sb.appendString(bs_desc).append(", ");
-            sb.appendNull().append(", ");
-            sb.appendNull().append(", ");
+            sb.appendDate(bs_starttime).append(", ");
+            sb.appendDate(bs_endtime).append(", ");
             sb.append(0).append(", ");
             sb.append(bs_bw_max).append(", ");
             sb.appendDate().append(", ");

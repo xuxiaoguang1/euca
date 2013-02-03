@@ -1,7 +1,11 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.eucalyptus.webui.client.activity.device.DeviceDate;
 import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
@@ -27,14 +31,17 @@ public class DeviceMemoryServiceAddViewImpl extends DialogBox implements DeviceM
 	}
 	
 	@UiField TextBox serverName;
-	@UiField TextBox memoryName;
+	@UiField TextBox memName;
 	@UiField ListBox accountNameList;
 	@UiField ListBox userNameList;
-	@UiField TextArea memoryDesc;
-	@UiField LongBox memoryUsed;
+	@UiField TextArea msDesc;
+	@UiField LongBox msUsed;
 	@UiField DeviceDateBox dateBegin;
 	@UiField DeviceDateBox dateEnd;
 	@UiField TextBox dateLife;
+	
+	private Map<String, Integer> accountMap = new HashMap<String, Integer>();
+    private Map<String, Integer> userMap = new HashMap<String, Integer>();
 	
 	private DevicePopupPanel popup = new DevicePopupPanel();
 		
@@ -43,15 +50,15 @@ public class DeviceMemoryServiceAddViewImpl extends DialogBox implements DeviceM
 		setWidget(uiBinder.createAndBindUi(this));
 		accountNameList.addChangeHandler(new ChangeHandler() {
 
-			@Override
-			public void onChange(ChangeEvent event) {
-				String account_name = getAccountName();
-				if (!isEmpty(account_name)) {
-					presenter.lookupUserNamesByAccountName(account_name);
-				}
-			}
-			
-		});
+            @Override
+            public void onChange(ChangeEvent event) {
+                int account_id = getAccountID();
+                if (account_id != -1) {
+                    presenter.lookupUserNamesByAccountID(account_id);
+                }
+            }
+            
+        });
 		for (final DeviceDateBox dateBox : new DeviceDateBox[]{dateBegin, dateEnd}) {
 			dateBox.setErrorHandler(new Handler() {
 
@@ -86,21 +93,70 @@ public class DeviceMemoryServiceAddViewImpl extends DialogBox implements DeviceM
 		hide();
 	}
 	
-	private String getAccountName() {
-		return getSelectedText(accountNameList); 
-	}
-	
-	private String getUserName() {
-		return getSelectedText(userNameList); 
-	}
-	
+    @Override
+    public void setAccountNames(Map<String, Integer> account_map) {
+        accountNameList.clear();
+        userNameList.clear();
+        accountMap.clear();
+        userMap.clear();
+        if (account_map != null && !account_map.isEmpty()) {
+            List<String> list = new ArrayList<String>(account_map.keySet());
+            Collections.sort(list);
+            for (String account_name : list) {
+                accountNameList.addItem(account_name);
+            }
+            accountNameList.setSelectedIndex(0);
+            accountMap = account_map;
+            int account_id = getAccountID();
+            if (account_id != -1) {
+                presenter.lookupUserNamesByAccountID(account_id);
+            }
+        }
+    }
+    
+    @Override
+    public void setUserNames(int account_id, Map<String, Integer> user_map) {
+        if (getAccountID() == account_id) {
+            userNameList.clear();
+            userMap.clear();
+            if (user_map != null && !user_map.isEmpty()) {
+                List<String> list = new ArrayList<String>(user_map.keySet());
+                Collections.sort(list);
+                for (String user_name : list) {
+                    userNameList.addItem(user_name);
+                }
+                userNameList.setSelectedIndex(0);
+                userMap = user_map;
+            }
+        }
+    }
+
 	private String getMemoryDesc() {
-		return getInputText(memoryDesc);
+		return getInputText(msDesc);
 	}
 	
 	private long getMemoryUsed() {
-	    return memoryUsed.getValue();
+	    return msUsed.getValue();
 	}
+	
+    private int getID(Map<String, Integer> map, String name) {
+        if (name == null || name.isEmpty()) {
+            return -1;
+        }
+        Integer id = map.get(name);
+        if (id == null) {
+            return -1;
+        }
+        return id;
+    }
+    
+    private int getAccountID() {
+        return getID(accountMap, getSelectedText(accountNameList));
+    }
+    
+    private int getUserID() {
+        return getID(userMap, getSelectedText(userNameList));
+    }
 	
 	private String getInputText(TextArea textarea) {
 		String text = textarea.getText();
@@ -149,15 +205,17 @@ public class DeviceMemoryServiceAddViewImpl extends DialogBox implements DeviceM
 		this.presenter = presenter;
     }
 	
-	private int memory_id;
+	private int mem_id;
+	private long ms_reserved;
 	
 	@Override
-	public void popup(int memory_id, String memory_name, String server_name, long ms_reserved) {
-		this.memory_id = memory_id;
+	public void popup(int mem_id, String mem_name, long ms_reserved, String server_name) {
+		this.mem_id = mem_id;
+		this.ms_reserved = ms_reserved;
 		serverName.setValue(server_name);
-		memoryName.setValue(memory_name);
-		memoryDesc.setValue("");
-		memoryUsed.setValue(ms_reserved);
+		memName.setValue(mem_name);
+		msDesc.setValue("");
+		msUsed.setValue(ms_reserved);
 		dateBegin.setValue(new Date());
 		dateEnd.setValue(new Date());
 		accountNameList.clear();
@@ -169,7 +227,7 @@ public class DeviceMemoryServiceAddViewImpl extends DialogBox implements DeviceM
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(memory_id, getMemoryDesc(), getMemoryUsed(), dateBegin.getValue(), dateEnd.getValue(), getAccountName(), getUserName())) {
+		if (presenter.onOK(mem_id, getMemoryDesc(), ms_reserved, getMemoryUsed(), dateBegin.getValue(), dateEnd.getValue(), getUserID())) {
 			hide();
 		}
 	}
@@ -179,31 +237,4 @@ public class DeviceMemoryServiceAddViewImpl extends DialogBox implements DeviceM
 		hide();
 	}
 	
-    @Override
-    public void setAccountNameList(List<String> account_name_list) {
-    	setListBox(accountNameList, account_name_list);
-    	setListBox(userNameList, null);
-    	String account_name = getAccountName();
-        if (!isEmpty(account_name)) {
-        	presenter.lookupUserNamesByAccountName(account_name);
-        }
-    }
-
-    @Override
-    public void setUserNameList(String account_name, List<String> user_name_list) {
-        if (getAccountName().equals(account_name)) {
-	        setListBox(userNameList, user_name_list);
-        }
-    }
-    
-    private void setListBox(ListBox listbox, List<String> values) {
-    	listbox.clear();
-    	if (values != null && !values.isEmpty()) {
-	    	for (String value : values) {
-	    		listbox.addItem(value);
-	    	}
-	    	listbox.setSelectedIndex(0);
-    	}
-    }
-
 }

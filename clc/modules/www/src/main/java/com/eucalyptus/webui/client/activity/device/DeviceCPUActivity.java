@@ -8,14 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.ClientFactory;
-import com.eucalyptus.webui.client.activity.AbstractSearchActivity;
 import com.eucalyptus.webui.client.place.SearchPlace;
-import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
-import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.DeviceCPUAddView;
 import com.eucalyptus.webui.client.view.DeviceCPUAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceCPUModifyView;
@@ -25,18 +21,15 @@ import com.eucalyptus.webui.client.view.DeviceCPUServiceAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceCPUServiceModifyView;
 import com.eucalyptus.webui.client.view.DeviceCPUServiceModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceCPUView;
-import com.eucalyptus.webui.client.view.FooterView;
-import com.eucalyptus.webui.client.view.HasValueWidget;
-import com.eucalyptus.webui.client.view.LogView;
-import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.message.ClientMessage;
+import com.eucalyptus.webui.shared.resource.device.CPUInfo;
+import com.eucalyptus.webui.shared.resource.device.CPUServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
 import com.eucalyptus.webui.shared.resource.device.status.CPUState;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceCPUView.Presenter {
+public class DeviceCPUActivity extends DeviceActivity implements DeviceCPUView.Presenter {
 	
 	private static final ClientMessage title = new ClientMessage("CPU", "CPU");
 	
@@ -67,72 +60,20 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 		return view;
 	}
 	
-	private EucalyptusServiceAsync getBackendService() {
-		return clientFactory.getBackendService();
-	}
-
-	private FooterView getFooterView() {
-		return clientFactory.getShellView().getFooterView();
-	}
-
-	private LogView getLogView() {
-		return clientFactory.getShellView().getLogView();
-	}
-
-	private Session getSession() {
-		return clientFactory.getLocalSession().getSession();
-	}
-	
-	private boolean isEmpty(String s) {
-		return s == null || s.length() == 0;
-	}
-	
-    private void showStatus(ClientMessage msg) {
-        getFooterView().showStatus(StatusType.NONE, msg.toString(), FooterView.CLEAR_DELAY_SECOND * 3);
-        getLogView().log(LogType.INFO, msg.toString());
-    }
-    
-    private void onFrontendServiceFailure(Throwable caught) {
-        Window.alert(new ClientMessage("", "前端服务运行错误").toString());
-        getLogView().log(LogType.ERROR, caught.toString());
-    }
-    
-    private void onBackendServiceFailure(Throwable caught) {
-        if (caught instanceof EucalyptusServiceException) {
-            EucalyptusServiceException exception = (EucalyptusServiceException)caught;
-            ClientMessage msg = exception.getFrontendMessage();
-            if (msg == null) {
-                msg = new ClientMessage("Backend Service Failure", "后代服务运行错误");
-            }
-            Window.alert(msg.toString());
-            getLogView().log(LogType.ERROR, msg.toString() + " : " + caught.toString());
-        }
-        else {
-            getLogView().log(LogType.ERROR, caught.toString());
-        }
-    }
-    
-	@Override
-	public void saveValue(ArrayList<String> keys, ArrayList<HasValueWidget> values) {
-		/* do nothing */
-	}
-	
 	@Override
 	protected void doSearch(String query, SearchRange range) {
 		getBackendService().lookupDeviceCPUByDate(getSession(), range, queryState, dateBegin, dateEnd, new AsyncCallback<SearchResult>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				if (caught instanceof EucalyptusServiceException) {
-					onBackendServiceFailure((EucalyptusServiceException)caught);
-				}
-				displayData(null);
+				onBackendServiceFailure(caught);
+                displayData(null);
 			}
 
 			@Override
 			public void onSuccess(SearchResult result) {
-				showStatus(new ClientMessage("", "查询CPU成功"));
-				displayData(result);
+				onBackendServiceFinished();
+                displayData(result);
 			}
 			
 		});
@@ -140,14 +81,12 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 
 			@Override
 			public void onFailure(Throwable caught) {
-				if (caught instanceof EucalyptusServiceException) {
-					onBackendServiceFailure((EucalyptusServiceException)caught);
-				}
+				onBackendServiceFailure(caught);
 			}
 
 			@Override
 			public void onSuccess(Map<Integer, Integer> result) {
-				showStatus(new ClientMessage("", "查询CPU数量成功"));
+				onBackendServiceFinished();
 				cpuCounts = result;
 				getView().updateLabels();
 			}
@@ -188,42 +127,40 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 	@Override
 	public void onAddCPU() {
 		try {
-			if (Window.confirm(new ClientMessage("", "确认创建新CPU设备").toString())) {
+			if (Window.confirm(new ClientMessage("Create a new CPU.", "确认创建新CPU.").toString())) {
 				if (cpuAddView == null) {
 					cpuAddView = new DeviceCPUAddViewImpl();
 					cpuAddView.setPresenter(new DeviceCPUAddView.Presenter() {
 						
 						@Override
-						public boolean onOK(String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, String server_name) {
-							if (isEmpty(cpu_name)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "CPU名称非法")).append(" = '").append(cpu_name).append("' ");
-								sb.append(new ClientMessage("", "请重新选择CPU"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							if (isEmpty(server_name)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "服务器名称非法")).append(" = '").append(server_name).append("' ");
-								sb.append(new ClientMessage("", "请重新选择服务器"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							getBackendService().addDeviceCPU(getSession(), cpu_name, cpu_desc, cpu_total, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, server_name, new AsyncCallback<Void>() {
+						public boolean onOK(String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, int server_id) {
+						    if (cpu_name == null || cpu_name.isEmpty()) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid CPU Name: ", "CPU名称非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+						    if (server_id == -1) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Server Name.", "服务器名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+							getBackendService().createDeviceCPU(getSession(), cpu_name, cpu_desc, cpu_total, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, server_id, new AsyncCallback<Void>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
-									}
-									getView().clearSelection();
+								    onBackendServiceFailure(caught);
+                                    getView().clearSelection();
 								}
 
 								@Override
 								public void onSuccess(Void result) {
-									showStatus(new ClientMessage("", "添加CPU成功"));
-									reloadCurrentRange();
-									getView().clearSelection();
+								    onBackendServiceFinished(new ClientMessage("Successfully create CPU.", "CPU添加成功."));
+                                    getView().clearSelection();
+                                    reloadCurrentRange();
 								}
 								
 							});
@@ -231,103 +168,98 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 						}
 						
 						@Override
-						public void lookupAreaNames() {
-							getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<List<String>>() {
+                        public void lookupAreaNames() {
+                            getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<Map<String, Integer>>() {
 
-								@Override
-								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
-									}
-								}
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    onBackendServiceFailure(caught);
+                                }
 
-								@Override
-								public void onSuccess(List<String> area_name_list) {
-									showStatus(new ClientMessage("", "获取区域列表成功"));
-									cpuAddView.setAreaNameList(area_name_list);
-								}
-								
-							});
-						}
+                                @Override
+                                public void onSuccess(Map<String, Integer> area_map) {
+                                    onBackendServiceFinished();
+                                    cpuAddView.setAreaNames(area_map);
+                                }
+                                
+                            });
+                        }
 						
 						@Override
-						public void lookupRoomNamesByAreaName(final String area_name) {
-							if (isEmpty(area_name)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "区域名称非法")).append(" = '").append(area_name).append("'");
-								Window.alert(sb.toString());
-							}
-							else {
-								getBackendService().lookupDeviceRoomNamesByAreaName(getSession(), area_name, new AsyncCallback<List<String>>() {
+                        public void lookupRoomNamesByAreaID(final int area_id) {
+                            if (area_id == -1) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Area Name.", "区域名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                            }
+                            else {
+                                getBackendService().lookupDeviceRoomNamesByAreaID(getSession(), area_id, new AsyncCallback<Map<String, Integer>>() {
+    
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+                                        onBackendServiceFailure(caught);
+                                    }
+    
+                                    @Override
+                                    public void onSuccess(Map<String, Integer> room_map) {
+                                        onBackendServiceFinished();
+                                        cpuAddView.setRoomNames(area_id, room_map);
+                                    }
+                                    
+                                });
+                            }
+                        }					
+						
+                        @Override
+                        public void lookupCabinetNamesByRoomID(final int room_id) {
+                            if (room_id == -1) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Room Name.", "机房名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                            }
+                            else {
+                                getBackendService().lookupDeviceCabinetNamesByRoomID(getSession(), room_id, new AsyncCallback<Map<String, Integer>>() {
 
-									@Override
-									public void onFailure(Throwable caught) {
-										if (caught instanceof EucalyptusServiceException) {
-											onBackendServiceFailure((EucalyptusServiceException)caught);
-										}
-									}
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+                                        onBackendServiceFailure(caught);
+                                    }
 
-									@Override
-									public void onSuccess(List<String> room_name_list) {
-										showStatus(new ClientMessage("", "获取机房列表成功"));
-										cpuAddView.setRoomNameList(area_name, room_name_list);
-									}
-									
-								});
-							}
-						}
+                                    @Override
+                                    public void onSuccess(Map<String, Integer> cabinet_map) {
+                                        onBackendServiceFinished();
+                                        cpuAddView.setCabinetNames(room_id, cabinet_map);
+                                    }
+                                    
+                                });
+                            }
+                        }
 						
 						@Override
-						public void lookupCabinetNamesByRoomName(final String room_name) {
-							if (isEmpty(room_name)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "机房名称非法")).append(" = '").append(room_name).append("'");
-								Window.alert(sb.toString());
-							}
+						public void lookupServerNamesByCabinetID(final int cabinet_id) {
+						    if (cabinet_id == -1) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Cabinet Name.", "机柜名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                            }
 							else {
-								getBackendService().lookupCabinetNamesByRoomID(getSession(), room_name, new AsyncCallback<List<String>>() {
+							    getBackendService().lookupDeviceServerNamesByCabinetID(getSession(), cabinet_id, new AsyncCallback<Map<String, Integer>>() {
 
-									@Override
-									public void onFailure(Throwable caught) {
-										if (caught instanceof EucalyptusServiceException) {
-											onBackendServiceFailure((EucalyptusServiceException)caught);
-										}
-									}
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+                                        onBackendServiceFailure(caught);
+                                    }
 
-									@Override
-									public void onSuccess(List<String> cabinet_name_list) {
-										showStatus(new ClientMessage("", "获取机柜列表成功"));
-										cpuAddView.setCabinetNameList(room_name, cabinet_name_list);
-									}
-									
-								});
-							}
-						}
-						
-						@Override
-						public void lookupServerNameByCabinetName(final String cabinet_name) {
-							if (isEmpty(cabinet_name)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "机房机柜非法")).append(" = '").append(cabinet_name).append("'");
-								Window.alert(sb.toString());
-							}
-							else {
-								getBackendService().lookupDeviceServerNamesByCabinetName(getSession(), cabinet_name, new AsyncCallback<List<String>>() {
-
-									@Override
-									public void onFailure(Throwable caught) {
-										if (caught instanceof EucalyptusServiceException) {
-											onBackendServiceFailure((EucalyptusServiceException)caught);
-										}
-									}
-
-									@Override
-									public void onSuccess(List<String> cabinet_name_list) {
-										showStatus(new ClientMessage("", "获取服务器列表成功"));
-										cpuAddView.setServerNameList(cabinet_name, cabinet_name_list);
-									}
-									
-								});
+                                    @Override
+                                    public void onSuccess(Map<String, Integer> server_map) {
+                                        onBackendServiceFinished();
+                                        cpuAddView.setServerNames(cabinet_id, server_map);
+                                    }
+                                    
+							    });
 							}
 						}
 						
@@ -346,18 +278,17 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 	public void onModifyCPU() {
 		try {
 			if (canModifyCPU()) {
-				if (Window.confirm(new ClientMessage("", "确认修改所选择的CPU").toString())) {
-					SearchResultRow row = getView().getSelectedSet().iterator().next();
+			    if (Window.confirm(new ClientMessage("Modify selected CPU.", "确认修改所选择的CPU.").toString())) {
 				    if (cpuModifyView == null) {
 				        cpuModifyView = new DeviceCPUModifyViewImpl();
 				        cpuModifyView.setPresenter(new DeviceCPUModifyView.Presenter() {
                             
                             @Override
-                            public boolean onOK(int cpu_id, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache) {
-                                if (cpu_total <= 0) {
+                            public boolean onOK(int cpu_id, String cpu_desc, int cpu_total, int cs_used, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache) {
+                                if (cpu_total <= 0 || cpu_total < cs_used) {
                                     StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("", "主频CPU数量非法")).append(" = '").append(cpu_total).append("' ");
-                                    sb.append(new ClientMessage("", "请重新选择数量"));
+                                    sb.append(new ClientMessage("Invalid CPU Total: ", "CPU数量非法")).append(" = ").append(cpu_total).append(".").append("\n");
+                                    sb.append(new ClientMessage("Please try again.", "请重试."));
                                     Window.alert(sb.toString());
                                     return false;
                                 }
@@ -365,15 +296,13 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 
                                     @Override
                                     public void onFailure(Throwable caught) {
-                                        if (caught instanceof EucalyptusServiceException) {
-                                            onBackendServiceFailure((EucalyptusServiceException)caught);
-                                        }
+                                        onBackendServiceFailure(caught);
                                         getView().clearSelection();
                                     }
 
                                     @Override
                                     public void onSuccess(Void result) {
-                                        showStatus(new ClientMessage("", "修改CPU成功"));
+                                        onBackendServiceFinished(new ClientMessage("Successfully modify selected CPU.", "CPU修改成功."));
                                         reloadCurrentRange();
                                         getView().clearSelection();
                                     }
@@ -384,16 +313,23 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
                             
                         });
 				    }
-				    int cpu_id = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_ID));
-				    String cpu_name = row.getField(CellTableColumns.CPU.CPU_NAME);
-				    String cpu_desc = row.getField(CellTableColumns.CPU.CPU_DESC);
-				    int cpu_total = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_TOTAL));
-				    String cpu_vendor = row.getField(CellTableColumns.CPU.CPU_VENDOR);
-				    String cpu_model = row.getField(CellTableColumns.CPU.CPU_MODEL);
-				    double cpu_ghz = Double.parseDouble(row.getField(CellTableColumns.CPU.CPU_GHZ)); 
-				    double cpu_cache = Double.parseDouble(row.getField(CellTableColumns.CPU.CPU_CACHE));
-				    String server_name = row.getField(CellTableColumns.CPU.SERVER_NAME);
-				    cpuModifyView.popup(cpu_id, cpu_name, cpu_desc, cpu_total, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, server_name); 
+                    SearchResultRow row = getView().getSelectedSet().iterator().next();
+                    final int cpu_id = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_ID));
+                    final String server_name = row.getField(CellTableColumns.CPU.SERVER_NAME);
+                    getBackendService().lookupDeviceCPUByID(getSession(), cpu_id, new AsyncCallback<CPUInfo>() {
+
+                        @Override
+                        public void onFailure(Throwable caught) {
+                            onBackendServiceFailure(caught);
+                            getView().clearSelection();
+                        }
+
+                        @Override
+                        public void onSuccess(final CPUInfo info) {
+                            cpuModifyView.popup(cpu_id, info.cpu_name, info.cpu_desc, info.cpu_total, info.cpu_total - info.cs_reserved, info.cpu_vendor, info.cpu_model, info.cpu_ghz, info.cpu_cache, server_name); 
+                        }
+                        
+                    });
 				}
 			}
 		}
@@ -407,28 +343,26 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 	public void onDeleteCPU() {
 		try {
 			if (canDeleteCPU()) {
-				List<Integer> cpu_id_list = new ArrayList<Integer>();
+				List<Integer> cpu_ids = new ArrayList<Integer>();
 				for (SearchResultRow row : getView().getSelectedSet()) {
 					int cpu_id = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_ID));
-					cpu_id_list.add(cpu_id);
+					cpu_ids.add(cpu_id);
 				}
-				if (!cpu_id_list.isEmpty()) {
-					if (Window.confirm(new ClientMessage("", "确认删除所选择的CPU").toString())) {
-						getBackendService().deleteDeviceCPU(getSession(), cpu_id_list, new AsyncCallback<Void>() {
+				if (!cpu_ids.isEmpty()) {
+				    if (Window.confirm(new ClientMessage("Delete selected CPU(s).", "确认删除所选择的CPU.").toString())) {
+						getBackendService().deleteDeviceCPU(getSession(), cpu_ids, new AsyncCallback<Void>() {
 		
 							@Override
 							public void onFailure(Throwable caught) {
-								if (caught instanceof EucalyptusServiceException) {
-									onBackendServiceFailure((EucalyptusServiceException)caught);
-								}
-								getView().clearSelection();
+							    onBackendServiceFailure(caught);
+                                getView().clearSelection();
 							}
 		
 							@Override
 							public void onSuccess(Void result) {
-								showStatus(new ClientMessage("", "删除CPU成功"));
-								reloadCurrentRange();
-								getView().clearSelection();
+							    onBackendServiceFinished(new ClientMessage("Successfully delete selected CPU(s).", "CPU删除成功."));
+                                getView().clearSelection();
+                                reloadCurrentRange();
 							}
 							
 						});
@@ -446,120 +380,131 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 	public void onAddCPUService() {
 		try {
 			if (canAddCPUService()) {
-				if (Window.confirm(new ClientMessage("", "确认添加的CPU服务").toString())) {
-					SearchResultRow row = getView().getSelectedSet().iterator().next();
+			    if (Window.confirm(new ClientMessage("Create a new CPU Service.", "确认创建新CPU服务.").toString())) {
 					if (cpuServiceAddView == null) {
 						cpuServiceAddView = new DeviceCPUServiceAddViewImpl();
 						cpuServiceAddView.setPresenter(new DeviceCPUServiceAddView.Presenter() {
 							
 							@Override
-							public boolean onOK(int cpu_id, String cs_desc, int cs_used, Date cs_starttime, Date cs_endtime, String account_name, String user_name) {
-								if (cs_used <= 0) {
+							public boolean onOK(int cpu_id, String cs_desc, int cs_reserved, int cs_used, Date cs_starttime, Date cs_endtime, int user_id) {
+								if (cs_used <= 0 || cs_used > cs_reserved) {
                                     StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("", "CPU数量非法")).append(" = '").append(cs_used).append("' ");
-                                    sb.append(new ClientMessage("", "请重新选择数量"));
+                                    sb.append(new ClientMessage("Invalid CPU Total: ", "CPU数量非法")).append(" = ").append(cs_used).append(".").append("\n");
+                                    sb.append(new ClientMessage("Please try again.", "请重试."));
                                     Window.alert(sb.toString());
                                     return false;
                                 }
-								if (cs_starttime == null || cs_endtime == null || DeviceDate.calcLife(cs_endtime, cs_starttime) <= 0) {
-									StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("", "非法的服务时间"));
-                                    if (cs_starttime != null && cs_endtime != null) {
-                                    	sb.append(" = '").append(DeviceDate.format(cs_starttime)).append("' >= '").append(DeviceDate.format(cs_endtime)).append("'");
-                                    }
-                                    sb.append(new ClientMessage("", "请重新选择时间"));
+							    if (cs_starttime == null) {
+							        StringBuilder sb = new StringBuilder();
+                                    sb.append(new ClientMessage("Invalid Start Time: ", "开始时间非法")).append(" = (null).").append("\n");
+                                    sb.append(new ClientMessage("Please try again.", "请重试."));
+                                    Window.alert(sb.toString());
+                                    return false;
+							    }
+							    if (cs_endtime == null) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append(new ClientMessage("Invalid End Time: ", "结束时间非法")).append(" = (null).").append("\n");
+                                    sb.append(new ClientMessage("Please try again.", "请重试."));
+                                    Window.alert(sb.toString());
+                                    return false;
+                                }
+							    int cs_life = DeviceDate.calcLife(cs_endtime, cs_starttime);
+							    if (cs_life <= 0) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append(new ClientMessage("Invalid Service Life Time: ", "服务期限非法")).append(" = ").append(cs_life).append(".").append("\n");
+                                    sb.append(new ClientMessage("Please try again.", "请重试."));
                                     Window.alert(sb.toString());
                                     return false;
 								}
-								if (isEmpty(account_name)) {
-									StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("", "非法的账户名称")).append(" = '").append(account_name).append("' ");
-                                    sb.append(new ClientMessage("", "请重新选择账户"));
-                                    Window.alert(sb.toString());
-									return false;
-								}
-								if (isEmpty(user_name)) {
-									StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("", "非法的用户名称")).append(" = '").append(user_name).append("' ");
-                                    sb.append(new ClientMessage("", "请重新选择账户"));
-                                    Window.alert(sb.toString());
-									return false;
-								}
-								getBackendService().addDeviceCPUService(getSession(), cs_desc, cs_used, cs_starttime, cs_endtime, cpu_id, account_name, user_name, new AsyncCallback<Void>() {
+							    if (user_id == -1) {
+	                                StringBuilder sb = new StringBuilder();
+	                                sb.append(new ClientMessage("Invalid User Name.", "用户名称非法.")).append("\n");
+	                                sb.append(new ClientMessage("Please try again.", "请重试."));
+	                                Window.alert(sb.toString());
+	                                return false;
+	                            }
+								getBackendService().createDeviceCPUService(getSession(), cs_desc, cs_used, CPUState.STOP, cs_starttime, cs_endtime, cpu_id, user_id, new AsyncCallback<Void>() {
 									
 									@Override
 									public void onFailure(Throwable caught) {
-										if (caught instanceof EucalyptusServiceException) {
-											onBackendServiceFailure((EucalyptusServiceException)caught);
-										}
-										getView().clearSelection();
+									    onBackendServiceFailure(caught);
+	                                    getView().clearSelection();
 									}
 
 									@Override
 									public void onSuccess(Void result) {
-										showStatus(new ClientMessage("", "添加CPU服务成功"));
-										reloadCurrentRange();
-										getView().clearSelection();
+									    onBackendServiceFinished(new ClientMessage("Successfully create CPU Service.", "CPU服务添加成功."));
+	                                    getView().clearSelection();
+	                                    reloadCurrentRange();
 									}
 											
 								});
 								return true;
 							}
-
+							
 							@Override
 							public void lookupAccountNames() {
-//								getBackendService().lookupDeviceAccountNames(getSession(), new AsyncCallback<List<String>>() {
-//
-//									@Override
-//									public void onFailure(Throwable caught) {
-//										if (caught instanceof EucalyptusServiceException) {
-//											onBackendServiceFailure((EucalyptusServiceException)caught);
-//										}
-//									}
-//
-//									@Override
-//									public void onSuccess(List<String> account_name_list) {
-//										showStatus(new SharedMessage("", "获取账户列表成功"));
-//										cpuServiceAddView.setAccountNameList(account_name_list);
-//									}
-//									
-//								});
-							}
+							    getBackendService().lookupDeviceAccountNames(getSession(), new AsyncCallback<Map<String, Integer>>() {
 
-							@Override
-							public void lookupUserNamesByAccountName(final String account_name) {
-								if (isEmpty(account_name)) {
-									StringBuilder sb = new StringBuilder();
-									sb.append(new ClientMessage("", "账户名称非法")).append(" = '").append(account_name).append("'");
-									Window.alert(sb.toString());
-								}
-								else {
-//									getBackendService().lookupDeviceUserNamesByAccountName(getSession(), account_name, new AsyncCallback<List<String>>() {
-//
-//										@Override
-//										public void onFailure(Throwable caught) {
-//											if (caught instanceof EucalyptusServiceException) {
-//												onBackendServiceFailure((EucalyptusServiceException)caught);
-//											}
-//										}
-//
-//										@Override
-//										public void onSuccess(List<String> user_name_list) {
-//											showStatus(new SharedMessage("", "获取用户列表成功"));
-//											cpuServiceAddView.setUserNameList(account_name, user_name_list);
-//										}
-//										
-//									});
-								}
-							}
-							
+	                                @Override
+	                                public void onFailure(Throwable caught) {
+	                                    onBackendServiceFailure(caught);
+	                                }
+
+	                                @Override
+	                                public void onSuccess(Map<String, Integer> account_map) {
+	                                    onBackendServiceFinished();
+	                                    cpuServiceAddView.setAccountNames(account_map);
+	                                }
+	                                
+	                            });
+	                        }
+	                        
+	                        @Override
+	                        public void lookupUserNamesByAccountID(final int account_id) {
+	                            if (account_id == -1) {
+	                                StringBuilder sb = new StringBuilder();
+	                                sb.append(new ClientMessage("Invalid Account Name.", "账户名称非法.")).append("\n");
+	                                sb.append(new ClientMessage("Please try again.", "请重试."));
+	                                Window.alert(sb.toString());
+	                            }
+	                            else {
+	                                getBackendService().lookupDeviceUserNamesByAccountID(getSession(), account_id, new AsyncCallback<Map<String, Integer>>() {
+	    
+	                                    @Override
+	                                    public void onFailure(Throwable caught) {
+	                                        onBackendServiceFailure(caught);
+	                                    }
+	    
+	                                    @Override
+	                                    public void onSuccess(Map<String, Integer> user_map) {
+	                                        onBackendServiceFinished();
+	                                        cpuServiceAddView.setUserNames(account_id, user_map);
+	                                    }
+	                                    
+	                                });
+	                            }
+	                        }                   
+
 						});
 					}
-				    int cpu_id = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_ID));
-				    String cpu_name = row.getField(CellTableColumns.CPU.CPU_NAME);
-				    String server_name = row.getField(CellTableColumns.CPU.SERVER_NAME);
-				    int cs_used = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_SERVICE_USED));
-					cpuServiceAddView.popup(cpu_id, cpu_name, server_name, cs_used);
+					SearchResultRow row = getView().getSelectedSet().iterator().next();
+                    final int cpu_id = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_ID));
+                    final String server_name = row.getField(CellTableColumns.CPU.SERVER_NAME);
+                    getBackendService().lookupDeviceCPUByID(getSession(), cpu_id, new AsyncCallback<CPUInfo>() {
+
+                        @Override
+                        public void onFailure(Throwable caught) {
+                            onBackendServiceFailure(caught);
+                            getView().clearSelection();
+                        }
+
+                        @Override
+                        public void onSuccess(final CPUInfo info) {
+                            cpuServiceAddView.popup(cpu_id, info.cpu_name, info.cs_reserved, server_name);
+                        }
+                        
+                    });
 				}
 			}
 		}
@@ -573,56 +518,95 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 	public void onModifyCPUService() {
 		try {
 			if (canModifyCPUService()) {
-				if (Window.confirm(new ClientMessage("", "确认修改所选择的CPU服务").toString())) {
-					SearchResultRow row = getView().getSelectedSet().iterator().next();
+			    if (Window.confirm(new ClientMessage("Modify selected CPU Service.", "确认修改所选择的CPU服务.").toString())) {
 					if (cpuServiceModifyView == null) {
 						cpuServiceModifyView = new DeviceCPUServiceModifyViewImpl();
 						cpuServiceModifyView.setPresenter(new DeviceCPUServiceModifyView.Presenter() {
 							
 							@Override
-							public boolean onOK(int cs_id, String cs_desc, Date cs_starttime, Date cs_endtime) {
-								if (cs_starttime == null || cs_endtime == null || DeviceDate.calcLife(cs_endtime, cs_starttime) <= 0) {
-									StringBuilder sb = new StringBuilder();
-									sb.append(new ClientMessage("", "非法的服务时间"));
-									if (cs_starttime != null && cs_endtime != null) {
-                                    	sb.append(" = '").append(DeviceDate.format(cs_starttime)).append("' >= '").append(DeviceDate.format(cs_endtime)).append("'");
-                                    }
-                                    sb.append(new ClientMessage("", "请重新选择时间"));
+							public boolean onOK(int cs_id, String cs_desc, int cs_reserved, int cs_used, Date cs_starttime, Date cs_endtime) {
+							    if (cs_used <= 0 || cs_used > cs_reserved) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append(new ClientMessage("Invalid CPU Total: ", "CPU数量非法")).append(" = ").append(cs_used).append(".").append("\n");
+                                    sb.append(new ClientMessage("Please try again.", "请重试."));
                                     Window.alert(sb.toString());
                                     return false;
-								}
-								getBackendService().modifyDeviceCPUService(getSession(), cs_id, cs_desc, cs_starttime, cs_endtime, new AsyncCallback<Void>() {
+                                }
+							    if (cs_starttime == null) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append(new ClientMessage("Invalid Start Time: ", "开始时间非法")).append(" = (null).").append("\n");
+                                    sb.append(new ClientMessage("Please try again.", "请重试."));
+                                    Window.alert(sb.toString());
+                                    return false;
+                                }
+                                if (cs_endtime == null) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append(new ClientMessage("Invalid End Time: ", "结束时间非法")).append(" = (null).").append("\n");
+                                    sb.append(new ClientMessage("Please try again.", "请重试."));
+                                    Window.alert(sb.toString());
+                                    return false;
+                                }
+                                int cs_life = DeviceDate.calcLife(cs_endtime, cs_starttime);
+                                if (cs_life <= 0) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append(new ClientMessage("Invalid Service Life Time: ", "服务期限非法")).append(" = ").append(cs_life).append(".").append("\n");
+                                    sb.append(new ClientMessage("Please try again.", "请重试."));
+                                    Window.alert(sb.toString());
+                                    return false;
+                                }
+                                getBackendService().modifyDeviceCPUService(getSession(), cs_id, cs_desc, cs_used, cs_starttime, cs_endtime, new AsyncCallback<Void> () {
 
-									@Override
-									public void onFailure(Throwable caught) {
-										if (caught instanceof EucalyptusServiceException) {
-											onBackendServiceFailure((EucalyptusServiceException)caught);
-										}
-										getView().clearSelection();
-									}
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+                                        onBackendServiceFailure(caught);
+                                        getView().clearSelection();
+                                    }
 
-									@Override
-									public void onSuccess(Void result) {
-										showStatus(new ClientMessage("", "变更CPU服务成功"));
-										reloadCurrentRange();
-										getView().clearSelection();
-									}
-
-								});
+                                    @Override
+                                    public void onSuccess(Void result) {
+                                        onBackendServiceFinished(new ClientMessage("Successfully modify selected CPU Service.", "CPU服务修改成功."));
+                                        reloadCurrentRange();
+                                        getView().clearSelection();
+                                    }
+                                    
+                                });
 								return true;
 							}
 						});
 					}
-					int cs_id = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_SERVICE_ID));
-					String cs_desc = row.getField(CellTableColumns.CPU.CPU_SERVICE_DESC);
-				    String cpu_name = row.getField(CellTableColumns.CPU.CPU_NAME);
-				    int cs_used = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_SERVICE_USED));
-				    Date cs_starttime = DeviceDate.parse(row.getField(CellTableColumns.CPU.CPU_SERVICE_STARTTIME));
-				    Date cs_endtime = DeviceDate.parse(row.getField(CellTableColumns.CPU.CPU_SERVICE_ENDTIME));
-				    String server_name = row.getField(CellTableColumns.CPU.SERVER_NAME);
-				    String account_name = row.getField(CellTableColumns.CPU.ACCOUNT_NAME);
-				    String user_name = row.getField(CellTableColumns.CPU.USER_NAME);
-					cpuServiceModifyView.popup(cs_id, cpu_name, cs_desc, cs_used, cs_starttime, cs_endtime, server_name, account_name, user_name);
+					SearchResultRow row = getView().getSelectedSet().iterator().next();
+					final int cpu_id = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_ID));
+                    final int cs_id = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_SERVICE_ID));
+                    final String server_name = row.getField(CellTableColumns.CPU.SERVER_NAME);
+                    final String account_name = row.getField(CellTableColumns.CPU.ACCOUNT_NAME);
+                    final String user_name = row.getField(CellTableColumns.CPU.USER_NAME);
+                    getBackendService().lookupDeviceCPUServiceByID(getSession(), cs_id, new AsyncCallback<CPUServiceInfo>() {
+
+                        @Override
+                        public void onFailure(Throwable caught) {
+                            onBackendServiceFailure(caught);
+                            getView().clearSelection();
+                        }
+
+                        @Override
+                        public void onSuccess(final CPUServiceInfo cs_info) {
+                            getBackendService().lookupDeviceCPUByID(getSession(), cpu_id, new AsyncCallback<CPUInfo>() {
+
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    onBackendServiceFailure(caught);
+                                    getView().clearSelection();
+                                }
+
+                                @Override
+                                public void onSuccess(CPUInfo cpu_info) {
+                                    cpuServiceModifyView.popup(cs_id, cpu_info.cpu_name, cs_info.cs_desc, cpu_info.cs_reserved, cs_info.cs_used, cs_info.cs_starttime, cs_info.cs_endtime, server_name, account_name, user_name);
+                                }
+                                
+                            });
+                        }
+                        
+                    });
 				}
 			}
 		}
@@ -636,28 +620,26 @@ public class DeviceCPUActivity extends AbstractSearchActivity implements DeviceC
 	public void onDeleteCPUService() {
 		try {
 			if (canDeleteCPUService()) {
-				List<Integer> cs_id_list = new ArrayList<Integer>();
+				List<Integer> cs_ids = new ArrayList<Integer>();
 				for (SearchResultRow row : getView().getSelectedSet()) {
 					int cs_id = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_SERVICE_ID));
-					cs_id_list.add(cs_id);
+					cs_ids.add(cs_id);
 				}
-				if (!cs_id_list.isEmpty()) {
-					if (Window.confirm(new ClientMessage("", "确认删除所选择的CPU服务").toString())) {
-						getBackendService().deleteDeviceCPUService(getSession(), cs_id_list, new AsyncCallback<Void>() {
+				if (!cs_ids.isEmpty()) {
+				    if (Window.confirm(new ClientMessage("Delete selected CPU Service(s).", "确认删除所选择的CPU服务.").toString())) {
+						getBackendService().deleteDeviceCPUService(getSession(), cs_ids, new AsyncCallback<Void>() {
 		
 							@Override
 							public void onFailure(Throwable caught) {
-								if (caught instanceof EucalyptusServiceException) {
-									onBackendServiceFailure((EucalyptusServiceException)caught);
-								}
-								getView().clearSelection();
+							    onBackendServiceFailure(caught);
+                                getView().clearSelection();
 							}
 		
 							@Override
 							public void onSuccess(Void result) {
-								showStatus(new ClientMessage("", "删除CPU服务成功"));
-								reloadCurrentRange();
-								getView().clearSelection();
+							    onBackendServiceFinished(new ClientMessage("Successfully delete selected CPU Service(s).", "CPU服务删除成功."));
+                                getView().clearSelection();
+                                reloadCurrentRange();
 							}
 							
 						});

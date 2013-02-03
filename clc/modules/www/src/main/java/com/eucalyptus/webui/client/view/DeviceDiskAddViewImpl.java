@@ -1,6 +1,10 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -31,6 +35,11 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
 	@UiField TextBox diskName;
 	@UiField TextArea diskDesc;
 	@UiField LongBox diskSize;
+	
+	private Map<String, Integer> areaMap = new HashMap<String, Integer>();
+    private Map<String, Integer> roomMap = new HashMap<String, Integer>();
+    private Map<String, Integer> cabinetMap = new HashMap<String, Integer>();
+    private Map<String, Integer> serverMap = new HashMap<String, Integer>();
 		
 	public DeviceDiskAddViewImpl() {
 		super(false);
@@ -39,10 +48,10 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
 
 			@Override
 			public void onChange(ChangeEvent event) {
-				String area_name = getAreaName();
-				if (!isEmpty(area_name)) {
-					presenter.lookupRoomNamesByAreaName(area_name);
-				}
+			    int area_id = getAreaID();
+                if (area_id != -1) {
+                    presenter.lookupRoomNamesByAreaID(area_id);
+                }
 			}
 			
 		});
@@ -50,9 +59,9 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
 
             @Override
             public void onChange(ChangeEvent event) {
-                String room_name = getRoomName();
-                if (!isEmpty(room_name)) {
-                    presenter.lookupCabinetNamesByRoomName(room_name);
+                int room_id = getRoomID();
+                if (room_id != -1) {
+                    presenter.lookupCabinetNamesByRoomID(room_id);
                 }
             }
             
@@ -61,9 +70,9 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
 
             @Override
             public void onChange(ChangeEvent event) {
-                String cabinet_name = getCabinetName();
-                if (!isEmpty(cabinet_name)) {
-                    presenter.lookupServerNameByCabinetName(cabinet_name);
+                int cabinet_id = getCabinetID();
+                if (cabinet_id != -1) {
+                    presenter.lookupServerNamesByCabinetID(cabinet_id);
                 }
             }
             
@@ -72,6 +81,96 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
 		hide();
 	}
 	
+	@Override
+    public void setAreaNames(Map<String, Integer> area_map) {
+        areaNameList.clear();
+        roomNameList.clear();
+        cabinetNameList.clear();
+        serverNameList.clear();
+        areaMap.clear();
+        roomMap.clear();
+        cabinetMap.clear();
+        serverMap.clear();
+        if (area_map != null && !area_map.isEmpty()) {
+            List<String> list = new ArrayList<String>(area_map.keySet());
+            Collections.sort(list);
+            for (String area_name : list) {
+                areaNameList.addItem(area_name);
+            }
+            areaNameList.setSelectedIndex(0);
+            areaMap = area_map;
+            int area_id = getAreaID();
+            if (area_id != -1) {
+                presenter.lookupRoomNamesByAreaID(area_id);
+            }
+        }
+    }
+
+    @Override
+    public void setRoomNames(int area_id, Map<String, Integer> room_map) {
+        if (getAreaID() == area_id) {
+            roomNameList.clear();
+            cabinetNameList.clear();
+            serverNameList.clear();
+            roomMap.clear();
+            cabinetMap.clear();
+            serverMap.clear();
+            if (room_map != null && !room_map.isEmpty()) {
+                List<String> list = new ArrayList<String>(room_map.keySet());
+                Collections.sort(list);
+                for (String room_name : list) {
+                    roomNameList.addItem(room_name);
+                }
+                roomNameList.setSelectedIndex(0);
+                roomMap = room_map;
+                int room_id = getRoomID();
+                if (room_id != -1) {
+                    presenter.lookupCabinetNamesByRoomID(room_id);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setCabinetNames(int room_id, Map<String, Integer> cabinet_map) {
+        if (getRoomID() == room_id) {
+            cabinetNameList.clear();
+            serverNameList.clear();
+            cabinetMap.clear();
+            serverMap.clear();
+            if (cabinet_map != null && !cabinet_map.isEmpty()) {
+                List<String> list = new ArrayList<String>(cabinet_map.keySet());
+                Collections.sort(list);
+                for (String cabinet_name : list) {
+                    cabinetNameList.addItem(cabinet_name);
+                }
+                cabinetNameList.setSelectedIndex(0);
+                cabinetMap = cabinet_map;
+                int cabinet_id = getCabinetID();
+                if (cabinet_id != -1) {
+                    presenter.lookupServerNamesByCabinetID(cabinet_id);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setServerNames(int cabinet_id, Map<String, Integer> server_map) {
+        if (getCabinetID() == cabinet_id) {
+            serverNameList.clear();
+            serverMap.clear();
+            if (server_map != null && !server_map.isEmpty()) {
+                List<String> list = new ArrayList<String>(server_map.keySet());
+                Collections.sort(list);
+                for (String server_name : list) {
+                    serverNameList.addItem(server_name);
+                }
+                serverNameList.setSelectedIndex(0);
+                serverMap = server_map;
+            }
+        }
+    }
+
 	private String getDiskName() {
 		return getInputText(diskName);
 	}
@@ -84,21 +183,32 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
 		return diskSize.getValue();
 	}
 	
-	private String getAreaName() {
-		return getSelectedText(areaNameList); 
-	}
-	
-	private String getRoomName() {
-		return getSelectedText(roomNameList);
-	}
-	
-	private String getCabinetName() {
-	    return getSelectedText(cabinetNameList);
-	}
-	
-	private String getServerName() {
-		return getSelectedText(serverNameList);
-	}
+    private int getID(Map<String, Integer> map, String name) {
+        if (name == null || name.isEmpty()) {
+            return -1;
+        }
+        Integer id = map.get(name);
+        if (id == null) {
+            return -1;
+        }
+        return id;
+    }
+    
+    private int getAreaID() {
+        return getID(areaMap, getSelectedText(areaNameList));
+    }
+    
+    private int getRoomID() {
+        return getID(roomMap, getSelectedText(roomNameList));
+    }
+    
+    private int getCabinetID() {
+        return getID(cabinetMap, getSelectedText(cabinetNameList));
+    }
+    
+    private int getServerID() {
+        return getID(serverMap, getSelectedText(serverNameList));
+    }
 	
 	private String getInputText(TextBox textbox) {
 		String text = textbox.getText();
@@ -124,10 +234,6 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
 	    return listbox.getItemText(index);
 	}
 	
-	private boolean isEmpty(String s) {
-	    return s == null || s.length() == 0;
-	}
-	
 	private DeviceDiskAddView.Presenter presenter;
 	
 	@Override
@@ -150,7 +256,7 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(getDiskName(), getDiskDesc(), getDiskSize(), getServerName())) {
+		if (presenter.onOK(getDiskName(), getDiskDesc(), getDiskSize(), getServerID())) {
 			hide();
 		}
 	}
@@ -160,58 +266,4 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
 		hide();
 	}
 
-    @Override
-    public void setAreaNameList(List<String> area_name_list) {
-    	setListBox(areaNameList, area_name_list);
-    	setListBox(roomNameList, null);
-    	setListBox(cabinetNameList, null);
-    	setListBox(serverNameList, null);
-        String area_name = getAreaName();
-        if (!isEmpty(area_name)) {
-            presenter.lookupRoomNamesByAreaName(area_name);
-        }
-    }
-
-    @Override
-    public void setRoomNameList(String area_name, List<String> room_name_list) {
-        if (getAreaName().equals(area_name)) {
-	        setListBox(roomNameList, room_name_list);
-	        setListBox(cabinetNameList, null);
-	        setListBox(serverNameList, null);
-	        String room_name = getRoomName();
-	        if (!isEmpty(room_name)) {
-	            presenter.lookupCabinetNamesByRoomName(room_name);
-	        }
-        }
-    }
-    
-    @Override
-    public void setCabinetNameList(String room_name, List<String> cabinet_name_list) {
-        if (getRoomName().equals(room_name)) {
-        	setListBox(cabinetNameList, cabinet_name_list);
-        	setListBox(serverNameList, null);
-        	String cabinet_name = getCabinetName();
-        	if (!isEmpty(cabinet_name)) {
-        		presenter.lookupServerNameByCabinetName(cabinet_name);
-        	}
-        }
-    }
-    
-	@Override
-	public void setServerNameList(String cabinet_name, List<String> server_name_list) {
-		if (getCabinetName().equals(cabinet_name)) {
-			setListBox(serverNameList, server_name_list);
-		}
-	}
-    
-    private void setListBox(ListBox listbox, List<String> values) {
-    	listbox.clear();
-    	if (values != null && !values.isEmpty()) {
-	    	for (String value : values) {
-	    		listbox.addItem(value);
-	    	}
-	    	listbox.setSelectedIndex(0);
-    	}
-    }
-    
 }

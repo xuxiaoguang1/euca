@@ -1,7 +1,7 @@
 package com.eucalyptus.webui.client.view;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -11,21 +11,21 @@ public interface DeviceBWServiceAddView extends IsWidget {
 	
 	public void popup();
 	
-	public void setAccountNameList(List<String> account_name_list);
-	
-	public void setUserNameList(String account_name, List<String> user_name_list);
-	
-	public void setIPAddrList(List<String> ip_addr_list, String account_name, String user_name);
+	public void setAccountNames(Map<String, Integer> account_map);
+    
+    public void setUserNames(int account_id, Map<String, Integer> user_map);
+    
+    public void setIPs(int account_id, int user_id, Map<String, Integer> ip_map);
 	
 	public interface Presenter {
 		
-		public boolean onOK(String ip_addr, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime);
+		public boolean onOK(String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, int ip_id);
 		
 		public void lookupAccountNames();
 		
-		public void lookupUserNamesByAccountName(String account_name);
+		public void lookupUserNamesByAccountID(int account_id);
 		
-		public void lookupAddrByUserName(String account_name, String user_name);
+		public void lookupIPsWithoutBWService(int account_id, int user_id);
 		
 	}
 	

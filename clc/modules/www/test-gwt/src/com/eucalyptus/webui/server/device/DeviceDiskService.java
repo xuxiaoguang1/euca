@@ -207,7 +207,25 @@ public class DeviceDiskService {
         }
     }
     
-    public Map<Integer, Long> lookupDiskCountsByState(Session session) throws EucalyptusServiceException {
+    public Map<String, Integer> lookupDiskNamesByServerID(boolean force, Session session, int server_id) throws EucalyptusServiceException {
+        if (!force && !getUser(session).isSystemAdmin()) {
+            throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
+        }
+        Connection conn = null;
+        try {
+            conn = DBProcWrapper.getConnection();
+            return DeviceDiskDBProcWrapper.lookupDiskNamesByServerID(conn, server_id);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EucalyptusServiceException(e);
+        }
+        finally {
+            DBProcWrapper.close(conn);
+        }
+    }
+    
+    public Map<Integer, Long> lookupDiskCounts(Session session) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             LoginUserProfile user = getUser(session);
@@ -225,7 +243,8 @@ public class DeviceDiskService {
                 account_id = user.getAccountId();
                 user_id = user.getUserId();
             }
-            Map<Integer, Long> result = DeviceDiskDBProcWrapper.lookupDiskCountsByState(conn, account_id, user_id);
+            conn = DBProcWrapper.getConnection();
+            Map<Integer, Long> result = DeviceDiskDBProcWrapper.lookupDiskCounts(conn, account_id, user_id);
             for (Map.Entry<Integer, Long> entry : result.entrySet()) {
                 entry.setValue(entry.getValue() / DISK_UNIT);
             }
@@ -245,14 +264,17 @@ public class DeviceDiskService {
         try {
             conn = DBProcWrapper.getConnection();
             DBTableDisk DISK = DBTable.DISK;
+            DBTableDiskService DISK_SERVICE = DBTable.DISK_SERVICE;
             ResultSet rs = DeviceDiskDBProcWrapper.lookupDiskByID(conn, false, disk_id);
             String disk_name = DBData.getString(rs, DISK.DISK_NAME);
             String disk_desc = DBData.getString(rs, DISK.DISK_DESC);
-            long disk_total = DBData.getLong(rs, DISK.DISK_TOTAL) / DISK_UNIT;
+            long disk_size = DBData.getLong(rs, DISK.DISK_TOTAL) / DISK_UNIT;
             Date disk_creationtime = DBData.getDate(rs, DISK.DISK_CREATIONTIME);
             Date disk_modifiedtime = DBData.getDate(rs, DISK.DISK_MODIFIEDTIME);
             int server_id = DBData.getInt(rs, DISK.SERVER_ID);
-            return new DiskInfo(disk_id, disk_name, disk_desc, disk_total, disk_creationtime, disk_modifiedtime, server_id);
+            rs = DeviceDiskDBProcWrapper.lookupDiskServiceReservedByID(conn, false, disk_id);
+            long ds_reserved = DBData.getLong(rs, DISK_SERVICE.DISK_SERVICE_USED) / DISK_UNIT;
+            return new DiskInfo(disk_id, disk_name, disk_desc, disk_size, ds_reserved, disk_creationtime, disk_modifiedtime, server_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -362,11 +384,14 @@ public class DeviceDiskService {
         long reserved = rs.getLong(DISK_SERVICE.DISK_SERVICE_USED.toString());
         if (reserved >= ds_used) {
             rs.updateLong(DISK_SERVICE.DISK_SERVICE_USED.toString(), reserved - ds_used);
+            rs.updateRow();
         }
         else if (force) {
             rs.updateLong(DISK_SERVICE.DISK_SERVICE_USED.toString(), 0);
+            rs.updateRow();
             rs = DeviceDiskDBProcWrapper.lookupDiskByID(conn, true, disk_id);
             rs.updateLong(DISK.DISK_TOTAL.toString(), rs.getLong(DISK.DISK_TOTAL.toString()) + ds_used - reserved);
+            rs.updateRow();
         }
         return DeviceDiskDBProcWrapper.createDiskService(conn, ds_desc, ds_used, ds_starttime, ds_endtime, ds_state, disk_id, user_id);
     }
@@ -542,9 +567,9 @@ public class DeviceDiskService {
         try {
             conn = DBProcWrapper.getConnection();
             conn.setAutoCommit(false);
-            for (Map.Entry<Integer, String> entry : DeviceDiskDBProcWrapper.lookupDiskNamesByServerID(conn, server_id).entrySet()) {
+            for (Map.Entry<String, Integer> entry : DeviceDiskDBProcWrapper.lookupDiskNamesByServerID(conn, server_id).entrySet()) {
                 DBTableDiskService DISK_SERVICE = DBTable.DISK_SERVICE;
-                for (int ds_id : DeviceDiskDBProcWrapper.lookupDiskServiceIDsByDiskID(conn, entry.getKey())) {
+                for (int ds_id : DeviceDiskDBProcWrapper.lookupDiskServiceIDsByDiskID(conn, entry.getValue())) {
                     ResultSet rs = DeviceDiskDBProcWrapper.lookupDiskServiceByID(conn, true, ds_id);
                     rs.updateInt(DISK_SERVICE.DISK_SERVICE_STATE.toString(), DiskState.STOP.getValue());
                     rs.updateRow();
@@ -624,17 +649,17 @@ class DeviceDiskDBProcWrapper {
     
     private static final Logger log = Logger.getLogger(DeviceDiskDBProcWrapper.class.getName());
     
-    public static Map<Integer, String> lookupDiskNamesByServerID(Connection conn, int server_id) throws Exception {
+    public static Map<String, Integer> lookupDiskNamesByServerID(Connection conn, int server_id) throws Exception {
         DBTableDisk DISK = DBTable.DISK;
         DBStringBuilder sb = new DBStringBuilder();
         sb.append("SELECT ");
-        sb.append(DISK.DISK_ID).append(", ").append(DISK.DISK_NAME);
+        sb.append(DISK.DISK_NAME).append(", ").append(DISK.DISK_ID);
         sb.append(" FROM ").append(DISK);
         sb.append(" WHERE ").append(DISK.SERVER_ID).append(" = ").append(server_id);
         ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        Map<Integer, String> result = new HashMap<Integer, String>();
+        Map<String, Integer> result = new HashMap<String, Integer>();
         while (rs.next()) {
-            result.put(rs.getInt(DISK.DISK_ID.toString()), rs.getString(DISK.DISK_NAME.toString()));
+            result.put(rs.getString(1), rs.getInt(2));
         }
         return result;
     }
@@ -777,7 +802,12 @@ class DeviceDiskDBProcWrapper {
             sb.appendDate().append(", ");
             sb.appendNull().append(", ");
             sb.append(disk_id).append(", ");
-            sb.append(user_id);
+            if (user_id == -1) {
+                sb.appendNull();
+            }
+            else {
+                sb.append(user_id);
+            }
         }
         sb.append(")");
         Statement stat = conn.createStatement();
@@ -787,7 +817,7 @@ class DeviceDiskDBProcWrapper {
         return rs.getInt(1);
     }
     
-    public static Map<Integer, Long> lookupDiskCountsByState(Connection conn, int account_id, int user_id) throws Exception {
+    public static Map<Integer, Long> lookupDiskCounts(Connection conn, int account_id, int user_id) throws Exception {
         DBTableUser USER = DBTable.USER;
         DBTableDiskService DISK_SERVICE = DBTable.DISK_SERVICE;
         DBStringBuilder sb = new DBStringBuilder();

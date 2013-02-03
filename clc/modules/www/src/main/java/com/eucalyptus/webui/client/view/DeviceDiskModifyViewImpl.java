@@ -54,10 +54,12 @@ public class DeviceDiskModifyViewImpl extends DialogBox implements DeviceDiskMod
     }
 	
 	private int disk_id;
+	private long ds_used;
 
 	@Override
-	public void popup(int disk_id, String disk_name, String disk_desc, long disk_size, String server_name) {
+	public void popup(int disk_id, String disk_name, String disk_desc, long disk_size, long ds_used, String server_name) {
 		this.disk_id = disk_id;
+		this.ds_used = ds_used;
 		diskName.setValue(disk_name);
 		diskDesc.setValue(disk_desc);
 		diskSize.setValue(disk_size);
@@ -67,7 +69,7 @@ public class DeviceDiskModifyViewImpl extends DialogBox implements DeviceDiskMod
 	
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(disk_id, getDiskDesc(), getDiskSize())) {
+		if (presenter.onOK(disk_id, getDiskDesc(), getDiskSize(), ds_used)) {
 			hide();
 		}
 	}

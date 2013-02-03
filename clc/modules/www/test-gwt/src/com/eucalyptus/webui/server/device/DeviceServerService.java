@@ -133,10 +133,7 @@ public class DeviceServerService {
         }
     }
     
-    public Map<String, Integer> lookupServerNamesByCabinetID(Session session, int cabinet_id) throws EucalyptusServiceException {
-        if (!getUser(session).isSystemAdmin()) {
-            throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
-        }
+    public Map<String, Integer> lookupServerNamesByCabinetID(int cabinet_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();

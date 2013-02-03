@@ -101,19 +101,19 @@
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">内存名称</g:Anchor>
 					</g:at>
 					<g:at left="120" top="122">
-						<g:TextBox ui:field="memoryName" maxLength="50" height="1.4EM" width="32EM"/>
+						<g:TextBox ui:field="memName" maxLength="50" height="1.4EM" width="32EM"/>
 					</g:at>
 					<g:at left="30" top="155">
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">内存描述</g:Anchor>
 					</g:at>
 					<g:at left="120" top="152">
-						<g:TextArea styleName="{style.textArea}" height="2.4EM" width="32EM" ui:field="memoryDesc"/>
+						<g:TextArea styleName="{style.textArea}" height="2.4EM" width="32EM" ui:field="memDesc"/>
 					</g:at>
 					<g:at left="30" top="200">
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">容量(MB)</g:Anchor>
 					</g:at>
 					<g:at left="120" top="197">
-						<g:LongBox ui:field="memorySize" maxLength="50" height="1.4EM" width="14EM" alignment="RIGHT"/>
+						<g:LongBox ui:field="memSize" maxLength="50" height="1.4EM" width="14EM" alignment="RIGHT"/>
 					</g:at>
 					<g:at left="400" top="210" style="font-size:90%;">
 						<g:Anchor styleName="{global.buttonCss.button}"

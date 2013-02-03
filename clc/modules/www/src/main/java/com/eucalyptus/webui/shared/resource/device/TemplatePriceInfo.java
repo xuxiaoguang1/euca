@@ -7,15 +7,19 @@ public class TemplatePriceInfo implements Serializable {
 
 	private static final long serialVersionUID = 8618101930035521382L;
 	
-	public final int tp_id;
-	public final int template_id;
-	public final String tp_desc;
-	public final double tp_cpu;
-	public final double tp_mem;
-	public final double tp_disk;
-	public final double tp_bw;
-	public final Date tp_creationtime;
-	public final Date tp_modifiedtime;
+	public int tp_id;
+	public int template_id;
+	public String tp_desc;
+	public double tp_cpu;
+	public double tp_mem;
+	public double tp_disk;
+	public double tp_bw;
+	public Date tp_creationtime;
+	public Date tp_modifiedtime;
+	
+	public TemplatePriceInfo() {
+	    /* do nothing */
+	}
 	
 	public TemplatePriceInfo(int tp_id, int template_id, String tp_desc, double tp_cpu, double tp_mem, double tp_disk, double tp_bw, Date tp_creationtime, Date tp_modifiedtime) {
 		this.tp_id = tp_id;

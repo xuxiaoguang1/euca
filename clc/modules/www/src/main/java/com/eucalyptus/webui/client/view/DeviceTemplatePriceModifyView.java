@@ -6,13 +6,12 @@ public interface DeviceTemplatePriceModifyView extends IsWidget {
 	
 	void setPresenter(Presenter presenter);
 	
-	void popup(int template_price_id, String template_name, String template_price_desc, 
-	        String cpu_name, int ncpus, double cpu_price,
-	        double mem_size, double mem_price, double disk_size, double disk_price, double bw_size, double bw_price);
+	void popup(int tp_id, String template_name, String tp_desc, String cpu_name, int ncpus, double tp_cpu,
+	        long mem_size, double tp_mem, long disk_size, double tp_disk, int bw_size, double tp_bw);
 	        
 	public interface Presenter {
 	    
-	    boolean onOK(int template_price_id, String template_price_desc, String cpu_price, String mem_price, String disk_price, String bw_price);
+	    boolean onOK(int tp_id, String tp_desc, double tp_cpu, double tp_mem, double tp_disk, double tp_bw);
 		
 	}
 

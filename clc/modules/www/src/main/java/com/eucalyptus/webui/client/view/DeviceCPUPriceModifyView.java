@@ -4,13 +4,13 @@ import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceCPUPriceModifyView extends IsWidget {
 	
-	void setPresenter(Presenter presenter);
+	public void setPresenter(Presenter presenter);
 	
-	void popup(int cpu_price_id, String cpu_name, String cpu_price_desc, double cpu_price);
+	public void popup(int cp_id, String cpu_name, String cp_desc, double cp_price);
 	
 	public interface Presenter {
 		
-		boolean onOK(int cpu_price_id, String cpu_price_desc, String price);
+		public boolean onOK(int cp_id, String cp_desc, double cp_price);
 		
 	}
 

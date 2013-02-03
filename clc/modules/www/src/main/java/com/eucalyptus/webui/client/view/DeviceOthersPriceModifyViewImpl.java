@@ -34,26 +34,22 @@ public class DeviceOthersPriceModifyViewImpl extends DialogBox implements Device
 	private DeviceOthersPriceModifyView.Presenter presenter;
 	
     @Override
-    public void popup(String title, String price_unit, String price, String price_desc, Presenter presenter) {
+    public void popup(String title, String price_unit, String op_desc, double op_price, Presenter presenter) {
         if (!isShowing()) {
         	othersPriceTitle.setText(title);
             othersPriceUnit.setText(price_unit);
-            othersPrice.setText(price);
-            if (price_desc == null) {
-                price_desc = "";
+            if (op_desc == null) {
+                op_desc = "";
             }
-            othersPriceDesc.setText(price_desc);
+            othersPriceDesc.setText(op_desc);
+            othersPrice.setValue(op_price);
             this.presenter = presenter;
             show();
         }
     }
     
-    private String getOthersPriceValue() {
-        String value = othersPrice.getText();
-        if (value == null) {
-            return "";
-        }
-        return value;
+    private double getOthersPriceValue() {
+        return othersPrice.getValue();
     }
     
     private String getOthersPriceDesc() {
@@ -66,7 +62,7 @@ public class DeviceOthersPriceModifyViewImpl extends DialogBox implements Device
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-	    if (presenter.onOK(getOthersPriceValue(), getOthersPriceDesc())) {
+	    if (presenter.onOK(getOthersPriceDesc(), getOthersPriceValue())) {
 	        hide();
 	    }
 	}

@@ -51,16 +51,16 @@ public class DeviceTemplateModifyViewImpl extends DialogBox implements DeviceTem
 		return templateNCPUs.getSelectedIndex() + 1;
 	}
 	
-	private String getTemplateMem() {
-		return getInputText(templateMem);
+	private long getTemplateMem() {
+		return templateMem.getValue();
 	}
 	
-	private String getTemplateDisk() {
-		return getInputText(templateDisk);
+	private long getTemplateDisk() {
+		return templateDisk.getValue();
 	}
 	
-	private String getTemplateBW() {
-		return getInputText(templateBW);
+	private int getTemplateBW() {
+		return templateBW.getValue();
 	}
 	
 	private String getTemplateImage() {
@@ -68,22 +68,6 @@ public class DeviceTemplateModifyViewImpl extends DialogBox implements DeviceTem
 	}
 	
 	private String getInputText(TextBox textbox) {
-		String text = textbox.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
-	private String getInputText(LongBox textbox) {
-		String text = textbox.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
-	private String getInputText(IntegerBox textbox) {
 		String text = textbox.getText();
 		if (text == null) {
 			return "";
@@ -109,15 +93,15 @@ public class DeviceTemplateModifyViewImpl extends DialogBox implements DeviceTem
 	private int template_id;
 	
 	@Override
-	public void popup(int template_id, String template_name, String template_desc, String template_cpu, int template_ncpus, String template_mem, String template_disk, String template_bw, String template_image) {
+	public void popup(int template_id, String template_name, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image) {
 		this.template_id = template_id;
 		templateName.setText(template_name);
 		templateDesc.setText(template_desc);
 		templateCPU.setText(template_cpu);
 		templateNCPUs.setSelectedIndex(template_ncpus - 1);
-		templateMem.setText(template_mem);;
-		templateDisk.setText(template_disk);;
-		templateBW.setText(template_bw);;
+		templateMem.setValue(template_mem);;
+		templateDisk.setValue(template_disk);;
+		templateBW.setValue(template_bw);;
 		templateImage.setText(template_image);;
 		show();
     }

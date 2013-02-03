@@ -19,13 +19,17 @@ public interface DeviceTemplatePriceView extends IsWidget, CanDisplaySearchResul
 	
 	public interface Presenter extends MultiSelectionChangeHandler, KnowsPageSize, DeviceSearchResultTableClickHandler, SearchRangeChangeHandler {
 		
-		public void onAdd();
+		public void onAddTemplatePrice();
 		
-		public void onModify();
+		public void onModifyTemplatePrice();
 		
-		public void onDelete();
+		public void onDeleteTemplatePrice();
 		
-		public void updateSearchResult(Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd);
+		public boolean canModifyTemplatePrice();
+		
+		public boolean canDeleteTemplatePrice();
+		
+		public void updateSearchResult(Date dateBegin, Date dateEnd);
 		
 	}
 	

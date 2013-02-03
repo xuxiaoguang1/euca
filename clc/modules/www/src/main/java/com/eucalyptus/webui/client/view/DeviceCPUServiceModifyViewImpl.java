@@ -26,10 +26,10 @@ public class DeviceCPUServiceModifyViewImpl extends DialogBox implements DeviceC
 	@UiField TextBox cpuName;
 	@UiField TextBox accountName;
 	@UiField TextBox userName;
-	@UiField TextArea cpuDesc;
+	@UiField TextArea csDesc;
 	@UiField DeviceDateBox dateBegin;
 	@UiField DeviceDateBox dateEnd;
-	@UiField IntegerBox cpuUsed;
+	@UiField IntegerBox csUsed;
 	@UiField TextBox dateLife;
 	
 	private DevicePopupPanel popup = new DevicePopupPanel();
@@ -72,7 +72,7 @@ public class DeviceCPUServiceModifyViewImpl extends DialogBox implements DeviceC
 	}
 	
 	private String getCPUDesc() {
-		return getInputText(cpuDesc);
+		return getInputText(csDesc);
 	}
 	
 	private String getInputText(TextArea textarea) {
@@ -115,16 +115,20 @@ public class DeviceCPUServiceModifyViewImpl extends DialogBox implements DeviceC
 	}
 	
 	private int cs_id;
+	private int cs_reserved;
+	private int cs_used;
 	
 	@Override
-	public void popup(int cs_id, String cpu_name, String cs_desc, int cs_used, Date cs_starttime, Date cs_endtime, String server_name, String account_name, String user_name) {
+	public void popup(int cs_id, String cpu_name, String cs_desc, int cs_reserved, int cs_used, Date cs_starttime, Date cs_endtime, String server_name, String account_name, String user_name) {
 		this.cs_id = cs_id;
+		this.cs_reserved = cs_reserved + cs_used;
+		this.cs_used = cs_used;
 		serverName.setValue(server_name);
 		cpuName.setValue(cpu_name);
-		cpuDesc.setValue(cs_desc);
+		csDesc.setValue(cs_desc);
 		dateBegin.setValue(cs_starttime);
 		dateEnd.setValue(cs_endtime);
-		cpuUsed.setValue(cs_used);
+		csUsed.setValue(cs_used);
 		accountName.setValue(account_name);
 		userName.setValue(user_name);
 		updateDateLife();
@@ -133,7 +137,7 @@ public class DeviceCPUServiceModifyViewImpl extends DialogBox implements DeviceC
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(cs_id, getCPUDesc(), dateBegin.getValue(), dateEnd.getValue())) {
+		if (presenter.onOK(cs_id, getCPUDesc(), cs_reserved, cs_used, dateBegin.getValue(), dateEnd.getValue())) {
 			hide();
 		}
 	}

@@ -6,30 +6,22 @@ import java.util.List;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.ClientFactory;
-import com.eucalyptus.webui.client.activity.AbstractSearchActivity;
 import com.eucalyptus.webui.client.place.SearchPlace;
-import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
-import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.DeviceTemplateAddView;
 import com.eucalyptus.webui.client.view.DeviceTemplateAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceTemplateModifyView;
 import com.eucalyptus.webui.client.view.DeviceTemplateModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceTemplateView;
-import com.eucalyptus.webui.client.view.FooterView;
-import com.eucalyptus.webui.client.view.HasValueWidget;
-import com.eucalyptus.webui.client.view.LogView;
-import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
+import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class DeviceTemplateActivity extends AbstractSearchActivity implements DeviceTemplateView.Presenter {
+public class DeviceTemplateActivity extends DeviceActivity implements DeviceTemplateView.Presenter {
 	
 	private static final ClientMessage title = new ClientMessage("Template", "模板");
 	
@@ -55,72 +47,20 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 		return view;
 	}
 	
-	private EucalyptusServiceAsync getBackendService() {
-		return clientFactory.getBackendService();
-	}
-	
-	private FooterView getFooterView() {
-		return clientFactory.getShellView().getFooterView();
-	}
-	
-	private LogView getLogView() {
-		return clientFactory.getShellView().getLogView();
-	}
-	
-	private Session getSession() {
-		return clientFactory.getLocalSession().getSession();
-	}
-	
-	private boolean isEmpty(String s) {
-		return s == null || s.length() == 0;
-	}
-	
-	private void showStatus(ClientMessage msg) {
-	    getFooterView().showStatus(StatusType.NONE, msg.toString(), FooterView.CLEAR_DELAY_SECOND * 3);
-	    getLogView().log(LogType.INFO, msg.toString());
-	}
-	
-	private void onFrontendServiceFailure(Throwable caught) {
-	    Window.alert(new ClientMessage("", "前端服务运行错误").toString());
-	    getLogView().log(LogType.ERROR, caught.toString());
-	}
-	
-	private void onBackendServiceFailure(Throwable caught) {
-	    if (caught instanceof EucalyptusServiceException) {
-	        EucalyptusServiceException exception = (EucalyptusServiceException)caught;
-	        ClientMessage msg = exception.getFrontendMessage();
-	        if (msg == null) {
-	            msg = new ClientMessage("Backend Service Failure", "后代服务运行错误");
-	        }
-	        Window.alert(msg.toString());
-	        getLogView().log(LogType.ERROR, msg.toString() + " : " + caught.toString());
-	    }
-	    else {
-	        getLogView().log(LogType.ERROR, caught.toString());
-	    }
-	}
-	
-	@Override
-	public void saveValue(ArrayList<String> keys, ArrayList<HasValueWidget> values) {
-		/* do nothing */
-	}
-	
 	@Override
 	protected void doSearch(String query, SearchRange range) {
 		getBackendService().lookupDeviceTemplateByDate(getSession(), range, dateBegin, dateEnd, new AsyncCallback<SearchResult>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				if (caught instanceof EucalyptusServiceException) {
-					onBackendServiceFailure((EucalyptusServiceException)caught);
-				}
-				displayData(null);
+				onBackendServiceFailure(caught);
+                displayData(null);
 			}
 
 			@Override
 			public void onSuccess(SearchResult result) {
-				showStatus(new ClientMessage("", "查询模板成功"));
-				displayData(result);
+				onBackendServiceFinished();
+                displayData(result);
 			}
 			
 		});
@@ -159,56 +99,68 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 	@Override
 	public void onAddTemplate() {
 		try {
-			if (Window.confirm(new ClientMessage("", "确认添加的模板").toString())) {
+			if (Window.confirm(new ClientMessage("Create a new Template.", "确认创建新模板.").toString())) {
 				if (templateAddView == null) {
 					templateAddView = new DeviceTemplateAddViewImpl();
 					templateAddView.setPresenter(new DeviceTemplateAddView.Presenter() {
 						
 						@Override
 						public boolean onOK(String template_name, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image) {
-							if (isEmpty(template_name)) {
+							if (template_name == null || template_name.isEmpty()) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Template Name: ", "模板名称非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+							if (template_cpu == null || template_cpu.isEmpty()) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid CPU Name: ", "CPU名称非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+							if (template_ncpus <= 0) {
 								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的模板名称")).append(" = '").append(template_name).append("' ");
-								sb.append(new ClientMessage("", "请重新选择模板名称"));
+                                sb.append(new ClientMessage("Invalid CPU Total: ", "CPU数量非法")).append(" = ").append(template_ncpus).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+							}
+							if (template_mem <= 0) {
+								StringBuilder sb = new StringBuilder();
+								sb.append(new ClientMessage("Invalid Memory Size: ", "内存数量非法")).append(" = ").append(template_mem).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
 								Window.alert(sb.toString());
 								return false;
 							}
-							if (template_mem < 0) {
+							if (template_disk <= 0) {
 								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的内存大小")).append(" = '").append(template_mem).append("' ");
-								sb.append(new ClientMessage("", "请重新选择内存大小"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							if (template_disk < 0) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的硬盘大小")).append(" = '").append(template_disk).append("' ");
-								sb.append(new ClientMessage("", "请重新选择硬盘大小"));
+								sb.append(new ClientMessage("Invalid Disk Size: ", "硬盘数量非法")).append(" = ").append(template_disk).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
 								Window.alert(sb.toString());
 								return false;
 							}
 							if (template_bw < 0) {
 								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的带宽")).append(" = '").append(template_bw).append("' ");
-								sb.append(new ClientMessage("", "请重新选择带宽"));
+								sb.append(new ClientMessage("Invalid Bandwidth Value: ", "带宽数值非法")).append(" = ").append(template_bw).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
 								Window.alert(sb.toString());
 								return false;
 							}
-							getBackendService().addDeviceTemplateService(getSession(), template_name, template_desc, template_cpu, template_ncpus, template_mem, template_disk, template_bw, template_image, new AsyncCallback<Void>() {
+							getBackendService().createDeviceTemplateService(getSession(), template_name, template_desc, template_cpu, template_ncpus, template_mem, template_disk, template_bw, template_image, new AsyncCallback<Void>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
-									}
-									getView().clearSelection();
+									onBackendServiceFailure(caught);
+                                    getView().clearSelection();
 								}
 
 								@Override
 								public void onSuccess(Void result) {
-									showStatus(new ClientMessage("", "添加模板成功"));
-									reloadCurrentRange();
-									getView().clearSelection();
+									onBackendServiceFinished(new ClientMessage("Successfully create Template.", "模板添加成功."));
+                                    getView().clearSelection();
+                                    reloadCurrentRange();
 								}
 								
 							});
@@ -217,18 +169,15 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 
 						@Override
 						public void lookupCPUNames() {
-							getBackendService().lookupDeviceCPUNamesUnpriced(getSession(), new AsyncCallback<List<String>>() {
+							getBackendService().lookupDeviceCPUNames(getSession(), new AsyncCallback<List<String>>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
-									}
+									onBackendServiceFailure(caught);
 								}
 
 								@Override
 								public void onSuccess(List<String> cpu_name_list) {
-									showStatus(new ClientMessage("", "获取CPU列表成功"));
 									templateAddView.setCPUNameList(cpu_name_list);
 								}
 								
@@ -249,80 +198,80 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 	@Override
 	public void onModifyTemplate() {
 		try {
-			if (Window.confirm(new ClientMessage("", "确认修改所选择的模板").toString())) {
-				SearchResultRow row = getView().getSelectedSet().iterator().next();
-				if (templateModifyView == null) {
-					templateModifyView = new DeviceTemplateModifyViewImpl();
-					templateModifyView.setPresenter(new DeviceTemplateModifyView.Presenter() {
-						
-						@Override
-						public boolean onOK(int template_id, String template_desc, String template_cpu, int template_ncpus, String mem, String disk, String bw, String template_image) {
-							long template_mem = 0;
-							try {
-								if (!isEmpty(mem)) {
-									template_mem = Long.parseLong(mem);
-								}
-							}
-							catch (Exception e) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的内存大小")).append(" = '").append(mem).append("' ");
-								sb.append(new ClientMessage("", "请重新选择内存大小"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							long template_disk = 0;
-							try {
-								if (!isEmpty(disk)) {
-									template_disk = Long.parseLong(disk);
-								}
-							}
-							catch (Exception e) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的硬盘大小")).append(" = '").append(disk).append("' ");
-								sb.append(new ClientMessage("", "请重新选择硬盘大小"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							int template_bw = 0;
-							try {
-								if (!isEmpty(bw)) {
-									template_bw = Integer.parseInt(bw);
-								}
-							}
-							catch (Exception e) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的带宽")).append(" = '").append(bw).append("' ");
-								sb.append(new ClientMessage("", "请重新选择带宽"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							getBackendService().modifyDeviceTemplateService(getSession(), template_id, template_desc, template_cpu, template_ncpus, template_mem, template_disk, template_bw, template_image, new AsyncCallback<Void>() {
+			if (canModifyTemplate()) {
+				if (Window.confirm(new ClientMessage("Modify selected Template.", "确认修改所选择的模板.").toString())) {
+					if (templateModifyView == null) {
+						templateModifyView = new DeviceTemplateModifyViewImpl();
+						templateModifyView.setPresenter(new DeviceTemplateModifyView.Presenter() {
+							
+							@Override
+							public boolean onOK(int template_id, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image) {
+							    if (template_ncpus <= 0) {
+	                                StringBuilder sb = new StringBuilder();
+	                                sb.append(new ClientMessage("Invalid CPU Total: ", "CPU数量非法")).append(" = ").append(template_ncpus).append(".").append("\n");
+	                                sb.append(new ClientMessage("Please try again.", "请重试."));
+	                                Window.alert(sb.toString());
+	                                return false;
+	                            }
+	                            if (template_mem <= 0) {
+	                                StringBuilder sb = new StringBuilder();
+	                                sb.append(new ClientMessage("Invalid Memory Size: ", "内存数量非法")).append(" = ").append(template_mem).append(".").append("\n");
+	                                sb.append(new ClientMessage("Please try again.", "请重试."));
+	                                Window.alert(sb.toString());
+	                                return false;
+	                            }
+	                            if (template_disk <= 0) {
+	                                StringBuilder sb = new StringBuilder();
+	                                sb.append(new ClientMessage("Invalid Disk Size: ", "硬盘数量非法")).append(" = ").append(template_disk).append(".").append("\n");
+	                                sb.append(new ClientMessage("Please try again.", "请重试."));
+	                                Window.alert(sb.toString());
+	                                return false;
+	                            }
+	                            if (template_bw < 0) {
+	                                StringBuilder sb = new StringBuilder();
+	                                sb.append(new ClientMessage("Invalid Bandwidth Value: ", "带宽数值非法")).append(" = ").append(template_bw).append(".").append("\n");
+	                                sb.append(new ClientMessage("Please try again.", "请重试."));
+	                                Window.alert(sb.toString());
+	                                return false;
+	                            }
+	                            getBackendService().modifyDeviceTemplateService(getSession(), template_id, template_desc, template_cpu, template_ncpus, template_mem, template_disk, template_bw, template_image, new AsyncCallback<Void>() {
 
-								@Override
-								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
-									}
-									getView().clearSelection();
-								}
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+                                        onBackendServiceFailure(caught);
+                                        getView().clearSelection();
+                                    }
 
-								@Override
-								public void onSuccess(Void result) {
-									showStatus(new ClientMessage("", "变更模板成功"));
-									reloadCurrentRange();
-									getView().clearSelection();
-								}
-								
-							});
-							return true;
-						}
-						
+                                    @Override
+                                    public void onSuccess(Void result) {
+                                        onBackendServiceFinished(new ClientMessage("Successfully modify selected Template.", "模板修改成功."));
+                                        reloadCurrentRange();
+                                        getView().clearSelection();
+                                    }
+                                    
+	                            });
+								return true;
+							}
+							
+						});
+					}
+					SearchResultRow row = getView().getSelectedSet().iterator().next();
+					final int template_id = Integer.parseInt(row.getField(CellTableColumns.TEMPLATE.TEMPLATE_ID));
+					getBackendService().lookupDeviceTemplateInfoByID(getSession(), template_id, new AsyncCallback<TemplateInfo>() {
+
+                        @Override
+                        public void onFailure(Throwable caught) {
+                            onBackendServiceFailure(caught);
+                            getView().clearSelection();
+                        }
+
+                        @Override
+                        public void onSuccess(TemplateInfo info) {
+                            templateModifyView.popup(template_id, info.template_name, info.template_desc, info.template_cpu, info.template_ncpus, info.template_mem, info.template_disk, info.template_bw, info.template_image);
+                        }
+                        
 					});
 				}
-				templateModifyView.popup(Integer.parseInt(row.getField(CellTableColumns.TEMPLATE.TEMPLATE_ID)), row.getField(CellTableColumns.TEMPLATE.TEMPLATE_NAME),
-						row.getField(CellTableColumns.TEMPLATE.TEMPLATE_DESC), row.getField(CellTableColumns.TEMPLATE.TEMPLATE_CPU), 
-						Integer.parseInt(row.getField(CellTableColumns.TEMPLATE.TEMPLATE_NCPUS)), row.getField(CellTableColumns.TEMPLATE.TEMPLATE_MEM),
-						row.getField(CellTableColumns.TEMPLATE.TEMPLATE_DISK), row.getField(CellTableColumns.TEMPLATE.TEMPLATE_BW), row.getField(CellTableColumns.TEMPLATE.TEMPLATE_IMAGE));
 			}
 		}
 		catch (Exception e) {
@@ -335,28 +284,26 @@ public class DeviceTemplateActivity extends AbstractSearchActivity implements De
 	public void onDeleteTemplate() {
 		try {
 			if (canDeleteTemplate()) {
-				List<Integer> template_id_list = new ArrayList<Integer>();
+				List<Integer> template_ids = new ArrayList<Integer>();
 				for (SearchResultRow row : getView().getSelectedSet()) {
 					int template_id = Integer.parseInt(row.getField(CellTableColumns.TEMPLATE.TEMPLATE_ID));
-					template_id_list.add(template_id);
+					template_ids.add(template_id);
 				}
-				if (!template_id_list.isEmpty()) {
-					if (Window.confirm(new ClientMessage("", "确认删除所选择的模板").toString())) {
-						getBackendService().deleteDeviceTemplateService(getSession(), template_id_list, new AsyncCallback<Void>() {
+				if (!template_ids.isEmpty()) {
+				    if (Window.confirm(new ClientMessage("Delete selected Template(s).", "确认删除所选择的模板.").toString())) {
+						getBackendService().deleteDeviceTemplateService(getSession(), template_ids, new AsyncCallback<Void>() {
 
 							@Override
 							public void onFailure(Throwable caught) {
-								if (caught instanceof EucalyptusServiceException) {
-									onBackendServiceFailure((EucalyptusServiceException)caught);
-								}
-								getView().clearSelection();
+							    onBackendServiceFailure(caught);
+                                getView().clearSelection();
 							}
 
 							@Override
 							public void onSuccess(Void result) {
-								showStatus(new ClientMessage("", "删除模板成功"));
-								reloadCurrentRange();
-								getView().clearSelection();
+							    onBackendServiceFinished(new ClientMessage("Successfully delete selected Template(s).", "模板删除成功."));
+                                getView().clearSelection();
+                                reloadCurrentRange();
 							}
 							
 						});

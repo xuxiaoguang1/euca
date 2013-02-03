@@ -42,7 +42,7 @@
 	<ui:with field="global"
 		type="com.eucalyptus.webui.client.view.GlobalResources" />
 
-	<g:DockLayoutPanel width="642px" height="280px">
+	<g:DockLayoutPanel width="644px" height="280px">
 		<g:center>
 		<g:VerticalPanel horizontalAlignment="ALIGN_LEFT" styleName="{style.background}" verticalAlignment="ALIGN_TOP">
 			<g:HTMLPanel width="640px">

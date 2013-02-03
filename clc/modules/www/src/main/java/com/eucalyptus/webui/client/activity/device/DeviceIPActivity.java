@@ -8,14 +8,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.ClientFactory;
-import com.eucalyptus.webui.client.activity.AbstractSearchActivity;
 import com.eucalyptus.webui.client.place.SearchPlace;
-import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
-import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.view.DeviceIPAddView;
 import com.eucalyptus.webui.client.view.DeviceIPAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceIPModifyView;
@@ -25,19 +21,15 @@ import com.eucalyptus.webui.client.view.DeviceIPServiceAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceIPServiceModifyView;
 import com.eucalyptus.webui.client.view.DeviceIPServiceModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceIPView;
-import com.eucalyptus.webui.client.view.FooterView;
-import com.eucalyptus.webui.client.view.HasValueWidget;
-import com.eucalyptus.webui.client.view.LogView;
-import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
+import com.eucalyptus.webui.shared.resource.device.IPServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.status.IPState;
 import com.eucalyptus.webui.shared.resource.device.status.IPType;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIPView.Presenter {
+public class DeviceIPActivity extends DeviceActivity implements DeviceIPView.Presenter {
 	
 	private static final ClientMessage title = new ClientMessage("IP", "IP地址");
 	
@@ -69,72 +61,20 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 		return view;
 	}
 	
-	private EucalyptusServiceAsync getBackendService() {
-		return clientFactory.getBackendService();
-	}
-	
-	private FooterView getFooterView() {
-		return clientFactory.getShellView().getFooterView();
-	}
-	
-	private LogView getLogView() {
-		return clientFactory.getShellView().getLogView();
-	}
-	
-	private Session getSession() {
-		return clientFactory.getLocalSession().getSession();
-	}
-	
-	private boolean isEmpty(String s) {
-		return s == null || s.length() == 0;
-	}
-	
-	private void showStatus(ClientMessage msg) {
-	    getFooterView().showStatus(StatusType.NONE, msg.toString(), FooterView.CLEAR_DELAY_SECOND * 3);
-	    getLogView().log(LogType.INFO, msg.toString());
-	}
-	
-	private void onFrontendServiceFailure(Throwable caught) {
-	    Window.alert(new ClientMessage("", "前端服务运行错误").toString());
-	    getLogView().log(LogType.ERROR, caught.toString());
-	}
-	
-	private void onBackendServiceFailure(Throwable caught) {
-	    if (caught instanceof EucalyptusServiceException) {
-	        EucalyptusServiceException exception = (EucalyptusServiceException)caught;
-	        ClientMessage msg = exception.getFrontendMessage();
-	        if (msg == null) {
-	            msg = new ClientMessage("Backend Service Failure", "后代服务运行错误");
-	        }
-	        Window.alert(msg.toString());
-	        getLogView().log(LogType.ERROR, msg.toString() + " : " + caught.toString());
-	    }
-	    else {
-	        getLogView().log(LogType.ERROR, caught.toString());
-	    }
-	}
-	
-	@Override
-	public void saveValue(ArrayList<String> keys, ArrayList<HasValueWidget> values) {
-		/* do nothing */
-	}
-	
 	@Override
 	protected void doSearch(String query, SearchRange range) {
 		getBackendService().lookupDeviceIPByDate(getSession(), range, queryType, queryState, dateBegin, dateEnd, new AsyncCallback<SearchResult>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				if (caught instanceof EucalyptusServiceException) {
-					onBackendServiceFailure((EucalyptusServiceException)caught);
-				}
-				displayData(null);
+				onBackendServiceFailure(caught);
+                displayData(null);
 			}
 
 			@Override
 			public void onSuccess(SearchResult result) {
-				showStatus(new ClientMessage("", "查询IP地址成功"));
-				displayData(result);
+				onBackendServiceFinished();
+                displayData(result);
 			}
 			
 		});
@@ -142,14 +82,12 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 
 			@Override
 			public void onFailure(Throwable caught) {
-				if (caught instanceof EucalyptusServiceException) {
-					onBackendServiceFailure((EucalyptusServiceException)caught);
-				}
+				onBackendServiceFailure(caught);
 			}
 
 			@Override
 			public void onSuccess(Map<Integer, Integer> result) {
-				showStatus(new ClientMessage("", "查询IP地址数量成功"));
+				onBackendServiceFinished();
 				ipCounts = result;
 				getView().updateLabels();
 			}
@@ -190,42 +128,40 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 	@Override
 	public void onAddIP() {
 		try {
-			if (Window.confirm(new ClientMessage("", "确认创建新IP地址").toString())) {
+			if (Window.confirm(new ClientMessage("Create a new IP Address.", "确认创建新IP地址.").toString())) {
 				if (ipAddView == null) {
 					ipAddView = new DeviceIPAddViewImpl();
 					ipAddView.setPresenter(new DeviceIPAddView.Presenter() {
 						
 						@Override
 						public boolean onOK(String ip_addr, String ip_desc, IPType ip_type) {
-							if (isEmpty(ip_addr)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "IP地址非法")).append(" = '").append(ip_addr).append("' ");
-								sb.append(new ClientMessage("", "请重新选择IP地址"));
-								Window.alert(sb.toString());
-								return false;
-							}
+							if (ip_addr == null || ip_addr.isEmpty()) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid IP Address: ", "IP地址非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
 							if (ip_type == null) {
 								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "IP地址类型非法"));
-								sb.append(new ClientMessage("", "请重新选择IP地址类型"));
+								sb.append(new ClientMessage("Invalid IP Address Type: ", "IP地址类型非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
 								Window.alert(sb.toString());
 								return false;
 							}
-							getBackendService().addDeviceIP(getSession(), ip_addr, ip_desc, ip_type, new AsyncCallback<Void>() {
-								
+							getBackendService().createDeviceIP(getSession(), ip_addr, ip_desc, ip_type, new AsyncCallback<Void>() {
+
 								@Override
 								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
-									}
-									getView().clearSelection();
+									onBackendServiceFailure(caught);
+                                    getView().clearSelection();
 								}
 
 								@Override
 								public void onSuccess(Void result) {
-									showStatus(new ClientMessage("", "添加IP地址成功"));
-									reloadCurrentRange();
-									getView().clearSelection();
+									onBackendServiceFinished(new ClientMessage("Successfully create IP Address.", "IP地址添加成功."));
+                                    getView().clearSelection();
+                                    reloadCurrentRange();
 								}
 								
 							});
@@ -246,49 +182,59 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 	@Override
 	public void onModifyIP() {
 		try {
-			if (Window.confirm(new ClientMessage("", "确认修改所选择的IP地址").toString())) {
-				SearchResultRow row = getView().getSelectedSet().iterator().next();
-				if (ipModifyView == null) {
-					ipModifyView = new DeviceIPModifyViewImpl();
-					ipModifyView.setPresenter(new DeviceIPModifyView.Presenter() {
-						
-						@Override
-						public boolean onOK(int ip_id, String ip_desc, IPType ip_type) {
-							if (ip_type == null) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "IP地址类型非法"));
-								sb.append(new ClientMessage("", "请重新选择IP地址类型"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							getBackendService().modifyDeviceIP(getSession(), ip_id, ip_desc, ip_type, new AsyncCallback<Void>() {
-
-								@Override
-								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
+			if (canModifyIP()) {
+				if (Window.confirm(new ClientMessage("Modify selected IP Address.", "确认修改所选择的IP地址.").toString())) {
+					if (ipModifyView == null) {
+						ipModifyView = new DeviceIPModifyViewImpl();
+						ipModifyView.setPresenter(new DeviceIPModifyView.Presenter() {
+							
+							@Override
+							public boolean onOK(int ip_id, String ip_desc, IPType ip_type) {
+								if (ip_type == null) {
+									StringBuilder sb = new StringBuilder();
+									sb.append(new ClientMessage("Invalid IP Address Type: ", "IP地址类型非法")).append(" = (null).").append("\n");
+	                                sb.append(new ClientMessage("Please try again.", "请重试."));
+									Window.alert(sb.toString());
+									return false;
+								}
+								getBackendService().modifyDeviceIP(getSession(), ip_id, ip_desc, ip_type, new AsyncCallback<Void>() {
+	
+									@Override
+									public void onFailure(Throwable caught) {
+										onBackendServiceFailure(caught);
+	                                    getView().clearSelection();
 									}
-									getView().clearSelection();
-								}
-
-								@Override
-								public void onSuccess(Void result) {
-									showStatus(new ClientMessage("", "修改IP地址成功"));
-									reloadCurrentRange();
-									getView().clearSelection();
-								}
-								
-							});
-							return true;
+	
+									@Override
+									public void onSuccess(Void result) {
+										onBackendServiceFinished(new ClientMessage("Successfully modify selected IP Address.", "IP地址修改成功."));
+	                                    reloadCurrentRange();
+	                                    getView().clearSelection();
+									}
+									
+								});
+								return true;
+							}
+							
+						});
+					}
+					SearchResultRow row = getView().getSelectedSet().iterator().next();
+					final int ip_id = Integer.parseInt(row.getField(CellTableColumns.IP.IP_ID));
+					getBackendService().lookupDeviceIPServiceByID(getSession(), ip_id, new AsyncCallback<IPServiceInfo>() {
+	
+						@Override
+						public void onFailure(Throwable caught) {
+							onBackendServiceFailure(caught);
+	                        getView().clearSelection();
+						}
+	
+						@Override
+						public void onSuccess(IPServiceInfo info) {
+							ipModifyView.popup(ip_id, info.ip_addr, info.ip_desc, info.ip_type);
 						}
 						
 					});
 				}
-				int ip_id = Integer.parseInt(row.getField(CellTableColumns.IP.IP_ID));
-			    String ip_addr = row.getField(CellTableColumns.IP.IP_ADDR);
-			    String ip_desc = row.getField(CellTableColumns.IP.IP_DESC);
-			    IPType ip_type = IPType.parse(row.getField(CellTableColumns.IP.IP_TYPE));
-			    ipModifyView.popup(ip_id, ip_addr, ip_desc, ip_type);
 			}
 		}
 		catch (Exception e) {
@@ -301,28 +247,26 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 	public void onDeleteIP() {
 		try {
 			if (canDeleteIP()) {
-				List<Integer> ip_id_list = new ArrayList<Integer>();
+				List<Integer> ip_ids = new ArrayList<Integer>();
 				for (SearchResultRow row : getView().getSelectedSet()) {
 					int ip_id = Integer.parseInt(row.getField(CellTableColumns.IP.IP_ID));
-					ip_id_list.add(ip_id);
+					ip_ids.add(ip_id);
 				}
-				if (!ip_id_list.isEmpty()) {
-					if (Window.confirm(new ClientMessage("", "确认删除所选择的IP地址").toString())) {
-						getBackendService().deleteDeviceIP(getSession(), ip_id_list, new AsyncCallback<Void>() {
+				if (!ip_ids.isEmpty()) {
+					if (Window.confirm(new ClientMessage("Delete selected IP Address(s).", "确认删除所选择的IP地址.").toString())) {
+						getBackendService().deleteDeviceIP(getSession(), ip_ids, new AsyncCallback<Void>() {
 
 							@Override
 							public void onFailure(Throwable caught) {
-								if (caught instanceof EucalyptusServiceException) {
-									onBackendServiceFailure((EucalyptusServiceException)caught);
-								}
-								getView().clearSelection();
+								onBackendServiceFailure(caught);
+                                getView().clearSelection();
 							}
 							
 							@Override
 							public void onSuccess(Void result) {
-								showStatus(new ClientMessage("", "删除IP地址成功"));
-								reloadCurrentRange();
-								getView().clearSelection();
+								onBackendServiceFinished(new ClientMessage("Successfully delete selected IP Address(s).", "IP地址删除成功."));
+                                getView().clearSelection();
+                                reloadCurrentRange();
 							}
 							
 						});
@@ -339,111 +283,124 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 	@Override
 	public void onAddIPService() {
 		try {
-			if (Window.confirm(new ClientMessage("", "确认添加的IP地址服务").toString())) {
-				SearchResultRow row = getView().getSelectedSet().iterator().next();
-				if (ipServiceAddView == null) {
-					ipServiceAddView = new DeviceIPServiceAddViewImpl();
-					ipServiceAddView.setPresenter(new DeviceIPServiceAddView.Presenter() {
-						
-						@Override
-						public boolean onOK(int ip_id, String is_desc, Date is_starttime, Date is_endtime, String account_name, String user_name) {
-							if (is_starttime == null || is_endtime == null || DeviceDate.calcLife(is_endtime, is_starttime) <= 0) {
-								StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "非法的服务时间"));
-                                if (is_starttime != null && is_endtime != null) {
-                                	sb.append(" = '").append(DeviceDate.format(is_starttime)).append("' >= '").append(DeviceDate.format(is_endtime)).append("'");
-                                }
-                                sb.append(new ClientMessage("", "请重新选择时间"));
-                                Window.alert(sb.toString());
-                                return false;
-							}
-							if (isEmpty(account_name)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的账户名称")).append(" = '").append(account_name).append("' ");
-								sb.append(new ClientMessage("", "请重新选择账户"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							if (isEmpty(user_name)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "非法的用户名称")).append(" = '").append(user_name).append("' ");
-								sb.append(new ClientMessage("", "请重新选择账户"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							getBackendService().addDeviceIPService(getSession(), is_desc, is_starttime, is_endtime, ip_id, account_name, user_name, new AsyncCallback<Void>() {
-
-								@Override
-								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
+			if (canAddIPService()) {
+				if (Window.confirm(new ClientMessage("Create a new IP Address Service.", "确认创建新IP地址服务.").toString())) {
+					if (ipServiceAddView == null) {
+						ipServiceAddView = new DeviceIPServiceAddViewImpl();
+						ipServiceAddView.setPresenter(new DeviceIPServiceAddView.Presenter() {
+							
+							@Override
+							public boolean onOK(int ip_id, String is_desc, Date is_starttime, Date is_endtime, int user_id) {
+								if (is_starttime == null) {
+							        StringBuilder sb = new StringBuilder();
+	                                sb.append(new ClientMessage("Invalid Start Time: ", "开始时间非法")).append(" = (null).").append("\n");
+	                                sb.append(new ClientMessage("Please try again.", "请重试."));
+	                                Window.alert(sb.toString());
+	                                return false;
+							    }
+							    if (is_endtime == null) {
+	                                StringBuilder sb = new StringBuilder();
+	                                sb.append(new ClientMessage("Invalid End Time: ", "结束时间非法")).append(" = (null).").append("\n");
+	                                sb.append(new ClientMessage("Please try again.", "请重试."));
+	                                Window.alert(sb.toString());
+	                                return false;
+	                            }
+							    int is_life = DeviceDate.calcLife(is_endtime, is_starttime);
+							    if (is_life <= 0) {
+	                                StringBuilder sb = new StringBuilder();
+	                                sb.append(new ClientMessage("Invalid Service Life Time: ", "服务期限非法")).append(" = ").append(is_life).append(".").append("\n");
+	                                sb.append(new ClientMessage("Please try again.", "请重试."));
+	                                Window.alert(sb.toString());
+	                                return false;
+								}
+							    if (user_id == -1) {
+	                                StringBuilder sb = new StringBuilder();
+	                                sb.append(new ClientMessage("Invalid User Name.", "用户名称非法.")).append("\n");
+	                                sb.append(new ClientMessage("Please try again.", "请重试."));
+	                                Window.alert(sb.toString());
+	                                return false;
+	                            }
+							    getBackendService().createDeviceIPService(getSession(), is_desc, IPState.STOP, is_starttime, is_endtime, ip_id, user_id, new AsyncCallback<Void>() {
+	
+									@Override
+									public void onFailure(Throwable caught) {
+										onBackendServiceFailure(caught);
+	                                    getView().clearSelection();
 									}
-									getView().clearSelection();
-								}
-
-								@Override
-								public void onSuccess(Void result) {
-									showStatus(new ClientMessage("", "添加IP地址服务成功"));
-									reloadCurrentRange();
-									getView().clearSelection();
-								}
-								
-							});
-							return true;
-						}
-						
-						@Override
-						public void lookupAccountNames() {
-//							getBackendService().lookupDeviceAccountNames(getSession(), new AsyncCallback<List<String>>() {
-//								
-//								@Override
-//								public void onFailure(Throwable caught) {
-//									if (caught instanceof EucalyptusServiceException) {
-//										onBackendServiceFailure((EucalyptusServiceException)caught);
-//									}
-//								}
-//								
-//								@Override
-//								public void onSuccess(List<String> account_name_list) {
-//									showStatus(new SharedMessage("", "获取账户列表成功"));
-//									ipServiceAddView.setAccountNameList(account_name_list);
-//								}
-//	                              
-//							});
-						}
-						
-						@Override
-						public void lookupUserNamesByAccountName(final String account_name) {
-							if (isEmpty(account_name)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "账户名称非法")).append(" = '").append(account_name).append("'");
-								Window.alert(sb.toString());
+	
+									@Override
+									public void onSuccess(Void result) {
+										onBackendServiceFinished(new ClientMessage("Successfully create IP Address Service.", "IP地址服务添加成功."));
+	                                    getView().clearSelection();
+	                                    reloadCurrentRange();
+									}
+									
+								});
+								return true;
 							}
-							else {
-//								getBackendService().lookupDeviceUserNamesByAccountName(getSession(), account_name, new AsyncCallback<List<String>>() {
-//									
-//									@Override
-//									public void onFailure(Throwable caught) {
-//										if (caught instanceof EucalyptusServiceException) {
-//											onBackendServiceFailure((EucalyptusServiceException)caught);
-//										}
-//									}
-//									
-//									@Override
-//									public void onSuccess(List<String> user_name_list) {
-//										showStatus(new SharedMessage("", "获取用户列表成功"));
-//										ipServiceAddView.setUserNameList(account_name, user_name_list);
-//									}
-//									
-//								});
-							}
+							
+							@Override
+							public void lookupAccountNames() {
+							    getBackendService().lookupDeviceAccountNames(getSession(), new AsyncCallback<Map<String, Integer>>() {
+	
+	                                @Override
+	                                public void onFailure(Throwable caught) {
+	                                    onBackendServiceFailure(caught);
+	                                }
+	
+	                                @Override
+	                                public void onSuccess(Map<String, Integer> account_map) {
+	                                    onBackendServiceFinished();
+	                                    ipServiceAddView.setAccountNames(account_map);
+	                                }
+	                                
+	                            });
+	                        }
+							
+	                        @Override
+	                        public void lookupUserNamesByAccountID(final int account_id) {
+	                            if (account_id == -1) {
+	                                StringBuilder sb = new StringBuilder();
+	                                sb.append(new ClientMessage("Invalid Account Name.", "账户名称非法.")).append("\n");
+	                                sb.append(new ClientMessage("Please try again.", "请重试."));
+	                                Window.alert(sb.toString());
+	                            }
+	                            else {
+	                                getBackendService().lookupDeviceUserNamesByAccountID(getSession(), account_id, new AsyncCallback<Map<String, Integer>>() {
+	    
+	                                    @Override
+	                                    public void onFailure(Throwable caught) {
+	                                        onBackendServiceFailure(caught);
+	                                    }
+	    
+	                                    @Override
+	                                    public void onSuccess(Map<String, Integer> user_map) {
+	                                        onBackendServiceFinished();
+	                                        ipServiceAddView.setUserNames(account_id, user_map);
+	                                    }
+	                                    
+	                                });
+	                            }
+	                        }                   
+						});
+					}
+					SearchResultRow row = getView().getSelectedSet().iterator().next();
+	                final int ip_id = Integer.parseInt(row.getField(CellTableColumns.IP.IP_ID));
+	                getBackendService().lookupDeviceIPServiceByID(getSession(), ip_id, new AsyncCallback<IPServiceInfo>() {
+	
+						@Override
+						public void onFailure(Throwable caught) {
+							onBackendServiceFailure(caught);
+	                        getView().clearSelection();
+						}
+	
+						@Override
+						public void onSuccess(IPServiceInfo info) {
+							ipServiceAddView.popup(ip_id, info.ip_addr);
 						}
 						
 					});
 				}
-				int ip_id = Integer.parseInt(row.getField(CellTableColumns.IP.IP_ID));
-				String ip_addr = row.getField(CellTableColumns.IP.IP_ADDR);
-				ipServiceAddView.popup(ip_id, ip_addr);
 			}
 		}
 		catch (Exception e) {
@@ -455,55 +412,76 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 	@Override
 	public void onModifyIPService() {
 		try {
-			if (Window.confirm(new ClientMessage("", "确认修改所选择的IP地址服务").toString())) {
-				SearchResultRow row = getView().getSelectedSet().iterator().next();
-				if (ipServiceModifyView == null) {
-					ipServiceModifyView = new DeviceIPServiceModifyViewImpl();
-					ipServiceModifyView.setPresenter(new DeviceIPServiceModifyView.Presenter() {
-						
-						@Override
-						public boolean onOK(int ip_id, String is_desc, Date is_starttime, Date is_endtime) {
-							if (is_starttime == null || is_endtime == null || DeviceDate.calcLife(is_endtime, is_starttime) <= 0) {
-								StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("", "非法的服务时间"));
-                                if (is_starttime != null && is_endtime != null) {
-                                	sb.append(" = '").append(DeviceDate.format(is_starttime)).append("' >= '").append(DeviceDate.format(is_endtime)).append("'");
+			if (canModifyIPService()) {
+				if (Window.confirm(new ClientMessage("Modify selected IP Address Service.", "确认修改所选择的IP地址服务.").toString())) {
+					if (ipServiceModifyView == null) {
+						ipServiceModifyView = new DeviceIPServiceModifyViewImpl();
+						ipServiceModifyView.setPresenter(new DeviceIPServiceModifyView.Presenter() {
+							
+							@Override
+							public boolean onOK(int ip_id, String is_desc, Date is_starttime, Date is_endtime) {
+								if (is_starttime == null) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append(new ClientMessage("Invalid Start Time: ", "开始时间非法")).append(" = (null).").append("\n");
+                                    sb.append(new ClientMessage("Please try again.", "请重试."));
+                                    Window.alert(sb.toString());
+                                    return false;
                                 }
-                                sb.append(new ClientMessage("", "请重新选择时间"));
-                                Window.alert(sb.toString());
-                                return false;
-							}
-							getBackendService().modifyDeviceIPService(getSession(), ip_id, is_desc, is_starttime, is_endtime, new AsyncCallback<Void>() {
+                                if (is_endtime == null) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append(new ClientMessage("Invalid End Time: ", "结束时间非法")).append(" = (null).").append("\n");
+                                    sb.append(new ClientMessage("Please try again.", "请重试."));
+                                    Window.alert(sb.toString());
+                                    return false;
+                                }
+                                int is_life = DeviceDate.calcLife(is_endtime, is_starttime);
+                                if (is_life <= 0) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append(new ClientMessage("Invalid Service Life Time: ", "服务期限非法")).append(" = ").append(is_life).append(".").append("\n");
+                                    sb.append(new ClientMessage("Please try again.", "请重试."));
+                                    Window.alert(sb.toString());
+                                    return false;
+                                }
+                                getBackendService().modifyDeviceIPService(getSession(), ip_id, is_desc, is_starttime, is_endtime, new AsyncCallback<Void>() {
 
-								@Override
-								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
+									@Override
+									public void onFailure(Throwable caught) {
+										onBackendServiceFailure(caught);
+                                        getView().clearSelection();
 									}
-									getView().clearSelection();
-								}
-								
-								@Override
-								public void onSuccess(Void result) {
-									showStatus(new ClientMessage("", "变更IP地址服务成功"));
-									reloadCurrentRange();
-									getView().clearSelection();
-								}
-								
-							});
-							return true;
+
+									@Override
+									public void onSuccess(Void result) {
+										onBackendServiceFinished(new ClientMessage("Successfully modify selected IP Address Service.", "IP地址服务修改成功."));
+                                        reloadCurrentRange();
+                                        getView().clearSelection();
+									}
+									
+								});
+								return true;
+							}
+							
+						});
+					}
+					SearchResultRow row = getView().getSelectedSet().iterator().next();
+					final int ip_id = Integer.parseInt(row.getField(CellTableColumns.IP.IP_ID));
+					final String account_name = row.getField(CellTableColumns.IP.ACCOUNT_NAME);
+                    final String user_name = row.getField(CellTableColumns.IP.USER_NAME);
+					getBackendService().lookupDeviceIPServiceByID(getSession(), ip_id, new AsyncCallback<IPServiceInfo>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							onBackendServiceFailure(caught);
+                            getView().clearSelection();
+						}
+
+						@Override
+						public void onSuccess(IPServiceInfo info) {
+							ipServiceModifyView.popup(ip_id, info.ip_addr, info.is_desc, info.is_starttime, info.is_endtime, account_name, user_name);
 						}
 						
 					});
 				}
-				int ip_id = Integer.parseInt(row.getField(CellTableColumns.IP.IP_ID));
-			    String ip_addr = row.getField(CellTableColumns.IP.IP_ADDR);
-				String is_desc = row.getField(CellTableColumns.IP.IP_SERVICE_DESC);
-			    Date is_starttime = DeviceDate.parse(row.getField(CellTableColumns.IP.IP_SERVICE_STARTTIME));
-			    Date is_endtime = DeviceDate.parse(row.getField(CellTableColumns.IP.IP_SERVICE_ENDTIME));
-			    String account_name = row.getField(CellTableColumns.IP.ACCOUNT_NAME);
-			    String user_name = row.getField(CellTableColumns.IP.USER_NAME);
-			    ipServiceModifyView.popup(ip_id, ip_addr, is_desc, is_starttime, is_endtime, account_name, user_name);
 			}
 		}
 		catch (Exception e) {
@@ -516,30 +494,28 @@ public class DeviceIPActivity extends AbstractSearchActivity implements DeviceIP
 	public void onDeleteIPService() {
 		try {
 			if (canDeleteIPService()) {
-				List<Integer> ip_id_list = new ArrayList<Integer>();
+				List<Integer> ip_ids = new ArrayList<Integer>();
 				for (SearchResultRow row : getView().getSelectedSet()) {
 					int ip_id = Integer.parseInt(row.getField(CellTableColumns.IP.IP_ID));
-					ip_id_list.add(ip_id);
+					ip_ids.add(ip_id);
 				}
-				if (!ip_id_list.isEmpty()) {
-					if (Window.confirm(new ClientMessage("", "确认删除所选择的IP地址服务").toString())) {
-						getBackendService().deleteDeviceIPService(getSession(), ip_id_list, new AsyncCallback<Void>() {
-							
+				if (!ip_ids.isEmpty()) {
+					if (Window.confirm(new ClientMessage("Delete selected IP Address Service(s).", "确认删除所选择的IP地址服务.").toString())) {
+						getBackendService().deleteDeviceIPService(getSession(), ip_ids, new AsyncCallback<Void>() {
+
 							@Override
 							public void onFailure(Throwable caught) {
-								if (caught instanceof EucalyptusServiceException) {
-									onBackendServiceFailure((EucalyptusServiceException)caught);
-								}
-								getView().clearSelection();
+								onBackendServiceFailure(caught);
+                                getView().clearSelection();
 							}
-							
+
 							@Override
 							public void onSuccess(Void result) {
-								showStatus(new ClientMessage("", "删除IP地址服务成功"));
-								reloadCurrentRange();
-								getView().clearSelection();
+								onBackendServiceFinished(new ClientMessage("Successfully delete selected IP Address Service(s).", "IP地址服务删除成功."));
+                                getView().clearSelection();
+                                reloadCurrentRange();
 							}
-                          
+							
 						});
 					}
 				}

@@ -26,10 +26,10 @@ public class DeviceDiskServiceModifyViewImpl extends DialogBox implements Device
 	@UiField TextBox diskName;
 	@UiField TextBox accountName;
 	@UiField TextBox userName;
-	@UiField TextArea diskDesc;
+	@UiField TextArea dsDesc;
 	@UiField DeviceDateBox dateBegin;
 	@UiField DeviceDateBox dateEnd;
-	@UiField LongBox diskUsed;
+	@UiField LongBox dsUsed;
 	@UiField TextBox dateLife;
 	
 	private DevicePopupPanel popup = new DevicePopupPanel();
@@ -72,7 +72,7 @@ public class DeviceDiskServiceModifyViewImpl extends DialogBox implements Device
 	}
 	
 	private String getDiskDesc() {
-		return getInputText(diskDesc);
+		return getInputText(dsDesc);
 	}
 	
 	private String getInputText(TextArea textarea) {
@@ -115,16 +115,20 @@ public class DeviceDiskServiceModifyViewImpl extends DialogBox implements Device
 	}
 	
 	private int ds_id;
+	private long ds_reserved;
+	private long ds_used;
 	
 	@Override
-	public void popup(int ds_id, String disk_name, String ds_desc, long ds_used, Date ds_starttime, Date ds_endtime, String server_name, String account_name, String user_name) {
+	public void popup(int ds_id, String disk_name, String ds_desc, long ds_reserved, long ds_used, Date ds_starttime, Date ds_endtime, String server_name, String account_name, String user_name) {
 		this.ds_id = ds_id;
+		this.ds_reserved = ds_reserved + ds_used;
+		this.ds_used = ds_used;
 		serverName.setValue(server_name);
 		diskName.setValue(disk_name);
-		diskDesc.setValue(ds_desc);
+		dsDesc.setValue(ds_desc);
 		dateBegin.setValue(ds_starttime);
 		dateEnd.setValue(ds_endtime);
-		diskUsed.setValue(ds_used);
+		dsUsed.setValue(ds_used);
 		accountName.setValue(account_name);
 		userName.setValue(user_name);
 		updateDateLife();
@@ -133,7 +137,7 @@ public class DeviceDiskServiceModifyViewImpl extends DialogBox implements Device
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(ds_id, getDiskDesc(), dateBegin.getValue(), dateEnd.getValue())) {
+		if (presenter.onOK(ds_id, getDiskDesc(), ds_reserved, ds_used, dateBegin.getValue(), dateEnd.getValue())) {
 			hide();
 		}
 	}

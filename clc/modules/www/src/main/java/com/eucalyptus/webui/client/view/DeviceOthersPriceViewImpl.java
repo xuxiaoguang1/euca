@@ -1,14 +1,17 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.Date;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.DoubleBox;
 
@@ -19,9 +22,9 @@ public class DeviceOthersPriceViewImpl extends Composite implements DeviceOthers
 	@UiField DoubleBox memoryPrice;
 	@UiField DoubleBox diskPrice;
 	@UiField DoubleBox bandwidthPrice;
-	@UiField TextArea memoryPriceDesc;
-	@UiField TextArea diskPriceDesc;
-	@UiField TextArea bandwidthPriceDesc;
+	@UiField TextBox memoryPriceDesc;
+	@UiField TextBox diskPriceDesc;
+	@UiField TextBox bandwidthPriceDesc;
 	@UiField Label memoryPriceModifiedtime;
 	@UiField Label diskPriceModifiedtime;
 	@UiField Label bandwidthPriceModifiedtime;
@@ -32,32 +35,36 @@ public class DeviceOthersPriceViewImpl extends Composite implements DeviceOthers
     interface DeviceOthersPriceViewImplUiBinder extends UiBinder<Widget, DeviceOthersPriceViewImpl> {
     }
     
+    private DateTimeFormat format = DateTimeFormat.getFormat("yyyy-MM-dd");
+    
     class Column {
 	    
 	    DoubleBox price;
-	    TextArea price_desc;
+	    TextBox price_desc;
 	    Label price_modifiedtime;
 	    Anchor buttonModify;
 	    
-	    public Column(DoubleBox price, TextArea price_desc, Label price_modifiedtime, Anchor buttonModify) {
+	    public Column(DoubleBox price, TextBox price_desc, Label price_modifiedtime, Anchor buttonModify) {
 	        this.price = price;
 	        this.price_desc = price_desc;
 	        this.price_modifiedtime = price_modifiedtime;
 	        this.buttonModify = buttonModify;
-	        setValue(0, "", "");
+	        setValue("", 0, null);
 	    }
 	    
 	    
-	    public void setValue(double price, String price_desc, String price_modifiedtime) {
-	        if (price_desc == null) {
-	            price_desc = "";
+	    public void setValue(String op_desc, double op_price, Date op_modifiedtime) {
+	        if (op_desc == null) {
+	            op_desc = "";
 	        }
-	        if (price_modifiedtime == null) {
-	            price_modifiedtime = "";
+	        this.price_desc.setText(op_desc);
+	        this.price.setValue(op_price);
+	        if (op_modifiedtime == null) {
+	            this.price_modifiedtime.setText("");
 	        }
-	        this.price.setValue(price);
-	        this.price_desc.setValue(price_desc);
-	        this.price_modifiedtime.setText(price_modifiedtime);
+	        else {
+	            this.price_modifiedtime.setText(format.format(op_modifiedtime));
+	        }
 	    }
 	    
 	}
@@ -85,33 +92,33 @@ public class DeviceOthersPriceViewImpl extends Composite implements DeviceOthers
 	}
 	
     @Override
-    public void setMemoryPrice(double price, String price_desc, String price_modifiedtime) {
-        memoryColumn.setValue(price, price_desc, price_modifiedtime);
+    public void setMemoryPrice(String op_desc, double op_price, Date op_modifiedtime) {
+        memoryColumn.setValue(op_desc, op_price, op_modifiedtime);
     }
 
     @Override
-    public void setDiskPrice(double price, String price_desc, String price_modifiedtime) {
-        diskColumn.setValue(price, price_desc, price_modifiedtime);
+    public void setDiskPrice(String op_desc, double op_price, Date op_modifiedtime) {
+        diskColumn.setValue(op_desc, op_price, op_modifiedtime);
     }
 
     @Override
-    public void setBandwidthPrice(double price, String price_desc, String price_modifiedtime) {
-        bandwidthColumn.setValue(price, price_desc, price_modifiedtime);
+    public void setBWPrice(String op_desc, double op_price, Date op_modifiedtime) {
+        bandwidthColumn.setValue(op_desc, op_price, op_modifiedtime);
     }
     
     @UiHandler("memoryPriceModify")
     void handleMemoryPriceModify(ClickEvent event) {
-    	presenter.onModifyMemoryPrice(memoryColumn.price.getText(), memoryColumn.price_desc.getText());
+    	presenter.onModifyMemoryPrice(memoryColumn.price_desc.getText(), memoryColumn.price.getValue());
     }
     
     @UiHandler("diskPriceModify")
     void handleDiskPriceModify(ClickEvent event) {
-    	presenter.onModifyDiskPrice(diskColumn.price.getText(), diskColumn.price_desc.getText());
+    	presenter.onModifyDiskPrice(diskColumn.price_desc.getText(), diskColumn.price.getValue());
     }
     
     @UiHandler("bandwidthPriceModify")
     void handleBandwidthPriceModify(ClickEvent event) {
-    	presenter.onModifyBandwidthPrice(bandwidthColumn.price.getText(), bandwidthColumn.price_desc.getText());
+    	presenter.onModifyBWPrice(bandwidthColumn.price_desc.getText(), bandwidthColumn.price.getValue());
     }
     
 }

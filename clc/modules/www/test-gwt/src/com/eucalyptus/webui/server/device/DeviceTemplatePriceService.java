@@ -93,11 +93,7 @@ public class DeviceTemplatePriceService {
 		
 	}
 	
-	private static final int BW_UNIT = 1024;
-	private static final long DISK_UNIT = 1000 * 1000;
-	private static final long MEMORY_UNIT = 1024 * 1024;
-	
-	public SearchResult lookupCPUPriceByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+	public SearchResult lookupTemplatePriceByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -114,11 +110,11 @@ public class DeviceTemplatePriceService {
     				String template_cpu = DBData.getString(rs, TEMPLATE.TEMPLATE_CPU);
     				int template_ncpus = DBData.getInt(rs, TEMPLATE.TEMPLATE_NCPUS);
     				double tp_cpu = DBData.getDouble(rs, TEMPLATE_PRICE.TEMPLATE_PRICE_CPU);
-    				long template_mem = DBData.getLong(rs, TEMPLATE.TEMPLATE_MEM) / MEMORY_UNIT;
+    				long template_mem = DBData.getLong(rs, TEMPLATE.TEMPLATE_MEM);
     				double tp_mem = DBData.getDouble(rs, TEMPLATE_PRICE.TEMPLATE_PRICE_MEM);
-    				long template_disk = DBData.getLong(rs, TEMPLATE.TEMPLATE_DISK) / DISK_UNIT;
+    				long template_disk = DBData.getLong(rs, TEMPLATE.TEMPLATE_DISK);
     				double tp_disk = DBData.getDouble(rs, TEMPLATE_PRICE.TEMPLATE_PRICE_DISK);
-    				int template_bw = DBData.getInt(rs, TEMPLATE.TEMPLATE_BW) / BW_UNIT;
+    				int template_bw = DBData.getInt(rs, TEMPLATE.TEMPLATE_BW);
     				double tp_bw = DBData.getDouble(rs, TEMPLATE_PRICE.TEMPLATE_PRICE_BW);
     				double tp_price = template_ncpus * tp_cpu + template_mem * tp_mem + template_disk * tp_disk + template_bw * tp_bw;
     				tp_price = (double)(int)(tp_price * 100) / 100;
@@ -193,6 +189,7 @@ public class DeviceTemplatePriceService {
 	        Connection conn = null;
 	        try {
 	            conn = DBProcWrapper.getConnection();
+	            conn.setAutoCommit(false);
 	            for (int tp_id : tp_ids) {
 	            	DeviceTemplatePriceDBProcWrapper.lookupTemplatePriceByID(conn, true, tp_id).deleteRow();
 	            }
@@ -223,6 +220,7 @@ public class DeviceTemplatePriceService {
 		Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
+            conn.setAutoCommit(false);
             DBTableTemplatePrice TEMPLATE_PRICE = DBTable.TEMPLATE_PRICE;
             ResultSet rs = DeviceTemplatePriceDBProcWrapper.lookupTemplatePriceByID(conn, true, tp_id);
             rs.updateString(TEMPLATE_PRICE.TEMPLATE_PRICE_DESC.toString(), tp_desc);
@@ -231,6 +229,7 @@ public class DeviceTemplatePriceService {
             rs.updateDouble(TEMPLATE_PRICE.TEMPLATE_PRICE_DISK.toString(), tp_disk);
             rs.updateDouble(TEMPLATE_PRICE.TEMPLATE_PRICE_BW.toString(), tp_bw);
             rs.updateString(TEMPLATE_PRICE.TEMPLATE_PRICE_MODIFIEDTIME.toString(), DBStringBuilder.getDate());
+            rs.updateRow();
             conn.commit();
         }
         catch (Exception e) {
@@ -268,7 +267,7 @@ public class DeviceTemplatePriceService {
         }
 	}
 	
-	public Map<Integer, String> lookupTemplatesWithoutPrice(Session session) throws EucalyptusServiceException {
+	public Map<String, Integer> lookupTemplatesWithoutPrice(Session session) throws EucalyptusServiceException {
 	    if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -302,23 +301,22 @@ class DeviceTemplatePriceDBProcWrapper {
         return rs;
 	}
 	
-	public static Map<Integer, String> lookupTemplatesWithoutPrice(Connection conn) throws Exception {
+	public static Map<String, Integer> lookupTemplatesWithoutPrice(Connection conn) throws Exception {
 		DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
 		DBTableTemplatePrice TEMPLATE_PRICE = DBTable.TEMPLATE_PRICE;
 		DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ").append(TEMPLATE.TEMPLATE_ID).append(", ").append(TEMPLATE.TEMPLATE_NAME);
+        sb.append("SELECT ").append(TEMPLATE.TEMPLATE_NAME).append(", ").append(TEMPLATE.TEMPLATE_ID);
         sb.append(" FROM ").append(TEMPLATE);
-        sb.append(" WHERE ").append(TEMPLATE.TEMPLATE_ID).append(" IS NOT IN ").append("("); {
+        sb.append(" WHERE ").append(TEMPLATE.TEMPLATE_ID).append(" NOT IN ").append("("); {
             sb.append("SELECT DISTINCT(").append(TEMPLATE_PRICE.TEMPLATE_ID).append(")");
             sb.append(" FROM ").append(TEMPLATE_PRICE);
             sb.append(" WHERE 1=1");
         }
         sb.append(")");
-        
         ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        Map<Integer, String> result = new HashMap<Integer, String>();
+        Map<String, Integer> result = new HashMap<String, Integer>();
         while (rs.next()) {
-        	result.put(rs.getInt(1), rs.getString(2));
+        	result.put(rs.getString(1), rs.getInt(2));
         }
         return result;
 	}

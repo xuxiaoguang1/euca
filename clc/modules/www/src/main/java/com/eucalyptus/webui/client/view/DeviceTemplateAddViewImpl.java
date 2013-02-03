@@ -113,7 +113,8 @@ public class DeviceTemplateAddViewImpl extends DialogBox implements DeviceTempla
 		templateMem.setValue(0L);;
 		templateDisk.setValue(0L);;
 		templateBW.setValue(0);;
-		templateImage.setValue("");;
+		templateImage.setValue("");
+		presenter.lookupCPUNames();
 		show();
     }
 
@@ -131,7 +132,13 @@ public class DeviceTemplateAddViewImpl extends DialogBox implements DeviceTempla
 	
 	@Override
 	public void setCPUNameList(List<String> cpu_name_list) {
-		
+	    templateCPU.clear();
+	    if (cpu_name_list != null && !cpu_name_list.isEmpty()) {
+	        for (String cpu_name : cpu_name_list) {
+	            templateCPU.addItem(cpu_name);
+	        }
+	        templateCPU.setSelectedIndex(0);
+	    }
 	}
 	
 }

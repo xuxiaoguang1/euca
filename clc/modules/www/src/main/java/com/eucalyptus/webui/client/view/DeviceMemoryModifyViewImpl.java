@@ -19,9 +19,9 @@ public class DeviceMemoryModifyViewImpl extends DialogBox implements DeviceMemor
 	}
 	
 	@UiField TextBox serverName;
-	@UiField TextBox memoryName;
-	@UiField TextArea memoryDesc;
-	@UiField LongBox memorySize;
+	@UiField TextBox memName;
+	@UiField TextArea memDesc;
+	@UiField LongBox memSize;
 
 	public DeviceMemoryModifyViewImpl() {
 		super(false);
@@ -31,11 +31,11 @@ public class DeviceMemoryModifyViewImpl extends DialogBox implements DeviceMemor
 	}
 	
 	private String getMemoryDesc() {
-		return getInputText(memoryDesc);
+		return getInputText(memDesc);
 	}
 	
 	private long getMemorySize() {
-		return memorySize.getValue();
+		return memSize.getValue();
 	}
 	
 	private String getInputText(TextArea textarea) {
@@ -53,21 +53,23 @@ public class DeviceMemoryModifyViewImpl extends DialogBox implements DeviceMemor
 		this.presenter = presenter;
     }
 	
-	private int memory_id;
+	private int mem_id;
+	private long ms_used;
 
 	@Override
-	public void popup(int memory_id, String memory_name, String memory_desc, long memory_size, String server_name) {
-		this.memory_id = memory_id;
-		memoryName.setValue(memory_name);
-		memoryDesc.setValue(memory_desc);
-		memorySize.setValue(memory_size);
+	public void popup(int mem_id, String mem_name, String mem_desc, long mem_size, long ms_used, String server_name) {
+		this.mem_id = mem_id;
+		this.ms_used = ms_used;
+		memName.setValue(mem_name);
+		memDesc.setValue(mem_desc);
+		memSize.setValue(mem_size);
 		serverName.setValue(server_name);
 		show();
 	}
 	
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(memory_id, getMemoryDesc(), getMemorySize())) {
+		if (presenter.onOK(mem_id, getMemoryDesc(), getMemorySize(), ms_used)) {
 			hide();
 		}
 	}

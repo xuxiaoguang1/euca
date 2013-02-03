@@ -206,7 +206,7 @@ public class DeviceMemoryService {
         }
     }
     
-    public Map<Integer, String> lookupMemoryNamesByServerID(boolean force, Session session, int server_id) throws EucalyptusServiceException {
+    public Map<String, Integer> lookupMemoryNamesByServerID(boolean force, Session session, int server_id) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -224,7 +224,7 @@ public class DeviceMemoryService {
         }
     }
     
-    public Map<Integer, Long> lookupMemoryCountsByState(Session session) throws EucalyptusServiceException {
+    public Map<Integer, Long> lookupMemoryCounts(Session session) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             LoginUserProfile user = getUser(session);
@@ -242,7 +242,8 @@ public class DeviceMemoryService {
                 account_id = user.getAccountId();
                 user_id = user.getUserId();
             }
-            Map<Integer, Long> result = DeviceMemoryDBProcWrapper.lookupMemoryCountsByState(conn, account_id, user_id);
+            conn = DBProcWrapper.getConnection();
+            Map<Integer, Long> result = DeviceMemoryDBProcWrapper.lookupMemoryCounts(conn, account_id, user_id);
             for (Map.Entry<Integer, Long> entry : result.entrySet()) {
                 entry.setValue(entry.getValue() / MEMORY_UNIT);
             }
@@ -262,6 +263,7 @@ public class DeviceMemoryService {
         try {
             conn = DBProcWrapper.getConnection();
             DBTableMemory MEMORY = DBTable.MEMORY;
+            DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
             ResultSet rs = DeviceMemoryDBProcWrapper.lookupMemoryByID(conn, false, mem_id);
             String mem_name = DBData.getString(rs, MEMORY.MEMORY_NAME);
             String mem_desc = DBData.getString(rs, MEMORY.MEMORY_DESC);
@@ -269,7 +271,9 @@ public class DeviceMemoryService {
             Date mem_creationtime = DBData.getDate(rs, MEMORY.MEMORY_CREATIONTIME);
             Date mem_modifiedtime = DBData.getDate(rs, MEMORY.MEMORY_MODIFIEDTIME);
             int server_id = DBData.getInt(rs, MEMORY.SERVER_ID);
-            return new MemoryInfo(mem_id, mem_name, mem_desc, mem_total, mem_creationtime, mem_modifiedtime, server_id);
+            rs = DeviceMemoryDBProcWrapper.lookupMemoryServiceReservedByID(conn, false, mem_id);
+            long ms_reserved = DBData.getLong(rs, MEMORY_SERVICE.MEMORY_SERVICE_USED) / MEMORY_UNIT;
+            return new MemoryInfo(mem_id, mem_name, mem_desc, mem_total, ms_reserved, mem_creationtime, mem_modifiedtime, server_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -380,11 +384,14 @@ public class DeviceMemoryService {
         long reserved = rs.getLong(MEMORY_SERVICE.MEMORY_SERVICE_USED.toString());
         if (reserved >= ms_used) {
             rs.updateLong(MEMORY_SERVICE.MEMORY_SERVICE_USED.toString(), reserved - ms_used);
+            rs.updateRow();
         }
         else if (force) {
             rs.updateLong(MEMORY_SERVICE.MEMORY_SERVICE_USED.toString(), 0);
+            rs.updateRow();
             rs = DeviceMemoryDBProcWrapper.lookupMemoryByID(conn, true, mem_id);
             rs.updateLong(MEMORY.MEMORY_TOTAL.toString(), rs.getLong(MEMORY.MEMORY_TOTAL.toString()) + ms_used - reserved);
+            rs.updateRow();
         }
         else {
             throw new EucalyptusServiceException(ClientMessage.invalidValue("Memory Size", "内存大小"));
@@ -563,9 +570,9 @@ public class DeviceMemoryService {
         try {
             conn = DBProcWrapper.getConnection();
             conn.setAutoCommit(false);
-            for (Map.Entry<Integer, String> entry : DeviceMemoryDBProcWrapper.lookupMemoryNamesByServerID(conn, server_id).entrySet()) {
+            for (Map.Entry<String, Integer> entry : DeviceMemoryDBProcWrapper.lookupMemoryNamesByServerID(conn, server_id).entrySet()) {
                 DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
-                for (int ms_id : DeviceMemoryDBProcWrapper.lookupMemoryServiceIDsByMemoryID(conn, entry.getKey())) {
+                for (int ms_id : DeviceMemoryDBProcWrapper.lookupMemoryServiceIDsByMemoryID(conn, entry.getValue())) {
                     ResultSet rs = DeviceMemoryDBProcWrapper.lookupMemoryServiceByID(conn, true, ms_id);
                     rs.updateInt(MEMORY_SERVICE.MEMORY_SERVICE_STATE.toString(), MemoryState.STOP.getValue());
                     rs.updateRow();
@@ -645,17 +652,17 @@ class DeviceMemoryDBProcWrapper {
     
     private static final Logger log = Logger.getLogger(DeviceMemoryDBProcWrapper.class.getName());
     
-    public static Map<Integer, String> lookupMemoryNamesByServerID(Connection conn, int server_id) throws Exception {
+    public static Map<String, Integer> lookupMemoryNamesByServerID(Connection conn, int server_id) throws Exception {
         DBTableMemory MEMORY = DBTable.MEMORY;
         DBStringBuilder sb = new DBStringBuilder();
         sb.append("SELECT ");
-        sb.append(MEMORY.MEMORY_ID).append(", ").append(MEMORY.MEMORY_NAME);
+        sb.append(MEMORY.MEMORY_NAME).append(", ").append(MEMORY.MEMORY_ID);
         sb.append(" FROM ").append(MEMORY);
         sb.append(" WHERE ").append(MEMORY.SERVER_ID).append(" = ").append(server_id);
         ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        Map<Integer, String> result = new HashMap<Integer, String>();
+        Map<String, Integer> result = new HashMap<String, Integer>();
         while (rs.next()) {
-            result.put(rs.getInt(MEMORY.MEMORY_ID.toString()), rs.getString(MEMORY.MEMORY_NAME.toString()));
+            result.put(rs.getString(1), rs.getInt(1));
         }
         return result;
     }
@@ -798,7 +805,12 @@ class DeviceMemoryDBProcWrapper {
             sb.appendDate().append(", ");
             sb.appendNull().append(", ");
             sb.append(mem_id).append(", ");
-            sb.append(user_id);
+            if (user_id == -1) {
+                sb.appendNull();
+            }
+            else {
+                sb.append(user_id);
+            }
         }
         sb.append(")");
         Statement stat = conn.createStatement();
@@ -808,7 +820,7 @@ class DeviceMemoryDBProcWrapper {
 		return rs.getInt(1);
 	}
 	
-	public static Map<Integer, Long> lookupMemoryCountsByState(Connection conn, int account_id, int user_id) throws Exception {
+	public static Map<Integer, Long> lookupMemoryCounts(Connection conn, int account_id, int user_id) throws Exception {
 	    DBTableUser USER = DBTable.USER;
         DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
         DBStringBuilder sb = new DBStringBuilder();

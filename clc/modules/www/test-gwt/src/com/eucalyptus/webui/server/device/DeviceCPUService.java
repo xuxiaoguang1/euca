@@ -224,10 +224,22 @@ public class DeviceCPUService {
         }
     }
     
-    public Map<Integer, String> lookupCPUNamesByServerID(boolean force, Session session, int server_id) throws EucalyptusServiceException {
-        if (!force && !getUser(session).isSystemAdmin()) {
-            throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
+    public List<String> lookupCPUNames() throws EucalyptusServiceException {
+    	Connection conn = null;
+        try {
+            conn = DBProcWrapper.getConnection();
+            return DeviceCPUDBProcWrapper.lookupCPUNames(conn);
         }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EucalyptusServiceException(e);
+        }
+        finally {
+            DBProcWrapper.close(conn);
+        }
+    }
+    
+    public Map<String, Integer> lookupCPUNamesByServerID(int server_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -242,7 +254,7 @@ public class DeviceCPUService {
         }
     }
     
-    public Map<Integer, Integer> lookupCPUCountsByState(Session session) throws EucalyptusServiceException {
+    public Map<Integer, Integer> lookupCPUCounts(Session session) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             LoginUserProfile user = getUser(session);
@@ -260,7 +272,8 @@ public class DeviceCPUService {
                 account_id = user.getAccountId();
                 user_id = user.getUserId();
             }
-            return DeviceCPUDBProcWrapper.lookupCPUCountsByState(conn, account_id, user_id);
+            conn = DBProcWrapper.getConnection();
+            return DeviceCPUDBProcWrapper.lookupCPUCounts(conn, account_id, user_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -276,6 +289,7 @@ public class DeviceCPUService {
         try {
             conn = DBProcWrapper.getConnection();
             DBTableCPU CPU = DBTable.CPU;
+            DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
             ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUByID(conn, false, cpu_id);
             String cpu_name = DBData.getString(rs, CPU.CPU_NAME);
             String cpu_desc = DBData.getString(rs, CPU.CPU_DESC);
@@ -287,7 +301,9 @@ public class DeviceCPUService {
             Date cpu_creationtime = DBData.getDate(rs, CPU.CPU_CREATIONTIME);
             Date cpu_modifiedtime = DBData.getDate(rs, CPU.CPU_MODIFIEDTIME);
             int server_id = DBData.getInt(rs, CPU.SERVER_ID);
-            return new CPUInfo(cpu_id, cpu_name, cpu_desc, cpu_total, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, cpu_creationtime, cpu_modifiedtime, server_id);
+            rs = DeviceCPUDBProcWrapper.lookupCPUServiceReservedByID(conn, false, cpu_id);
+            int cs_reserved = rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString());
+            return new CPUInfo(cpu_id, cpu_name, cpu_desc, cpu_total, cs_reserved, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, cpu_creationtime, cpu_modifiedtime, server_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -302,8 +318,8 @@ public class DeviceCPUService {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
-            ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceByID(conn, false, cs_id);
             DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
+            ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceByID(conn, false, cs_id);
             String cs_desc = DBData.getString(rs, CPU_SERVICE.CPU_SERVICE_DESC);
             int cs_used = DBData.getInt(rs, CPU_SERVICE.CPU_SERVICE_USED);
             Date cs_starttime = DBData.getDate(rs, CPU_SERVICE.CPU_SERVICE_STARTTIME);
@@ -397,11 +413,14 @@ public class DeviceCPUService {
         int reserved = rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString());
         if (reserved >= cs_used) {
             rs.updateInt(CPU_SERVICE.CPU_SERVICE_USED.toString(), reserved - cs_used);
+            rs.updateRow();
         }
         else if (force) {
             rs.updateLong(CPU_SERVICE.CPU_SERVICE_USED.toString(), 0);
+            rs.updateRow();
             rs = DeviceCPUDBProcWrapper.lookupCPUByID(conn, true, cpu_id);
             rs.updateLong(CPU.CPU_TOTAL.toString(), rs.getLong(CPU.CPU_TOTAL.toString()) + cs_used - reserved);
+            rs.updateRow();
         }
         else {
             throw new EucalyptusServiceException(ClientMessage.invalidValue("CPU Size", "CPU大小"));
@@ -590,9 +609,9 @@ public class DeviceCPUService {
         try {
             conn = DBProcWrapper.getConnection();
             conn.setAutoCommit(false);
-            for (Map.Entry<Integer, String> entry : DeviceCPUDBProcWrapper.lookupCPUNamesByServerID(conn, server_id).entrySet()) {
+            for (Map.Entry<String, Integer> entry : DeviceCPUDBProcWrapper.lookupCPUNamesByServerID(conn, server_id).entrySet()) {
             	DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-            	for (int cs_id : DeviceCPUDBProcWrapper.lookupCPUServiceIDsByCPUID(conn, entry.getKey())) {
+            	for (int cs_id : DeviceCPUDBProcWrapper.lookupCPUServiceIDsByCPUID(conn, entry.getValue())) {
             		ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceByID(conn, true, cs_id);
             		rs.updateInt(CPU_SERVICE.CPU_SERVICE_STATE.toString(), CPUState.STOP.getValue());
                     rs.updateRow();
@@ -672,17 +691,30 @@ class DeviceCPUDBProcWrapper {
     
     private static final Logger log = Logger.getLogger(DeviceCPUDBProcWrapper.class.getName());
     
-    public static Map<Integer, String> lookupCPUNamesByServerID(Connection conn, int server_id) throws Exception {
+    public static List<String> lookupCPUNames(Connection conn) throws Exception {
+        DBTableCPU CPU = DBTable.CPU;
+        DBStringBuilder sb = new DBStringBuilder();
+        sb.append("SELECT DISTINCT(").append(CPU.CPU_NAME).append(")");
+        sb.append(" FROM ").append(CPU).append(" WHERE 1=1");
+        ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+        List<String> result = new LinkedList<String>();
+        while (rs.next()) {
+        	result.add(rs.getString(1));
+        }
+        return result;
+    }
+    
+    public static Map<String, Integer> lookupCPUNamesByServerID(Connection conn, int server_id) throws Exception {
         DBTableCPU CPU = DBTable.CPU;
         DBStringBuilder sb = new DBStringBuilder();
         sb.append("SELECT ");
-        sb.append(CPU.CPU_ID).append(", ").append(CPU.CPU_NAME);
+        sb.append(CPU.CPU_NAME).append(", ").append(CPU.CPU_ID);
         sb.append(" FROM ").append(CPU);
         sb.append(" WHERE ").append(CPU.SERVER_ID).append(" = ").append(server_id);
         ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        Map<Integer, String> result = new HashMap<Integer, String>();
+        Map<String, Integer> result = new HashMap<String, Integer>();
         while (rs.next()) {
-            result.put(rs.getInt(CPU.CPU_ID.toString()), rs.getString(CPU.CPU_NAME.toString()));
+        	result.put(rs.getString(1), rs.getInt(2));
         }
         return result;
     }
@@ -833,7 +865,12 @@ class DeviceCPUDBProcWrapper {
             sb.appendDate().append(", ");
             sb.appendNull().append(", ");
             sb.append(cpu_id).append(", ");
-            sb.append(user_id);
+            if (user_id == -1) {
+                sb.appendNull();
+            }
+            else {
+                sb.append(user_id);
+            }
         }
         sb.append(")");
         Statement stat = conn.createStatement();
@@ -843,7 +880,7 @@ class DeviceCPUDBProcWrapper {
         return rs.getInt(1);
     }
     
-    public static Map<Integer, Integer> lookupCPUCountsByState(Connection conn, int account_id, int user_id) throws Exception {
+    public static Map<Integer, Integer> lookupCPUCounts(Connection conn, int account_id, int user_id) throws Exception {
         DBTableUser USER = DBTable.USER;
         DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
         DBStringBuilder sb = new DBStringBuilder();

@@ -1,6 +1,10 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -12,7 +16,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DoubleBox;
+import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.LongBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -29,13 +35,15 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
 	@UiField TextArea templatePriceDesc;
 	@UiField TextBox cpuName;
 	@UiField DoubleBox cpuPrice;
-	@UiField DoubleBox memSize;
+	@UiField LongBox memSize;
 	@UiField DoubleBox memPrice;
-	@UiField DoubleBox diskSize;
+	@UiField LongBox diskSize;
 	@UiField DoubleBox diskPrice;
-	@UiField DoubleBox bwSize;
+	@UiField IntegerBox bwSize;
 	@UiField DoubleBox bwPrice;
 	@UiField DoubleBox totalPrice;
+	
+	private Map<String, Integer> templateMap = new HashMap<String, Integer>();
 	
 	public DeviceTemplatePriceAddViewImpl() {
 		super(false);
@@ -56,10 +64,10 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
 
 			@Override
 			public void onChange(ChangeEvent event) {
-				int index = templateName.getSelectedIndex();
-				if (index != -1) {
-					presenter.lookupTemplateDetailByName(templateName.getItemText(index));
-				}
+			    int template_id = getTemplateID();
+			    if (template_id != -1) {
+			        presenter.lookupTemplate(template_id);
+			    }
 			}
 			
 		});
@@ -80,29 +88,58 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
 	private double disk_size;
 	private double bw_size;
 	
-	private boolean isEmpty(String s) {
-		return s == null || s.isEmpty();
-	}
-	
-	private double getPrice(String text) {
-		if (isEmpty(text)) {
-			return 0;
-		}
-		return Double.parseDouble(text);
-	}
+	private int getID(Map<String, Integer> map, String name) {
+        if (name == null || name.isEmpty()) {
+            return -1;
+        }
+        Integer id = map.get(name);
+        if (id == null) {
+            return -1;
+        }
+        return id;
+    }
+    
+    private int getTemplateID() {
+        return getID(templateMap, getSelectedText(templateName));
+    }
+    
+    private String getSelectedText(ListBox listbox) {
+        int index = listbox.getSelectedIndex();
+        if (index == -1) {
+            return "";
+        }
+        return listbox.getItemText(index);
+    }
 	
 	private void updateTotalPrice() {
-		try {
-			double total_price = getPrice(cpuPrice.getText()) * ncpus;
-			total_price += getPrice(memPrice.getText()) * mem_size;
-			total_price += getPrice(diskPrice.getText()) * disk_size;
-			total_price += getPrice(bwPrice.getText()) * bw_size;
-			totalPrice.setValue(total_price);
-		}
-		catch (Exception e) {
-			totalPrice.setText("INVALID VALUE");
-			e.printStackTrace();
-		}
+	    try {
+	        double sum = 0;
+	        double value;
+	        if ((value = cpuPrice.getValue()) < 0 || ncpus < 0) {
+	            totalPrice.setText("INVALID VALUE");
+	            return;
+	        }
+	        sum += value * ncpus;
+	        if ((value = memPrice.getValue()) < 0 || mem_size < 0) {
+	            totalPrice.setText("INVALID VALUE");
+                return;
+	        }
+	        sum += value * mem_size;
+	        if ((value = diskPrice.getValue()) < 0 || disk_size < 0) {
+	            totalPrice.setText("INVALID VALUE");
+                return;
+	        }
+	        sum += value * disk_size;
+	        if ((value = bwPrice.getValue()) < 0 || bw_size < 0) {
+	            totalPrice.setText("INVALID VALUE");
+                return;
+	        }
+	        sum += value * bw_size;
+	        totalPrice.setValue(sum);
+	    }
+	    catch (Exception e) {
+	        totalPrice.setText("INVALID VALUE");
+	    }
 	}
 	
 	private void resetTemplateDetail(boolean all) {
@@ -124,27 +161,32 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
 	public void popup() {
 		templateName.clear();
 		resetTemplateDetail(true);
-		presenter.lookupTemplateList();
+		presenter.lookupTemplates();
 		show();
 	}
 	
-	@Override
-	public void setTemplateList(List<String> template_name_list) {
-		templateName.clear();
-		resetTemplateDetail(true);
-		if (template_name_list != null && !template_name_list.isEmpty()) {
-			for (String template_name : template_name_list) {
-				templateName.addItem(template_name);
-			}
-			templateName.setSelectedIndex(0);
-			presenter.lookupTemplateDetailByName(templateName.getItemText(0));
-		}
-	}
-	
-	@Override
-	public void setTemplateDetails(int template_id, String template_name, String cpu_name, int ncpus, double mem_size, double disk_size, double bw_size) {
-		int index = templateName.getSelectedIndex();
-		if (index != -1 && templateName.getItemText(index).equals(template_name)) {
+    @Override
+    public void setTemplates(Map<String, Integer> template_map) {
+        templateName.clear();
+        templateMap.clear();
+        if (template_map != null && !template_map.isEmpty()) {
+            List<String> list = new ArrayList<String>(template_map.keySet());
+            Collections.sort(list);
+            for (String template_name : list) {
+                templateName.addItem(template_name);
+            }
+            templateName.setSelectedIndex(0);
+            templateMap = template_map;
+            int template_id = getTemplateID();
+            if (template_id != -1) {
+                presenter.lookupTemplate(template_id);
+            }
+        }
+    }
+
+    @Override
+    public void setTemplate(int template_id, String template_name, String cpu_name, int ncpus, long mem_size, long disk_size, int bw_size) {
+        if (getTemplateID() == template_id) {
 			this.template_id = template_id;
 			this.ncpus = ncpus;
 			this.mem_size = mem_size;
@@ -156,6 +198,11 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
 			memSize.setValue(mem_size);
 			diskSize.setValue(disk_size);
 			bwSize.setValue(bw_size);
+			cpuPrice.setValue(0.0);
+            memPrice.setValue(0.0);
+            diskPrice.setValue(0.0);
+            bwPrice.setValue(0.0);
+            totalPrice.setValue(0.0);
 			updateTotalPrice();
 		}
 	}
@@ -168,42 +215,9 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
     	return text;
     }
     
-    private String getCPUPrice() {
-    	String value = cpuPrice.getText();
-    	if (value == null) {
-    		return "";
-    	}
-    	return value;
-    }
-    
-    private String getMemPrice() {
-    	String value = memPrice.getText();
-    	if (value == null) {
-    		return "";
-    	}
-    	return value;
-    }
-
-    private String getDiskPrice() {
-    	String value = diskPrice.getText();
-    	if (value == null) {
-    		return "";
-    	}
-    	return value;
-    }
-    
-    private String getBWPrice() {
-    	String value = bwPrice.getText();
-    	if (value == null) {
-    		return "";
-    	}
-    	return value;
-    }
-    
     @UiHandler("buttonOK")
     void handleButtonOK(ClickEvent event) {
-    	if (presenter.onOK(template_id, getTemplatePriceDesc(),
-    			getCPUPrice(), getMemPrice(), getDiskPrice(), getBWPrice())) {
+    	if (presenter.onOK(template_id, getTemplatePriceDesc(), cpuPrice.getValue(), memPrice.getValue(), diskPrice.getValue(), bwPrice.getValue())) {
     		hide();
     	}
     }

@@ -25,7 +25,6 @@ import com.eucalyptus.webui.server.vm.VITDBProcWrapper;
 import com.eucalyptus.webui.server.vm.VITSyncException;
 import com.eucalyptus.webui.server.vm.VmImageType;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
-import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserApp;
@@ -128,12 +127,11 @@ public class UserAppServiceProcImpl {
 			  if (vit != null)
 				  euca_vit_id = vit.getEucaVITId();
 			  
-			  System.err.println("not finish yet!!!");
-              System.exit(0);
-              
-              Template template = null;
-			  
-			  // Template template = DeviceTemplateService.getInstance().lookupTemplateByID(session, templateId);
+			  throw new RuntimeException("NOT FINISH YET!! PLEASE USE TemplateInfo INSTEAD!!!");
+			  /* *
+			   * !![NOT FINISH YET!! PLEASE USE TemplateInfo INSTEAD!!!]
+
+			  Template template = DeviceTemplateService.getInstance().lookupTemplateByID(session, templateId);
 			  
 			  if (keyPair != null && securityGroup != null && euca_vit_id != null) {
 				  String euca_vi_key = EucaServiceWrapper.getInstance().runVM(session, template, keyPair, securityGroup, euca_vit_id);
@@ -146,6 +144,18 @@ public class UserAppServiceProcImpl {
 			  }
 			  else
 				  throw new EucalyptusServiceException("User's key_pair or security group para error");
+			  */
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
 			  
 		  } catch (UserAppSyncException e) {
 			// TODO Auto-generated catch block

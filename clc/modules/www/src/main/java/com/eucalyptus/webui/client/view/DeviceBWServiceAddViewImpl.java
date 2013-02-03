@@ -1,7 +1,11 @@
 package com.eucalyptus.webui.client.view;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.eucalyptus.webui.client.activity.device.DeviceDate;
 import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
@@ -35,6 +39,10 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 	@UiField DeviceDateBox dateEnd;
 	@UiField TextBox dateLife;
 	
+	private Map<String, Integer> accountMap = new HashMap<String, Integer>();
+    private Map<String, Integer> userMap = new HashMap<String, Integer>();
+    private Map<String, Integer> ipMap = new HashMap<String, Integer>();
+	
 	private DevicePopupPanel popup = new DevicePopupPanel();
 		
 	public DeviceBWServiceAddViewImpl() {
@@ -44,14 +52,13 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 
 			@Override
 			public void onChange(ChangeEvent event) {
-				String account_name = getAccountName();
-				if (!isEmpty(account_name)) {
-					presenter.lookupUserNamesByAccountName(account_name);
-				}
-				else {
-					userNameList.clear();
-					presenter.lookupAddrByUserName(getAccountName(), getUserName());
-				}
+			    int account_id = getAccountID();
+			    if (account_id != -1) {
+			        presenter.lookupUserNamesByAccountID(account_id);
+			    }
+			    else {
+			    	setUserNames(-1, null);
+			    }
 			}
 			
 		});
@@ -59,7 +66,7 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 
 			@Override
 			public void onChange(ChangeEvent event) {
-				presenter.lookupAddrByUserName(getAccountName(), getUserName());
+				presenter.lookupIPsWithoutBWService(getAccountID(), getUserID());
 			}
 			
 		});
@@ -97,16 +104,63 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 		hide();
 	}
 	
-	private String getAccountName() {
-		return getSelectedText(accountNameList); 
-	}
+	@Override
+    public void setAccountNames(Map<String, Integer> account_map) {
+        accountNameList.clear();
+        userNameList.clear();
+        ipAddrList.clear();
+        accountMap.clear();
+        userMap.clear();
+        ipMap.clear();
+        if (account_map != null && !account_map.isEmpty()) {
+            accountNameList.addItem("");
+            List<String> list = new ArrayList<String>(account_map.keySet());
+            Collections.sort(list);
+            for (String account_name : list) {
+                accountNameList.addItem(account_name);
+            }
+            accountNameList.setSelectedIndex(0);
+            accountMap = account_map;
+        }
+        setUserNames(-1, null);
+    }
 	
-	private String getUserName() {
-		return getSelectedText(userNameList); 
-	}
+	@Override
+    public void setUserNames(int account_id, Map<String, Integer> user_map) {
+        if (getAccountID() == account_id) {
+            userNameList.clear();
+            ipAddrList.clear();
+            userMap.clear();
+            ipMap.clear();
+            if (user_map != null && !user_map.isEmpty()) {
+                userNameList.addItem("");
+                List<String> list = new ArrayList<String>(user_map.keySet());
+                Collections.sort(list);
+                for (String user_name : list) {
+                    userNameList.addItem(user_name);
+                }
+                userNameList.setSelectedIndex(0);
+                userMap = user_map;
+            }
+            presenter.lookupIPsWithoutBWService(account_id, -1);
+        }
+    }
 	
-	private String getIPAddr() {
-		return getSelectedText(ipAddrList);
+	@Override
+    public void setIPs(int account_id, int user_id, Map<String, Integer> ip_map) {
+		if (getAccountID() == account_id && getUserID() == user_id) {
+            ipAddrList.clear();
+            ipMap.clear();
+            if (ip_map != null && !ip_map.isEmpty()) {
+                List<String> list = new ArrayList<String>(ip_map.keySet());
+                Collections.sort(list);
+                for (String ip : list) {
+                    ipAddrList.addItem(ip);
+                }
+                ipAddrList.setSelectedIndex(0);
+                ipMap = ip_map;
+            }
+		}
 	}
 	
 	private String getBWDesc() {
@@ -116,6 +170,29 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 	private int getBWMax() {
 		return bwMax.getValue();
 	}
+	
+	private int getID(Map<String, Integer> map, String name) {
+        if (name == null || name.isEmpty()) {
+            return -1;
+        }
+        Integer id = map.get(name);
+        if (id == null) {
+            return -1;
+        }
+        return id;
+    }
+    
+    private int getAccountID() {
+        return getID(accountMap, getSelectedText(accountNameList));
+    }
+    
+    private int getUserID() {
+        return getID(userMap, getSelectedText(userNameList));
+    }
+    
+    private int getIPID() {
+    	return getID(ipMap, getSelectedText(ipAddrList));
+    }
 	
 	private String getInputText(TextArea textarea) {
 		String text = textarea.getText();
@@ -180,7 +257,7 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(getIPAddr(), getBWDesc(), getBWMax(), dateBegin.getValue(), dateEnd.getValue())) {
+		if (presenter.onOK(getBWDesc(), getBWMax(), dateBegin.getValue(), dateEnd.getValue(), getIPID())) {
 			hide();
 		}
 	}
@@ -190,46 +267,4 @@ public class DeviceBWServiceAddViewImpl extends DialogBox implements DeviceBWSer
 		hide();
 	}
 	
-    @Override
-    public void setAccountNameList(List<String> account_name_list) {
-    	setListBox(accountNameList, account_name_list, true);
-    	setListBox(userNameList, null, true);
-    	setListBox(ipAddrList, null, false);
-    	String account_name = getAccountName();
-        if (!isEmpty(account_name)) {
-        	presenter.lookupUserNamesByAccountName(account_name);
-        }
-        else {
-        	presenter.lookupAddrByUserName("", "");
-        }
-    }
-    
-    @Override
-    public void setUserNameList(String account_name, List<String> user_name_list) {
-        if (getAccountName().equals(account_name)) {
-	        setListBox(userNameList, user_name_list, true);
-	        presenter.lookupAddrByUserName(account_name, getUserName());
-        }
-    }
-    
-	@Override
-	public void setIPAddrList(List<String> ip_addr_list, String account_name, String user_name) {
-		if (getAccountName().equals(account_name) && getUserName().equals(user_name)) {
-			setListBox(ipAddrList, ip_addr_list, false);
-		}
-	}
-	
-    private void setListBox(ListBox listbox, List<String> values, boolean hasEmpty) {
-    	listbox.clear();
-    	if (values != null && !values.isEmpty()) {
-    		if (hasEmpty) {
-    			listbox.addItem("");
-    		}
-	    	for (String value : values) {
-	    		listbox.addItem(value);
-	    	}
-	    	listbox.setSelectedIndex(0);
-    	}
-    }
-
 }
