@@ -1,0 +1,107 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:p1="urn:import:com.google.gwt.user.datepicker.client"
+	xmlns:d="urn:import:com.eucalyptus.webui.client.view">
+	
+	<ui:style>
+		.title {
+			font-size: 110%;
+			font-weight: bold;
+			color: darkblue;
+			border-bottom: 1px solid #AAAAAA;
+		}
+		
+		.border {
+			border-bottom: 1px solid #AAAAAA;
+			border-top: 1px solid #AAAAAA;
+			border-left: 1px solid #AAAAAA;
+			border-right: 1px solid #AAAAAA;
+		}
+		
+		.background {
+			backgroupd-color: #DDDDDD;
+			border-bottom: 2px solid #AAAAAA;
+			border-top: 2px solid #AAAAAA;
+			border-left: 2px solid #AAAAAA;
+			border-right: 2px solid #AAAAAA;
+		}
+		
+		.textBoxStyle-readonly {
+            background-color:lightgray;
+        }
+
+		.textArea {
+			resize:none;
+		}
+	</ui:style>
+	<ui:with field="global"
+		type="com.eucalyptus.webui.client.view.GlobalResources" />
+		
+	<g:DockLayoutPanel width="324px" height="180px">
+		<g:center>
+			<g:VerticalPanel horizontalAlignment="ALIGN_LEFT" styleName="{style.background}" verticalAlignment="ALIGN_TOP">
+				<g:HTMLPanel width="320px">
+					<table>
+						<colgroup width="30px" />
+						<colgroup width="550px" />
+						<colgroup width="30px" />
+						<tbody>
+							<tr height="10px" />
+							<tr>
+								<td />
+								<td>
+									<g:HTMLPanel>
+										<table>
+											<colgroup width="20px" />
+											<colgroup width="510px" />
+											<colgroup width="20px" />
+											<tbody class="{style.title}">
+												<tr>
+													<td />
+													<td>操作服务器：</td>
+													<td />
+												</tr>
+												<tr height="5px">
+													<td />
+													<td />
+													<td />
+												</tr>
+											</tbody>
+										</table>
+									</g:HTMLPanel>
+								</td>
+								<td />
+							</tr>
+							<tr height="10px" />
+						</tbody>
+					</table>
+				</g:HTMLPanel>
+				<g:AbsolutePanel height="130px" width="320px" styleName="font-size:95%">
+					<g:at left="30" top="5">
+						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">服务器</g:Anchor>
+					</g:at>
+					<g:at left="100" top="2">
+						<g:TextBox ui:field="serverName" maxLength="50" height="1.4EM" width="12EM" styleName="{style.textBoxStyle-readonly}" readOnly="true"/>
+					</g:at>
+					<g:at left="30" top="40">
+						<g:Button ui:field="buttonStart" text="开机" width="80px" height="30px"/>
+					</g:at>
+					<g:at left="130" top="40">
+						<g:Button ui:field="buttonStop" text="关机" width="80px" height="30px"/>
+					</g:at>
+					<g:at left="30" top="80">
+						<g:Button ui:field="buttonConnect" text="连接" width="80px" height="30px"/>
+					</g:at>
+					<g:at left="130" top="80">
+						<g:Button ui:field="buttonSecret" text="密钥管理" width="80px" height="30px"/>
+					</g:at>
+					<g:at left="220" top="80">
+						<g:Button ui:field="buttonCancel" text="取消" width="80px" height="30px"/>
+					</g:at>
+				</g:AbsolutePanel>
+			</g:VerticalPanel>
+		</g:center>
+	</g:DockLayoutPanel>
+
+</ui:UiBinder> 

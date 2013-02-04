@@ -1,19 +1,36 @@
 package com.eucalyptus.webui.client.service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.client.view.DeviceCPUDeviceAddView;
-import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
-import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
 import com.eucalyptus.webui.shared.config.SysConfig;
-import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.resource.VMImageType;
+import com.eucalyptus.webui.shared.resource.device.AreaInfo;
+import com.eucalyptus.webui.shared.resource.device.BWServiceInfo;
+import com.eucalyptus.webui.shared.resource.device.CPUInfo;
+import com.eucalyptus.webui.shared.resource.device.CPUPriceInfo;
+import com.eucalyptus.webui.shared.resource.device.CPUServiceInfo;
+import com.eucalyptus.webui.shared.resource.device.CabinetInfo;
+import com.eucalyptus.webui.shared.resource.device.DiskInfo;
+import com.eucalyptus.webui.shared.resource.device.DiskServiceInfo;
+import com.eucalyptus.webui.shared.resource.device.IPServiceInfo;
+import com.eucalyptus.webui.shared.resource.device.MemoryInfo;
+import com.eucalyptus.webui.shared.resource.device.MemoryServiceInfo;
+import com.eucalyptus.webui.shared.resource.device.OthersPriceInfo;
+import com.eucalyptus.webui.shared.resource.device.RoomInfo;
+import com.eucalyptus.webui.shared.resource.device.ServerInfo;
+import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
+import com.eucalyptus.webui.shared.resource.device.TemplatePriceInfo;
+import com.eucalyptus.webui.shared.resource.device.status.CPUState;
+import com.eucalyptus.webui.shared.resource.device.status.DiskState;
+import com.eucalyptus.webui.shared.resource.device.status.IPState;
+import com.eucalyptus.webui.shared.resource.device.status.IPType;
+import com.eucalyptus.webui.shared.resource.device.status.MemoryState;
+import com.eucalyptus.webui.shared.resource.device.status.ServerState;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
@@ -722,199 +739,123 @@ public interface EucalyptusService extends RemoteService {
 	public String getUserToken(Session session)
 			throws EucalyptusServiceException;
 	
-	SearchResult lookupDeviceAreaByDate(Session session, SearchRange range,
-			Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException;
+	Map<String, Integer> lookupDeviceAccountNames(Session session) throws EucalyptusServiceException;
+	Map<String, Integer> lookupDeviceUserNamesByAccountID(Session session, int account_id) throws EucalyptusServiceException;
+	
+	SearchResult lookupDeviceAreaByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException; 
 	void modifyDeviceArea(Session session, int area_id, String area_desc) throws EucalyptusServiceException;
-	void deleteDeviceArea(Session session, Collection<Integer> area_ids) throws EucalyptusServiceException;
-	void addDeviceArea(Session session, String area_name, String area_desc) throws EucalyptusServiceException;
-	List<String> lookupDeviceAreaNames(Session session) throws EucalyptusServiceException;
+	void deleteDeviceArea(Session session, List<Integer> area_ids) throws EucalyptusServiceException;
+	void createDeviceArea(Session session, String area_name, String area_desc) throws EucalyptusServiceException;
+	Map<String, Integer> lookupDeviceAreaNames(Session session) throws EucalyptusServiceException;
+	AreaInfo lookupDeviceAreaByID(Session session, int area_id) throws EucalyptusServiceException;
 	
-	SearchResult lookupDeviceRoomByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException;
-	void addDeviceRoom(Session session, String room_name, String room_desc, String area_name) throws EucalyptusServiceException;
+	SearchResult lookupDeviceRoomByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
+	void createDeviceRoom(Session session, String room_name, String room_desc, int area_id) throws EucalyptusServiceException;
 	void modifyDeviceRoom(Session session, int room_id, String room_desc) throws EucalyptusServiceException;
-	void deleteDeviceRoom(Session session, Collection<Integer> room_ids) throws EucalyptusServiceException;
-	List<String> lookupDeviceRoomNamesByAreaName(Session session, String area_name) throws EucalyptusServiceException;
+	void deleteDeviceRoom(Session session, List<Integer> room_ids) throws EucalyptusServiceException;
+	Map<String, Integer> lookupDeviceRoomNamesByAreaID(Session session, int area_id) throws EucalyptusServiceException;
+	RoomInfo lookupDeviceRoomByID(Session session, int room_id) throws EucalyptusServiceException;
 	
-	SearchResult lookupDeviceCabinetByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException;
-	void addDeviceCabinet(Session session, String cabinet_name, String cabinet_desc, String room_name) throws EucalyptusServiceException;
+	SearchResult lookupDeviceCabinetByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
+	void createDeviceCabinet(Session session, String cabinet_name, String cabinet_desc, int room_id) throws EucalyptusServiceException;
 	void modifyDeviceCabinet(Session session, int cabinet_id, String cabinet_desc) throws EucalyptusServiceException;
-	void deleteDeviceCabinet(Session session, Collection<Integer> cabinet_ids) throws EucalyptusServiceException;
-	List<String> lookupCabinetNamesByRoomName(Session session, String room_name) throws EucalyptusServiceException;
+	void deleteDeviceCabinet(Session session, List<Integer> cabinet_ids) throws EucalyptusServiceException;
+	Map<String, Integer> lookupDeviceCabinetNamesByRoomID(Session session, int room_id) throws EucalyptusServiceException;
+	CabinetInfo lookupDeviceCabinetByID(Session session, int cabinet_id) throws EucalyptusServiceException;
 	
-	SearchResult lookupDeviceCPUPriceByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException;
-	void addDeviceCPUPrice(Session session, String cpu_name, String cpu_price_desc, double cpu_price) throws EucalyptusServiceException;
-	void modifyDeviceCPUPrice(Session session, int cpu_price_id, String cpu_price_desc, double cpu_price) throws EucalyptusServiceException;
-	void deleteDeviceCPUPrice(Session session, Collection<Integer> cpu_price_ids) throws EucalyptusServiceException;
-	List<String> lookupDeviceCPUNamesUnpriced(Session session) throws EucalyptusServiceException;
-	
-	SearchResultRow lookupDeviceMemoryPrice(Session session) throws EucalyptusServiceException;
-	SearchResultRow lookupDeviceDiskPrice(Session session) throws EucalyptusServiceException;
-	SearchResultRow lookupDeviceBandwidthPrice(Session session) throws EucalyptusServiceException;
-	void modifyDeviceMemoryPrice(Session session, String others_price_desc, double others_price) throws EucalyptusServiceException;
-	void modifyDeviceDiskPrice(Session session, String others_price_desc, double others_price) throws EucalyptusServiceException;
-	void modifyDeviceBandwidthPrice(Session session, String others_price_desc, double others_price) throws EucalyptusServiceException;
-	
-	List<String> lookupDeviceTemplateUnpriced(Session session) throws EucalyptusServiceException;
-	double lookupDeviceTemplatePriceByPriceID(int template_price_id) throws EucalyptusServiceException;
-	SearchResult lookupDeviceTemplatePriceByDate(Session session, SearchRange range, Date creationtimeBegin,
-	        Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException;
-    void deleteDeviceTemplatePrice(Session session, Collection<Integer> template_price_ids) throws EucalyptusServiceException;
-    void modifyDeviceTemplatePrice(Session session, int template_price_id, String template_price_desc, double template_price_cpu,
-            double template_price_mem, double template_price_disk, double template_price_bw) throws EucalyptusServiceException;
-    void createDeviceTemplatePriceByID(Session session, int template_id, String template_price_desc, double template_price_cpu,
-            double template_price_mem, double template_price_disk, double template_price_bw) throws EucalyptusServiceException;
+	SearchResult lookupDeviceServerByDate(Session session, SearchRange range, ServerState server_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
+	Map<Integer, Integer> lookupDeviceServerCounts(Session session) throws EucalyptusServiceException;
+	void createDeviceServer(Session session, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws EucalyptusServiceException;
+	void modifyDeviceServer(Session session, int server_id, String server_desc, String server_ip, int server_bw) throws EucalyptusServiceException;
+	void modifyDeviceServerState(Session session, int server_id, ServerState server_state) throws EucalyptusServiceException;
+    void deleteDeviceServer(Session session, List<Integer> server_ids) throws EucalyptusServiceException;
+    Map<String, Integer> lookupDeviceServerNamesByCabinetID(Session session, int cabinet_id) throws EucalyptusServiceException;
+    ServerInfo lookupDeviceServerByID(Session session, int server_id) throws EucalyptusServiceException;
     
-    Template lookupDeviceTemplateByName(Session session, String template_name) throws EucalyptusServiceException;
+    SearchResult lookupDeviceCPUByDate(Session session, SearchRange range, CPUState cs_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
+    Map<Integer, Integer> lookupDeviceCPUCounts(Session session) throws EucalyptusServiceException;
+    void createDeviceCPU(Session session, String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, int server_id) throws EucalyptusServiceException ;
+    void createDeviceCPUService(Session session, String cs_desc, int cs_size, CPUState cs_state, Date cs_starttime, Date cs_endtime, int cpu_id, int user_id) throws EucalyptusServiceException;
+    void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache) throws EucalyptusServiceException;
+    void modifyDeviceCPUService(Session session, int cs_id, String cs_desc, int cs_size, Date cs_starttime, Date cs_endtime) throws EucalyptusServiceException;
+    void deleteDeviceCPU(Session session, List<Integer> cpu_ids) throws EucalyptusServiceException;
+    void deleteDeviceCPUService(Session session, List<Integer> cs_ids) throws EucalyptusServiceException;
+    List<String> lookupDeviceCPUNames(Session session) throws EucalyptusServiceException;
+    Map<String, Integer> lookupDeviceCPUNamesByServerID(Session session, int server_id) throws EucalyptusServiceException;
+    public CPUInfo lookupDeviceCPUByID(Session session, int cpu_id) throws EucalyptusServiceException;
+    public CPUServiceInfo lookupDeviceCPUServiceByID(Session session, int cs_id) throws EucalyptusServiceException;
     
-	SearchResult lookupDeviceServer(Session session, String search,
-			SearchRange range, int queryState);
+    SearchResult lookupDeviceMemoryByDate(Session session, SearchRange range, MemoryState ms_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
+    Map<Integer, Long> lookupDeviceMemoryCounts(Session session) throws EucalyptusServiceException;
+    void createDeviceMemory(Session session, String mem_name, String mem_desc, long mem_size, int server_id) throws EucalyptusServiceException;
+    void createDeviceMemoryService(Session session, String ms_desc, long ms_size, MemoryState ms_state, Date ms_starttime, Date ms_endtime, int mem_id, int user_id) throws EucalyptusServiceException;
+    void modifyDeviceMemory(Session session, int mem_id, String mem_desc, long mem_size) throws EucalyptusServiceException;
+    void modifyDeviceMemoryService(Session session, int ms_id, String ms_desc, long ms_size, Date ms_starttime, Date ms_endtime) throws EucalyptusServiceException;
+    void deleteDeviceMemory(Session session, List<Integer> mem_ids) throws EucalyptusServiceException;
+    void deleteDeviceMemoryService(Session session, List<Integer> ms_ids) throws EucalyptusServiceException;
+    Map<String, Integer> lookupDeviceMemoryNamesByServerID(Session session, int server_id) throws EucalyptusServiceException;
+    MemoryInfo lookupDeviceMemoryByID(Session session, int mem_id) throws EucalyptusServiceException;
+    MemoryServiceInfo lookupDeviceMemoryServiceByID(Session session, int ms_id) throws EucalyptusServiceException;
+    
+    SearchResult lookupDeviceDiskByDate(Session session, SearchRange range, DiskState ds_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
+    Map<Integer, Long> lookupDeviceDiskCounts(Session session) throws EucalyptusServiceException;
+    void createDeviceDisk(Session session, String disk_name, String disk_desc, long disk_size, int server_id) throws EucalyptusServiceException;
+    void createDeviceDiskService(Session session, String ds_desc, long ds_size, DiskState ds_state, Date ds_starttime, Date ds_endtime, int disk_id, int user_id) throws EucalyptusServiceException;
+    void modifyDeviceDisk(Session session, int disk_id, String disk_desc, long disk_size) throws EucalyptusServiceException;
+    void modifyDeviceDiskService(Session session, int ds_id, String ds_desc, long ds_size, Date ds_starttime, Date ds_endtime) throws EucalyptusServiceException;
+    void deleteDeviceDisk(Session session, List<Integer> disk_ids) throws EucalyptusServiceException;
+    void deleteDeviceDiskService(Session session, List<Integer> ds_ids) throws EucalyptusServiceException;
+    Map<String, Integer> lookupDeviceDiskNamesByServerID(Session session, int server_id) throws EucalyptusServiceException;
+    DiskInfo lookupDeviceDiskByID(Session session, int disk_id) throws EucalyptusServiceException;
+    DiskServiceInfo lookupDeviceDiskServiceByID(Session session, int ds_id) throws EucalyptusServiceException;
+    
+    SearchResult lookupDeviceIPByDate(Session session, SearchRange range, IPType ip_type, IPState ip_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
+    Map<Integer, Integer> lookupDeviceIPCounts(Session session, IPType ip_type) throws EucalyptusServiceException;
+    void createDeviceIP(Session session, String ip_addr, String ip_desc, IPType ip_type) throws EucalyptusServiceException;
+    void createDeviceIPService(Session session, String is_desc, IPState is_state, Date is_starttime, Date is_endtime, int ip_id, int user_id) throws EucalyptusServiceException;
+    void modifyDeviceIP(Session session, int ip_id, String ip_desc, IPType ip_type) throws EucalyptusServiceException;
+    void modifyDeviceIPService(Session session, int ip_id, String is_desc, Date is_starttime, Date is_endtime) throws EucalyptusServiceException;
+    void deleteDeviceIP(Session session, List<Integer> ip_ids) throws EucalyptusServiceException;
+    void deleteDeviceIPService(Session session, List<Integer> ip_ids) throws EucalyptusServiceException;
+    Map<String, Integer> lookupDeviceIPUnusedByIPType(Session session, IPType ip_type) throws EucalyptusServiceException;
+    IPServiceInfo lookupDeviceIPServiceByID(Session session, int ip_id) throws EucalyptusServiceException;
+    
+    SearchResult lookupDeviceBWByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
+    void createDeviceBWService(Session session, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, int ip_id) throws EucalyptusServiceException;
+    void modifyDeviceBWService(Session session, int bs_id, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime) throws EucalyptusServiceException;
+    void deleteDeviceBWService(Session session, List<Integer> bs_ids) throws EucalyptusServiceException;
+    BWServiceInfo lookupDeviceBWServiceByID(Session session, int bs_id) throws EucalyptusServiceException;
+    public Map<String, Integer> lookupDeviceIPsWihtoutBWService(Session session, int account_id, int user_id) throws EucalyptusServiceException;
+    
+    SearchResult lookupDeviceTemplateByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
+    void createDeviceTemplateService(Session session, String template_name, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image) throws EucalyptusServiceException;
+    void modifyDeviceTemplateService(Session session, int template_id, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image) throws EucalyptusServiceException;
+    void deleteDeviceTemplateService(Session session, List<Integer> template_ids) throws EucalyptusServiceException;
+    TemplateInfo lookupDeviceTemplateInfoByID(Session session, int template_id) throws EucalyptusServiceException;
+    
+	SearchResult lookupDeviceCPUPriceByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
+	void createDeviceCPUPrice(Session session, String cpu_name, String cp_desc, double cp_price) throws EucalyptusServiceException;
+	void modifyDeviceCPUPrice(Session session, int cp_id, String cp_desc, double cp_price) throws EucalyptusServiceException;
+	void deleteDeviceCPUPrice(Session session, List<Integer> cp_ids) throws EucalyptusServiceException;
+	List<String> lookupDeviceCPUNamesWithoutPrice(Session session) throws EucalyptusServiceException;
+	CPUPriceInfo lookupDeviceCPUPriceByID(Session session, int cp_id) throws EucalyptusServiceException;
 
-	Map<Integer, Integer> getDeviceServerCounts(Session session);
-
-	SearchResultRow modifyDeviceServerState(Session session,
-			SearchResultRow row, int state);
-
-	void createDeviceServer(Session session, String mark, String name, String conf, String ip, int bw, int state,
-	        String cabinet_name) throws EucalyptusServiceException;
-
-	List<SearchResultRow> deleteDeviceServer(Session session,
-			List<SearchResultRow> list);
-
-	SearchResult lookupDeviceCPU(Session session, String search,
-			SearchRange range, int queryState);
-
-	Map<Integer, Integer> getDeviceCPUCounts(Session session);
-
-	SearchResultRow modifyDeviceCPUService(Session session,
-			SearchResultRow row, String endtime, int state);
-
-	List<SearchResultRow> deleteDeviceCPUService(Session session,
-			List<SearchResultRow> list);
-
-	List<SearchResultRow> deleteDeviceCPUDevice(Session session,
-			List<SearchResultRow> list);
-
-	SearchResultRow addDeviceCPUService(Session session, SearchResultRow row,
-			String account, String user, String starttime, int life, int state);
-
-	boolean addDeviceCPUDevice(Session session, String serverMark, String name,
-			String vendor, String model, double ghz, double cache, int num);
-
-	DeviceCPUDeviceAddView.DataCache lookupDeviceCPUInfo(Session session);
+	OthersPriceInfo lookupDeviceMemoryPrice(Session session) throws EucalyptusServiceException;
+	OthersPriceInfo lookupDeviceDiskPrice(Session session) throws EucalyptusServiceException;
+	OthersPriceInfo lookupDeviceBWPrice(Session session) throws EucalyptusServiceException;
+	void modifyDeviceMemoryPrice(Session session, String op_desc, double op_price) throws EucalyptusServiceException;
+	void modifyDeviceDiskPrice(Session session, String op_desc, double op_price) throws EucalyptusServiceException;
+	void modifyDeviceBWPrice(Session session, String op_desc, double op_price) throws EucalyptusServiceException;
 	
-	List<String> listDeviceCPUAccounts(Session session);
-
-	List<String> listDeviceCPUUsersByAccount(Session session, String account);
-
-	SearchResult lookupDeviceMemory(Session session, String search,
-			SearchRange range, int queryState);
-
-	Map<Integer, Long> getDeviceMemoryCounts(Session session);
-
-	SearchResultRow modifyDeviceMemoryService(Session session,
-			SearchResultRow row, String endtime, int state);
-
-	List<SearchResultRow> deleteDeviceMemoryService(Session session,
-			List<SearchResultRow> list);
-
-	List<SearchResultRow> deleteDeviceMemoryDevice(Session session,
-			List<SearchResultRow> list);
-
-	SearchResultRow addDeviceMemoryService(Session session,
-			SearchResultRow row, String account, String user, long used,
-			String starttime, int life, int state);
-
-	boolean addDeviceMemoryDevice(Session session, String serverMark,
-			String name, long total, int num);
-
-	DeviceMemoryDeviceAddView.DataCache lookupDeviceMemoryInfo(Session session);
-
-	List<String> listDeviceMemoryAccounts(Session session);
-
-	List<String> listDeviceMemoryUsersByAccount(Session session, String account);
-
-	SearchResult lookupDeviceDisk(Session session, String search,
-			SearchRange range, int queryState);
-
-	Map<Integer, Long> getDeviceDiskCounts(Session session);
-
-	SearchResultRow modifyDeviceDiskService(Session session,
-			SearchResultRow row, String endtime, int state);
-
-	List<SearchResultRow> deleteDeviceDiskService(Session session,
-			List<SearchResultRow> list);
-
-	List<SearchResultRow> deleteDeviceDiskDevice(Session session,
-			List<SearchResultRow> list);
-
-	SearchResultRow addDeviceDiskService(Session session, SearchResultRow row,
-			String account, String user, long used, String starttime, int life,
-			int state);
-
-	boolean addDeviceDiskDevice(Session session, String serverMark,
-			String name, long total, int num);
-
-	DeviceDiskDeviceAddView.DataCache lookupDeviceDiskInfo(Session session);
-
-	List<String> listDeviceDiskAccounts(Session session);
-
-	List<String> listDeviceDiskUsersByAccount(Session session, String account);
-
-	SearchResult lookupDeviceIP(Session session, String search,
-			SearchRange range, int queryState, int queryType);
-
-	Map<Integer, Integer> getDeviceIPCounts(Session session, int queryType);
-
-	SearchResultRow modifyDeviceIPService(Session session, SearchResultRow row,
-			String endtime, int state);
-
-	List<SearchResultRow> deleteDeviceIPService(Session session,
-			List<SearchResultRow> list);
-
-	List<SearchResultRow> deleteDeviceIPDevice(Session session,
-			List<SearchResultRow> list);
-
-	SearchResultRow addDeviceIPService(Session session, SearchResultRow row,
-			String account, String user, String vmMark, String starttime,
-			int life, int state);
-
-	boolean addDeviceIPDevice(Session session, List<String> publicList,
-			List<String> privateList);
-
+	SearchResult lookupDeviceTemplatePriceByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
+	void createDeviceTemplatePriceByID(Session session, int template_id, String tp_desc, double tp_cpu, double tp_mem, double tp_disk, double tp_bw) throws EucalyptusServiceException;
+    void modifyDeviceTemplatePrice(Session session, int tp_id, String tp_desc, double tp_cpu, double tp_mem, double tp_disk, double tp_bw) throws EucalyptusServiceException;
+    void deleteDeviceTemplatePrice(Session session, List<Integer> tp_ids) throws EucalyptusServiceException;
+    TemplatePriceInfo lookupDeviceTemplatePriceByID(Session session, int tp_id) throws EucalyptusServiceException;
+    Map<String, Integer> lookupDeviceTemplatesWithoutPrice(Session session) throws EucalyptusServiceException;
+    
 	List<String> listDeviceVMsByUser(Session session, String account,
 			String user);
-
-	List<String> listDeviceIPAccounts(Session session);
-
-	List<String> listDeviceIPUsersByAccount(Session session, String account);
-
-	SearchResult lookupDeviceBW(Session session, String search,
-			SearchRange range);
-
-	SearchResultRow modifyDeviceBWService(Session session, SearchResultRow row,
-			String endtime);
-
-	List<SearchResultRow> deleteDeviceBWService(Session session,
-			List<SearchResultRow> list);
-
-	boolean addDeviceBWService(Session session, String account, String user, String starttime, int life, String ip, long bandwidth);
-
-	List<String> listDeviceBWAccounts(Session session);
-
-	List<String> listDeviceBWUsersByAccount(Session session, String account);
-
-	List<String> listDeviceIPsByUser(Session session, String account,
-			String user);
-
-	SearchResult lookupDeviceTemplate(Session session, String search,
-			SearchRange range, Date starttime, Date endtime);
-
-	List<SearchResultRow> deleteDeviceTemplate(Session session,
-			List<SearchResultRow> list);
-
-	boolean addDeviceTemplate(Session session, String mark, String cpu, int ncpus, String mem, String disk, String bw, String image);
-	SearchResultRow modifyDeviceTempate(Session session, SearchResultRow row, String cpu, int ncpus, String mem, String disk, String bw, String image);
-	List<String> listDeviceTemplateCPUNames(Session session);
 
 	SearchResult lookupDeviceVM(Session session, String search,
 			SearchRange range, int queryState)
@@ -1035,5 +976,5 @@ public interface EucalyptusService extends RemoteService {
   void modifyPolicy(Session session, String policyId, String name, String content) throws EucalyptusServiceException;
 
   SearchResult lookupHistory(Session session, String search, SearchRange range) throws EucalyptusServiceException;
-  
+
 }

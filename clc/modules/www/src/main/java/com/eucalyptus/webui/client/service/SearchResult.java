@@ -26,6 +26,12 @@ public class SearchResult implements Serializable {
 		setDescs(descs);
 	}
 	
+	public SearchResult(int totalSize, SearchRange range, List<SearchResultFieldDesc> descs, List<SearchResultRow> rows) {
+		this(totalSize, range);
+		setDescs(descs);
+		setRows(rows);
+	}
+	
 	public void setDescs(List<SearchResultFieldDesc> descs) {
 		this.descs.clear();
 		this.descs.addAll(descs);

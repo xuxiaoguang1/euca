@@ -2,7 +2,7 @@ package com.eucalyptus.webui.client.service;
 
 import java.io.Serializable;
 
-import com.eucalyptus.webui.client.activity.device.ClientMessage;
+import com.eucalyptus.webui.shared.message.ClientMessage;
 
 public class EucalyptusServiceException extends Exception implements Serializable {
 	

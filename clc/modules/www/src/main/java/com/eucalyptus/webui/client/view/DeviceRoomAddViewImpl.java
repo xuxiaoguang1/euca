@@ -1,6 +1,10 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -24,6 +28,8 @@ public class DeviceRoomAddViewImpl extends DialogBox implements DeviceRoomAddVie
 	@UiField TextArea roomDesc;
 	@UiField ListBox areaNameList;
 	
+	private Map<String, Integer> areaMap = new HashMap<String, Integer>();
+	
 	public DeviceRoomAddViewImpl() {
 		super(false);
 		setWidget(uiBinder.createAndBindUi(this));
@@ -40,50 +46,75 @@ public class DeviceRoomAddViewImpl extends DialogBox implements DeviceRoomAddVie
 	
 	@Override
 	public void popup() {
-		roomName.setValue("");
-		roomDesc.setValue("");
+		roomName.setText("");
+		roomDesc.setText("");
 		areaNameList.clear();
 		presenter.lookupAreaNames();
 		show();
 	}
 	
-	public void setAreaNameList(Collection<String> area_name_list) {
-		areaNameList.clear();
-		if (area_name_list != null && !area_name_list.isEmpty()) {
-			for (String area_name : area_name_list) {
-				areaNameList.addItem(area_name);
-			}
-			areaNameList.setSelectedIndex(0);
-		}
-	}
+    @Override
+    public void setAreaNames(Map<String, Integer> area_map) {
+        areaNameList.clear();
+        areaMap.clear();
+        if (area_map != null && !area_map.isEmpty()) {
+            List<String> list = new ArrayList<String>(area_map.keySet());
+            Collections.sort(list);
+            for (String area_name : list) {
+                areaNameList.addItem(area_name);
+            }
+            areaNameList.setSelectedIndex(0);
+            areaMap.putAll(area_map);
+        }
+    }
 	
 	private String getRoomName() {
-		String room_name = roomName.getValue();
-		if (room_name == null) {
-			return "";
-		}
-		return room_name;
+		return getInputText(roomName);
 	}
 	
 	private String getRoomDesc() {
-		String room_desc = roomDesc.getValue();
-		if (room_desc == null) {
-			return "";
-		}
-		return room_desc;
+		return getInputText(roomDesc);
 	}
 	
-	private String getAreaName() {
-		int index = areaNameList.getSelectedIndex();
-		if (index == -1) {
+	private int getAreaID() {
+	    String area_name = getSelectedText(areaNameList);
+	    if (area_name == null || area_name.isEmpty()) {
+	        return -1;
+	    }
+	    Integer id = areaMap.get(area_name);
+	    if (id == null) {
+	        return -1;
+	    }
+	    return id;
+	}
+	
+	private String getInputText(TextBox textbox) {
+		String text = textbox.getText();
+		if (text == null) {
 			return "";
 		}
-		return areaNameList.getItemText(index);
+		return text;
+	}
+	
+	private String getInputText(TextArea textarea) {
+		String text = textarea.getText();
+		if (text == null) {
+			return "";
+		}
+		return text;
+	}
+	
+	private String getSelectedText(ListBox listbox) {
+	    int index = listbox.getSelectedIndex();
+	    if (index == -1) {
+	    	return "";
+	    }
+	    return listbox.getItemText(index);
 	}
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(getRoomName(), getRoomDesc(), getAreaName())) {
+		if (presenter.onOK(getRoomName(), getRoomDesc(), getAreaID())) {
 			hide();
 		}
 	}

@@ -1,56 +1,42 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.List;
+import java.util.Date;
 import java.util.Set;
 
-import com.eucalyptus.webui.client.activity.device.DeviceServerActivity.ServerState;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.view.DeviceSearchResultTable.DeviceSearchResultTableClickHandler;
+import com.eucalyptus.webui.shared.resource.device.status.ServerState;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceServerView extends IsWidget, CanDisplaySearchResult, Clearable, SelectionController {
 	
-	public static final int DEFAULT_PAGESIZE = 20;
+	public void setPresenter(Presenter presenter);
 	
-	void setPresenter(Presenter presenter);
+	public Set<SearchResultRow> getSelectedSet();
 	
-	void updateLabels();
+	public void setSelectedRow(SearchResultRow row);
 	
-	void openMirrorMode(MirrorModeType type, List<SearchResultRow> data);
+	public void updateLabels();
 	
-	void closeMirrorMode();
+	public int getPageSize();
 	
-	DeviceMirrorSearchResultTable getMirrorTable();
-	
-	boolean isMirrorMode();
-	
-	MirrorModeType getMirrorModeType();
-	
-	Set<SearchResultRow> getSelectedSet();
-	
-	enum MirrorModeType {
-		MODIFY_STATE,
-		DELETE_DEVICE,
-	}
-	
-	public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceMirrorSearchResultTable.Presenter {
+	public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceSearchResultTableClickHandler {
 		
-		void onModifyState();
+		public void onAddServer();
 		
-		void onDeleteDevice();
+		public void onDeleteServer();
 		
-		void onAddDevice();
+		public void onModifyServer();
 		
-		void onClearSelection();
+		public void onOperateServer();
 		
-		void onMirrorBack();
+		public void updateSearchResult(Date dateBegin, Date dateEnd);
 		
-		void onMirrorDeleteAll();
+		public ServerState getQueryState();
+
+		public int getCounts(ServerState state);
 		
-		int getCounts(ServerState state);
-		
-		void setQueryState(ServerState state);
-		
-		ServerState getQueryState();
+		public void setQueryState(ServerState queryState);
 		
 	}
 

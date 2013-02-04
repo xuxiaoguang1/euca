@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.server;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,30 +17,49 @@ import com.eucalyptus.webui.client.service.EucalyptusService;
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.client.view.DeviceCPUDeviceAddView;
-import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
-import com.eucalyptus.webui.client.view.DeviceMemoryDeviceAddView;
-import com.eucalyptus.webui.server.device.DeviceAreaServiceProcImpl;
-import com.eucalyptus.webui.server.device.DeviceBWServiceProcImpl;
-import com.eucalyptus.webui.server.device.DeviceCPUPriceServiceProcImpl;
-import com.eucalyptus.webui.server.device.DeviceCPUServiceProcImpl;
-import com.eucalyptus.webui.server.device.DeviceCabinetServiceProcImpl;
-import com.eucalyptus.webui.server.device.DeviceDiskServiceProcImpl;
-import com.eucalyptus.webui.server.device.DeviceIPServiceProcImpl;
-import com.eucalyptus.webui.server.device.DeviceMemoryServiceProcImpl;
-import com.eucalyptus.webui.server.device.DeviceOthersPriceServiceProcImpl;
-import com.eucalyptus.webui.server.device.DeviceRoomServiceProcImpl;
-import com.eucalyptus.webui.server.device.DeviceServerServiceProcImpl;
+import com.eucalyptus.webui.server.device.DeviceAccountService;
+import com.eucalyptus.webui.server.device.DeviceAreaService;
+import com.eucalyptus.webui.server.device.DeviceBWService;
+import com.eucalyptus.webui.server.device.DeviceCPUPriceService;
+import com.eucalyptus.webui.server.device.DeviceCPUService;
+import com.eucalyptus.webui.server.device.DeviceCabinetService;
+import com.eucalyptus.webui.server.device.DeviceDiskService;
+import com.eucalyptus.webui.server.device.DeviceIPService;
+import com.eucalyptus.webui.server.device.DeviceMemoryService;
+import com.eucalyptus.webui.server.device.DeviceOthersPriceService;
+import com.eucalyptus.webui.server.device.DeviceRoomService;
+import com.eucalyptus.webui.server.device.DeviceServerService;
 import com.eucalyptus.webui.server.device.DeviceTemplatePriceService;
-import com.eucalyptus.webui.server.device.DeviceTemplateServiceProcImpl;
+import com.eucalyptus.webui.server.device.DeviceTemplateService;
 import com.eucalyptus.webui.server.mail.MailSenderInfo;
 import com.eucalyptus.webui.server.user.AuthenticateUserLogin;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.server.user.PwdResetProc;
-import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.config.SysConfig;
 import com.eucalyptus.webui.shared.query.QueryType;
 import com.eucalyptus.webui.shared.resource.VMImageType;
+import com.eucalyptus.webui.shared.resource.device.AreaInfo;
+import com.eucalyptus.webui.shared.resource.device.BWServiceInfo;
+import com.eucalyptus.webui.shared.resource.device.CPUInfo;
+import com.eucalyptus.webui.shared.resource.device.CPUPriceInfo;
+import com.eucalyptus.webui.shared.resource.device.CPUServiceInfo;
+import com.eucalyptus.webui.shared.resource.device.CabinetInfo;
+import com.eucalyptus.webui.shared.resource.device.DiskInfo;
+import com.eucalyptus.webui.shared.resource.device.DiskServiceInfo;
+import com.eucalyptus.webui.shared.resource.device.IPServiceInfo;
+import com.eucalyptus.webui.shared.resource.device.MemoryInfo;
+import com.eucalyptus.webui.shared.resource.device.MemoryServiceInfo;
+import com.eucalyptus.webui.shared.resource.device.OthersPriceInfo;
+import com.eucalyptus.webui.shared.resource.device.RoomInfo;
+import com.eucalyptus.webui.shared.resource.device.ServerInfo;
+import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
+import com.eucalyptus.webui.shared.resource.device.TemplatePriceInfo;
+import com.eucalyptus.webui.shared.resource.device.status.CPUState;
+import com.eucalyptus.webui.shared.resource.device.status.DiskState;
+import com.eucalyptus.webui.shared.resource.device.status.IPState;
+import com.eucalyptus.webui.shared.resource.device.status.IPType;
+import com.eucalyptus.webui.shared.resource.device.status.MemoryState;
+import com.eucalyptus.webui.shared.resource.device.status.ServerState;
 import com.eucalyptus.webui.shared.user.AccountInfo;
 import com.eucalyptus.webui.shared.user.EnumState;
 import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
@@ -70,18 +88,6 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	private UserServiceProcImpl userServiceProc = new UserServiceProcImpl();
 	private UserAppServiceProcImpl userAppServiceProc = new UserAppServiceProcImpl();
 	private GroupServiceProcImpl groupServiceProc = new GroupServiceProcImpl();
-	private DeviceAreaServiceProcImpl deviceAreaServiceProc = new DeviceAreaServiceProcImpl();
-	private DeviceRoomServiceProcImpl deviceRoomServiceProc = new DeviceRoomServiceProcImpl();
-	private DeviceCabinetServiceProcImpl deviceCabinetServiceProc = new DeviceCabinetServiceProcImpl();
-	private DeviceCPUPriceServiceProcImpl deviceCPUPriceServiceProc = new DeviceCPUPriceServiceProcImpl();
-	private DeviceOthersPriceServiceProcImpl deviceOthersPriceServiceProc = new DeviceOthersPriceServiceProcImpl();
-	private DeviceServerServiceProcImpl deviceServerServiceProc = new DeviceServerServiceProcImpl();
-	private DeviceCPUServiceProcImpl deviceCPUServiceProc = new DeviceCPUServiceProcImpl();
-	private DeviceMemoryServiceProcImpl deviceMemoryServiceProc = new DeviceMemoryServiceProcImpl();
-	private DeviceDiskServiceProcImpl deviceDiskServiceProc = new DeviceDiskServiceProcImpl();
-	private DeviceIPServiceProcImpl deviceIPServiceProc = new DeviceIPServiceProcImpl();
-	private DeviceBWServiceProcImpl deviceBWServiceProc = new DeviceBWServiceProcImpl();
-	private DeviceTemplateServiceProcImpl deviceTemplateServiceProc = new DeviceTemplateServiceProcImpl();
 	private DeviceVMServiceProcImpl deviceVMServiceProc = new DeviceVMServiceProcImpl();
 	private static void randomDelay() {
 		try {
@@ -696,472 +702,510 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 	
 	@Override
-	public SearchResult lookupDeviceAreaByDate(Session session, SearchRange range,
-			Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException {
-		return deviceAreaServiceProc.lookupAreaByDate(session, range, creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
+	public Map<String, Integer> lookupDeviceAccountNames(Session session) throws EucalyptusServiceException {
+	    return DeviceAccountService.getInstance().lookupAccountNames();
 	}
 	
 	@Override
-	public void addDeviceArea(Session session, String area_name, String area_desc) throws EucalyptusServiceException {
-		deviceAreaServiceProc.addArea(session, area_name, area_desc);
+	public Map<String, Integer> lookupDeviceUserNamesByAccountID(Session session, int account_id) throws EucalyptusServiceException {
+	    return DeviceAccountService.getInstance().lookupUserNamesByAccountID(account_id);
+	}
+	
+	@Override
+	public SearchResult lookupDeviceAreaByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+		return DeviceAreaService.getInstance().lookupAreaByDate(session, range, dateBegin, dateEnd);
+	}
+	
+	@Override
+	public void createDeviceArea(Session session, String area_name, String area_desc) throws EucalyptusServiceException {
+	    DeviceAreaService.getInstance().createArea(false, session, area_name, area_desc);
 	}
 	
 	@Override
 	public void modifyDeviceArea(Session session, int area_id, String area_desc) throws EucalyptusServiceException {
-		deviceAreaServiceProc.modifyArea(session, area_id, area_desc);
+	    DeviceAreaService.getInstance().modifyArea(false, session, area_id, area_desc);
 	}
 
 	@Override
-	public void deleteDeviceArea(Session session, Collection<Integer> area_ids) throws EucalyptusServiceException {
-		deviceAreaServiceProc.deleteArea(session, area_ids);
+	public void deleteDeviceArea(Session session, List<Integer> area_ids) throws EucalyptusServiceException {
+	    DeviceAreaService.getInstance().deleteArea(false, session, area_ids);
 	}
 	
 	@Override
-	public List<String> lookupDeviceAreaNames(Session session) throws EucalyptusServiceException {
-		return deviceAreaServiceProc.lookupAreaNames(session);
+	public Map<String, Integer> lookupDeviceAreaNames(Session session) throws EucalyptusServiceException {
+	    return DeviceAreaService.getInstance().lookupAreaNames();
 	}
 	
 	@Override
-	public SearchResult lookupDeviceRoomByDate(Session session, SearchRange range,
-			Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException {
-		return deviceRoomServiceProc.lookupRoomByDate(session, range, creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
+	public AreaInfo lookupDeviceAreaByID(Session session, int area_id) throws EucalyptusServiceException {
+	    return DeviceAreaService.getInstance().lookupAreaByID(area_id);
 	}
 	
 	@Override
-	public void addDeviceRoom(Session session, String room_name, String room_desc, String area_name) throws EucalyptusServiceException {
-		deviceRoomServiceProc.addRoom(session, room_name, room_desc, area_name);
+	public SearchResult lookupDeviceRoomByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+		return DeviceRoomService.getInstance().lookupRoomByDate(session, range, dateBegin, dateEnd);
+	}
+	
+	@Override
+	public void createDeviceRoom(Session session, String room_name, String room_desc, int area_id) throws EucalyptusServiceException {
+	    DeviceRoomService.getInstance().createRoom(false, session, room_name, room_desc, area_id);
 	}
 	
 	@Override
 	public void modifyDeviceRoom(Session session, int room_id, String room_desc) throws EucalyptusServiceException {
-		deviceRoomServiceProc.modifyRoom(session, room_id, room_desc);
-	}
-
-	@Override
-	public void deleteDeviceRoom(Session session, Collection<Integer> room_ids) throws EucalyptusServiceException {
-		deviceRoomServiceProc.deleteRoom(session, room_ids);
+	    DeviceRoomService.getInstance().modifyRoom(false, session, room_id, room_desc);
 	}
 	
 	@Override
-	public List<String> lookupDeviceRoomNamesByAreaName(Session session, String area_name) throws EucalyptusServiceException {
-		return deviceRoomServiceProc.lookupRoomNamesByAreaName(session, area_name);
+	public void deleteDeviceRoom(Session session, List<Integer> room_ids) throws EucalyptusServiceException {
+	    DeviceRoomService.getInstance().deleteRoom(false, session, room_ids);
 	}
 	
 	@Override
-	public SearchResult lookupDeviceCabinetByDate(Session session, SearchRange range,
-			Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) throws EucalyptusServiceException {
-		return deviceCabinetServiceProc.lookupCabinetByDate(session, range, creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
+	public Map<String, Integer> lookupDeviceRoomNamesByAreaID(Session session, int area_id) throws EucalyptusServiceException {
+	    return DeviceRoomService.getInstance().lookupRoomNamesByAreaID(area_id);
 	}
 	
 	@Override
-	public void addDeviceCabinet(Session session, String cabinet_name, String cabinet_desc, String room_name) throws EucalyptusServiceException {
-		deviceCabinetServiceProc.addCabinet(session, cabinet_name, cabinet_desc, room_name);
+	public RoomInfo lookupDeviceRoomByID(Session session, int room_id) throws EucalyptusServiceException {
+	    return DeviceRoomService.getInstance().lookupRoomByID(room_id);
+	}
+	
+	@Override
+	public SearchResult lookupDeviceCabinetByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+		return DeviceCabinetService.getInstance().lookupCabinetByDate(session, range, dateBegin, dateEnd);
+	}
+	
+	@Override
+	public void createDeviceCabinet(Session session, String cabinet_name, String cabinet_desc, int room_id) throws EucalyptusServiceException {
+	    DeviceCabinetService.getInstance().createCabinet(false, session, cabinet_name, cabinet_desc, room_id);
 	}
 	
 	@Override
 	public void modifyDeviceCabinet(Session session, int cabinet_id, String cabinet_desc) throws EucalyptusServiceException {
-		deviceCabinetServiceProc.modifyCabinet(session, cabinet_id, cabinet_desc);
+	    DeviceCabinetService.getInstance().modifyCabinet(false, session, cabinet_id, cabinet_desc);
 	}
 
 	@Override
-	public void deleteDeviceCabinet(Session session, Collection<Integer> cabinet_ids) throws EucalyptusServiceException {
-		deviceCabinetServiceProc.deleteCabinet(session, cabinet_ids);
+	public void deleteDeviceCabinet(Session session, List<Integer> cabinet_ids) throws EucalyptusServiceException {
+	    DeviceCabinetService.getInstance().deleteCabinet(false, session, cabinet_ids);
 	}
 	
 	@Override
-	public List<String> lookupCabinetNamesByRoomName(Session session, String room_name) throws EucalyptusServiceException {
-	    return deviceCabinetServiceProc.lookupCabinetNamesByRoomName(session, room_name);
+	public Map<String, Integer> lookupDeviceCabinetNamesByRoomID(Session session, int room_id) throws EucalyptusServiceException {
+	    return DeviceCabinetService.getInstance().lookupCabinetNamesByRoomID(room_id);
 	}
 	
 	@Override
-	public SearchResult lookupDeviceCPUPriceByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd)
-			throws EucalyptusServiceException {
-		return deviceCPUPriceServiceProc.lookupCPUPriceByDate(session, range, creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
-	}
-
-	@Override
-	public void addDeviceCPUPrice(Session session, String cpu_name, String cpu_price_desc, double cpu_price) throws EucalyptusServiceException {
-		deviceCPUPriceServiceProc.addCPUPrice(session, cpu_name, cpu_price_desc, cpu_price);
+	public CabinetInfo lookupDeviceCabinetByID(Session session, int cabinet_id) throws EucalyptusServiceException {
+	    return DeviceCabinetService.getInstance().lookupCabinetByID(cabinet_id);
 	}
 	
 	@Override
-	public void modifyDeviceCPUPrice(Session session, int cpu_price_id, String cpu_price_desc, double cpu_price) throws EucalyptusServiceException {
-		deviceCPUPriceServiceProc.modifyCPUPrice(session, cpu_price_id, cpu_price_desc, cpu_price);
+	public  SearchResult lookupDeviceServerByDate(Session session, SearchRange range, ServerState server_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+	    return DeviceServerService.getInstance().lookupServerByDate(session, range, server_state, dateBegin, dateEnd);
 	}
 	
-	@Override
-	public SearchResult lookupDeviceTemplatePriceByDate(Session session, SearchRange range, Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd)
-	        throws EucalyptusServiceException {
-	    return DeviceTemplatePriceService.getInstance().lookupTemplatePriceByDate(session, range, creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd);
-	}
-	
-	@Override
-	public double lookupDeviceTemplatePriceByPriceID(int template_price_id) throws EucalyptusServiceException {
-	    return DeviceTemplatePriceService.getInstance().lookupTemplatePriceByPriceID(template_price_id);
-	}
-	
-	@Override
-	public void deleteDeviceTemplatePrice(Session session, Collection<Integer> template_price_ids) throws EucalyptusServiceException {
-	    DeviceTemplatePriceService.getInstance().deleteTemplatePrice(session, template_price_ids);
-	}
-	
-	@Override
-	public List<String> lookupDeviceTemplateUnpriced(Session session) throws EucalyptusServiceException {
-	    return DeviceTemplatePriceService.getInstance().lookupTemplateUnpriced(session);
-	}
-	
-	@Override
-	public void modifyDeviceTemplatePrice(Session session, int template_price_id, String template_price_desc,
-	            double template_price_cpu, double template_price_mem, double template_price_disk, double template_price_bw) throws EucalyptusServiceException {
-	    DeviceTemplatePriceService.getInstance().modifyTemplatePrice(session, template_price_id, template_price_desc, template_price_cpu, template_price_mem, template_price_disk, template_price_bw);
-	}
-	
-	@Override
-	public void createDeviceTemplatePriceByID(Session session, int template_id, String template_price_desc,
-	            double template_price_cpu, double template_price_mem, double template_price_disk, double template_price_bw) throws EucalyptusServiceException {
-	    DeviceTemplatePriceService.getInstance().createTemplatePriceByID(session, template_id, template_price_desc, template_price_cpu, template_price_mem, template_price_disk, template_price_bw);
-	}
-	
-	@Override
-	public Template lookupDeviceTemplateByName(Session session, String template_name) throws EucalyptusServiceException {
-		return deviceTemplateServiceProc.lookupTemplateByName(session, template_name);
-	}
-
-	@Override
-	public void deleteDeviceCPUPrice(Session session, Collection<Integer> cpu_price_ids) throws EucalyptusServiceException {
-		deviceCPUPriceServiceProc.deleteCPUPrice(session, cpu_price_ids);
-	}
-	
-	@Override
-	public List<String> lookupDeviceCPUNamesUnpriced(Session session) throws EucalyptusServiceException {
-	    return deviceCPUPriceServiceProc.lookupCPUNamesUnpriced(session);
-	}
-	
-	@Override
-	public SearchResultRow lookupDeviceMemoryPrice(Session session) throws EucalyptusServiceException {
-	    return deviceOthersPriceServiceProc.lookupOthersPriceMemory(session);
-	}
-	
-	@Override
-    public SearchResultRow lookupDeviceDiskPrice(Session session) throws EucalyptusServiceException {
-        return deviceOthersPriceServiceProc.lookupOthersPriceDisk(session);
+    @Override
+    public Map<Integer, Integer> lookupDeviceServerCounts(Session session) throws EucalyptusServiceException {
+        return DeviceServerService.getInstance().lookupServerCountsByState(session);
     }
-
+   
+    @Override
+    public void createDeviceServer(Session session, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws EucalyptusServiceException {
+        DeviceServerService.getInstance().createServer(false, session, server_name, server_desc, server_ip, server_bw, server_state, cabinet_id);
+    }
+    
+    @Override
+    public void modifyDeviceServer(Session session, int server_id, String server_desc, String server_ip, int server_bw) throws EucalyptusServiceException {
+        DeviceServerService.getInstance().modifyServer(false, session, server_id, server_desc, server_ip, server_bw);
+    }
+    
+    @Override
+    public void modifyDeviceServerState(Session session, int server_id, ServerState server_state) throws EucalyptusServiceException {
+        DeviceServerService.getInstance().modifyServerState(false, session, server_id, server_state);
+    }
+    
+    @Override
+    public void deleteDeviceServer(Session session, List<Integer> server_ids) throws EucalyptusServiceException {
+        DeviceServerService.getInstance().deleteServer(false, session, server_ids);
+    }
+    
+    @Override
+    public Map<String, Integer> lookupDeviceServerNamesByCabinetID(Session session, int cabinet_id) throws EucalyptusServiceException {
+        return DeviceServerService.getInstance().lookupServerNamesByCabinetID(cabinet_id);
+    }
+    
+    @Override
+    public ServerInfo lookupDeviceServerByID(Session session, int server_id) throws EucalyptusServiceException {
+        return DeviceServerService.getInstance().lookupServerInfoByID(server_id);
+    }
+    
+    @Override
+    public SearchResult lookupDeviceCPUByDate(Session session, SearchRange range, CPUState cs_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+        return DeviceCPUService.getInstance().lookupCPUByDate(session, range, cs_state, dateBegin, dateEnd);
+    }
+    
+    @Override
+    public Map<Integer, Integer> lookupDeviceCPUCounts(Session session) throws EucalyptusServiceException {
+    	return DeviceCPUService.getInstance().lookupCPUCounts(session);
+    }
+    
+    @Override
+    public void createDeviceCPU(Session session, String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, int server_id) throws EucalyptusServiceException {
+    	DeviceCPUService.getInstance().createCPU(false, session, cpu_name, cpu_desc, cpu_total, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, server_id);
+    }
+    
+    @Override
+    public void createDeviceCPUService(Session session, String cs_desc, int cs_size, CPUState cs_state, Date cs_starttime, Date cs_endtime, int cpu_id, int user_id) throws EucalyptusServiceException {
+    	DeviceCPUService.getInstance().createCPUService(false, session, cs_desc, cs_size, cs_state, cs_starttime, cs_endtime, cpu_id, user_id);
+    }
+    
+    @Override
+    public void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache) throws EucalyptusServiceException {
+    	DeviceCPUService.getInstance().modifyCPU(false, session, cpu_id, cpu_desc, cpu_total, cpu_vendor, cpu_model, cpu_ghz, cpu_cache);
+    }
+    
+    @Override
+    public void modifyDeviceCPUService(Session session, int cs_id, String cs_desc, int cs_size, Date cs_starttime, Date cs_endtime) throws EucalyptusServiceException {
+    	DeviceCPUService.getInstance().modifyCPUService(false, session, cs_id, cs_desc, cs_size, cs_starttime, cs_endtime);
+    }
+    
+    @Override
+    public void deleteDeviceCPU(Session session, List<Integer> cpu_ids) throws EucalyptusServiceException {
+    	DeviceCPUService.getInstance().deleteCPU(false, session, cpu_ids);
+    }
+    
+    @Override
+    public void deleteDeviceCPUService(Session session, List<Integer> cs_ids) throws EucalyptusServiceException {
+    	DeviceCPUService.getInstance().deleteCPUService(false, session, cs_ids);
+    }
+    
+    @Override
+    public List<String> lookupDeviceCPUNames(Session session) throws EucalyptusServiceException {
+    	return DeviceCPUService.getInstance().lookupCPUNames();
+    }
+    
+    @Override
+    public Map<String, Integer> lookupDeviceCPUNamesByServerID(Session session, int server_id) throws EucalyptusServiceException {
+    	return DeviceCPUService.getInstance().lookupCPUNamesByServerID(server_id);
+    }
+    
+    @Override
+    public CPUInfo lookupDeviceCPUByID(Session session, int cpu_id) throws EucalyptusServiceException {
+    	return DeviceCPUService.getInstance().lookupCPUInfoByID(cpu_id);
+    }
+    
+    @Override
+    public CPUServiceInfo lookupDeviceCPUServiceByID(Session session, int cs_id) throws EucalyptusServiceException {
+    	return DeviceCPUService.getInstance().lookupCPUServiceInfoByID(cs_id);
+    }
+    
+    @Override
+    public SearchResult lookupDeviceMemoryByDate(Session session, SearchRange range, MemoryState memory_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+        return DeviceMemoryService.getInstance().lookupMemoryByDate(session, range, memory_state, dateBegin, dateEnd);
+    }
+    
+    @Override
+    public Map<Integer, Long> lookupDeviceMemoryCounts(Session session) throws EucalyptusServiceException {
+    	return DeviceMemoryService.getInstance().lookupMemoryCounts(session);
+    }
+    
+    @Override
+    public void createDeviceMemory(Session session, String mem_name, String mem_desc, long mem_size, int server_id) throws EucalyptusServiceException {
+    	DeviceMemoryService.getInstance().createMemory(false, session, mem_name, mem_desc, mem_size, server_id);
+    }
+    
+    @Override
+    public void createDeviceMemoryService(Session session, String ms_desc, long ms_size, MemoryState ms_state, Date ms_starttime, Date ms_endtime, int mem_id, int user_id) throws EucalyptusServiceException {
+    	DeviceMemoryService.getInstance().createMemoryService(false, session, ms_desc, ms_size, ms_state, ms_starttime, ms_endtime, mem_id, user_id);
+    }
+    
+    @Override
+    public void modifyDeviceMemory(Session session, int mem_id, String mem_desc, long mem_size) throws EucalyptusServiceException {
+    	DeviceMemoryService.getInstance().modifyMemory(false, session, mem_id, mem_desc, mem_size);
+    }
+    
+    @Override
+    public void modifyDeviceMemoryService(Session session, int ms_id, String ms_desc, long ms_size, Date ms_starttime, Date ms_endtime) throws EucalyptusServiceException {
+    	DeviceMemoryService.getInstance().modifyMemoryService(false, session, ms_id, ms_desc, ms_size, ms_starttime, ms_endtime);
+    }
+    
+    @Override
+    public void deleteDeviceMemory(Session session, List<Integer> mem_ids) throws EucalyptusServiceException {
+    	DeviceMemoryService.getInstance().deleteMemory(false, session, mem_ids);
+    }
+    
+    @Override
+    public void deleteDeviceMemoryService(Session session, List<Integer> ms_ids) throws EucalyptusServiceException {
+    	DeviceMemoryService.getInstance().deleteMemoryService(false, session, ms_ids);
+    }
+    
+    @Override
+    public Map<String, Integer> lookupDeviceMemoryNamesByServerID(Session session, int server_id) throws EucalyptusServiceException {
+    	return DeviceMemoryService.getInstance().lookupMemoryNamesByServerID(false, session, server_id);
+    }
+    
+    @Override
+    public MemoryInfo lookupDeviceMemoryByID(Session session, int mem_id) throws EucalyptusServiceException {
+    	return DeviceMemoryService.getInstance().lookupMemoryInfoByID(mem_id);
+    }
+    
+    @Override
+    public MemoryServiceInfo lookupDeviceMemoryServiceByID(Session session, int ms_id) throws EucalyptusServiceException {
+    	return DeviceMemoryService.getInstance().lookupMemoryServiceInfoByID(ms_id);
+    }
+    
+    @Override
+    public SearchResult lookupDeviceDiskByDate(Session session, SearchRange range, DiskState disk_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+        return DeviceDiskService.getInstance().lookupDiskByDate(session, range, disk_state, dateBegin, dateEnd);
+    }
+    
+    @Override
+    public Map<Integer, Long> lookupDeviceDiskCounts(Session session) throws EucalyptusServiceException {
+        return DeviceDiskService.getInstance().lookupDiskCounts(session);
+    }
+    
+    @Override
+    public void createDeviceDisk(Session session, String disk_name, String disk_desc, long disk_size, int server_id) throws EucalyptusServiceException {
+        DeviceDiskService.getInstance().createDisk(false, session, disk_name, disk_desc, disk_size, server_id);
+    }
+    
+    @Override
+    public void createDeviceDiskService(Session session, String ds_desc, long ds_size, DiskState ds_state, Date ds_starttime, Date ds_endtime, int disk_id, int user_id) throws EucalyptusServiceException {
+        DeviceDiskService.getInstance().createDiskService(false, session, ds_desc, ds_size, ds_state, ds_starttime, ds_endtime, disk_id, user_id);
+    }
+    
+    @Override
+    public void modifyDeviceDisk(Session session, int disk_id, String disk_desc, long disk_size) throws EucalyptusServiceException {
+        DeviceDiskService.getInstance().modifyDisk(false, session, disk_id, disk_desc, disk_size);
+    }
+    
+    @Override
+    public void modifyDeviceDiskService(Session session, int ds_id, String ds_desc, long ds_size, Date ds_starttime, Date ds_endtime) throws EucalyptusServiceException {
+        DeviceDiskService.getInstance().modifyDiskService(false, session, ds_id, ds_desc, ds_size, ds_starttime, ds_endtime);
+    }
+    
+    @Override
+    public void deleteDeviceDisk(Session session, List<Integer> disk_ids) throws EucalyptusServiceException {
+        DeviceDiskService.getInstance().deleteDisk(false, session, disk_ids);
+    }
+    
+    @Override
+    public void deleteDeviceDiskService(Session session, List<Integer> ds_ids) throws EucalyptusServiceException {
+        DeviceDiskService.getInstance().deleteDiskService(false, session, ds_ids);
+    }
+    
+    @Override
+    public Map<String, Integer> lookupDeviceDiskNamesByServerID(Session session, int server_id) throws EucalyptusServiceException {
+        return DeviceDiskService.getInstance().lookupDiskNamesByServerID(false, session, server_id);
+    }
+    
+    @Override
+    public DiskInfo lookupDeviceDiskByID(Session session, int disk_id) throws EucalyptusServiceException {
+        return DeviceDiskService.getInstance().lookupDiskInfoByID(disk_id);
+    }
+    
+    @Override
+    public DiskServiceInfo lookupDeviceDiskServiceByID(Session session, int ds_id) throws EucalyptusServiceException {
+        return DeviceDiskService.getInstance().lookupDiskServiceInfoByID(ds_id);
+    }
+        
+    @Override
+    public SearchResult lookupDeviceIPByDate(Session session, SearchRange range, IPType ip_type, IPState is_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+    	return DeviceIPService.getInstance().lookupIPByDate(session, range, ip_type, is_state, dateBegin, dateEnd);
+    }
+    
+    @Override
+    public Map<Integer, Integer> lookupDeviceIPCounts(Session session, IPType ip_type) throws EucalyptusServiceException {
+    	return DeviceIPService.getInstance().lookupIPCountsByState(session, ip_type);
+    }
+    
+    @Override
+    public void createDeviceIP(Session session, String ip_addr, String ip_desc, IPType ip_type) throws EucalyptusServiceException {
+    	DeviceIPService.getInstance().createIP(false, session, ip_addr, ip_desc, ip_type);
+    }
+    
+    @Override
+    public void createDeviceIPService(Session session, String is_desc, IPState is_state, Date is_starttime, Date is_endtime, int ip_id, int user_id) throws EucalyptusServiceException {
+    	DeviceIPService.getInstance().createIPService(false, session, is_desc, is_state, is_starttime, is_endtime, ip_id, user_id);
+    }
+    
+    @Override
+    public void modifyDeviceIP(Session session, int ip_id, String ip_desc, IPType ip_type) throws EucalyptusServiceException {
+    	DeviceIPService.getInstance().modifyIP(false, session, ip_id, ip_desc, ip_type);
+    }
+    
+    @Override
+    public void modifyDeviceIPService(Session session, int ip_id, String is_desc, Date is_starttime, Date is_endtime) throws EucalyptusServiceException {
+    	DeviceIPService.getInstance().modifyIPService(false, session, ip_id, is_desc, is_starttime, is_endtime);
+    }
+    
+    @Override
+    public void deleteDeviceIP(Session session, List<Integer> ip_ids) throws EucalyptusServiceException {
+    	DeviceIPService.getInstance().deleteIP(false, session, ip_ids);
+    }
+    
+    @Override
+    public void deleteDeviceIPService(Session session, List<Integer> ip_ids) throws EucalyptusServiceException {
+    	DeviceIPService.getInstance().deleteIPService(false, session, ip_ids);
+    }
+    
+    @Override
+    public Map<String, Integer> lookupDeviceIPUnusedByIPType(Session session, IPType ip_type) throws EucalyptusServiceException {
+    	return DeviceIPService.getInstance().lookupIPReservedByIPType(session, ip_type);
+    }
+    
+    @Override
+    public IPServiceInfo lookupDeviceIPServiceByID(Session session, int ip_id) throws EucalyptusServiceException {
+    	return DeviceIPService.getInstance().lookupIPServiceInfoByID(ip_id);
+    }
+    
 	@Override
-    public SearchResultRow lookupDeviceBandwidthPrice(Session session) throws EucalyptusServiceException {
-        return deviceOthersPriceServiceProc.lookupOthersPriceBandwidth(session);
+    public SearchResult lookupDeviceBWByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+		return DeviceBWService.getInstance().lookupBWServiceByDate(session, range, dateBegin, dateEnd);
     }
 	
 	@Override
-	public void modifyDeviceMemoryPrice(Session session, String others_price_desc, double others_price) throws EucalyptusServiceException {
-	    deviceOthersPriceServiceProc.modifyOthersPriceMemory(session, others_price_desc, others_price);
-	}
-	
-	@Override
-    public void modifyDeviceDiskPrice(Session session, String others_price_desc, double others_price) throws EucalyptusServiceException {
-        deviceOthersPriceServiceProc.modifyOthersPriceDisk(session, others_price_desc, others_price);
+    public void createDeviceBWService(Session session, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, int ip_id) throws EucalyptusServiceException {
+		DeviceBWService.getInstance().createBWService(false, session, bs_desc, bs_bw_max, bs_starttime, bs_endtime, ip_id);
     }
 	
 	@Override
-    public void modifyDeviceBandwidthPrice(Session session, String others_price_desc, double others_price) throws EucalyptusServiceException {
-        deviceOthersPriceServiceProc.modifyOthersPriceBandwidth(session, others_price_desc, others_price);
+    public void modifyDeviceBWService(Session session, int bs_id, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime) throws EucalyptusServiceException {
+		DeviceBWService.getInstance().modifyBWService(false, session, bs_id, bs_desc, bs_bw_max, bs_starttime, bs_endtime);
     }
 	
 	@Override
-	public SearchResult lookupDeviceServer(Session session, String search, SearchRange range, int queryState) {
-		return deviceServerServiceProc.lookupServer(session, search, range, queryState);
-	}
-
-	@Override
-	public Map<Integer, Integer> getDeviceServerCounts(Session session) {
-		return deviceServerServiceProc.getServerCounts(session);
-	}
-	
-	@Override
-    public List<SearchResultRow> deleteDeviceServer(Session session, List<SearchResultRow> list) {
-		return deviceServerServiceProc.deleteDevice(session, list);
+    public void deleteDeviceBWService(Session session, List<Integer> bs_ids) throws EucalyptusServiceException {
+		DeviceBWService.getInstance().deleteBWService(false, session, bs_ids);
     }
-
+	
 	@Override
-	public SearchResultRow modifyDeviceServerState(Session session, SearchResultRow row, int state) {
-		return deviceServerServiceProc.modifyServerState(session, row, state);
+    public BWServiceInfo lookupDeviceBWServiceByID(Session session, int bs_id) throws EucalyptusServiceException {
+		return DeviceBWService.getInstance().lookupBWServiceInfoByID(bs_id);
+    }
+	
+	@Override
+	public Map<String, Integer> lookupDeviceIPsWihtoutBWService(Session session, int account_id, int user_id) throws EucalyptusServiceException {
+		return DeviceBWService.getInstance().lookupIPsWithoutBWService(false, session, null, account_id, user_id);
 	}
 	
 	@Override
-	public void createDeviceServer(Session session, String mark, String name, String conf, String ip,
-			int bw, int state, String cabinet_name) throws EucalyptusServiceException {
-		deviceServerServiceProc.createServer(session, mark, name, conf, ip, bw, state, cabinet_name);
-	}
-
-	@Override
-	public SearchResult lookupDeviceCPU(Session session, String search, SearchRange range, int queryState) {
-		return deviceCPUServiceProc.lookupCPU(session, search, range, queryState);
-	}
-
-	@Override
-	public Map<Integer, Integer> getDeviceCPUCounts(Session session) {
-		return deviceCPUServiceProc.getCPUCounts(session);
-	}
-
-	@Override
-	public SearchResultRow modifyDeviceCPUService(Session session, SearchResultRow row, String endtime, int state) {
-		return deviceCPUServiceProc.modifyService(session, row, endtime, state);
-	}
-
-	@Override
-	public List<SearchResultRow> deleteDeviceCPUService(Session session, List<SearchResultRow> list) {
-		return deviceCPUServiceProc.deleteService(session, list);
-	}
-
-	@Override
-	public List<SearchResultRow> deleteDeviceCPUDevice(Session session, List<SearchResultRow> list) {
-		return deviceCPUServiceProc.deleteDevice(session, list);
-	}
-
-	@Override
-	public SearchResultRow addDeviceCPUService(Session session, SearchResultRow row, String account, String user,
-	        String starttime, int life, int state) {
-		return deviceCPUServiceProc.addService(session, row, account, user, starttime, life, state);
-	}
-
-	@Override
-	public boolean addDeviceCPUDevice(Session session, String serverMark, String name, String vendor, String model,
-	        double ghz, double cache, int num) {
-		return deviceCPUServiceProc.addDevice(session, serverMark, name, vendor, model, ghz, cache, num);
-	}
-
-	@Override
-	public DeviceCPUDeviceAddView.DataCache lookupDeviceCPUInfo(Session session) {
-		return deviceCPUServiceProc.lookupDeviceInfo(session);
+	public SearchResult lookupDeviceTemplateByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+		return DeviceTemplateService.getInstance().lookupTemplateByDate(session, range, dateBegin, dateEnd);
 	}
 	
 	@Override
-	public List<String> listDeviceCPUAccounts(Session session) {
-		return deviceCPUServiceProc.listAccounts(session);
-	}
-
+    public void createDeviceTemplateService(Session session, String template_name, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image) throws EucalyptusServiceException {
+		DeviceTemplateService.getInstance().createTemplate(session, template_name, template_desc, template_cpu, template_ncpus, template_mem, template_disk, template_bw, template_image);
+    }
+	
 	@Override
-	public List<String> listDeviceCPUUsersByAccount(Session session, String account) {
-		return deviceCPUServiceProc.listUsersByAccount(session, account);
-	}
-
-	@Override
-	public SearchResult lookupDeviceMemory(Session session, String search, SearchRange range, int queryState) {
-		return deviceMemoryServiceProc.lookupMemory(session, search, range, queryState);
-	}
-
-	@Override
-	public Map<Integer, Long> getDeviceMemoryCounts(Session session) {
-		return deviceMemoryServiceProc.getMemoryCounts(session);
-	}
-
-	@Override
-	public SearchResultRow modifyDeviceMemoryService(Session session, SearchResultRow row, String endtime, int state) {
-		return deviceMemoryServiceProc.modifyService(session, row, endtime, state);
-	}
-
-	@Override
-	public List<SearchResultRow> deleteDeviceMemoryService(Session session, List<SearchResultRow> list) {
-		return deviceMemoryServiceProc.deleteService(session, list);
-	}
-
-	@Override
-	public List<SearchResultRow> deleteDeviceMemoryDevice(Session session, List<SearchResultRow> list) {
-		return deviceMemoryServiceProc.deleteDevice(session, list);
-	}
-
-	@Override
-	public SearchResultRow addDeviceMemoryService(Session session, SearchResultRow row, String account, String user,
-	        long used, String starttime, int life, int state) {
-		return deviceMemoryServiceProc.addService(session, row, account, user, used, starttime, life, state);
-	}
-
-	@Override
-	public boolean addDeviceMemoryDevice(Session session, String serverMark, String name, long total, int num) {
-		return deviceMemoryServiceProc.addDevice(session, serverMark, name, total, num);
-	}
-
-	@Override
-	public DeviceMemoryDeviceAddView.DataCache lookupDeviceMemoryInfo(Session session) {
-		return deviceMemoryServiceProc.lookupDeviceInfo(session);
-	}
-
-	@Override
-	public List<String> listDeviceMemoryAccounts(Session session) {
-		return deviceMemoryServiceProc.listAccounts(session);
-	}
-
-	@Override
-	public List<String> listDeviceMemoryUsersByAccount(Session session, String account) {
-		return deviceMemoryServiceProc.listUsersByAccount(session, account);
-	}
-
-	@Override
-	public SearchResult lookupDeviceDisk(Session session, String search, SearchRange range, int queryState) {
-		return deviceDiskServiceProc.lookupDisk(session, search, range, queryState);
-	}
-
-	@Override
-	public Map<Integer, Long> getDeviceDiskCounts(Session session) {
-		return deviceDiskServiceProc.getDiskCounts(session);
-	}
-
-	@Override
-	public SearchResultRow modifyDeviceDiskService(Session session, SearchResultRow row, String endtime, int state) {
-		return deviceDiskServiceProc.modifyService(session, row, endtime, state);
-	}
-
-	@Override
-	public List<SearchResultRow> deleteDeviceDiskService(Session session, List<SearchResultRow> list) {
-		return deviceDiskServiceProc.deleteService(session, list);
-	}
-
-	@Override
-	public List<SearchResultRow> deleteDeviceDiskDevice(Session session, List<SearchResultRow> list) {
-		return deviceDiskServiceProc.deleteDevice(session, list);
-	}
-
-	@Override
-	public SearchResultRow addDeviceDiskService(Session session, SearchResultRow row, String account, String user,
-	        long used, String starttime, int life, int state) {
-		return deviceDiskServiceProc.addService(session, row, account, user, used, starttime, life, state);
-	}
-
-	@Override
-	public boolean addDeviceDiskDevice(Session session, String serverMark, String name, long total, int num) {
-		return deviceDiskServiceProc.addDevice(session, serverMark, name, total, num);
-	}
-
-	@Override
-	public DeviceDiskDeviceAddView.DataCache lookupDeviceDiskInfo(Session session) {
-		return deviceDiskServiceProc.lookupDeviceInfo(session);
-	}
-
-	@Override
-	public List<String> listDeviceDiskAccounts(Session session) {
-		return deviceDiskServiceProc.listAccounts(session);
-	}
-
-	@Override
-	public List<String> listDeviceDiskUsersByAccount(Session session, String account) {
-		return deviceDiskServiceProc.listUsersByAccount(session, account);
-	}
-
-	@Override
-	public SearchResult lookupDeviceIP(Session session, String search, SearchRange range, int queryState, int queryType) {
-		return deviceIPServiceProc.lookupIP(session, search, range, queryState, queryType);
-	}
-
-	@Override
-	public Map<Integer, Integer> getDeviceIPCounts(Session session, int queryType) {
-		return deviceIPServiceProc.getIPCounts(session, queryType);
-	}
-
-	@Override
-	public SearchResultRow modifyDeviceIPService(Session session, SearchResultRow row, String endtime, int state) {
-		return deviceIPServiceProc.modifyService(session, row, endtime, state);
-	}
-
-	@Override
-	public List<SearchResultRow> deleteDeviceIPService(Session session, List<SearchResultRow> list) {
-		return deviceIPServiceProc.deleteService(session, list);
-	}
-
-	@Override
-	public List<SearchResultRow> deleteDeviceIPDevice(Session session, List<SearchResultRow> list) {
-		return deviceIPServiceProc.deleteDevice(session, list);
-	}
-
-	@Override
-	public SearchResultRow addDeviceIPService(Session session, SearchResultRow row, String account, String user,
-	        String vmMark, String starttime, int life, int state) {
-		return deviceIPServiceProc.addService(session, row, account, user, vmMark, starttime, life, state);
-	}
-
-	@Override
-	public boolean addDeviceIPDevice(Session session, List<String> publicList, List<String> privateList) {
-		return deviceIPServiceProc.addDevice(session, publicList, privateList);
-	}
-
-	@Override
-	public List<String> listDeviceIPAccounts(Session session) {
-		return deviceIPServiceProc.listAccounts(session);
-	}
-
-	@Override
-	public List<String> listDeviceIPUsersByAccount(Session session, String account) {
-		return deviceIPServiceProc.listUsersByAccount(session, account);
-	}
-
-	@Override
-	public List<String> listDeviceVMsByUser(Session session, String account, String user) {
-		return deviceIPServiceProc.listVMsByUser(session, account, user);
-	}
-
-	@Override
-	public SearchResult lookupDeviceBW(Session session, String search, SearchRange range) {
-		return deviceBWServiceProc.lookupBW(session, search, range);
-	}
-
-	@Override
-	public SearchResultRow modifyDeviceBWService(Session session, SearchResultRow row, String endtime) {
-		return deviceBWServiceProc.modifyService(session, row, endtime);
-	}
-
-	@Override
-	public List<SearchResultRow> deleteDeviceBWService(Session session, List<SearchResultRow> list) {
-		return deviceBWServiceProc.deleteService(session, list);
-	}
-
-	@Override
-	public boolean addDeviceBWService(Session session, String account, String user, String starttime, int life,
-	        String ip, long bandwidth) {
-		return deviceBWServiceProc.addService(session, account, user, starttime, life, ip, bandwidth);
-	}
-
-	@Override
-	public List<String> listDeviceBWAccounts(Session session) {
-		return deviceBWServiceProc.listAccounts(session);
-	}
-
-	@Override
-	public List<String> listDeviceBWUsersByAccount(Session session, String account) {
-		return deviceBWServiceProc.listUsersByAccount(session, account);
-	}
-
-	@Override
-	public List<String> listDeviceIPsByUser(Session session, String account, String user) {
-		return deviceBWServiceProc.listIPsByUser(session, account, user);
-	}
-
-	@Override
-	public SearchResult lookupDeviceTemplate(Session session, String search, SearchRange range, Date starttime,
-	        Date endtime) {
-		return deviceTemplateServiceProc.lookupTemplate(session, search, range, starttime, endtime);
-	}
-
-	@Override
-	public List<SearchResultRow> deleteDeviceTemplate(Session session, List<SearchResultRow> list) {
-		return deviceTemplateServiceProc.deleteTemplate(session, list);
-	}
-
-	@Override
-	public boolean addDeviceTemplate(Session session, String mark, String cpu, int ncpus, String mem, String disk, String bw,
-	        String image) {
-		return deviceTemplateServiceProc.addTemplate(session, mark, cpu, ncpus, mem, disk, bw, image);
-	}
-
-	@Override
-	public SearchResultRow modifyDeviceTempate(Session session, SearchResultRow row, String cpu, int ncpus, String mem,
-	        String disk, String bw, String image) {
-		return deviceTemplateServiceProc.modifyTemplate(session, row, cpu, ncpus, mem, disk, bw, image);
+	public void modifyDeviceTemplateService(Session session, int template_id, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image) throws EucalyptusServiceException {
+		DeviceTemplateService.getInstance().modifyTempalte(session, template_id, template_desc, template_cpu, template_ncpus, template_mem, template_disk, template_bw, template_image);
 	}
 	
 	@Override
-	public List<String> listDeviceTemplateCPUNames(Session session) {
-		return deviceTemplateServiceProc.listDeviceCPUNames(session);
+	public void deleteDeviceTemplateService(Session session, List<Integer> template_ids) throws EucalyptusServiceException {
+		DeviceTemplateService.getInstance().deleteTemplate(session, template_ids);
 	}
 	
+	@Override
+	public TemplateInfo lookupDeviceTemplateInfoByID(Session session, int template_id) throws EucalyptusServiceException {
+		return DeviceTemplateService.getInstance().lookupTemplateInfoByID(template_id);
+	}
+		
+	@Override
+	public SearchResult lookupDeviceCPUPriceByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+	    return DeviceCPUPriceService.getInstance().lookupCPUPriceByDate(session, range, dateBegin, dateEnd);
+	}
+
+	@Override
+	public void createDeviceCPUPrice(Session session, String cpu_name, String cp_desc, double cp_price) throws EucalyptusServiceException {
+	    DeviceCPUPriceService.getInstance().createCPUPrice(session, cpu_name, cp_desc, cp_price);
+	}
+
+	@Override
+	public void modifyDeviceCPUPrice(Session session, int cp_id, String cp_desc, double cp_price) throws EucalyptusServiceException {
+	    DeviceCPUPriceService.getInstance().modifyCPUPrice(session, cp_id, cp_desc, cp_price);
+	}
+	
+	@Override
+    public void deleteDeviceCPUPrice(Session session, List<Integer> cp_ids) throws EucalyptusServiceException {
+	    DeviceCPUPriceService.getInstance().deleteCPUPrice(session, cp_ids);
+    }
+	
+	@Override
+	public List<String> lookupDeviceCPUNamesWithoutPrice(Session session) throws EucalyptusServiceException {
+	    return DeviceCPUPriceService.getInstance().lookupCPUsWithoutPrice();
+	}
+	
+	@Override
+	public CPUPriceInfo lookupDeviceCPUPriceByID(Session session, int cp_id) throws EucalyptusServiceException {
+	    return DeviceCPUPriceService.getInstance().lookupCPUPriceByID(cp_id);
+	}
+	
+	@Override
+	public OthersPriceInfo lookupDeviceMemoryPrice(Session session) throws EucalyptusServiceException {
+	    return DeviceOthersPriceService.getInstance().lookupOthersPriceMemory();
+	}
+	
+	@Override
+    public OthersPriceInfo lookupDeviceDiskPrice(Session session) throws EucalyptusServiceException {
+        return DeviceOthersPriceService.getInstance().lookupOthersPriceDisk();
+    }
+	
+	@Override
+    public OthersPriceInfo lookupDeviceBWPrice(Session session) throws EucalyptusServiceException {
+        return DeviceOthersPriceService.getInstance().lookupOthersPriceBandwidth();
+    }
+	
+	@Override
+	public void modifyDeviceMemoryPrice(Session session, String op_desc, double op_price) throws EucalyptusServiceException {
+	    DeviceOthersPriceService.getInstance().modifyOthersPriceMemory(session, op_desc, op_price);
+	}
+	
+	@Override
+    public void modifyDeviceDiskPrice(Session session, String op_desc, double op_price) throws EucalyptusServiceException {
+        DeviceOthersPriceService.getInstance().modifyOthersPriceDisk(session, op_desc, op_price);
+    }
+	
+	@Override
+    public void modifyDeviceBWPrice(Session session, String op_desc, double op_price) throws EucalyptusServiceException {
+        DeviceOthersPriceService.getInstance().modifyOthersPriceBandwidth(session, op_desc, op_price);
+    }
+	
+	@Override
+	public SearchResult lookupDeviceTemplatePriceByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+	    return DeviceTemplatePriceService.getInstance().lookupTemplatePriceByDate(session, range, dateBegin, dateEnd);
+	}
+	
+	@Override
+	public void createDeviceTemplatePriceByID(Session session, int template_id, String tp_desc, double tp_cpu, double tp_mem, double tp_disk, double tp_bw) throws EucalyptusServiceException {
+	    DeviceTemplatePriceService.getInstance().createTemplatePriceByID(session, template_id, tp_desc, tp_cpu, tp_mem, tp_disk, tp_bw);
+    }
+	
+	@Override
+	public void modifyDeviceTemplatePrice(Session session, int tp_id, String tp_desc, double tp_cpu, double tp_mem, double tp_disk, double tp_bw) throws EucalyptusServiceException {
+	    DeviceTemplatePriceService.getInstance().modifyTemplatePrice(session, tp_id, tp_desc, tp_cpu, tp_mem, tp_disk, tp_bw);
+	}
+	
+	@Override
+	public void deleteDeviceTemplatePrice(Session session, List<Integer> tp_ids) throws EucalyptusServiceException {
+	    DeviceTemplatePriceService.getInstance().deleteTemplatePrice(session, tp_ids);
+	}
+	
+	@Override
+	public TemplatePriceInfo lookupDeviceTemplatePriceByID(Session session, int tp_id) throws EucalyptusServiceException {
+	    return DeviceTemplatePriceService.getInstance().lookupTemplatePriceByID(tp_id);
+	}
+	
+	@Override
+	public Map<String, Integer> lookupDeviceTemplatesWithoutPrice(Session session) throws EucalyptusServiceException {
+	    return DeviceTemplatePriceService.getInstance().lookupTemplatesWithoutPrice(session);
+	}
+				
 	@Override
 	public SearchResult lookupDeviceVM(Session session, String search, SearchRange range, int queryState) throws EucalyptusServiceException {
 		return deviceVMServiceProc.lookupVM(session, search, range, queryState);
@@ -1287,7 +1331,14 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		// TODO Auto-generated method stub
 		return SysConfProcImpl.instance().getSysConfig();
 	}
-	
+
+	@Override
+	public List<String> listDeviceVMsByUser(Session session, String account,
+			String user) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 //	@Override
 //	public SearchResult listAccessKeysByUser(Session session, String userId)
 //			throws EucalyptusServiceException {

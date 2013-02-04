@@ -4,12 +4,10 @@ import java.util.Date;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.view.DBSearchResultTable.DBSearchResultTableClickHandler;
+import com.eucalyptus.webui.client.view.DeviceSearchResultTable.DeviceSearchResultTableClickHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceTemplatePriceView extends IsWidget, CanDisplaySearchResult, Clearable, SelectionController {
-	
-	public static final int DEFAULT_PAGESIZE = 20;
 	
 	public void setPresenter(Presenter presenter);
 	
@@ -17,15 +15,21 @@ public interface DeviceTemplatePriceView extends IsWidget, CanDisplaySearchResul
 	
 	public void setSelectedRow(SearchResultRow row);
 	
-	public interface Presenter extends MultiSelectionChangeHandler, KnowsPageSize, DBSearchResultTableClickHandler, SearchRangeChangeHandler {
+	public int getPageSize();
+	
+	public interface Presenter extends MultiSelectionChangeHandler, KnowsPageSize, DeviceSearchResultTableClickHandler, SearchRangeChangeHandler {
 		
-		public void onAdd();
+		public void onAddTemplatePrice();
 		
-		public void onModify();
+		public void onModifyTemplatePrice();
 		
-		public void onDelete();
+		public void onDeleteTemplatePrice();
 		
-		public void updateSearchResult(Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd);
+		public boolean canModifyTemplatePrice();
+		
+		public boolean canDeleteTemplatePrice();
+		
+		public void updateSearchResult(Date dateBegin, Date dateEnd);
 		
 	}
 	

@@ -6,17 +6,17 @@ import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceCPUPriceAddView extends IsWidget {
 	
-	void setPresenter(Presenter presenter);
+	public void setPresenter(Presenter presenter);
 	
-	void popup();
+	public void popup();
 	
 	void setCPUNameList(Collection<String> cpu_name_list);
 	
 	public interface Presenter {
 		
-		boolean onOK(String cpu_name, String cpu_price_desc, String cpu_price);
+		public boolean onOK(String cpu_name, String cp_desc, double cp_price);
 		
-		void lookupCPUNames();
+		public void lookupCPUNames();
 		
 	}
 

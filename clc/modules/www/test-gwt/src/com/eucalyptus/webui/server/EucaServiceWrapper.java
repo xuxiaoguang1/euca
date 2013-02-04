@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 
 public class EucaServiceWrapper {
@@ -36,10 +35,12 @@ public class EucaServiceWrapper {
    * @param group string
    * @return euca id of vm
    */
+  /*
   public String runVM(Session session, int userID, Template template, String keypair, String group, String image) throws EucalyptusServiceException {
     //real code about template won't be in old repo
     return aws.runInstance(session, userID, image, keypair, "m1.small", group);
   }
+  */
   
   /**
    * get all keypairs' name owned by user

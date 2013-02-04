@@ -61,44 +61,32 @@
 									<g:HTMLPanel styleName="border-top:1px solid #AAAAAA;">
 										<table class="style.topContent">
 											<tbody>
-												<tr>
-													<td>
-														<g:Anchor horizontalAlignment="ALIGN_CENTER" width="6EM">创建日期：</g:Anchor>
-													</td>
-													<td width="10px">&nbsp;</td>
-													<td>
-														<d:DeviceDateBox width="5EM" ui:field="creationtimeBegin"/>
-													</td>
-													<td width="8px">&nbsp;</td>
-													<td>
-														<g:Anchor horizontalAlignment="ALIGN_CENTER">至</g:Anchor>
-													</td>
-													<td width="8px">&nbsp;</td>
-													<td>
-														<d:DeviceDateBox width="5EM" ui:field="creationtimeEnd"/>
-													</td>
-													<td width="80px">&nbsp;</td>
-													<td>
-														<g:Anchor horizontalAlignment="ALIGN_CENTER" width="6EM">修改日期：</g:Anchor>
-													</td>
-													<td width="10px">&nbsp;</td>
-													<td>
-														<d:DeviceDateBox width="5EM" ui:field="modifiedtimeBegin"/>
-													</td>
-													<td width="8px">&nbsp;</td>
-													<td>
-														<g:Anchor horizontalAlignment="ALIGN_CENTER">至</g:Anchor>
-													</td>
-													<td width="8px">&nbsp;</td>
-													<td>
-														<d:DeviceDateBox width="5EM" ui:field="modifiedtimeEnd"/>
-													</td>
-													<td width="40px">&nbsp;</td>
-													<td>
-														<d:DeviceButton styleName="{global.buttonCss.button}"
-															horizontalAlignment="ALIGN_CENTER" width="5EM" ui:field="buttonClearDate" text="清空日期"/>
-													</td>
-												</tr>
+										       <tr>
+		                                           <td style="font-size:80%;">
+		                                               <g:ListBox ui:field="pageSizeList" height="1.4EM" width="50px"/>
+		                                           </td>
+		                                           <td width="10px">&nbsp;</td>
+		                                           <td>
+		                                               <g:Anchor horizontalAlignment="ALIGN_CENTER" width="6EM">日期过滤：</g:Anchor>
+		                                           </td>
+		                                           <td width="10px">&nbsp;</td>
+		                                           <td>
+		                                               <d:DeviceDateBox width="6EM" ui:field="dateBegin"/>
+		                                           </td>
+		                                           <td width="8px">&nbsp;</td>
+		                                           <td>
+		                                               <g:Anchor horizontalAlignment="ALIGN_CENTER">至</g:Anchor>
+		                                           </td>
+		                                           <td width="8px">&nbsp;</td>
+		                                           <td>
+		                                               <d:DeviceDateBox width="6EM" ui:field="dateEnd"/>
+		                                           </td>
+		                                           <td width="40px">&nbsp;</td>
+		                                           <td>
+		                                               <d:DeviceButton styleName="{global.buttonCss.button}"
+		                                                   horizontalAlignment="ALIGN_CENTER" width="5EM" ui:field="buttonClearDate" text="清空日期"/>
+		                                           </td>
+		                                       </tr>
 											</tbody>
 										</table>
 									</g:HTMLPanel>
@@ -107,7 +95,7 @@
 						</g:center>
 					</g:DockLayoutPanel>
 				</g:center>
-				<g:south size="3">
+				<g:south size="2.5">
 					<g:HTMLPanel styleName="border-top:1px solid #AAAAAA;">
 						<table class="{style.bottom}">
 							<tbody>

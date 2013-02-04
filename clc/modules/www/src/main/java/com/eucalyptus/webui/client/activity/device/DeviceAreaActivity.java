@@ -7,41 +7,34 @@ import java.util.List;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.ClientFactory;
-import com.eucalyptus.webui.client.activity.AbstractSearchActivity;
 import com.eucalyptus.webui.client.place.SearchPlace;
-import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
-import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.client.view.FooterView;
-import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.client.view.DeviceAreaAddView;
 import com.eucalyptus.webui.client.view.DeviceAreaAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceAreaModifyView;
 import com.eucalyptus.webui.client.view.DeviceAreaModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceAreaView;
-import com.eucalyptus.webui.client.view.HasValueWidget;
-import com.eucalyptus.webui.client.view.LogView;
+import com.eucalyptus.webui.shared.message.ClientMessage;
+import com.eucalyptus.webui.shared.resource.device.AreaInfo;
+import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class DeviceAreaActivity extends AbstractSearchActivity implements DeviceAreaView.Presenter {
+public class DeviceAreaActivity extends DeviceActivity implements DeviceAreaView.Presenter {
 	
 	private static final ClientMessage title = new ClientMessage("Area", "区域");
 	
-	private Date creationtimeBegin;
-	private Date creationtimeEnd;
-	private Date modifiedtimeBegin;
-	private Date modifiedtimeEnd;
+	private Date dateBegin;
+	private Date dateEnd;
 	
 	private DeviceAreaAddView areaAddView;
 	private DeviceAreaModifyView areaModifyView;
 	
 	public DeviceAreaActivity(SearchPlace place, ClientFactory clientFactory) {
 		super(place, clientFactory);
+		super.pageSize = DevicePageSize.getPageSize();
 	}
 	
 	private DeviceAreaView getView() {
@@ -56,77 +49,19 @@ public class DeviceAreaActivity extends AbstractSearchActivity implements Device
 		return view;
 	}
 	
-	private EucalyptusServiceAsync getBackendService() {
-		return clientFactory.getBackendService();
-	}
-
-	private FooterView getFooterView() {
-		return clientFactory.getShellView().getFooterView();
-	}
-
-	private LogView getLogView() {
-		return clientFactory.getShellView().getLogView();
-	}
-
-	private Session getSession() {
-		return clientFactory.getLocalSession().getSession();
-	}
-	
-	private final static int AREA_ID = 0;
-	private final static int AREA_NAME = 3;
-	private final static int AREA_DESC = 4;
-	
-	private boolean isEmpty(String s) {
-		return s == null || s.length() == 0;
-	}
-	
-	private void showStatus(ClientMessage msg) {
-		getFooterView().showStatus(StatusType.NONE, msg.toString(), FooterView.CLEAR_DELAY_SECOND * 3);
-		getLogView().log(LogType.INFO, msg.toString());
-	}
-	
-	private void onFrontendServiceFailure(Throwable caught) {
-		Window.alert(new ClientMessage("", "前端服务运行错误").toString());
-		getLogView().log(LogType.ERROR, caught.toString());
-	}
-	
-	private void onBackendServiceFailure(Throwable caught) {
-		if (caught instanceof EucalyptusServiceException) {
-			EucalyptusServiceException exception = (EucalyptusServiceException)caught;
-			ClientMessage msg = exception.getFrontendMessage();
-			if (msg == null) {
-				msg = new ClientMessage("Backend Service Failure", "后代服务运行错误");
-			}
-			Window.alert(msg.toString());
-			getLogView().log(LogType.ERROR, msg.toString() + " : " + caught.toString());
-		}
-		else {
-			getLogView().log(LogType.ERROR, caught.toString());
-		}
-	}
-	
-	@Override
-	public void saveValue(ArrayList<String> keys, ArrayList<HasValueWidget> values) {
-		/* do nothing */
-	}
-
 	@Override
 	protected void doSearch(String query, SearchRange range) {
-		getBackendService().lookupDeviceAreaByDate(getSession(), range,
-				creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd, 
-				new AsyncCallback<SearchResult>() {
+		getBackendService().lookupDeviceAreaByDate(getSession(), range, dateBegin, dateEnd, new AsyncCallback<SearchResult>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				if (caught instanceof EucalyptusServiceException) {
-					onBackendServiceFailure((EucalyptusServiceException)caught);
-				}
+			    onBackendServiceFailure(caught);
 				displayData(null);
 			}
 
 			@Override
 			public void onSuccess(SearchResult result) {
-				showStatus(new ClientMessage("", "查询区域成功"));
+				onBackendServiceFinished();
 				displayData(result);
 			}
 			
@@ -150,7 +85,12 @@ public class DeviceAreaActivity extends AbstractSearchActivity implements Device
 
 	@Override
 	public void onClick(SearchResultRow row, int row_index, int column_index) {
-		System.out.println("single click " + row_index + " " + column_index + " " + row);
+		/* do nothing */
+	}
+
+	@Override
+	public void onHover(SearchResultRow row, int row_index, int columin_index) {
+		/* do nothing */
 	}
 
 	@Override
@@ -161,35 +101,33 @@ public class DeviceAreaActivity extends AbstractSearchActivity implements Device
 	@Override
 	public void onAdd() {
 		try {
-			if (Window.confirm(new ClientMessage("", "确认创建新区域").toString())) {
+			if (Window.confirm(new ClientMessage("Create a new Area.", "确认创建新区域.").toString())) {
 				if (areaAddView == null) {
 					areaAddView = new DeviceAreaAddViewImpl();
 					areaAddView.setPresenter(new DeviceAreaAddView.Presenter() {
 						
 						@Override
 						public boolean onOK(String area_name, String area_desc) {
-							if (isEmpty(area_name)) {
+						    if (area_name == null || area_name.isEmpty()) {
 								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "区域名称非法")).append(" = '").append(area_name).append("' ");
-								sb.append(new ClientMessage("", "请重新选择区域"));
+								sb.append(new ClientMessage("Invalid Area Name: ", "区域名称非法")).append(" = (null).").append("\n");
+								sb.append(new ClientMessage("Please try again.", "请重试."));
 								Window.alert(sb.toString());
 								return false;
 							}
-							getBackendService().addDeviceArea(getSession(), area_name, area_desc, new AsyncCallback<Void>() {
+							getBackendService().createDeviceArea(getSession(), area_name, area_desc, new AsyncCallback<Void>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
-									}
+								    onBackendServiceFailure(caught);
 									getView().clearSelection();
 								}
 
 								@Override
 								public void onSuccess(Void result) {
-									showStatus(new ClientMessage("", "添加区域成功"));
-									reloadCurrentRange();
+								    onBackendServiceFinished(new ClientMessage("Successfully create Area.", "区域添加成功."));
 									getView().clearSelection();
+									reloadCurrentRange();
 								}
 								
 							});
@@ -213,10 +151,7 @@ public class DeviceAreaActivity extends AbstractSearchActivity implements Device
 		try {
 			if (set != null && !set.isEmpty()) {
 				SearchResultRow row = new LinkedList<SearchResultRow>(set).getFirst();
-				if (Window.confirm(new ClientMessage("", "确认修改所选择的区域").toString())) {
-					int area_id = Integer.parseInt(row.getField(AREA_ID));
-					String area_name = row.getField(AREA_NAME);
-					String area_desc = row.getField(AREA_DESC);
+				if (Window.confirm(new ClientMessage("Modify selected Area.", "确认修改所选择的区域.").toString())) {
 					if (areaModifyView == null) {
 						areaModifyView = new DeviceAreaModifyViewImpl();
 						areaModifyView.setPresenter(new DeviceAreaModifyView.Presenter() {
@@ -227,15 +162,13 @@ public class DeviceAreaActivity extends AbstractSearchActivity implements Device
 
 									@Override
 									public void onFailure(Throwable caught) {
-										if (caught instanceof EucalyptusServiceException) {
-											onBackendServiceFailure((EucalyptusServiceException)caught);
-										}
+									    onBackendServiceFailure(caught);
 										getView().clearSelection();
 									}
 
 									@Override
 									public void onSuccess(Void result) {
-										showStatus(new ClientMessage("", "修改区域成功"));
+									    onBackendServiceFinished(new ClientMessage("Successfully modify selected Area.", "区域修改成功."));
 										reloadCurrentRange();
 										getView().clearSelection();
 									}
@@ -246,7 +179,21 @@ public class DeviceAreaActivity extends AbstractSearchActivity implements Device
 							
 						});
 					}
-					areaModifyView.popup(area_id, area_name, area_desc);
+					int area_id = Integer.parseInt(row.getField(CellTableColumns.AREA.AREA_ID));
+					getBackendService().lookupDeviceAreaByID(getSession(), area_id, new AsyncCallback<AreaInfo>() {
+
+                        @Override
+                        public void onFailure(Throwable caught) {
+                            onBackendServiceFailure(caught);
+                            getView().clearSelection();
+                        }
+
+                        @Override
+                        public void onSuccess(AreaInfo info) {
+                            areaModifyView.popup(info.area_id, info.area_name, info.area_desc);
+                        }
+                        
+					});
 				}
 			}
 		}
@@ -261,28 +208,26 @@ public class DeviceAreaActivity extends AbstractSearchActivity implements Device
 		Set<SearchResultRow> set = getView().getSelectedSet();
 		try {
 			if (set != null && !set.isEmpty()) {
-				List<Integer> area_id_list = new ArrayList<Integer>();
+				List<Integer> area_ids = new ArrayList<Integer>();
 				for (SearchResultRow row : set) {
-					int area_id = Integer.parseInt(row.getField(AREA_ID));
-					area_id_list.add(area_id);
+					int area_id = Integer.parseInt(row.getField(CellTableColumns.AREA.AREA_ID));
+					area_ids.add(area_id);
 				}
-				if (!area_id_list.isEmpty()) {
-					if (Window.confirm(new ClientMessage("", "确认删除所选择的区域").toString())) {
-						getBackendService().deleteDeviceArea(getSession(), area_id_list, new AsyncCallback<Void>() {
+				if (!area_ids.isEmpty()) {
+					if (Window.confirm(new ClientMessage("Delete selected Area(s).", "确认删除所选择的区域.").toString())) {
+						getBackendService().deleteDeviceArea(getSession(), area_ids, new AsyncCallback<Void>() {
 		
 							@Override
 							public void onFailure(Throwable caught) {
-								if (caught instanceof EucalyptusServiceException) {
-									onBackendServiceFailure((EucalyptusServiceException)caught);
-								}
+							    onBackendServiceFailure(caught);
 								getView().clearSelection();
 							}
 		
 							@Override
 							public void onSuccess(Void result) {
-								showStatus(new ClientMessage("", "删除区域成功"));
-								reloadCurrentRange();
+								onBackendServiceFinished(new ClientMessage("Successfully delete selected Area(s).", "区域删除成功."));
 								getView().clearSelection();
+                                reloadCurrentRange();
 							}
 							
 						});
@@ -297,13 +242,11 @@ public class DeviceAreaActivity extends AbstractSearchActivity implements Device
 	}
 
     @Override
-    public void updateSearchResult(Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) {
+    public void updateSearchResult(Date dateBegin, Date dateEnd) {
     	getView().clearSelection();
-    	this.creationtimeBegin = creationtimeBegin;
-    	this.creationtimeEnd = creationtimeEnd;
-    	this.modifiedtimeBegin = modifiedtimeBegin;
-    	this.modifiedtimeEnd = modifiedtimeEnd;
-    	range = new SearchRange(0, DeviceAreaView.DEFAULT_PAGESIZE, -1, true);
+    	this.dateBegin = dateBegin;
+    	this.dateEnd = dateEnd;
+    	range = new SearchRange(0, getView().getPageSize(), -1, true);
     	reloadCurrentRange();
     }
 	

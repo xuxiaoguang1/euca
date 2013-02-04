@@ -36,36 +36,32 @@ public class DeviceCPUPriceModifyViewImpl extends DialogBox implements DeviceCPU
 		this.presenter = presenter;
 	}
 	
-	private int cpu_price_id;
+	private int cp_id;
 	
 	@Override
-	public void popup(int cpu_price_id, String cpu_name, String cpu_price_desc, double cpu_price) {
-		this.cpu_price_id = cpu_price_id;
+	public void popup(int cp_id, String cpu_name, String cp_desc, double cp_price) {
+		this.cp_id = cp_id;
 		cpuName.setText(cpu_name);
-		cpuPrice.setValue(cpu_price);
-		cpuPriceDesc.setText(cpu_price_desc);
+		cpuPrice.setValue(cp_price);
+		cpuPriceDesc.setText(cp_desc);
 		show();
 	}
 	
-	private String getCPUPriceValue() {
-		String value = cpuPrice.getText();
-		if (value == null) {
-			return "";
-		}
-		return value;
+	private double getCPUPriceValue() {
+	    return cpuPrice.getValue();
 	}
 	
 	private String getCPUPriceDesc() {
-		String cpu_price_desc = cpuPriceDesc.getText();
-		if (cpu_price_desc == null) {
+		String cp_desc = cpuPriceDesc.getText();
+		if (cp_desc == null) {
 			return "";
 		}
-		return cpu_price_desc;
+		return cp_desc;
 	}
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(cpu_price_id, getCPUPriceDesc(), getCPUPriceValue())) {
+		if (presenter.onOK(cp_id, getCPUPriceDesc(), getCPUPriceValue())) {
 			hide();
 		}
 	}

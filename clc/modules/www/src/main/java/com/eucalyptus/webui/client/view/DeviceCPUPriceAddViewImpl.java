@@ -65,20 +65,16 @@ public class DeviceCPUPriceAddViewImpl extends DialogBox implements DeviceCPUPri
 		return cpuNameList.getItemText(index);
 	}
 	
-	public String getCPUPrice() {
-		String value = cpuPrice.getText();
-		if (value == null) {
-			return "";
-		}
-		return value;
+	public double getCPUPrice() {
+	    return cpuPrice.getValue();
 	}
 	
 	private String getCPUPriceDesc() {
-		String cpu_price_desc = cpuPriceDesc.getText();
-		if (cpu_price_desc == null) {
+		String cp_desc = cpuPriceDesc.getText();
+		if (cp_desc == null) {
 			return "";
 		}
-		return cpu_price_desc;
+		return cp_desc;
 	}
 	
 	@UiHandler("buttonOK")

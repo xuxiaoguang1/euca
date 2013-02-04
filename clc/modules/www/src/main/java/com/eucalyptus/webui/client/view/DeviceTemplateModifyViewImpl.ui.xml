@@ -29,105 +29,120 @@
 			font-size: 90%;
 			border-top: 1px solid #AAAAAA;
 		}
+		
+		.textArea {
+			resize:none;
+		}
+		
+		.textBoxStyle-readonly {
+            background-color:lightgray;
+        }
 	</ui:style>
 
 	<ui:with field="global"
 		type="com.eucalyptus.webui.client.view.GlobalResources" />
 
-	<g:VerticalPanel horizontalAlignment="ALIGN_LEFT"
-		width="610px" height="260px" styleName="{style.background}"
-		verticalAlignment="ALIGN_TOP">
-		<g:HTMLPanel width="610px">
-			<table>
-				<colgroup width="30px" />
-				<colgroup width="550px" />
-				<colgroup width="30px" />
-				<tbody>
-					<tr height="10px" />
-					<tr>
-						<td />
-						<td>
-							<g:HTMLPanel>
-								<table>
-									<colgroup width="20px" />
-									<colgroup width="510px" />
-									<colgroup width="20px" />
-									<tbody class="{style.title}">
-										<tr>
-											<td />
-											<td>编辑模板：</td>
-											<td />
-										</tr>
-										<tr height="5px">
-											<td />
-											<td />
-											<td />
-										</tr>
-									</tbody>
-								</table>
-							</g:HTMLPanel>
-						</td>
-						<td />
-					</tr>
-					<tr height="10px" />
-				</tbody>
-			</table>
-		</g:HTMLPanel>
-		<g:AbsolutePanel height="128px" width="610px">
-			<g:at left="30" top="5">
-				<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">标识符</g:Anchor>
-			</g:at>
-			<g:at left="90" top="2">
-				<g:Label ui:field="markLabel" width="100px" />
-			</g:at>
-			<g:at left="30" top="35">
-				<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">CPU</g:Anchor>
-			</g:at>
-			<g:at left="90" top="32">
-				<g:ListBox visibleItemCount="1" width="105px"
-						   height="22px" selectedIndex="0" ui:field="cpuNameList" />
-			</g:at>
-			<g:at left="225" top="32">
-				<g:ListBox ui:field="cpuNumList" width="50px" height="22px" />
-			</g:at>
-			<g:at left="210" top="32">
-				<g:Label text="x" />
-			</g:at>
-			<g:at left="410" top="35">
-				<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">内存</g:Anchor>
-			</g:at>
-			<g:at left="470" top="32">
-				<g:LongBox ui:field="memText" maxLength="40" width="100px" />
-			</g:at>
-			<g:at left="30" top="65">
-				<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">硬盘</g:Anchor>
-			</g:at>
-			<g:at left="90" top="62">
-				<g:LongBox ui:field="diskText" maxLength="40" width="100px" />
-			</g:at>
-			<g:at left="220" top="65">
-				<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">带宽</g:Anchor>
-			</g:at>
-			<g:at left="280" top="62">
-				<g:LongBox ui:field="bwText" maxLength="40" width="100px" />
-			</g:at>
-			<g:at left="410" top="65">
-				<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">镜像</g:Anchor>
-			</g:at>
-			<g:at left="470" top="62">
-				<g:TextBox ui:field="imageText" maxLength="40" width="100px" />
-			</g:at>
-			<g:at left="420" top="98" style="font-size:90%;">
-				<g:Anchor styleName="{global.buttonCss.button}"
-					horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonOK">确&nbsp;定
-				</g:Anchor>
-			</g:at>
-			<g:at left="500" top="98" style="font-size:90%;">
-				<g:Anchor styleName="{global.buttonCss.button}"
-					horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonCancel">取&nbsp;消
-				</g:Anchor>
-			</g:at>
-		</g:AbsolutePanel>
-	</g:VerticalPanel>
-
+	<g:DockLayoutPanel width="654px" height="340px">
+		<g:center>
+		<g:VerticalPanel horizontalAlignment="ALIGN_LEFT" styleName="{style.background}" verticalAlignment="ALIGN_TOP">
+			<g:HTMLPanel width="650px">
+				<table>
+					<colgroup width="30px" />
+					<colgroup width="590px" />
+					<colgroup width="30px" />
+					<tbody>
+						<tr height="10px" />
+						<tr>
+							<td />
+							<td>
+								<g:HTMLPanel>
+									<table>
+										<colgroup width="20px" />
+										<colgroup width="550px" />
+										<colgroup width="20px" />
+										<tbody class="{style.title}">
+											<tr>
+												<td />
+												<td>变更模板：</td>
+												<td />
+											</tr>
+											<tr height="5px">
+												<td />
+												<td />
+												<td />
+											</tr>
+										</tbody>
+									</table>
+								</g:HTMLPanel>
+							</td>
+							<td />
+						</tr>
+						<tr height="10px" />
+					</tbody>
+				</table>
+			</g:HTMLPanel>
+			<g:AbsolutePanel height="230px" width="640px">
+				<g:at left="30" top="5">
+					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM">模板名称</g:Anchor>
+				</g:at>
+				<g:at left="150" top="2">
+					<g:TextBox ui:field="templateName" height="1.4EM" width="33EM" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
+				</g:at>
+				<g:at left="30" top="35">
+					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM">模板描述</g:Anchor>
+				</g:at>
+				<g:at left="150" top="32">
+					<g:TextArea styleName="{style.textArea}" height="2.4EM" width="33EM" ui:field="templateDesc"/>
+				</g:at>
+				<g:at left="30" top="80">
+					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM" text="CPU名称"/>
+				</g:at>
+				<g:at left="150" top="77">
+					<g:TextBox height="1.4EM" width="12EM" ui:field="templateCPU"/>
+				</g:at>
+				<g:at left="350" top="80">
+					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="9EM" text="x"/>
+				</g:at>
+				<g:at left="380" top="77">
+					<g:ListBox height="1.8EM" width="8EM" ui:field="templateNCPUs"/>
+				</g:at>
+				<g:at left="30" top="110">
+					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM" text="内存(MB)"/>
+				</g:at>
+				<g:at left="150" top="107">
+					<g:LongBox height="1.4EM" width="12EM" ui:field="templateMem" alignment="RIGHT"/>
+				</g:at>
+				<g:at left="350" top="110">
+					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM" text="硬盘(MB)"/>
+				</g:at>
+				<g:at left="445" top="107">
+					<g:LongBox height="1.4EM" width="12EM" ui:field="templateDisk" alignment="RIGHT"/>
+				</g:at>
+				<g:at left="30" top="140">
+					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM" text="带宽(KB)"/>
+				</g:at>
+				<g:at left="150" top="137">
+					<g:IntegerBox height="1.4EM" width="12EM" ui:field="templateBW" alignment="RIGHT"/>
+				</g:at>
+				<g:at left="350" top="140">
+					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="9EM" text="镜像名称"/>
+				</g:at>
+				<g:at left="445" top="137">
+					<g:TextBox height="1.4EM" width="12EM" ui:field="templateImage"/>
+				</g:at>
+				<g:at left="432" top="180" style="font-size:90%;">
+					<g:Anchor styleName="{global.buttonCss.button}"
+						horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonOK">确&nbsp;定
+					</g:Anchor>
+				</g:at>
+				<g:at left="510" top="180" style="font-size:90%;">
+					<g:Anchor styleName="{global.buttonCss.button}"
+						horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonCancel">取&nbsp;消
+					</g:Anchor>
+				</g:at>
+			</g:AbsolutePanel>
+		</g:VerticalPanel>
+		</g:center>
+	</g:DockLayoutPanel>
+	
 </ui:UiBinder> 

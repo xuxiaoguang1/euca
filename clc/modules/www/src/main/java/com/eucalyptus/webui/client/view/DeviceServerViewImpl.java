@@ -1,12 +1,16 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.List;
+import java.util.Date;
 import java.util.Set;
 
-import com.eucalyptus.webui.client.activity.device.DeviceServerActivity.ServerState;
+import com.eucalyptus.webui.client.activity.device.DevicePageSize;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
+import com.eucalyptus.webui.shared.resource.device.status.ServerState;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -14,32 +18,109 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
-import com.google.gwt.user.client.ui.DeckPanel;
+import com.google.gwt.view.client.SelectionChangeEvent;
 
 public class DeviceServerViewImpl extends Composite implements DeviceServerView {
 
-	private static CPUViewImplUiBinder uiBinder = GWT.create(CPUViewImplUiBinder.class);
+	private static DeviceServerViewImplUiBinder uiBinder = GWT.create(DeviceServerViewImplUiBinder.class);
 
-	interface CPUViewImplUiBinder extends UiBinder<Widget, DeviceServerViewImpl> {
+	interface DeviceServerViewImplUiBinder extends UiBinder<Widget, DeviceServerViewImpl> {
 	}
+	
+	@UiField LayoutPanel resultPanel;
+	@UiField Anchor buttonAddServer;
+	@UiField Anchor buttonDeleteServer;
+	@UiField Anchor buttonModifyServer;
+	@UiField Anchor buttonOperateServer;
+	@UiField Anchor buttonClearSelection;
+	@UiField DeviceDateBox dateBegin;
+	@UiField DeviceDateBox dateEnd;
+	@UiField Anchor buttonClearDate;
+	@UiField Anchor labelAll;
+	@UiField Anchor labelStop;
+	@UiField Anchor labelInuse;
+	@UiField Anchor labelError;
+	@UiField ListBox pageSizeList;
+	
+	private Presenter presenter;
+	private MultiSelectionModel<SearchResultRow> selection;
+	private DeviceSearchResultTable table;
+	private DevicePopupPanel popup = new DevicePopupPanel();
+	
+	public DeviceServerViewImpl() {
+		initWidget(uiBinder.createAndBindUi(this));
+		
+		for (String pageSize : DevicePageSize.getPageSizeList()) {
+		    pageSizeList.addItem(pageSize);
+		}
+		pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
+		pageSizeList.addChangeHandler(new ChangeHandler() {
 
-	@UiField
-	LayoutPanel resultPanel;
-	@UiField
-	Anchor labelAll;
-	@UiField
-	Anchor labelReserved;
-	@UiField
-	Anchor labelInuse;
-	@UiField
-	Anchor labelStop;
+		    @Override
+		    public void onChange(ChangeEvent event) {
+		        DevicePageSize.setPageSizeSelectedIndex(pageSizeList.getSelectedIndex());
+		        if (table != null) {
+		            table.setPageSize(DevicePageSize.getPageSize());
+		        }
+		    }
+		    
+		});
+	        
+		selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
+		selection.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+
+			@Override
+			public void onSelectionChange(SelectionChangeEvent event) {
+				updateSearchResultButtonStatus();
+				presenter.onSelectionChange(selection.getSelectedSet());
+			}
+			
+		});
+		updateSearchResultButtonStatus();
+		
+		popup.setAutoHideEnabled(true);
+        
+		for (final DeviceDateBox dateBox : new DeviceDateBox[]{dateBegin, dateEnd}) {
+			dateBox.setErrorHandler(new Handler() {
+
+				@Override
+				public void onErrorHappens() {
+					updateDateButtonStatus();
+					int x = dateBox.getAbsoluteLeft();
+		            int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
+					popup.setHTML(x, y, "30EM", "3EM", DeviceDateBox.getDateErrorHTML(dateBox));
+				}
+
+				@Override
+				public void onValueChanged() {
+					updateDateButtonStatus();
+	            	int x = dateBox.getAbsoluteLeft();
+		            int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
+	                DeviceDateBox pair;
+	                pair = (dateBox != dateBegin ? dateBegin : dateEnd);
+	                if (!pair.hasError()) {
+	                	Date date0 = dateBegin.getValue(), date1 = dateEnd.getValue();
+	                	if (date0 != null && date1 != null) {
+	                		if (date0.getTime() > date1.getTime()) {
+	                			popup.setHTML(x, y, "20EM", "2EM", DeviceDateBox.getDateErrorHTML(dateBegin, dateEnd));
+	                			return;
+	                		}
+	                	}
+	                	updateSearchRange();
+	                }
+				}
+			});
+		}
+		
+		updateDateButtonStatus();
+	}
 	
 	private String getLabel(boolean highlight, String msg) {
 		StringBuilder sb = new StringBuilder();
-		String color = isMirrorMode() ? "#AAAAAA" : highlight ? "red" : "darkblue";
-		sb.append("<font color='").append(color).append("'>").append(msg).append("</font>");
+		sb.append("<font color='").append(highlight ? "red" : "darkblue").append("'>").append(msg).append("</font>");
 		return sb.toString();
 	}
 
@@ -49,7 +130,7 @@ public class DeviceServerViewImpl extends Composite implements DeviceServerView 
 		final String suffix = " 台";
 		final ServerState[] states = {null, ServerState.STOP, ServerState.INUSE, ServerState.ERROR};
 		ServerState state = presenter.getQueryState();
-		Anchor[] labels = new Anchor[]{labelAll, labelReserved, labelInuse, labelStop};
+		Anchor[] labels = new Anchor[]{labelAll, labelStop, labelInuse, labelError};
 		for (int i = 0; i < labels.length; i ++) {
 			if (labels[i] != null) {
 				int value = presenter.getCounts(states[i]);
@@ -57,28 +138,32 @@ public class DeviceServerViewImpl extends Composite implements DeviceServerView 
 			}
 		}
 	}
-
-	private void updatePanel() {
-		updateLabels();
-		resultPanel.clear();
-		if (!isMirrorMode()) {
-			if (table != null) {
-				resultPanel.add(table);
-			}
-			deckPanel.showWidget(0);
+	
+	private void updateSearchResultButtonStatus() {
+		int size = selection.getSelectedSet().size();
+		buttonAddServer.setEnabled(true);
+		buttonDeleteServer.setEnabled(size != 0);
+		buttonModifyServer.setEnabled(size == 1);
+		buttonOperateServer.setEnabled(size == 1);
+		buttonClearSelection.setEnabled(size != 0);
+	}
+	
+	private void updateDateButtonStatus() {
+		if (isEmpty(dateBegin.getText()) && isEmpty(dateEnd.getText())) {
+			buttonClearDate.setEnabled(false);
 		}
 		else {
-			if (mirrorTable != null) {
-				resultPanel.add(mirrorTable);
-			}
-			switch (getMirrorModeType()) {
-			case MODIFY_STATE:
-				deckPanel.showWidget(1);
-				break;
-			case DELETE_DEVICE:
-				deckPanel.showWidget(2);
-				break;
-			}
+            buttonClearDate.setEnabled(true);
+		}
+	}
+	
+	public boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
+	}
+	
+	private void updateSearchRange() {
+		if (!dateBegin.hasError() && !dateEnd.hasError()) {
+			presenter.updateSearchResult(dateBegin.getValue(), dateEnd.getValue());
 		}
 	}
 
@@ -87,7 +172,7 @@ public class DeviceServerViewImpl extends Composite implements DeviceServerView 
 		presenter.setQueryState(null);
 	}
 
-	@UiHandler("labelReserved")
+	@UiHandler("labelStop")
 	void handleLabelReserved(ClickEvent event) {
 		presenter.setQueryState(ServerState.STOP);
 	}
@@ -97,51 +182,52 @@ public class DeviceServerViewImpl extends Composite implements DeviceServerView 
 		presenter.setQueryState(ServerState.INUSE);
 	}
 
-	@UiHandler("labelStop")
+	@UiHandler("labelError")
 	void handleLabelStop(ClickEvent event) {
 		presenter.setQueryState(ServerState.ERROR);
 	}
-
-	public DeviceServerViewImpl() {
-		initWidget(uiBinder.createAndBindUi(this));
-		selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
-	}
-
-	private Presenter presenter;
-
-	private MultiSelectionModel<SearchResultRow> selection;
-
-	private SearchResultTable table;
-	private DeviceMirrorSearchResultTable mirrorTable;
 
 	@Override
 	public Set<SearchResultRow> getSelectedSet() {
 		return selection.getSelectedSet();
 	}
+	
+	@Override
+	public void setSelectedRow(SearchResultRow row) {
+		clearSelection();
+		if (row != null) {
+			selection.setSelected(row, true);
+		}
+		updateSearchResultButtonStatus();
+	}
 
 	@Override
 	public void showSearchResult(SearchResult result) {
 		if (table == null) {
-			// int pageSize = presenter.getPageSize();
-			table = new SearchResultTable(DEFAULT_PAGESIZE, result.getDescs(), presenter, selection);
+			table = new DeviceSearchResultTable(result.getDescs(), selection);
+			table.setRangeChangeHandler(presenter);
+			table.setClickHandler(presenter);
 			table.load();
-			updatePanel();
-		}
-		if (mirrorTable == null) {
-			mirrorTable = new DeviceMirrorSearchResultTable(DEFAULT_PAGESIZE, result.getDescs(), presenter);
-			mirrorTable.load();
-			updatePanel();
+			resultPanel.add(table);
 		}
 		table.setData(result);
+		if (table.getPageSize() != DevicePageSize.getPageSize()) {
+            table.setPageSize(DevicePageSize.getPageSize());
+            pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
+        }
+	}
+	
+	@Override
+	public int getPageSize() {
+		return table.getPageSize();
 	}
 
 	@Override
 	public void clear() {
 		resultPanel.clear();
 		table = null;
-		mirrorTable = null;
 	}
-
+	
 	@Override
 	public void clearSelection() {
 		selection.clear();
@@ -152,76 +238,49 @@ public class DeviceServerViewImpl extends Composite implements DeviceServerView 
 		this.presenter = presenter;
 	}
 
-	@UiField
-	DeckPanel deckPanel;
-	
-	@UiHandler("buttonAddDevice")
-	void onButtonAddDevice(ClickEvent event) {
-		presenter.onAddDevice();
+	@UiHandler("buttonAddServer")
+	void onButtonAddServer(ClickEvent event) {
+		if (buttonAddServer.isEnabled()) {
+			presenter.onAddServer();
+		}
 	}
 	
-	@UiHandler("buttonDeleteDevice")
-	void onButtonDeleteDevice(ClickEvent event) {
-		presenter.onDeleteDevice();
+	@UiHandler("buttonDeleteServer")
+	void onButtonDeleteServer(ClickEvent event) {
+		if (buttonDeleteServer.isEnabled()) {
+			presenter.onDeleteServer();
+		}
 	}
 	
 	@UiHandler("buttonModifyServer")
-	void handleButtonModifyState(ClickEvent event) {
-		presenter.onModifyState();
+	void handleButtonModifyServer(ClickEvent event) {
+		if (buttonModifyServer.isEnabled()) {
+			presenter.onModifyServer();
+		}
+	}
+	
+	@UiHandler("buttonOperateServer")
+	void handleButtonOperateServer(ClickEvent event) {
+		if (buttonOperateServer.isEnabled()) {
+			presenter.onOperateServer();
+		}
 	}
 
-	@UiHandler("clearSelection")
+	@UiHandler("buttonClearSelection")
 	void handleButtonClearSelection(ClickEvent event) {
-		presenter.onClearSelection();
+		if (buttonClearSelection.isEnabled()) {
+			clearSelection();
+		}
 	}
 	
-	@UiHandler("mirrorModifyStateBack")
-	void handleMirrorModifyStateBack(ClickEvent event) {
-		presenter.onMirrorBack();
-	}
-
-	@UiHandler("mirrorDeleteDeviceDeleteAll")
-	void handleMirrorDeleteDeviceDeleteAll(ClickEvent event) {
-		presenter.onMirrorDeleteAll();
-	}
-	
-	@UiHandler("mirrorDeleteDeviceBack")
-	void handleMirrorDeleteDeviceBack(ClickEvent event) {
-		presenter.onMirrorBack();
+	@UiHandler("buttonClearDate")
+	void handleButtonClearDate(ClickEvent event) {
+	    if (buttonClearDate.isEnabled()) {
+	    	dateBegin.setValue(null);
+    	    dateEnd.setValue(null);
+    	    updateDateButtonStatus();
+    	    updateSearchRange();
+	    }
 	}
 	
-	private MirrorModeType mirrorModeType = null;
-
-	@Override
-	public boolean isMirrorMode() {
-		return mirrorModeType != null;
-	}
-
-	@Override
-	public void openMirrorMode(MirrorModeType type, List<SearchResultRow> data) {
-		assert (!isMirrorMode() && type != null);
-		clearSelection();
-		mirrorModeType = type;
-		mirrorTable.setData(data);
-		updatePanel();
-	}
-
-	@Override
-	public void closeMirrorMode() {
-		assert (isMirrorMode());
-		mirrorModeType = null;
-		mirrorTable.clearSelection();
-		updatePanel();
-	}
-
-	@Override
-	public DeviceMirrorSearchResultTable getMirrorTable() {
-		return mirrorTable;
-	}
-
-	@Override
-	public MirrorModeType getMirrorModeType() {
-		return mirrorModeType;
-	}
-
 }

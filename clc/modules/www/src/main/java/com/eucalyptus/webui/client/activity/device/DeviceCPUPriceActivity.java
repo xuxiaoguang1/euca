@@ -2,40 +2,31 @@ package com.eucalyptus.webui.client.activity.device;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.ClientFactory;
-import com.eucalyptus.webui.client.activity.AbstractSearchActivity;
 import com.eucalyptus.webui.client.place.SearchPlace;
-import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
-import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.client.view.FooterView;
-import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.client.view.DeviceCPUPriceAddView;
 import com.eucalyptus.webui.client.view.DeviceCPUPriceAddViewImpl;
 import com.eucalyptus.webui.client.view.DeviceCPUPriceModifyView;
 import com.eucalyptus.webui.client.view.DeviceCPUPriceModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceCPUPriceView;
-import com.eucalyptus.webui.client.view.HasValueWidget;
-import com.eucalyptus.webui.client.view.LogView;
+import com.eucalyptus.webui.shared.message.ClientMessage;
+import com.eucalyptus.webui.shared.resource.device.CPUPriceInfo;
+import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class DeviceCPUPriceActivity extends AbstractSearchActivity implements DeviceCPUPriceView.Presenter {
+public class DeviceCPUPriceActivity extends DeviceActivity implements DeviceCPUPriceView.Presenter {
 	
 	private static final ClientMessage title = new ClientMessage("CPUPrice", "CPU定价");
 	
-	private Date creationtimeBegin;
-	private Date creationtimeEnd;
-	private Date modifiedtimeBegin;
-	private Date modifiedtimeEnd;
+	private Date dateBegin;
+    private Date dateEnd;
 	
 	private DeviceCPUPriceAddView cpuPriceAddView;
 	private DeviceCPUPriceModifyView cpuPriceModifyView;
@@ -56,82 +47,23 @@ public class DeviceCPUPriceActivity extends AbstractSearchActivity implements De
 		return view;
 	}
 	
-	private EucalyptusServiceAsync getBackendService() {
-		return clientFactory.getBackendService();
-	}
-
-	private FooterView getFooterView() {
-		return clientFactory.getShellView().getFooterView();
-	}
-
-	private LogView getLogView() {
-		return clientFactory.getShellView().getLogView();
-	}
-
-	private Session getSession() {
-		return clientFactory.getLocalSession().getSession();
-	}
-	
-	private final static int CPU_PRICE_ID = 0;
-	private final static int CPU_NAME = 3;
-	private final static int CPU_PRICE_DESC = 4;
-	private final static int CPU_PRICE = 5;
-	
-	private boolean isEmpty(String s) {
-		return s == null || s.length() == 0;
-	}
-	
-	private void showStatus(ClientMessage msg) {
-		getFooterView().showStatus(StatusType.NONE, msg.toString(), FooterView.CLEAR_DELAY_SECOND * 3);
-		getLogView().log(LogType.INFO, msg.toString());
-	}
-	
-	private void onFrontendServiceFailure(Throwable caught) {
-		Window.alert(new ClientMessage("", "前端服务运行错误").toString());
-		getLogView().log(LogType.ERROR, caught.toString());
-	}
-	
-	private void onBackendServiceFailure(Throwable caught) {
-		if (caught instanceof EucalyptusServiceException) {
-			EucalyptusServiceException exception = (EucalyptusServiceException)caught;
-			ClientMessage msg = exception.getFrontendMessage();
-			if (msg == null) {
-				msg = new ClientMessage("Backend Service Failure", "后代服务运行错误");
-			}
-			Window.alert(msg.toString());
-			getLogView().log(LogType.ERROR, msg.toString() + " : " + caught.toString());
-		}
-		else {
-			getLogView().log(LogType.ERROR, caught.toString());
-		}
-	}
-	
-	@Override
-	public void saveValue(ArrayList<String> keys, ArrayList<HasValueWidget> values) {
-		/* do nothing */
-	}
-
 	@Override
 	protected void doSearch(String query, SearchRange range) {
-		getBackendService().lookupDeviceCPUPriceByDate(getSession(), range,
-				creationtimeBegin, creationtimeEnd, modifiedtimeBegin, modifiedtimeEnd, 
-				new AsyncCallback<SearchResult>() {
+	    getBackendService().lookupDeviceCPUPriceByDate(getSession(), range, dateBegin, dateEnd, new AsyncCallback<SearchResult>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				if (caught instanceof EucalyptusServiceException) {
-					onBackendServiceFailure((EucalyptusServiceException)caught);
-				}
-				displayData(null);
-			}
+            @Override
+            public void onFailure(Throwable caught) {
+                onBackendServiceFailure(caught);
+                displayData(null);
+            }
 
-			@Override
-			public void onSuccess(SearchResult result) {
-				showStatus(new ClientMessage("", "查询CPU定价成功"));
-				displayData(result);
-			}
-			
-		});
+            @Override
+            public void onSuccess(SearchResult result) {
+                onBackendServiceFinished();
+                displayData(result);
+            }
+            
+	    });
 	}
 
 	@Override
@@ -151,7 +83,12 @@ public class DeviceCPUPriceActivity extends AbstractSearchActivity implements De
 
 	@Override
 	public void onClick(SearchResultRow row, int row_index, int column_index) {
-		System.out.println("single click " + row_index + " " + column_index + " " + row);
+		/* do nothing */
+	}
+
+	@Override
+	public void onHover(SearchResultRow row, int row_index, int columin_index) {
+		/* do nothing */
 	}
 
 	@Override
@@ -160,74 +97,63 @@ public class DeviceCPUPriceActivity extends AbstractSearchActivity implements De
 	}
 	
 	@Override
-	public void onAdd() {
+	public void onAddCPUPrice() {
 		try {
-			if (Window.confirm(new ClientMessage("", "确认创建CPU定价").toString())) {
+		    if (Window.confirm(new ClientMessage("Create a new CPU Price.", "确认创建新CPU定价.").toString())) {
 				if (cpuPriceAddView == null) {
 					cpuPriceAddView = new DeviceCPUPriceAddViewImpl();
 					cpuPriceAddView.setPresenter(new DeviceCPUPriceAddView.Presenter() {
 						
 						@Override
-						public boolean onOK(String cpu_name, String cpu_price_desc, String price) {
-							if (isEmpty(cpu_name)) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "CPU名称非法")).append(" = '").append(cpu_name).append("' ");
-								sb.append(new ClientMessage("", "请重新选择CPU名称"));
-								Window.alert(sb.toString());
-								return false;
+						public boolean onOK(String cpu_name, String cp_desc, double cp_price) {
+						    if (cpu_name == null || cpu_name.isEmpty()) {
+						        StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid CPU Name: ", "CPU名称非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
 							}
-							double cpu_price = 0;
-							try {
-							    if (!isEmpty(price)) {
-							        cpu_price = Double.parseDouble(price);
-							    }
-							}
-							catch (Exception e) {
-								StringBuilder sb = new StringBuilder();
-								sb.append(new ClientMessage("", "CPU价格非法")).append(" = '").append(price).append("' ");
-								sb.append(new ClientMessage("", "请重新填写价格"));
-								Window.alert(sb.toString());
-								return false;
-							}
-							getBackendService().addDeviceCPUPrice(getSession(), cpu_name, cpu_price_desc, cpu_price, new AsyncCallback<Void>() {
+						    if (cp_price < 0) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid CPU Price: ", "CPU价格非法")).append(" = ").append(cp_price).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+						    getBackendService().createDeviceCPUPrice(getSession(), cpu_name, cp_desc, cp_price, new AsyncCallback<Void>() {
 
-								@Override
-								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
-									}
-									getView().clearSelection();
-								}
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    onBackendServiceFailure(caught);
+                                    getView().clearSelection();
+                                }
 
-								@Override
-								public void onSuccess(Void result) {
-									showStatus(new ClientMessage("", "添加CPU定价成功"));
-									reloadCurrentRange();
-									getView().clearSelection();
-								}
-								
-							});
+                                @Override
+                                public void onSuccess(Void result) {
+                                    onBackendServiceFinished(new ClientMessage("Successfully create CPU Price.", "CPU价格添加成功."));
+                                    getView().clearSelection();
+                                    reloadCurrentRange();
+                                }
+                                
+						    });
 							return true;
 						}
 
 						@Override
 						public void lookupCPUNames() {
-							getBackendService().lookupDeviceCPUNamesUnpriced(getSession(), new AsyncCallback<List<String>>() {
+						    getBackendService().lookupDeviceCPUNamesWithoutPrice(getSession(), new AsyncCallback<List<String>>() {
 
-								@Override
-								public void onFailure(Throwable caught) {
-									if (caught instanceof EucalyptusServiceException) {
-										onBackendServiceFailure((EucalyptusServiceException)caught);
-									}
-								}
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    onBackendServiceFailure(caught);
+                                }
 
-								@Override
-								public void onSuccess(List<String> result) {
-									showStatus(new ClientMessage("", "获取CPU列表成功"));
-									cpuPriceAddView.setCPUNameList(result);
-								}
-								
-							});
+                                @Override
+                                public void onSuccess(List<String> cpu_name_list) {
+                                    cpuPriceAddView.setCPUNameList(cpu_name_list);
+                                }
+                                
+						    });
 						}
 						
 					});
@@ -242,59 +168,60 @@ public class DeviceCPUPriceActivity extends AbstractSearchActivity implements De
 	}
 
 	@Override
-	public void onModify() {
-		Set<SearchResultRow> set = getView().getSelectedSet();
+	public void onModifyCPUPrice() {
 		try {
-			if (set != null && !set.isEmpty()) {
-				SearchResultRow row = new LinkedList<SearchResultRow>(set).getFirst();
-				if (Window.confirm(new ClientMessage("", "确认修改所选择的CPU定价").toString())) {
-					int cpu_price_id = Integer.parseInt(row.getField(CPU_PRICE_ID));
-					String cpu_name = row.getField(CPU_NAME);
-					String cpu_price_desc = row.getField(CPU_PRICE_DESC);
-					double cpu_price = Double.parseDouble(row.getField(CPU_PRICE));
-					if (cpuPriceModifyView == null) {
+		    if (canModifyCPUPrice()) {
+		        if (Window.confirm(new ClientMessage("Modify selected CPU Price.", "确认修改所选择的CPU定价.").toString())) {
+		            if (cpuPriceModifyView == null) {
 						cpuPriceModifyView = new DeviceCPUPriceModifyViewImpl();
 						cpuPriceModifyView.setPresenter(new DeviceCPUPriceModifyView.Presenter() {
 							
 							@Override
-							public boolean onOK(int cpu_name, String cpu_price_desc, String price) {
-								double cpu_price = 0;
-								try{
-								    if (!isEmpty(price)) {
-								        cpu_price = Double.parseDouble(price);
-								    }
-								}
-								catch (Exception e) {
-									StringBuilder sb = new StringBuilder();
-									sb.append(new ClientMessage("", "CPU价格非法")).append(" = '").append(price).append("' ");
-									sb.append(new ClientMessage("", "请重新填写价格"));
-									Window.alert(sb.toString());
-									return false;
-								}
-								getBackendService().modifyDeviceCPUPrice(getSession(), cpu_name, cpu_price_desc, cpu_price, new AsyncCallback<Void>() {
+							public boolean onOK(int cp_id, String cp_desc, double cp_price) {
+							    if (cp_price < 0) {
+	                                StringBuilder sb = new StringBuilder();
+	                                sb.append(new ClientMessage("Invalid CPU Price: ", "CPU价格非法")).append(" = ").append(cp_price).append(".").append("\n");
+	                                sb.append(new ClientMessage("Please try again.", "请重试."));
+	                                Window.alert(sb.toString());
+	                                return false;
+	                            }
+							    getBackendService().modifyDeviceCPUPrice(getSession(), cp_id, cp_desc, cp_price, new AsyncCallback<Void>() {
 
-									@Override
-									public void onFailure(Throwable caught) {
-										if (caught instanceof EucalyptusServiceException) {
-											onBackendServiceFailure((EucalyptusServiceException)caught);
-										}
-										getView().clearSelection();
-									}
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+                                        onBackendServiceFailure(caught);
+                                        getView().clearSelection();
+                                    }
 
-									@Override
-									public void onSuccess(Void result) {
-										showStatus(new ClientMessage("", "修改CPU定价成功"));
-										reloadCurrentRange();
-										getView().clearSelection();
-									}
-									
-								});
+                                    @Override
+                                    public void onSuccess(Void result) {
+                                        onBackendServiceFinished(new ClientMessage("Successfully modify selected CPU Price.", "CPU定价修改成功."));
+                                        reloadCurrentRange();
+                                        getView().clearSelection();
+                                    }
+                                    
+							    });
 								return true;
 							}
 							
 						});
 					}
-					cpuPriceModifyView.popup(cpu_price_id, cpu_name, cpu_price_desc, cpu_price);
+		            SearchResultRow row = getView().getSelectedSet().iterator().next();
+		            final int cp_id = Integer.parseInt(row.getField(CellTableColumns.CPU_PRICE.CPU_PRICE_ID));
+		            getBackendService().lookupDeviceCPUPriceByID(getSession(), cp_id, new AsyncCallback<CPUPriceInfo>() {
+
+                        @Override
+                        public void onFailure(Throwable caught) {
+                            onBackendServiceFailure(caught);
+                            getView().clearSelection();
+                        }
+
+                        @Override
+                        public void onSuccess(CPUPriceInfo info) {
+                            cpuPriceModifyView.popup(cp_id, info.cpu_name, info.cp_desc, info.cp_price);
+                        }
+                        
+		            });
 				}
 			}
 		}
@@ -305,39 +232,36 @@ public class DeviceCPUPriceActivity extends AbstractSearchActivity implements De
 	}
 
 	@Override
-	public void onDelete() {
-		Set<SearchResultRow> set = getView().getSelectedSet();
-		try {
-			if (set != null && !set.isEmpty()) {
-				List<Integer> cpu_price_id_list = new ArrayList<Integer>();
-				for (SearchResultRow row : set) {
-					int cpu_price_id = Integer.parseInt(row.getField(CPU_PRICE_ID));
-					cpu_price_id_list.add(cpu_price_id);
-				}
-				if (!cpu_price_id_list.isEmpty()) {
-					if (Window.confirm(new ClientMessage("", "确认删除所选择的CPU定价").toString())) {
-						getBackendService().deleteDeviceCPUPrice(getSession(), cpu_price_id_list, new AsyncCallback<Void>() {
-		
-							@Override
-							public void onFailure(Throwable caught) {
-								if (caught instanceof EucalyptusServiceException) {
-									onBackendServiceFailure((EucalyptusServiceException)caught);
-								}
-								getView().clearSelection();
-							}
-		
-							@Override
-							public void onSuccess(Void result) {
-								showStatus(new ClientMessage("", "删除CPU定价成功"));
-								reloadCurrentRange();
-								getView().clearSelection();
-							}
-							
-						});
-					}
-				}
-			}
-		}
+	public void onDeleteCPUPrice() {
+	    try {
+            if (canDeleteCPUPrice()) {
+                List<Integer> cp_ids = new ArrayList<Integer>();
+                for (SearchResultRow row : getView().getSelectedSet()) {
+                    int cp_id = Integer.parseInt(row.getField(CellTableColumns.CPU_PRICE.CPU_PRICE_ID));
+                    cp_ids.add(cp_id);
+                }
+                if (!cp_ids.isEmpty()) {
+                    if (Window.confirm(new ClientMessage("Delete selected CPU Price(s).", "确认删除所选择的CPU定价.").toString())) {
+                        getBackendService().deleteDeviceCPUPrice(getSession(), cp_ids, new AsyncCallback<Void>() {
+
+                            @Override
+                            public void onFailure(Throwable caught) {
+                                onBackendServiceFailure(caught);
+                                getView().clearSelection();
+                            }
+
+                            @Override
+                            public void onSuccess(Void result) {
+                                onBackendServiceFinished(new ClientMessage("Successfully delete selected CPU Price(s).", "CPU定价删除成功."));
+                                getView().clearSelection();
+                                reloadCurrentRange();
+                            }
+                            
+                        });
+                    }
+                }
+            }
+        }
 		catch (Exception e) {
 			e.printStackTrace();
 			onFrontendServiceFailure(e);
@@ -345,14 +269,30 @@ public class DeviceCPUPriceActivity extends AbstractSearchActivity implements De
 	}
 
     @Override
-    public void updateSearchResult(Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd) {
-    	getView().clearSelection();
-    	this.creationtimeBegin = creationtimeBegin;
-    	this.creationtimeEnd = creationtimeEnd;
-    	this.modifiedtimeBegin = modifiedtimeBegin;
-    	this.modifiedtimeEnd = modifiedtimeEnd;
-    	range = new SearchRange(0, DeviceCPUPriceView.DEFAULT_PAGESIZE, -1, true);
-    	reloadCurrentRange();
+    public void updateSearchResult(Date dateBegin, Date dateEnd) {
+        getView().clearSelection();
+        this.dateBegin = dateBegin;
+        this.dateEnd = dateEnd;
+        range = new SearchRange(0, getView().getPageSize(), -1, true);
+        reloadCurrentRange();
+    }
+    
+    @Override
+    public boolean canDeleteCPUPrice() {
+        Set<SearchResultRow> set = getView().getSelectedSet();
+        if (!set.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean canModifyCPUPrice() {
+        Set<SearchResultRow> set = getView().getSelectedSet();
+        if (set.size() == 1) {
+            return true;
+        }
+        return false;
     }
 	
 }

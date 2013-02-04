@@ -33,6 +33,10 @@
 		.textArea {
 			resize:none;
 		}
+		
+		.textBoxStyle-readonly {
+            background-color:lightgray;
+        }
 	</ui:style>
 
 	<ui:with field="global"

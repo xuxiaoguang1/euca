@@ -1,6 +1,6 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -10,17 +10,17 @@ public interface DeviceTemplatePriceAddView extends IsWidget {
 	
 	void popup();
 	
-	void setTemplateList(List<String> template_name_list);
+	void setTemplates(Map<String, Integer> template_map);
 	
-	void setTemplateDetails(int template_id, String template_name, String cpu_name, int ncpus, double mem_size, double disk_size, double bw_size);
+	void setTemplate(int template_id, String template_name, String cpu_name, int ncpus, long mem_size, long disk_size, int bw_size);
 	
 	public interface Presenter {
 		
-		void lookupTemplateList();
+		void lookupTemplates();
 		
-		void lookupTemplateDetailByName(String template_name);
-	    
-	    boolean onOK(int template_id, String template_price_desc, String cpu_price, String mem_price, String disk_price, String bw_price);
+		void lookupTemplate(int template_id);
+		
+	    boolean onOK(int template_id, String tp_desc, double tp_cpu, double tp_mem, double tp_disk, double tp_bw);
 		
 	}
 

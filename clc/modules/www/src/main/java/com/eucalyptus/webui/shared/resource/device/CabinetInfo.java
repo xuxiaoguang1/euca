@@ -15,10 +15,12 @@ public class CabinetInfo implements Serializable {
     public int room_id;
     
     public CabinetInfo() {
+        /* do nothing */
     }
     
     public CabinetInfo(int cabinet_id, String cabinet_name, String cabinet_desc, Date cabinet_creationtime, Date cabinet_modifiedtime, int room_id) {
         this.cabinet_id = cabinet_id;
+        this.cabinet_name = cabinet_name;
         this.cabinet_desc = cabinet_desc;
         this.cabinet_creationtime = cabinet_creationtime;
         this.cabinet_modifiedtime = cabinet_modifiedtime;

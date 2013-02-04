@@ -33,7 +33,7 @@
 			text-align:center;
 		}
 		
-		.textArea {
+		.textBox {
 			resize:none;
 			font-size:100%;
 			position:relative;
@@ -90,7 +90,7 @@
 		<g:center>
 			<g:HTMLPanel>
 				<table class="border-top: 1px solid #AAAAAA;">
-					<tr height="15px">
+					<tr height="2EM">
 						<td>&nbsp;</td>
 					</tr>
 					<tr>
@@ -106,7 +106,7 @@
 						<td width="50EM">&nbsp;</td>
 						<td/>
 					</tr>
-					<tr height="15px">
+					<tr height="2EM">
 						<td>&nbsp;</td>
 					</tr>
 					<tr>
@@ -116,13 +116,13 @@
 						<td/>
 						<td><g:Anchor horizontalAlignment="ALIGN_LEFT" text=" 元/MB/天"/></td>
 						<td/>
-						<td rowspan="2"><g:TextArea alignment="LEFT" width="24EM" height="4.4EM" readOnly="true" styleName="{style.textArea}" ui:field="memoryPriceDesc"/></td>
+						<td><g:TextBox alignment="LEFT" width="24EM" height="1.4EM" readOnly="true" styleName="{style.textBox}" ui:field="memoryPriceDesc"/></td>
 						<td/>
 						<td><g:Label styleName="{style.box2}" ui:field="memoryPriceModifiedtime"/></td>
 						<td/>
 						<td><d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="5EM" text="编 辑" ui:field="memoryPriceModify"/></td>
 					</tr>
-					<tr height="15px">
+					<tr height="2EM">
 						<td>&nbsp;</td>
 					</tr>
 					<tr>
@@ -132,13 +132,13 @@
 						<td/>
 						<td><g:Anchor horizontalAlignment="ALIGN_LEFT" text=" 元/MB/天"/></td>
 						<td/>
-						<td rowspan="2"><g:TextArea alignment="LEFT" width="24EM" height="4.4EM" readOnly="true" styleName="{style.textArea}" ui:field="diskPriceDesc"/></td>
+						<td><g:TextBox alignment="LEFT" width="24EM" height="1.4EM" readOnly="true" styleName="{style.textBox}" ui:field="diskPriceDesc"/></td>
 						<td/>
 						<td><g:Label styleName="{style.box2}" ui:field="diskPriceModifiedtime"/></td>
 						<td/>
 						<td><d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="5EM" text="编 辑" ui:field="diskPriceModify"/></td>
 					</tr>
-					<tr height="15px">
+					<tr height="2EM">
 						<td>&nbsp;</td>
 					</tr>
 					<tr>
@@ -148,7 +148,7 @@
 						<td/>
 						<td><g:Anchor horizontalAlignment="ALIGN_LEFT" text=" 元/KB/天"/></td>
 						<td/>
-						<td rowspan="2"><g:TextArea alignment="LEFT" width="24EM" height="4.4EM" readOnly="true" styleName="{style.textArea}" ui:field="bandwidthPriceDesc"/></td>
+						<td><g:TextBox alignment="LEFT" width="24EM" height="1.4EM" readOnly="true" styleName="{style.textBox}" ui:field="bandwidthPriceDesc"/></td>
 						<td/>
 						<td><g:Label styleName="{style.box2}" ui:field="bandwidthPriceModifiedtime"/></td>
 						<td/>

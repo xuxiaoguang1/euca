@@ -4,12 +4,10 @@ import java.util.Date;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.view.DBSearchResultTable.DBSearchResultTableClickHandler;
+import com.eucalyptus.webui.client.view.DeviceSearchResultTable.DeviceSearchResultTableClickHandler;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceAreaView extends IsWidget, CanDisplaySearchResult, Clearable, SelectionController {
-	
-	public static final int DEFAULT_PAGESIZE = 20;
 	
 	public void setPresenter(Presenter presenter);
 	
@@ -17,7 +15,9 @@ public interface DeviceAreaView extends IsWidget, CanDisplaySearchResult, Cleara
 	
 	public void setSelectedRow(SearchResultRow row);
 	
-	public interface Presenter extends MultiSelectionChangeHandler, KnowsPageSize, DBSearchResultTableClickHandler, SearchRangeChangeHandler {
+	public int getPageSize();
+	
+	public interface Presenter extends MultiSelectionChangeHandler, KnowsPageSize, DeviceSearchResultTableClickHandler, SearchRangeChangeHandler {
 		
 		public void onAdd();
 		
@@ -25,7 +25,7 @@ public interface DeviceAreaView extends IsWidget, CanDisplaySearchResult, Cleara
 		
 		public void onDelete();
 		
-		public void updateSearchResult(Date creationtimeBegin, Date creationtimeEnd, Date modifiedtimeBegin, Date modifiedtimeEnd);
+		public void updateSearchResult(Date dateBegin, Date dateEnd);
 		
 	}
 	
