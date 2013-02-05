@@ -38,6 +38,8 @@ import com.eucalyptus.webui.server.mail.MailSenderInfo;
 import com.eucalyptus.webui.server.user.AuthenticateUserLogin;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.server.user.PwdResetProc;
+import com.eucalyptus.webui.server.ws.EucaWSAdapter;
+import com.eucalyptus.webui.server.ws.EucaWSException;
 import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.config.SysConfig;
 import com.eucalyptus.webui.shared.query.QueryType;
@@ -314,12 +316,27 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 			throw new EucalyptusServiceException("No permission");
 		}
 
+		int accountId = curUser.getAccountId();
 		if (user.getId() == 0) {
-			int accountId = curUser.getAccountId();
-			userServiceProc.createUser(accountId, user);
+			
+			try {
+				EucaWSAdapter.instance().createUser(session, Integer.toString(accountId), user.getName(), "/");
+				userServiceProc.createUser(accountId, user);
+			} catch (EucaWSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				throw new EucalyptusServiceException("Failed to create user in Euca");
+			}
 		}
 		else {
-			userServiceProc.modifyUser(user);
+			try {
+				EucaWSAdapter.instance().updateUser(session, Integer.toString(accountId), user.getName(), null);
+				userServiceProc.modifyUser(user);
+			} catch (EucaWSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				throw new EucalyptusServiceException("Failed to update user in Euca");
+			}
 		}
 	}
 
