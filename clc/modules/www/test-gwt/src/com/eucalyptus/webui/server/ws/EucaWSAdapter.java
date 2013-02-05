@@ -19,9 +19,11 @@ import com.amazonaws.services.identitymanagement.model.DeleteUserRequest;
 import com.amazonaws.services.identitymanagement.model.PutGroupPolicyRequest;
 import com.amazonaws.services.identitymanagement.model.PutUserPolicyRequest;
 import com.amazonaws.services.identitymanagement.model.RemoveUserFromGroupRequest;
+import com.amazonaws.services.identitymanagement.model.UpdateUserRequest;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.server.config.WSConfig;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
+import com.google.common.base.Strings;
 
 public class EucaWSAdapter {
 
@@ -90,10 +92,28 @@ public class EucaWSAdapter {
 	 * @return userIDExt
 	 * @throws EucaWSException
 	 */
-	String createUser(String accountId, String userName, String userPath) throws EucaWSException {
+	public String createUser(String accountId, String userName, String userPath) throws EucaWSException {
 		CreateUserRequest request = new CreateUserRequest(userName);
 		request.setPath(userPath);
 		this.AIMC.createUser(request);
+		
+		return null;
+	}
+	
+	/**
+	 * @param accountId
+	 * @param userName
+	 * @param userPath
+	 * @return userIDExt
+	 * @throws EucaWSException
+	 */
+	public String updateUser(String accountId, String userName, String userPath) throws EucaWSException {
+		UpdateUserRequest request = new UpdateUserRequest(userName);
+		
+		if (!Strings.isNullOrEmpty(userPath))
+			request.setNewPath(userPath);
+		
+		this.AIMC.updateUser(request);
 		
 		return null;
 	}

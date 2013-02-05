@@ -37,7 +37,6 @@ import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.server.user.PwdResetProc;
 import com.eucalyptus.webui.server.ws.EucaWSAdapter;
 import com.eucalyptus.webui.server.ws.EucaWSException;
-import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.config.SysConfig;
 import com.eucalyptus.webui.shared.query.QueryType;
 import com.eucalyptus.webui.shared.resource.VMImageType;
@@ -327,7 +326,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		if (user.getId() == 0) {
 			
 			try {
-				EucaWSAdapter.instance().createUser(session, Integer.toString(accountId), user.getName(), "/");
+				EucaWSAdapter.instance().createUser(Integer.toString(accountId), user.getName(), "/");
 				userServiceProc.createUser(accountId, user);
 			} catch (EucaWSException e) {
 				// TODO Auto-generated catch block
@@ -337,7 +336,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		}
 		else {
 			try {
-				EucaWSAdapter.instance().updateUser(session, Integer.toString(accountId), user.getName(), null);
+				EucaWSAdapter.instance().updateUser(Integer.toString(accountId), user.getName(), null);
 				userServiceProc.modifyUser(user);
 			} catch (EucaWSException e) {
 				// TODO Auto-generated catch block
