@@ -15,7 +15,7 @@ import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.server.config.ViewSearchTableServerConfig;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
-import com.eucalyptus.webui.server.device.DeviceTemplateServiceProcImpl;
+import com.eucalyptus.webui.server.device.DeviceTemplateService;
 import com.eucalyptus.webui.server.user.UserAppDBProcWrapper;
 import com.eucalyptus.webui.server.user.UserAppSyncException;
 import com.eucalyptus.webui.server.vm.VITDBProcWrapper;
@@ -26,7 +26,6 @@ import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.config.SearchTableCol;
 import com.eucalyptus.webui.shared.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
-import com.eucalyptus.webui.shared.resource.Template;
 import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserApp;
@@ -45,8 +44,10 @@ public class UserAppServiceProcImpl {
 		  long srvDuration = userApp.getSrvEndingTime().getTime() - userApp.getSrvStartingTime().getTime();
 		  try {
 			  //update device state by user application
-			  deviceTemDBProc.actionTemplate(session, userApp.getUserId(), userApp.getTemplateId(), (int)srvDuration);
-			  
+			  // DeviceTemplateService.getInstance().actionTemplate(session, userApp.getUserId(), userApp.getTemplateId(), (int)srvDuration);
+		      System.err.println("not finish yet!!!");
+		      System.exit(0);
+		      
 			  userAppDBProc.addUserApp(userApp);
 		  }
 		  catch (UserAppSyncException e) {
@@ -127,7 +128,11 @@ public class UserAppServiceProcImpl {
 			  if (vit != null)
 				  euca_vit_id = vit.getEucaVITId();
 			  
-			  Template template = deviceTemDBProc.lookupTemplateByID(session, templateId);
+			  throw new RuntimeException("NOT FINISH YET!! PLEASE USE TemplateInfo INSTEAD!!!");
+			  /* *
+			   * !![NOT FINISH YET!! PLEASE USE TemplateInfo INSTEAD!!!]
+
+			  Template template = DeviceTemplateService.getInstance().lookupTemplateByID(session, templateId);
 			  
 			  if (keyPair != null && securityGroup != null && euca_vit_id != null) {
 			    //FIXME userID
@@ -141,6 +146,18 @@ public class UserAppServiceProcImpl {
 			  }
 			  else
 				  throw new EucalyptusServiceException("User's key_pair or security group para error");
+			  */
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
 			  
 		  } catch (UserAppSyncException e) {
 			// TODO Auto-generated catch block
@@ -279,7 +296,6 @@ public class UserAppServiceProcImpl {
 	  private SorterProxy sorterProxy = new SorterProxy(EnumService.USER_APP_SRV);
 	  private UserAppDBProcWrapper userAppDBProc = new UserAppDBProcWrapper(this.sorterProxy);
 	  
-	  private DeviceTemplateServiceProcImpl deviceTemDBProc = new DeviceTemplateServiceProcImpl();
 	  private VITDBProcWrapper vitDBProc = new VITDBProcWrapper();
 	  
 	  private static List<SearchResultRow> DATA = null;

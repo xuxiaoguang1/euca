@@ -1,299 +1,53 @@
 package com.eucalyptus.webui.client.activity.device;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.ClientFactory;
-import com.eucalyptus.webui.client.activity.AbstractSearchActivity;
-import com.eucalyptus.webui.client.activity.ActivityUtil;
 import com.eucalyptus.webui.client.place.SearchPlace;
-import com.eucalyptus.webui.client.service.EucalyptusServiceAsync;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.session.Session;
-import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView;
-import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddViewImpl;
+import com.eucalyptus.webui.client.view.DeviceDiskAddView;
+import com.eucalyptus.webui.client.view.DeviceDiskAddViewImpl;
+import com.eucalyptus.webui.client.view.DeviceDiskModifyView;
+import com.eucalyptus.webui.client.view.DeviceDiskModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceDiskServiceAddView;
 import com.eucalyptus.webui.client.view.DeviceDiskServiceAddViewImpl;
+import com.eucalyptus.webui.client.view.DeviceDiskServiceModifyView;
+import com.eucalyptus.webui.client.view.DeviceDiskServiceModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceDiskView;
-import com.eucalyptus.webui.client.view.DeviceServiceDatePicker;
-import com.eucalyptus.webui.client.view.DeviceServiceModifyView;
-import com.eucalyptus.webui.client.view.DeviceServiceModifyViewImpl;
-import com.eucalyptus.webui.client.view.FooterView;
-import com.eucalyptus.webui.client.view.HasValueWidget;
-import com.eucalyptus.webui.client.view.LogView;
-import com.eucalyptus.webui.client.view.DeviceDiskDeviceAddView.DataCache;
-import com.eucalyptus.webui.client.view.DeviceDiskView.MirrorModeType;
-import com.eucalyptus.webui.client.view.DeviceMirrorSearchResultTable.SearchResultRowMatcher;
-import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.LogView.LogType;
-import com.eucalyptus.webui.shared.checker.InvalidValueException;
+import com.eucalyptus.webui.shared.message.ClientMessage;
+import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
+import com.eucalyptus.webui.shared.resource.device.DiskInfo;
+import com.eucalyptus.webui.shared.resource.device.DiskServiceInfo;
+import com.eucalyptus.webui.shared.resource.device.status.DiskState;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class DeviceDiskActivity extends AbstractSearchActivity implements DeviceDiskView.Presenter {
-
-	private static final int LAN_SELECT = 1;
-
-	public static final String TITLE[] = {"Disk", "磁盘"};
-
-	private DeviceServiceModifyView serviceModifyView;
-	private DeviceDiskServiceAddView serviceAddView;
-	private DeviceDiskDeviceAddView deviceAddView;
+public class DeviceDiskActivity extends DeviceActivity implements DeviceDiskView.Presenter {
 	
-	public static final long DIV_UNIT = 1000;
-
-	public static final int TABLE_COL_INDEX_DS_ID = 0;
-	public static final int TABLE_COL_INDEX_DISK_ID = 1;
-	public static final int TABLE_COL_INDEX_CHECKBOX = 2;
-	public static final int TABLE_COL_INDEX_NO = 3;
-	public static final int TABLE_COL_INDEX_TOTAL = 6;
-	public static final int TABLE_COL_INDEX_USED = 7;
-	public static final int TABLE_COL_INDEX_ACCOUNT = 8;
-	public static final int TABLE_COL_INDEX_USER = 9;
-	public static final int TABLE_COL_INDEX_STARTTIME = 10;
-	public static final int TABLE_COL_INDEX_LIFE = 11;
-	public static final int TABLE_COL_INDEX_REMAINS = 12;
-	public static final int TABLE_COL_INDEX_STATE = 13;
-
+	private static final ClientMessage title = new ClientMessage("Disk", "硬盘");
+	
+	private Date dateBegin;
+	private Date dateEnd;
+	private DiskState queryState = null;
+	private Map<Integer, Long> diskCounts = new HashMap<Integer, Long>();
+	
+	private DeviceDiskAddView diskAddView;
+	private DeviceDiskModifyView diskModifyView;
+	private DeviceDiskServiceAddView diskServiceAddView;
+	private DeviceDiskServiceModifyView diskServiceModifyView;
+	
 	public DeviceDiskActivity(SearchPlace place, ClientFactory clientFactory) {
 		super(place, clientFactory);
-		final String[] stateValueList = new String[]{DiskState.INUSE.toString(), DiskState.STOP.toString()};
-		serviceModifyView = new DeviceServiceModifyViewImpl();
-		serviceModifyView.setPresenter(new DeviceServiceModifyView.Presenter() {
-
-			@Override
-			public boolean onOK(SearchResultRow row, Date starttime, Date endtime, String state) {
-				final long div = DeviceServiceDatePicker.DAY_MILLIS;
-				if (starttime.getTime() / div > endtime.getTime() / div) {
-					StringBuilder sb = new StringBuilder();
-					sb.append(UPDATE_SERVICE_FAILURE_INVALID_DATE[LAN_SELECT]).append("\n");
-					sb.append("<");
-					sb.append(DeviceServiceDatePicker.format(starttime));
-					sb.append(", ");
-					sb.append(DeviceServiceDatePicker.format(endtime));
-					sb.append(">");
-					Window.alert(sb.toString());
-					return false;
-				}
-				handleModifyService(row, DeviceServiceDatePicker.format(endtime), state);
-				getView().getMirrorTable().clearSelection();
-				return true;
-			}
-
-			@Override
-			public void onCancel() {
-				getView().getMirrorTable().clearSelection();
-			}
-
-		});
-
-		serviceAddView = new DeviceDiskServiceAddViewImpl(stateValueList);
-		serviceAddView.setPresenter(new DeviceDiskServiceAddView.Presenter() {
-
-			@Override
-			public boolean onOK(SearchResultRow row, String account, String user, Date starttime, Date endtime,
-			        String state, long used, long max) {
-				final long div = DeviceServiceDatePicker.DAY_MILLIS;
-				if (starttime.getTime() / div > endtime.getTime() / div) {
-					StringBuilder sb = new StringBuilder();
-					sb.append(ADD_SERVICE_FAILURE_INVALID_DATE[LAN_SELECT]).append("\n");
-					sb.append("<");
-					sb.append(DeviceServiceDatePicker.format(starttime)).append(", ");
-					sb.append(DeviceServiceDatePicker.format(endtime));
-					sb.append(">");
-					Window.alert(sb.toString());
-					return false;
-				}
-				if (isEmpty(account) || isEmpty(user) || isEmpty(state) || !(used > 0 && used <= max)) {
-					StringBuilder sb = new StringBuilder();
-					sb.append(ADD_SERVICE_FAILURE_INVALID_ARGS[LAN_SELECT]).append("\n");
-					sb.append("<account='").append(account).append("'").append(", ");
-					sb.append("user='").append(user).append("'").append(", ");
-					sb.append("state='").append(state).append("'").append(", ");
-					sb.append("used='").append(used).append("'>");
-					Window.alert(sb.toString());
-					return false;
-				}
-				handleAddService(row, account, user, DeviceServiceDatePicker.format(starttime), (int)(endtime.getTime()
-				        / div - starttime.getTime() / div), state, used);
-				getView().getMirrorTable().clearSelection();
-				return true;
-			}
-
-			@Override
-			public void lookupAccounts() {
-				getBackendService().listDeviceDiskAccounts(getSession(), new AsyncCallback<List<String>>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						log(QUERY_ACCOUNTS_FAILURE[LAN_SELECT], caught);
-					}
-
-					@Override
-					public void onSuccess(List<String> result) {
-						if (result != null) {
-							serviceAddView.setAccountList(result);
-						}
-						else {
-							showStatus(QUERY_ACCOUNTS_FAILURE[LAN_SELECT]);
-						}
-					}
-
-				});
-			}
-
-			@Override
-			public void lookupUserByAccount(final String account) {
-				getBackendService().listDeviceDiskUsersByAccount(getSession(), account, new AsyncCallback<List<String>>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						log(QUERY_USERS_BY_ACCOUNT_FAILURE[LAN_SELECT], caught);
-					}
-
-					@Override
-					public void onSuccess(List<String> result) {
-						if (result != null) {
-							serviceAddView.setUserList(account, result);
-						}
-						else {
-							showStatus(QUERY_USERS_BY_ACCOUNT_FAILURE[LAN_SELECT]);
-						}
-					}
-
-				});
-			}
-
-			@Override
-			public void onCancel() {
-				getView().getMirrorTable().clearSelection();
-			}
-
-		});
-
-		deviceAddView = new DeviceDiskDeviceAddViewImpl();
-		deviceAddView.setPresenter(new DeviceDiskDeviceAddView.Presenter() {
-
-			@Override
-			public void lookupDevicesInfo() {
-				getBackendService().lookupDeviceDiskInfo(getSession(), new AsyncCallback<DataCache>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						log(QUERY_DEVICES_INFO_FAILURE[LAN_SELECT], caught);
-					}
-
-					@Override
-					public void onSuccess(DataCache result) {
-						if (result != null) {
-							deviceAddView.setDevicesInfo(result);
-						}
-						else {
-							showStatus(QUERY_DEVICES_INFO_FAILURE[LAN_SELECT]);
-						}
-					}
-
-				});
-			}
-
-			@Override
-			public boolean onOK(String serverMark, String name, long total, int num) {
-				if (serverMark == null || name == null || total <= 0) {
-					StringBuilder sb = new StringBuilder();
-					sb.append(ADD_DEVICE_FAILURE_INVALID_ARGS[LAN_SELECT]).append("\n");
-					sb.append("<server='").append(serverMark).append("'").append(", ");
-					sb.append("DiskName='").append(name).append("'").append(", ");
-					sb.append("DiskTotal='").append(total).append("'>");
-					Window.alert(sb.toString());
-					return false;
-				}
-				handleAddDevice(serverMark, name, total, num);
-				return true;
-			}
-
-		});
+		super.pageSize = DevicePageSize.getPageSize();
 	}
 	
-	private boolean isEmpty(String s) {
-		return s == null || s.length() == 0;
-	}
-
-	private EucalyptusServiceAsync getBackendService() {
-		return clientFactory.getBackendService();
-	}
-
-	private FooterView getFooterView() {
-		return clientFactory.getShellView().getFooterView();
-	}
-
-	private LogView getLogView() {
-		return clientFactory.getShellView().getLogView();
-	}
-
-	private Session getSession() {
-		return clientFactory.getLocalSession().getSession();
-	}
-
-	private DiskState queryState = null;
-
-	private void log(String msg, Throwable caught) {
-		getFooterView().showStatus(StatusType.ERROR, msg, FooterView.CLEAR_DELAY_SECOND * 5);
-		getLogView().log(LogType.ERROR, msg + ": " + caught.getMessage());
-	}
-
-	private void showStatus(String msg) {
-		getFooterView().showStatus(StatusType.ERROR, msg, FooterView.CLEAR_DELAY_SECOND * 5);
-		getLogView().log(LogType.ERROR, msg);
-	}
-	
-	private void reloadLabels() {
-		getBackendService().getDeviceDiskCounts(getSession(), new AsyncCallback<Map<Integer, Long>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				log(QUERY_COUNT_FAILURE[LAN_SELECT], caught);
-			}
-
-			@Override
-			public void onSuccess(Map<Integer, Long> result) {
-				DiskState.reset();
-				for (Map.Entry<Integer, Long> entry : result.entrySet()) {
-					DiskState.setCount(DiskState.getDiskState(entry.getKey()), entry.getValue());
-				}
-				getView().updateLabels();
-			}
-
-		});
-	}
-
-	@Override
-	protected void doSearch(String query, SearchRange range) {
-		getBackendService().lookupDeviceDisk(getSession(), query, range, DiskState.getValue(queryState),
-		        new AsyncCallback<SearchResult>() {
-
-			        @Override
-			        public void onFailure(Throwable caught) {
-				        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-				        log(QUERY_TABLE_FAILURE[LAN_SELECT], caught);
-				        displayData(null);
-			        }
-
-			        @Override
-			        public void onSuccess(SearchResult result) {
-				        displayData(result);
-			        }
-
-		        });
-		reloadLabels();
-	}
-
 	private DeviceDiskView getView() {
 		DeviceDiskView view = (DeviceDiskView)this.view;
 		if (view == null) {
@@ -305,585 +59,732 @@ public class DeviceDiskActivity extends AbstractSearchActivity implements Device
 		}
 		return view;
 	}
+	
+	@Override
+	protected void doSearch(String query, SearchRange range) {
+		getBackendService().lookupDeviceDiskByDate(getSession(), range, queryState, dateBegin, dateEnd, new AsyncCallback<SearchResult>() {
 
+            @Override
+            public void onFailure(Throwable caught) {
+                onBackendServiceFailure(caught);
+                displayData(null);
+            }
+
+            @Override
+            public void onSuccess(SearchResult result) {
+                onBackendServiceFinished();
+                displayData(result);
+            }
+			
+		});
+		getBackendService().lookupDeviceDiskCounts(getSession(), new AsyncCallback<Map<Integer, Long>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+			    onBackendServiceFailure(caught);
+			}
+
+			@Override
+			public void onSuccess(Map<Integer, Long> result) {
+			    onBackendServiceFinished();
+				diskCounts = result;
+				getView().updateLabels();
+			}
+			
+		});
+	}
+	
+	@Override
+	protected String getTitle() {
+		return title.toString();
+	}
+	
 	@Override
 	protected void showView(SearchResult result) {
 		getView().showSearchResult(result);
 	}
-
+	
 	@Override
-	public void onSelectionChange(Set<SearchResultRow> selections) {
+	public void onSelectionChange(Set<SearchResultRow> selection) {
 		/* do nothing */
 	}
 
 	@Override
-	public void saveValue(ArrayList<String> keys, ArrayList<HasValueWidget> values) {
+	public void onClick(SearchResultRow row, int row_index, int column_index) {
 		/* do nothing */
 	}
 
 	@Override
-	protected String getTitle() {
-		return TITLE[LAN_SELECT];
+	public void onHover(SearchResultRow row, int row_index, int columin_index) {
+		/* do nothing */
 	}
-
-	public static class DiskState {
-
-		final private int value;
-		final private String[] STATE_VALUES;
-		private long count;
-
-		public static final DiskState INUSE = new DiskState(0);
-		public static final DiskState STOP = new DiskState(1);
-		public static final DiskState RESERVED = new DiskState(2);
-
-		private DiskState(int value) {
-			assert (value >= 0);
-			this.value = value;
-			this.count = 0;
-			switch (value) {
-			default:
-				throw new InvalidValueException(Integer.toString(value));
-			case 0:
-				STATE_VALUES = new String[]{"NORMAL", "使用"};
-				return;
-			case 1:
-				STATE_VALUES = new String[]{"STOP", "未使用"};
-				return;
-			case 2:
-				STATE_VALUES = new String[]{"RESERVED", "预留"};
-				return;
-			}
-		}
-
-		public int getValue() {
-			return value;
-		}
-
-		public static int getValue(DiskState state) {
-			if (state == null) {
-				return -1;
-			}
-			return state.value;
-		}
-
-		public static int getValue(String state) {
-			if (state == null) {
-				return -1;
-			}
-			else if (state.equals(INUSE.toString())) {
-				return INUSE.getValue();
-			}
-			else if (state.equals(STOP.toString())) {
-				return STOP.getValue();
-			}
-			else if (state.equals(RESERVED.toString())) {
-				return RESERVED.getValue();
-			}
-			throw new InvalidValueException(state);
-		}
-
-		public static DiskState getDiskState(int value) {
-			if (value == -1) {
-				return null;
-			}
-			else if (value == INUSE.value) {
-				return INUSE;
-			}
-			else if (value == STOP.value) {
-				return STOP;
-			}
-			else if (value == RESERVED.value) {
-				return RESERVED;
-			}
-			throw new InvalidValueException(Integer.toString(value));
-		}
-
-		public static long getCount(DiskState state) {
-			if (state != null) {
-				return state.count;
-			}
-			else {
-				return countTotal;
-			}
-		}
-
-		public static void setCount(DiskState state, long count) {
-			if (state != null) {
-				state.count = count;
-			}
-			else {
-				countTotal = count;
-			}
-		}
-
-		public static void reset() {
-			INUSE.count = 0;
-			STOP.count = 0;
-			RESERVED.count = 0;
-			countTotal = 0;
-		}
-
-		private static long countTotal = 0;
-
-		@Override
-		public String toString() {
-			return STATE_VALUES[LAN_SELECT];
-		}
-
-	}
-
+	
 	@Override
-	public void setQueryState(DiskState state) {
-		getView().clearSelection();
-		this.queryState = state;
-		this.range = new SearchRange(0, DeviceDiskView.DEFAULT_PAGESIZE, -1, true);
-		reloadCurrentRange();
+	public void onDoubleClick(SearchResultRow row, int row_index, int column_index) {
+		getView().setSelectedRow(row);
 	}
+	
+    @Override
+    public void onAddDisk() {
+        try {
+            if (Window.confirm(new ClientMessage("Create a new Disk.", "确认创建新硬盘.").toString())) {
+                if (diskAddView == null) {
+                    diskAddView = new DeviceDiskAddViewImpl();
+                    diskAddView.setPresenter(new DeviceDiskAddView.Presenter() {
+                        
+                        @Override
+                        public boolean onOK(String disk_name, String disk_desc, long disk_size, int server_id) {
+                            if (disk_name == null || disk_name.isEmpty()) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Disk Name: ", "硬盘名称非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            if (disk_size <= 0) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Disk Size: ", "硬盘大小非法")).append(" = ").append(disk_size).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            if (server_id == -1) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Server Name.", "服务器名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            getBackendService().createDeviceDisk(getSession(), disk_name, disk_desc, disk_size, server_id, new AsyncCallback<Void>() {
 
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    onBackendServiceFailure(caught);
+                                    getView().clearSelection();
+                                }
+
+                                @Override
+                                public void onSuccess(Void result) {
+                                    onBackendServiceFinished(new ClientMessage("Successfully create Disk.", "硬盘添加成功."));
+                                    getView().clearSelection();
+                                    reloadCurrentRange();
+                                }
+                            });
+                            return true;
+                        }
+                        
+                        @Override
+                        public void lookupAreaNames() {
+                            getBackendService().lookupDeviceAreaNames(getSession(), new AsyncCallback<Map<String, Integer>>() {
+
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    onBackendServiceFailure(caught);
+                                }
+
+                                @Override
+                                public void onSuccess(Map<String, Integer> area_map) {
+                                    onBackendServiceFinished();
+                                    diskAddView.setAreaNames(area_map);
+                                }
+                                
+                            });
+                        }
+                        
+                        @Override
+                        public void lookupRoomNamesByAreaID(final int area_id) {
+                            if (area_id == -1) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Area Name.", "区域名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                            }
+                            else {
+                                getBackendService().lookupDeviceRoomNamesByAreaID(getSession(), area_id, new AsyncCallback<Map<String, Integer>>() {
+    
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+                                        onBackendServiceFailure(caught);
+                                    }
+    
+                                    @Override
+                                    public void onSuccess(Map<String, Integer> room_map) {
+                                        onBackendServiceFinished();
+                                        diskAddView.setRoomNames(area_id, room_map);
+                                    }
+                                    
+                                });
+                            }
+                        }
+                        
+                        @Override
+                        public void lookupCabinetNamesByRoomID(final int room_id) {
+                            if (room_id == -1) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Room Name.", "机房名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                            }
+                            else {
+                                getBackendService().lookupDeviceCabinetNamesByRoomID(getSession(), room_id, new AsyncCallback<Map<String, Integer>>() {
+
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+                                        onBackendServiceFailure(caught);
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Map<String, Integer> cabinet_map) {
+                                        onBackendServiceFinished();
+                                        diskAddView.setCabinetNames(room_id, cabinet_map);
+                                    }
+                                    
+                                });
+                            }
+                        }
+                        
+                        @Override
+                        public void lookupServerNamesByCabinetID(final int cabinet_id) {
+                            if (cabinet_id == -1) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Cabinet Name.", "机柜名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                            }
+                            else {
+                                getBackendService().lookupDeviceServerNamesByCabinetID(getSession(), cabinet_id, new AsyncCallback<Map<String, Integer>>() {
+
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+                                        onBackendServiceFailure(caught);
+                                    }
+
+                                    @Override
+                                    public void onSuccess(Map<String, Integer> server_map) {
+                                        onBackendServiceFinished();
+                                        diskAddView.setServerNames(cabinet_id, server_map);
+                                    }
+                                    
+                                });
+                            }
+                        }
+
+                    });
+                }
+                diskAddView.popup();
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            onFrontendServiceFailure(e);
+        }
+    }
+
+    @Override
+    public void onModifyDisk() {
+        try {
+            if (Window.confirm(new ClientMessage("Modify selected Disk.", "确认修改所选择的硬盘.").toString())) {
+                if (diskModifyView == null) {
+                    diskModifyView = new DeviceDiskModifyViewImpl();
+                    diskModifyView.setPresenter(new DeviceDiskModifyView.Presenter() {
+                        
+                        @Override
+                        public boolean onOK(int disk_id, String disk_desc, long disk_size, long ds_used) {
+                            if (disk_size <= 0 || disk_size < ds_used) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Disk Size: ", "硬盘大小非法")).append(" = ").append(disk_size).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            getBackendService().modifyDeviceDisk(getSession(), disk_id, disk_desc, disk_size, new AsyncCallback<Void> () {
+
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    onBackendServiceFailure(caught);
+                                    getView().clearSelection();
+                                }
+
+                                @Override
+                                public void onSuccess(Void result) {
+                                    onBackendServiceFinished(new ClientMessage("Successfully modify selected Disk.", "硬盘修改成功."));
+                                    reloadCurrentRange();
+                                    getView().clearSelection();
+                                }
+                                
+                            });
+                            return true;
+                        }
+                        
+                    });
+                }
+                SearchResultRow row = getView().getSelectedSet().iterator().next();
+                final int disk_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_ID));
+                final String server_name = row.getField(CellTableColumns.DISK.SERVER_NAME);
+                getBackendService().lookupDeviceDiskByID(getSession(), disk_id, new AsyncCallback<DiskInfo>() {
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        onBackendServiceFailure(caught);
+                        getView().clearSelection();
+                    }
+
+                    @Override
+                    public void onSuccess(DiskInfo info) {
+                        diskModifyView.popup(disk_id, info.disk_name, info.disk_desc, info.disk_size, info.disk_size - info.ds_reserved, server_name);
+                    }
+                    
+                });
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            onFrontendServiceFailure(e);
+        }
+    }
+
+    @Override
+    public void onDeleteDisk() {
+        try {
+            if (canDeleteDisk()) {
+                List<Integer> disk_ids = new ArrayList<Integer>();
+                for (SearchResultRow row : getView().getSelectedSet()) {
+                    int disk_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_ID));
+                    disk_ids.add(disk_id);
+                }
+                if (!disk_ids.isEmpty()) {
+                    if (Window.confirm(new ClientMessage("Delete selected Disk(s).", "确认删除所选择的硬盘.").toString())) {
+                        getBackendService().deleteDeviceDisk(getSession(), disk_ids, new AsyncCallback<Void>() {
+        
+                            @Override
+                            public void onFailure(Throwable caught) {
+                                onBackendServiceFailure(caught);
+                                getView().clearSelection();
+                            }
+        
+                            @Override
+                            public void onSuccess(Void result) {
+                                onBackendServiceFinished(new ClientMessage("Successfully delete selected Disk(s).", "硬盘删除成功."));
+                                getView().clearSelection();
+                                reloadCurrentRange();
+                            }
+                            
+                        });
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            onFrontendServiceFailure(e);
+        }
+    }
+
+    @Override
+    public void onAddDiskService() {
+        try {
+            if (Window.confirm(new ClientMessage("Create a new Disk Service.", "确认创建新硬盘服务.").toString())) {
+                if (diskServiceAddView == null) {
+                    diskServiceAddView = new DeviceDiskServiceAddViewImpl();
+                    diskServiceAddView.setPresenter(new DeviceDiskServiceAddView.Presenter() {
+                        
+                        @Override
+                        public boolean onOK(int disk_id, String ds_desc, long ds_reserved, long ds_used, Date ds_starttime, Date ds_endtime, int user_id) {
+                        	if (ds_used <= 0 || ds_used > ds_reserved) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Disk Size: ", "磁盘数量非法")).append(" = ").append(ds_used).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            if (ds_starttime == null) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Start Time: ", "开始时间非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            if (ds_endtime == null) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid End Time: ", "结束时间非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            int ds_life = DeviceDate.calcLife(ds_endtime, ds_starttime);
+                            if (ds_life <= 0) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Service Life Time: ", "服务期限非法")).append(" = ").append(ds_life).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            if (user_id == -1) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid User Name.", "用户名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            getBackendService().createDeviceDiskService(getSession(), ds_desc, ds_used, DiskState.STOP, ds_starttime, ds_endtime, disk_id, user_id, new AsyncCallback<Void>() {
+
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    onBackendServiceFailure(caught);
+                                    getView().clearSelection();
+                                }
+
+                                @Override
+                                public void onSuccess(Void result) {
+                                    onBackendServiceFinished(new ClientMessage("Successfully create Disk Service.", "硬盘服务添加成功."));
+                                    getView().clearSelection();
+                                    reloadCurrentRange();
+                                }
+                                
+                            });
+                            return true;
+                        }
+                        
+                        @Override
+                        public void lookupAccountNames() {
+                            getBackendService().lookupDeviceAccountNames(getSession(), new AsyncCallback<Map<String, Integer>>() {
+
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    onBackendServiceFailure(caught);
+                                }
+
+                                @Override
+                                public void onSuccess(Map<String, Integer> account_map) {
+                                    onBackendServiceFinished();
+                                    diskServiceAddView.setAccountNames(account_map);
+                                }
+                                
+                            });
+                        }
+                        
+                        @Override
+                        public void lookupUserNamesByAccountID(final int account_id) {
+                            if (account_id == -1) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Account Name.", "账户名称非法.")).append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                            }
+                            else {
+                                getBackendService().lookupDeviceUserNamesByAccountID(getSession(), account_id, new AsyncCallback<Map<String, Integer>>() {
+    
+                                    @Override
+                                    public void onFailure(Throwable caught) {
+                                        onBackendServiceFailure(caught);
+                                    }
+    
+                                    @Override
+                                    public void onSuccess(Map<String, Integer> user_map) {
+                                        onBackendServiceFinished();
+                                        diskServiceAddView.setUserNames(account_id, user_map);
+                                    }
+                                    
+                                });
+                            }
+                        }                   
+
+                    });
+                }
+                SearchResultRow row = getView().getSelectedSet().iterator().next();
+                final int disk_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_ID));
+			    final String server_name = row.getField(CellTableColumns.DISK.SERVER_NAME);
+			    getBackendService().lookupDeviceDiskByID(getSession(), disk_id, new AsyncCallback<DiskInfo>() {
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        onBackendServiceFailure(caught);
+                        getView().clearSelection();
+                    }
+
+                    @Override
+                    public void onSuccess(DiskInfo info) {
+                        diskServiceAddView.popup(disk_id, info.disk_name, info.ds_reserved, server_name);
+                    }
+                    
+			    });
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            onFrontendServiceFailure(e);
+        }
+    }
+
+    @Override
+    public void onModifyDiskService() {
+        try {
+            if (Window.confirm(new ClientMessage("Modify selected Disk Service.", "确认修改所选择的硬盘服务.").toString())) {
+                if (diskServiceModifyView == null) {
+                    diskServiceModifyView = new DeviceDiskServiceModifyViewImpl();
+                    diskServiceModifyView.setPresenter(new DeviceDiskServiceModifyView.Presenter() {
+                        
+                        @Override
+                        public boolean onOK(int ds_id, String ds_desc, long ds_reserved, long ds_used, Date ds_starttime, Date ds_endtime) {
+                            if (ds_used <= 0 || ds_used > ds_reserved) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Disk Size: ", "硬盘大小非法")).append(" = ").append(ds_used).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            if (ds_starttime == null) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Start Time: ", "开始时间非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            if (ds_endtime == null) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid End Time: ", "结束时间非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            int ds_life = DeviceDate.calcLife(ds_endtime, ds_starttime);
+                            if (ds_life <= 0) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Service Life Time: ", "服务期限非法")).append(" = ").append(ds_life).append(".").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            getBackendService().modifyDeviceDiskService(getSession(), ds_id, ds_desc, ds_used, ds_starttime, ds_endtime, new AsyncCallback<Void>() {
+
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    onBackendServiceFailure(caught);
+                                    getView().clearSelection();
+                                }
+
+                                @Override
+                                public void onSuccess(Void result) {
+                                    onBackendServiceFinished(new ClientMessage("Successfully modify selected Disk Service.", "硬盘服务修改成功."));
+                                    reloadCurrentRange();
+                                    getView().clearSelection();
+                                }
+                                
+                            });
+                            return true;
+                        }
+                        
+                    });
+                }
+                SearchResultRow row = getView().getSelectedSet().iterator().next();
+                final int disk_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_ID));
+				final int ds_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_SERVICE_ID));
+			    final String server_name = row.getField(CellTableColumns.DISK.SERVER_NAME);
+			    final String account_name = row.getField(CellTableColumns.DISK.ACCOUNT_NAME);
+			    final String user_name = row.getField(CellTableColumns.DISK.USER_NAME);
+			    getBackendService().lookupDeviceDiskServiceByID(getSession(), ds_id, new AsyncCallback<DiskServiceInfo>() {
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        onBackendServiceFailure(caught);
+                        getView().clearSelection();
+                    }
+
+                    @Override
+                    public void onSuccess(final DiskServiceInfo ds_info) {
+                        getBackendService().lookupDeviceDiskByID(getSession(), disk_id, new AsyncCallback<DiskInfo>() {
+
+                            @Override
+                            public void onFailure(Throwable caught) {
+                                onBackendServiceFailure(caught);
+                                getView().clearSelection();
+                            }
+
+                            @Override
+                            public void onSuccess(DiskInfo disk_info) {
+                                diskServiceModifyView.popup(ds_id, disk_info.disk_name, ds_info.ds_desc, disk_info.ds_reserved, ds_info.ds_used, ds_info.ds_starttime, ds_info.ds_endtime, server_name, account_name, user_name);
+                            }
+                            
+                        });
+                    }
+                    
+			    });
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            onFrontendServiceFailure(e);
+        }
+    }
+
+    @Override
+    public void onDeleteDiskService() {
+        try {
+            if (canDeleteDiskService()) {
+                List<Integer> ds_ids = new ArrayList<Integer>();
+                for (SearchResultRow row : getView().getSelectedSet()) {
+                    int ds_id = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_SERVICE_ID));
+                    ds_ids.add(ds_id);
+                }
+                if (!ds_ids.isEmpty()) {
+                    if (Window.confirm(new ClientMessage("Delete selected Disk Service(s).", "确认删除所选择的硬盘服务.").toString())) {
+                        getBackendService().deleteDeviceDiskService(getSession(), ds_ids, new AsyncCallback<Void>() {
+        
+                            @Override
+                            public void onFailure(Throwable caught) {
+                                onBackendServiceFailure(caught);
+                                getView().clearSelection();
+                            }
+        
+                            @Override
+                            public void onSuccess(Void result) {
+                                onBackendServiceFinished(new ClientMessage("Successfully delete selected Disk Service(s).", "硬盘服务删除成功."));
+                                getView().clearSelection();
+                                reloadCurrentRange();
+                            }
+                            
+                        });
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            onFrontendServiceFailure(e);
+        }
+    }
+    
 	@Override
 	public DiskState getQueryState() {
 		return queryState;
 	}
 
 	@Override
+	public void setQueryState(DiskState queryState) {
+		if (this.queryState != queryState) {
+	    	getView().clearSelection();
+			this.queryState = queryState;
+	    	range = new SearchRange(0, DevicePageSize.getPageSize(), -1, true);
+	    	reloadCurrentRange();
+		}
+	}
+	
+	@Override
 	public long getCounts(DiskState state) {
-		return DiskState.getCount(state);
-	}
-
-	private static final String[] QUERY_COUNT_FAILURE = {"", "获取资源失败"};
-	private static final String[] QUERY_TABLE_FAILURE = {"", "获取列表失败"};
-	private static final String[] QUERY_ACCOUNTS_FAILURE = {"", "获取账户列表失败"};
-	private static final String[] QUERY_DEVICES_INFO_FAILURE = {"", "获取资源列表失败"};
-	private static final String[] QUERY_USERS_BY_ACCOUNT_FAILURE = {"", "获取用户列表失败"};
-	private static final String[] UPDATE_SERVICE_FAILURE = {"", "更新服务失败"};
-	private static final String[] UPDATE_SERVICE_FAILURE_INVALID_DATE = {"", "更新服务失败：选择时间无效"};
-	private static final String[] UPDATE_SERVICE_SUCCESS = {"", "更新服务成功"};
-	private static final String[] ADD_DEVICE_SUCCESS = {"", "添加设备成功"};
-	private static final String[] ADD_DEVICE_FAILURE = {"", "添加设备失败"};
-	private static final String[] ADD_SERVICE_SUCCESS = {"", "添加服务成功"};
-	private static final String[] ADD_SERVICE_FAILURE = {"", "添加服务失败"};
-	private static final String[] ADD_SERVICE_FAILURE_INVALID_DATE = {"", "添加服务失败：选择时间无效"};
-	private static final String[] ADD_SERVICE_FAILURE_INVALID_ARGS = {"", "添加服务失败：选择参数无效"};
-	private static final String[] ADD_DEVICE_FAILURE_INVALID_ARGS = {"", "添加设备失败：无效的参数"};
-	private static final String[] DELETE_SERVICE_FAILURE = {"", "删除服务失败"};
-	private static final String[] DELETE_SERVICE_SUCCESS = {"", "删除服务成功"};
-	private static final String[] DELETE_SERVICE_CONFIRM = {"", "确认删除所选择的 服务？"};
-	private static final String[] DELETE_ALL_SERVICE_CONFIRM = {"", "确认删除所选择的 全部服务？"};
-	private static final String[] ACTION_SELECTED_FAILURE = {"", "请选择操作对象"};
-	private static final String[] DELETE_DEVICE_FAILURE = {"", "删除设备失败"};
-	private static final String[] DELETE_DEVICE_SUCCESS = {"", "删除设备成功"};
-	private static final String[] DELETE_DELETE_CONFIRM = {"", "确认删除所选择的 设备？"};
-	private static final String[] DELETE_ALL_DEVICE_CONFIRM = {"", "确认删除所选择的 全部设备？"};
-
-	private void prepareAddService(SearchResultRow row) {
-		String starttime = row.getField(TABLE_COL_INDEX_STARTTIME);
-		String state = row.getField(TABLE_COL_INDEX_STATE);
-		String life = row.getField(TABLE_COL_INDEX_LIFE);
-		String used = row.getField(TABLE_COL_INDEX_USED);
-		Date date0 = null, date1 = null;
-		if (!isEmpty(starttime)) {
-			date0 = DeviceServiceDatePicker.parse(starttime);
-			date1 = DeviceServiceDatePicker.parse(starttime, life);
+		Long count = diskCounts.get(state == null ? -1 : state.getValue());
+		if (count == null) {
+			return 0;
 		}
-		serviceAddView.setValue(row, date0, date1, state, used);
+		return count;
 	}
-
-	private void prepareModifyService(SearchResultRow row) {
-		String starttime = row.getField(TABLE_COL_INDEX_STARTTIME);
-		String state = row.getField(TABLE_COL_INDEX_STATE);
-		String life = row.getField(TABLE_COL_INDEX_LIFE);
-		assert (!isEmpty(starttime) && !isEmpty(state) && !isEmpty(life));
-		final String[] stateValueList = new String[]{DiskState.INUSE.toString(), DiskState.STOP.toString()};
-		serviceModifyView.setValue(row, DeviceServiceDatePicker.parse(starttime),
-		        DeviceServiceDatePicker.parse(starttime, life), stateValueList, state);
-	}
-
-	private void prepareDeleteService(SearchResultRow row) {
-		if (!Window.confirm(DELETE_SERVICE_CONFIRM[LAN_SELECT])) {
-			getView().getMirrorTable().clearSelection();
-			return;
-		}
-		List<SearchResultRow> list = new ArrayList<SearchResultRow>();
-		list.add(row);
-		handleDeleteService(list);
-	}
-
-	private void prepareDeleteDevice(SearchResultRow row) {
-		if (!Window.confirm(DELETE_DELETE_CONFIRM[LAN_SELECT])) {
-			getView().getMirrorTable().clearSelection();
-			return;
-		}
-		List<SearchResultRow> list = new ArrayList<SearchResultRow>();
-		list.add(row);
-		handleDeleteDevice(list);
+	
+	@Override
+	public void updateSearchResult(Date dateBegin, Date dateEnd) {
+    	getView().clearSelection();
+    	this.dateBegin = dateBegin;
+    	this.dateEnd = dateEnd;
+    	range = new SearchRange(0, DevicePageSize.getPageSize(), -1, true);
+    	reloadCurrentRange();
 	}
 
 	@Override
-	public void onMirrorSelectRow(SearchResultRow row) {
-		if (row == null) {
-			return;
-		}
-		switch (getView().getMirrorModeType()) {
-		case ADD_SERVICE:
-			prepareAddService(row);
-			return;
-		case MODIFY_SERVICE:
-			prepareModifyService(row);
-			return;
-		case DELETE_SERVICE:
-			prepareDeleteService(row);
-			return;
-		case DELETE_DEVICE:
-			prepareDeleteDevice(row);
-			return;
-		default:
-			return;
-		}
-	}
-
-	private void handleAddDevice(String serverMark, String name, long total, int num) {
-		assert (!isEmpty(serverMark) && !isEmpty(name));
-		getBackendService().addDeviceDiskDevice(getSession(), serverMark, name, total, num,
-		        new AsyncCallback<Boolean>() {
-
-			        @Override
-			        public void onFailure(Throwable caught) {
-				        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-				        log(ADD_DEVICE_FAILURE[LAN_SELECT], caught);
-			        }
-
-			        @Override
-			        public void onSuccess(Boolean result) {
-				        if (!result) {
-					        showStatus(ADD_DEVICE_FAILURE[LAN_SELECT]);
-				        }
-				        else {
-					        showStatus(ADD_DEVICE_SUCCESS[LAN_SELECT]);
-				        }
-				        reloadCurrentRange();
-			        }
-
-		        });
-	}
-
-	private void handleAddService(SearchResultRow row, String account, String user, String starttime, int life,
-	        String state, long used) {
-		assert (row != null && getView().getMirrorModeType() == MirrorModeType.ADD_SERVICE);
-		getBackendService().addDeviceDiskService(getSession(), row, account, user, used, starttime, life,
-		        DiskState.getValue(state), new AsyncCallback<SearchResultRow>() {
-
-			        @Override
-			        public void onFailure(Throwable caught) {
-				        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-				        log(ADD_SERVICE_FAILURE[LAN_SELECT], caught);
-			        }
-
-			        @Override
-			        public void onSuccess(SearchResultRow result) {
-				        if (result != null) {
-					        showStatus(ADD_SERVICE_SUCCESS[LAN_SELECT]);
-					        if (getView().isMirrorMode()) {
-						        final int col = TABLE_COL_INDEX_DS_ID;
-						        result.setField(TABLE_COL_INDEX_CHECKBOX, "+");
-						        final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
-
-							        @Override
-							        public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								        return row0.getField(col).equals(row1.getField(col));
-							        }
-
-						        };
-						        long used = 0;
-						        try {
-						        	used = Long.parseLong(result.getField(TABLE_COL_INDEX_USED));
-						        }
-						        catch (Exception e) {
-						        }
-						        if (used != 0) {
-						        	getView().getMirrorTable().updateRow(result, matcher);
-						        }
-						        else {
-						        	getView().getMirrorTable().deleteRow(result, matcher);
-						        }
-					        }
-				        }
-				        else {
-					        showStatus(ADD_SERVICE_FAILURE[LAN_SELECT]);
-				        }
-			        	reloadCurrentRange();
-			        }
-
-		        });
-	}
-
-	private void handleModifyService(SearchResultRow row, String endtime, String state) {
-		assert (row != null && getView().getMirrorModeType() == MirrorModeType.MODIFY_SERVICE);
-		getBackendService().modifyDeviceDiskService(getSession(), row, endtime, DiskState.getValue(state),
-		        new AsyncCallback<SearchResultRow>() {
-
-			        @Override
-			        public void onFailure(Throwable caught) {
-				        ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-				        log(UPDATE_SERVICE_FAILURE[LAN_SELECT], caught);
-			        }
-
-			        @Override
-			        public void onSuccess(SearchResultRow result) {
-				        if (result != null) {
-					        showStatus(UPDATE_SERVICE_SUCCESS[LAN_SELECT]);
-					        if (getView().isMirrorMode()) {
-						        final int col = TABLE_COL_INDEX_DS_ID;
-						        result.setField(TABLE_COL_INDEX_CHECKBOX, "+");
-						        final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
-
-							        @Override
-							        public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								        return row0.getField(col).equals(row1.getField(col));
-							        }
-
-						        };
-						        getView().getMirrorTable().updateRow(result, matcher);
-					        }
-				        }
-				        else {
-					        showStatus(UPDATE_SERVICE_FAILURE[LAN_SELECT]);
-				        }
-			        	reloadCurrentRange();
-			        }
-
-		        });
-	}
-
-	private void handleDeleteService(List<SearchResultRow> list) {
-		DeviceDiskView view = getView();
-		assert (list.size() != 0 && view.getMirrorModeType() == MirrorModeType.DELETE_SERVICE);
-		getBackendService().deleteDeviceDiskService(getSession(), list, new AsyncCallback<List<SearchResultRow>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-				log(DELETE_SERVICE_FAILURE[LAN_SELECT], caught);
-			}
-
-			@Override
-			public void onSuccess(List<SearchResultRow> result) {
-				if (result != null) {
-					showStatus(DELETE_SERVICE_SUCCESS[LAN_SELECT]);
-					if (getView().isMirrorMode()) {
-						final int col = TABLE_COL_INDEX_DS_ID;
-						final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
-
-							@Override
-							public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								return row0.getField(col).equals(row1.getField(col));
-							}
-
-						};
-						for (SearchResultRow row : result) {
-							getView().getMirrorTable().deleteRow(row, matcher);
-						}
-			        }
-				}
-				else {
-					showStatus(DELETE_SERVICE_FAILURE[LAN_SELECT]);
-				}
-	        	reloadCurrentRange();
-			}
-
-		});
-	}
-
-	private void handleDeleteDevice(List<SearchResultRow> list) {
-		DeviceDiskView view = getView();
-		assert (list.size() != 0 && view.getMirrorModeType() == MirrorModeType.DELETE_DEVICE);
-		getBackendService().deleteDeviceDiskDevice(getSession(), list, new AsyncCallback<List<SearchResultRow>>() {
-
-			@Override
-			public void onFailure(Throwable caught) {
-				ActivityUtil.logoutForInvalidSession(clientFactory, caught);
-				log(DELETE_DEVICE_FAILURE[LAN_SELECT], caught);
-			}
-
-			@Override
-			public void onSuccess(List<SearchResultRow> result) {
-				if (result != null) {
-					showStatus(DELETE_DEVICE_SUCCESS[LAN_SELECT]);
-					if (getView().isMirrorMode()) {
-						final int col = TABLE_COL_INDEX_DISK_ID;
-						final SearchResultRowMatcher matcher = new SearchResultRowMatcher() {
-
-							@Override
-							public boolean match(SearchResultRow row0, SearchResultRow row1) {
-								return row0.getField(col).equals(row1.getField(col));
-							}
-
-						};
-						for (SearchResultRow row : result) {
-							getView().getMirrorTable().deleteRow(row, matcher);
-						}
-			        }
-				}
-				else {
-					showStatus(DELETE_DEVICE_FAILURE[LAN_SELECT]);
-				}
-	        	reloadCurrentRange();
-			}
-
-		});
-	}
-
-	private SearchResultRow copyRow(SearchResultRow row) {
-		SearchResultRow tmp = row.copy();
-		tmp.setField(TABLE_COL_INDEX_CHECKBOX, "");
-		return tmp;
-	}
-
-	private boolean hasService(SearchResultRow row) {
-		return !isEmpty(row.getField(TABLE_COL_INDEX_STARTTIME));
-	}
-
-	@Override
-	public void onAddService() {
-		Set<SearchResultRow> selected = getView().getSelectedSet();
-		if (selected == null || selected.isEmpty()) {
-			showStatus(ACTION_SELECTED_FAILURE[LAN_SELECT]);
-			return;
-		}
-		List<SearchResultRow> list = new ArrayList<SearchResultRow>();
-		for (SearchResultRow row : selected) {
-			if (!hasService(row)) {
-				list.add(copyRow(row));
-			}
-		}
-		getView().openMirrorMode(MirrorModeType.ADD_SERVICE, sortSearchResultRow(list));
-	}
-
-	@Override
-	public void onModifyService() {
-		Set<SearchResultRow> selected = getView().getSelectedSet();
-		if (selected == null || selected.isEmpty()) {
-			showStatus(ACTION_SELECTED_FAILURE[LAN_SELECT]);
-			return;
-		}
-		List<SearchResultRow> list = new ArrayList<SearchResultRow>();
-		for (SearchResultRow row : selected) {
-			if (hasService(row)) {
-				list.add(copyRow(row));
-			}
-		}
-		getView().openMirrorMode(MirrorModeType.MODIFY_SERVICE, sortSearchResultRow(list));
-	}
-
-	@Override
-	public void onDeleteService() {
-		Set<SearchResultRow> selected = getView().getSelectedSet();
-		if (selected == null || selected.isEmpty()) {
-			showStatus(ACTION_SELECTED_FAILURE[LAN_SELECT]);
-			return;
-		}
-		List<SearchResultRow> list = new ArrayList<SearchResultRow>();
-		for (SearchResultRow row : selected) {
-			if (hasService(row)) {
-				list.add(copyRow(row));
-			}
-		}
-		getView().openMirrorMode(MirrorModeType.DELETE_SERVICE, sortSearchResultRow(list));
-	}
-
-	@Override
-	public void onDeleteDevice() {
-		Set<SearchResultRow> selected = getView().getSelectedSet();
-		if (selected == null || selected.isEmpty()) {
-			showStatus(ACTION_SELECTED_FAILURE[LAN_SELECT]);
-			return;
-		}
-		List<SearchResultRow> list = new ArrayList<SearchResultRow>();
-		for (SearchResultRow row : selected) {
-			if (!hasService(row)) {
-				String used = row.getField(TABLE_COL_INDEX_USED);
-				String total = row.getField(TABLE_COL_INDEX_TOTAL);
+	public boolean canDeleteDisk() {
+		Set<SearchResultRow> set = getView().getSelectedSet();
+		if (!set.isEmpty()) {
+			for (SearchResultRow row : set) {
 				try {
-					if (!isEmpty(total) && !isEmpty(used)) {
-						if (Long.parseLong(total) != Long.parseLong(used)) {
-							continue ;
-						}
+					DiskState ds_state = DiskState.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STATE));
+					if (ds_state != DiskState.RESERVED) {
+						return false;
+					}
+					long disk_total = Long.parseLong(row.getField(CellTableColumns.DISK.DISK_TOTAL));
+					long ds_used = Long.parseLong(row.getField(CellTableColumns.DISK.DISK_SERVICE_USED));
+					if (disk_total != ds_used) {
+						return false;
 					}
 				}
 				catch (Exception e) {
-				}
-				list.add(copyRow(row));
-			}
-		}
-		getView().openMirrorMode(MirrorModeType.DELETE_DEVICE, sortSearchResultRow(list));
-	}
-
-	@Override
-	public void onAddDevice() {
-		deviceAddView.popup();
-	}
-
-	@Override
-	public void onClearSelection() {
-		getView().clearSelection();
-	}
-
-	@Override
-	public void onMirrorBack() {
-		if (getView().getMirrorModeType() == MirrorModeType.ADD_SERVICE) {
-			serviceAddView.clearCache();
-		}
-		getView().closeMirrorMode();
-	}
-
-	@Override
-	public void onMirrorDeleteAll() {
-		List<SearchResultRow> data;
-		switch (getView().getMirrorModeType()) {
-		case DELETE_SERVICE:
-			data = getView().getMirrorTable().getData();
-			if (data != null && data.size() != 0) {
-				if (Window.confirm(DELETE_ALL_SERVICE_CONFIRM[LAN_SELECT])) {
-					handleDeleteService(data);
+					e.printStackTrace();
+					return false;
 				}
 			}
-			break;
-		case DELETE_DEVICE:
-			data = getView().getMirrorTable().getData();
-			if (data != null && data.size() != 0) {
-				if (Window.confirm(DELETE_ALL_DEVICE_CONFIRM[LAN_SELECT])) {
-					handleDeleteDevice(data);
-				}
-			}
-			break;
-		default:
-			break;
+			return true;
 		}
+		return false;
+	}
+	
+	@Override
+	public boolean canModifyDisk() {
+		Set<SearchResultRow> set = getView().getSelectedSet();
+		if (set.size() == 1) {
+			return true;
+		}
+		return false;
 	}
 
-	private List<SearchResultRow> sortSearchResultRow(List<SearchResultRow> list) {
-		Collections.sort(list, new Comparator<SearchResultRow>() {
+	@Override
+	public boolean canAddDiskService() {
+		Set<SearchResultRow> set = getView().getSelectedSet();
+		if (set.size() == 1) {
+			try {
+				SearchResultRow row = set.iterator().next();
+				DiskState ds_state = DiskState.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STATE));
+				if (ds_state != DiskState.RESERVED) {
+					return false;
+				}
+				long ds_used = Integer.parseInt(row.getField(CellTableColumns.DISK.DISK_SERVICE_USED));
+				if (ds_used == 0) {
+					return false;
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
 
-			@Override
-			public int compare(SearchResultRow arg0, SearchResultRow arg1) {
-				String v0 = arg0.getField(TABLE_COL_INDEX_NO);
-				String v1 = arg1.getField(TABLE_COL_INDEX_NO);
-				if (v0 == null) {
-					return v1 == null ? 0 : 1;
-				}
-				if (v1 == null) {
-					return -1;
-				}
+	@Override
+	public boolean canDeleteDiskService() {
+		Set<SearchResultRow> set = getView().getSelectedSet();
+		if (!set.isEmpty()) {
+			for (SearchResultRow row : set) {
 				try {
-					return Integer.parseInt(v0) - Integer.parseInt(v1);
+					DiskState ds_state = DiskState.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STATE));
+					if (ds_state != DiskState.INUSE && ds_state != DiskState.STOP) {
+						return false;
+					}
 				}
 				catch (Exception e) {
 					e.printStackTrace();
+					return false;
 				}
-				return 0;
 			}
-
-		});
-		return list;
+			return true;
+		}
+		return false;
 	}
-
+	
+	@Override
+	public boolean canModifyDiskService() {
+		Set<SearchResultRow> set = getView().getSelectedSet();
+		if (set.size() == 1) {
+			try {
+				SearchResultRow row = set.iterator().next();
+				DiskState ds_state = DiskState.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STATE));
+				if (ds_state != DiskState.INUSE && ds_state != DiskState.STOP) {
+					return false;
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	
 }

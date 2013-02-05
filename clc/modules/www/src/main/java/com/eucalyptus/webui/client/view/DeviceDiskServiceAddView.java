@@ -1,34 +1,28 @@
 package com.eucalyptus.webui.client.view;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
-import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceDiskServiceAddView extends IsWidget {
 	
-	void setPresenter(Presenter presenter);
+	public void setPresenter(Presenter presenter);
 	
-	void setValue(SearchResultRow row, Date starttime, Date endtime, String state, String used);
+	public void popup(int disk_id, String disk_name, long ds_reserved, String server_name);
 	
-	void setAccountList(List<String> accountList);
-	
-	void setUserList(String account, List<String> userList);
-	
-	void clearCache();
+    public void setAccountNames(Map<String, Integer> account_map);
+    
+    public void setUserNames(int account_id, Map<String, Integer> user_map);
 	
 	public interface Presenter {
 		
-		boolean onOK(SearchResultRow row, String account, String user, Date starttime, Date endtime, String state,
-				long used, long max);
+		public boolean onOK(int disk_id, String ds_desc, long ds_reserved, long ds_used, Date ds_starttime, Date ds_endtime, int user_id);
 		
-		void lookupAccounts();
+		public void lookupAccountNames();
 		
-		void lookupUserByAccount(String account);
-		
-		void onCancel();
+		public void lookupUserNamesByAccountID(int account_id);
 		
 	}
-
+	
 }

@@ -1,38 +1,28 @@
 package com.eucalyptus.webui.client.view;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
-import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceIPServiceAddView extends IsWidget {
 	
-	void setPresenter(Presenter presenter);
+	public void setPresenter(Presenter presenter);
 	
-	void setValue(SearchResultRow row, Date starttime, Date endtime, String state);
+	public void popup(int ip_id, String ip_addr);
 	
-	void setAccountList(List<String> accountList);
-	
-	void setUserList(String account, List<String> userList);
-	
-	void setVMList(String account, String user, List<String> list);
-	
-	void clearCache();
+	public void setAccountNames(Map<String, Integer> account_map);
+    
+    public void setUserNames(int account_id, Map<String, Integer> user_map);
 	
 	public interface Presenter {
 		
-		boolean onOK(SearchResultRow row, String account, String user, String vmMark, 
-				Date starttime, Date endtime, String state);
+		public boolean onOK(int ip_id, String is_desc, Date is_starttime, Date is_endtime, int user_id);
 		
-		void lookupAccounts();
+		public void lookupAccountNames();
 		
-		void lookupUserByAccount(String account);
-		
-		void lookupVMsByUser(String account, String user);
-		
-		void onCancel();
+		public void lookupUserNamesByAccountID(int account_id);
 		
 	}
-
+	
 }

@@ -1,0 +1,297 @@
+package com.eucalyptus.webui.client.view;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.DoubleBox;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
+public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView {
+	
+	private static DeviceCPUAddViewImplUiBinder uiBinder = GWT.create(DeviceCPUAddViewImplUiBinder.class);
+	
+	interface DeviceCPUAddViewImplUiBinder extends UiBinder<Widget, DeviceCPUAddViewImpl> {
+	}
+	
+	@UiField ListBox areaNameList;
+	@UiField ListBox roomNameList;
+	@UiField ListBox cabinetNameList;
+	@UiField ListBox serverNameList;
+	
+	@UiField TextBox cpuName;
+	@UiField TextArea cpuDesc;
+	@UiField TextBox cpuVendor;
+	@UiField TextBox cpuModel;
+	@UiField DoubleBox cpuGHz;
+	@UiField DoubleBox cpuCache;
+	@UiField ListBox numList;
+	
+	private Map<String, Integer> areaMap = new HashMap<String, Integer>();
+    private Map<String, Integer> roomMap = new HashMap<String, Integer>();
+    private Map<String, Integer> cabinetMap = new HashMap<String, Integer>();
+    private Map<String, Integer> serverMap = new HashMap<String, Integer>();
+		
+	public DeviceCPUAddViewImpl() {
+		super(false);
+		setWidget(uiBinder.createAndBindUi(this));
+		areaNameList.addChangeHandler(new ChangeHandler() {
+
+			@Override
+			public void onChange(ChangeEvent event) {
+			    int area_id = getAreaID();
+                if (area_id != -1) {
+                    presenter.lookupRoomNamesByAreaID(area_id);
+                }
+			}
+			
+		});
+        roomNameList.addChangeHandler(new ChangeHandler() {
+
+            @Override
+            public void onChange(ChangeEvent event) {
+                int room_id = getRoomID();
+                if (room_id != -1) {
+                    presenter.lookupCabinetNamesByRoomID(room_id);
+                }
+            }
+            
+        });
+        cabinetNameList.addChangeHandler(new ChangeHandler() {
+
+            @Override
+            public void onChange(ChangeEvent event) {
+                int cabinet_id = getCabinetID();
+                if (cabinet_id != -1) {
+                    presenter.lookupServerNamesByCabinetID(cabinet_id);
+                }
+            }
+            
+        });
+        for (int i = 1; i <= 64; i ++) {
+        	numList.addItem(Integer.toString(i));
+        }
+		center();
+		hide();
+	}
+	
+    @Override
+    public void setAreaNames(Map<String, Integer> area_map) {
+        areaNameList.clear();
+        roomNameList.clear();
+        cabinetNameList.clear();
+        serverNameList.clear();
+        areaMap.clear();
+        roomMap.clear();
+        cabinetMap.clear();
+        serverMap.clear();
+        if (area_map != null && !area_map.isEmpty()) {
+            List<String> list = new ArrayList<String>(area_map.keySet());
+            Collections.sort(list);
+            for (String area_name : list) {
+                areaNameList.addItem(area_name);
+            }
+            areaNameList.setSelectedIndex(0);
+            areaMap = area_map;
+            int area_id = getAreaID();
+            if (area_id != -1) {
+                presenter.lookupRoomNamesByAreaID(area_id);
+            }
+        }
+    }
+
+    @Override
+    public void setRoomNames(int area_id, Map<String, Integer> room_map) {
+        if (getAreaID() == area_id) {
+            roomNameList.clear();
+            cabinetNameList.clear();
+            serverNameList.clear();
+            roomMap.clear();
+            cabinetMap.clear();
+            serverMap.clear();
+            if (room_map != null && !room_map.isEmpty()) {
+                List<String> list = new ArrayList<String>(room_map.keySet());
+                Collections.sort(list);
+                for (String room_name : list) {
+                    roomNameList.addItem(room_name);
+                }
+                roomNameList.setSelectedIndex(0);
+                roomMap = room_map;
+                int room_id = getRoomID();
+                if (room_id != -1) {
+                    presenter.lookupCabinetNamesByRoomID(room_id);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setCabinetNames(int room_id, Map<String, Integer> cabinet_map) {
+        if (getRoomID() == room_id) {
+            cabinetNameList.clear();
+            serverNameList.clear();
+            cabinetMap.clear();
+            serverMap.clear();
+            if (cabinet_map != null && !cabinet_map.isEmpty()) {
+                List<String> list = new ArrayList<String>(cabinet_map.keySet());
+                Collections.sort(list);
+                for (String cabinet_name : list) {
+                    cabinetNameList.addItem(cabinet_name);
+                }
+                cabinetNameList.setSelectedIndex(0);
+                cabinetMap = cabinet_map;
+                int cabinet_id = getCabinetID();
+                if (cabinet_id != -1) {
+                    presenter.lookupServerNamesByCabinetID(cabinet_id);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setServerNames(int cabinet_id, Map<String, Integer> server_map) {
+        if (getCabinetID() == cabinet_id) {
+            serverNameList.clear();
+            serverMap.clear();
+            if (server_map != null && !server_map.isEmpty()) {
+                List<String> list = new ArrayList<String>(server_map.keySet());
+                Collections.sort(list);
+                for (String server_name : list) {
+                    serverNameList.addItem(server_name);
+                }
+                serverNameList.setSelectedIndex(0);
+                serverMap = server_map;
+            }
+        }
+    }
+
+	private String getCPUName() {
+		return getInputText(cpuName);
+	}
+	
+	private String getCPUDesc() {
+		return getInputText(cpuDesc);
+	}
+	
+	private String getCPUVendor() {
+		return getInputText(cpuVendor);
+	}
+	
+	private String getCPUModel() {
+		return getInputText(cpuModel);
+	}
+	
+	private double getCPUGHz() {
+		return cpuGHz.getValue();
+	}
+	
+	private double getCPUCache() {
+		return cpuCache.getValue();
+	}
+	
+	private int getCPUTotal() {
+		return numList.getSelectedIndex() + 1;
+	}
+	
+    private int getID(Map<String, Integer> map, String name) {
+        if (name == null || name.isEmpty()) {
+            return -1;
+        }
+        Integer id = map.get(name);
+        if (id == null) {
+            return -1;
+        }
+        return id;
+    }
+    
+    private int getAreaID() {
+        return getID(areaMap, getSelectedText(areaNameList));
+    }
+    
+    private int getRoomID() {
+        return getID(roomMap, getSelectedText(roomNameList));
+    }
+    
+    private int getCabinetID() {
+        return getID(cabinetMap, getSelectedText(cabinetNameList));
+    }
+    
+    private int getServerID() {
+        return getID(serverMap, getSelectedText(serverNameList));
+    }
+
+	private String getInputText(TextBox textbox) {
+		String text = textbox.getText();
+		if (text == null) {
+			return "";
+		}
+		return text;
+	}
+	
+	private String getInputText(TextArea textarea) {
+		String text = textarea.getText();
+		if (text == null) {
+			return "";
+		}
+		return text;
+	}
+	
+	private String getSelectedText(ListBox listbox) {
+	    int index = listbox.getSelectedIndex();
+	    if (index == -1) {
+	    	return "";
+	    }
+	    return listbox.getItemText(index);
+	}
+	
+	private DeviceCPUAddView.Presenter presenter;
+	
+	@Override
+    public void setPresenter(Presenter presenter) {
+		this.presenter = presenter;
+    }
+	
+	@Override
+    public void popup() {
+		cpuName.setValue("");
+		cpuName.setValue("");
+		cpuDesc.setValue("");
+		cpuVendor.setValue("");
+		cpuModel.setValue("");
+		cpuGHz.setValue(0.0);
+		cpuCache.setValue(0.0);
+		areaNameList.clear();
+		roomNameList.clear();
+		cabinetNameList.clear();
+		serverNameList.clear();
+		presenter.lookupAreaNames();
+		numList.setSelectedIndex(0);
+		show();
+    }
+
+	@UiHandler("buttonOK")
+	void handleButtonOK(ClickEvent event) {
+		if (presenter.onOK(getCPUName(), getCPUDesc(), getCPUTotal(), getCPUVendor(), getCPUModel(), getCPUGHz(), getCPUCache(), getServerID())) {
+			hide();
+		}
+	}
+	
+	@UiHandler("buttonCancel")
+	void handleButtonCancel(ClickEvent event) {
+		hide();
+	}
+
+}

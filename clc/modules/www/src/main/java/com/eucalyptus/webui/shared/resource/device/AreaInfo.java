@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class AreaInfo implements Serializable {
     
-    private static final long serialVersionUID = -658789108260469749L;
+    private static final long serialVersionUID = -5800197263355717258L;
     
     public int area_id;
     public String area_name;
@@ -14,6 +14,7 @@ public class AreaInfo implements Serializable {
     public Date area_modifiedtime;
     
     public AreaInfo() {
+        /* do nothing */
     }
     
     public AreaInfo(int area_id, String area_name, String area_desc, Date area_creationtime, Date area_modifiedtime) {

@@ -6,18 +6,18 @@ import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceTemplateAddView extends IsWidget {
 	
-	void setPresenter(Presenter presenter);
+	public void setPresenter(Presenter presenter);
 	
-	void popup();
+	public void popup();
 	
-	void setCPUNameList(List<String> list);
+	public void setCPUNameList(List<String> cpu_name_list);
 	
 	public interface Presenter {
 		
-		boolean onOK(String mark, String cpu, int ncpus, String mem, String disk, String bw, String image);
+		public boolean onOK(String template_name, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image);
 		
-		void lookupCPUNames();
+		public void lookupCPUNames();
 		
 	}
-
+	
 }

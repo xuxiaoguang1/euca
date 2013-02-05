@@ -119,4 +119,42 @@ public class DBProcWrapper {
 		
 		return null;
 	}
+	
+	public static Connection getConnection() throws Exception {
+	    return DriverManager.getConnection(DBConfig.instance().url(), DBConfig.instance().usr(), DBConfig.instance().pwd());
+	}
+	
+	public static ResultSet queryResultSet(Connection conn, boolean updatable, String sql) throws Exception {
+	    Statement stat;
+	    if (updatable) {
+	        stat = conn.createStatement(ResultSet.FETCH_FORWARD, ResultSet.CONCUR_UPDATABLE);
+	    }
+	    else {
+	        stat = conn.createStatement(ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+	    }
+	    return stat.executeQuery(sql);
+	}
+	
+	public static void rollback(Connection conn) {
+		if (conn != null) {
+			try {
+				conn.rollback();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static void close(Connection conn) {
+	    if (conn != null) {
+	        try {
+	            conn.close();
+	        }
+	        catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+	
 }

@@ -1,19 +1,17 @@
 package com.eucalyptus.webui.client.view;
 
-import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.shared.resource.device.status.ServerState;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceServerModifyView extends IsWidget {
 	
-	void setPresenter(Presenter presenter);
+	public void setPresenter(Presenter presenter);
 	
-	void popup(SearchResultRow row, int state);
+	public void popup(int server_id, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state);
 	
 	public interface Presenter {
 		
-		void onOK(SearchResultRow row, int state);
-		
-		void onCancel();
+		public boolean onOK(int server_id, String server_desc, String server_ip, String server_bw);
 		
 	}
 

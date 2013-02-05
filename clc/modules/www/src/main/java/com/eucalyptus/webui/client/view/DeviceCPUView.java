@@ -1,62 +1,54 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.List;
+import java.util.Date;
 import java.util.Set;
 
-import com.eucalyptus.webui.client.activity.device.DeviceCPUActivity.CPUState;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.view.DeviceSearchResultTable.DeviceSearchResultTableClickHandler;
+import com.eucalyptus.webui.shared.resource.device.status.CPUState;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceCPUView extends IsWidget, CanDisplaySearchResult, Clearable, SelectionController {
 	
-	public static final int DEFAULT_PAGESIZE = 20;
+	public void setPresenter(Presenter presenter);
 	
-	void setPresenter(Presenter presenter);
+	public Set<SearchResultRow> getSelectedSet();
 	
-	void updateLabels();
+	public void setSelectedRow(SearchResultRow row);
 	
-	void openMirrorMode(MirrorModeType type, List<SearchResultRow> data);
+	public void updateLabels();
 	
-	void closeMirrorMode();
-	
-	DeviceMirrorSearchResultTable getMirrorTable();
-	
-	boolean isMirrorMode();
-	
-	MirrorModeType getMirrorModeType();
-	
-	Set<SearchResultRow> getSelectedSet();
-	
-	enum MirrorModeType {
-		MODIFY_SERVICE,
-		DELETE_SERVICE,
-		DELETE_DEVICE,
-		ADD_SERVICE,
-	}
-	
-	public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceMirrorSearchResultTable.Presenter {
+	public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceSearchResultTableClickHandler {
+
+		public void onAddCPU();
 		
-		void onAddService();
+		public void onModifyCPU();
 		
-		void onModifyService();
+		public void onDeleteCPU();
 		
-		void onDeleteService();
+		public void onAddCPUService();
 		
-		void onDeleteDevice();
+		public void onModifyCPUService();
 		
-		void onAddDevice();
+		public void onDeleteCPUService();
 		
-		void onClearSelection();
+		public boolean canDeleteCPU();
 		
-		void onMirrorBack();
+		public boolean canModifyCPU();
 		
-		void onMirrorDeleteAll();
+		public boolean canAddCPUService();
 		
-		int getCounts(CPUState state);
+		public boolean canDeleteCPUService();
 		
-		void setQueryState(CPUState state);
+		public boolean canModifyCPUService();
 		
-		CPUState getQueryState();
+		public void updateSearchResult(Date dateBegin, Date dateEnd);
+		
+		public CPUState getQueryState();
+		
+		public int getCounts(CPUState state);
+		
+		public void setQueryState(CPUState state);
 		
 	}
 

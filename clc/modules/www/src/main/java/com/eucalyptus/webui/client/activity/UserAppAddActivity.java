@@ -28,22 +28,24 @@ public class UserAppAddActivity extends AbstractSearchActivity {
 
   @Override
   protected void doSearch( String query, SearchRange range ) {
-	  this.clientFactory.getBackendService().lookupDeviceTemplate(clientFactory.getLocalSession().getSession(), search, range, null, null, new AsyncCallback<SearchResult>() {
-
-	        @Override
-	        public void onFailure(Throwable caught) {
-		        // TODO Auto-generated method stub
-	        	int lan = LanguageSelection.instance().getCurLanguage().ordinal();
-	        	clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-	    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES[lan] + ":" + caught.getMessage( ) );
-	        }
-
-	        @Override
-	        public void onSuccess(SearchResult result) {
-		        // TODO Auto-generated method stub;
-	        	clientFactory.getUserAppAddView().showSearchResult(result);
-	        }
-	  	});
+	  // TODO !! fix it!!
+	  throw new RuntimeException("UPDATED!!");
+//	  this.clientFactory.getBackendService().lookupDeviceTemplate(clientFactory.getLocalSession().getSession(), search, range, null, null, new AsyncCallback<SearchResult>() {
+//
+//	        @Override
+//	        public void onFailure(Throwable caught) {
+//		        // TODO Auto-generated method stub
+//	        	int lan = LanguageSelection.instance().getCurLanguage().ordinal();
+//	        	clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+//	    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES[lan] + ":" + caught.getMessage( ) );
+//	        }
+//
+//	        @Override
+//	        public void onSuccess(SearchResult result) {
+//		        // TODO Auto-generated method stub;
+//	        	clientFactory.getUserAppAddView().showSearchResult(result);
+//	        }
+//	  	});
   }
   
   @Override

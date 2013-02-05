@@ -1,63 +1,55 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.List;
+import java.util.Date;
 import java.util.Set;
 
-import com.eucalyptus.webui.client.activity.device.DeviceMemoryActivity.MemoryState;
 import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.view.DeviceSearchResultTable.DeviceSearchResultTableClickHandler;
+import com.eucalyptus.webui.shared.resource.device.status.MemoryState;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceMemoryView extends IsWidget, CanDisplaySearchResult, Clearable, SelectionController {
 	
-	public static final int DEFAULT_PAGESIZE = 20;
-	
-	void setPresenter(Presenter presenter);
-	
-	void updateLabels();
-	
-	void openMirrorMode(MirrorModeType type, List<SearchResultRow> data);
-	
-	void closeMirrorMode();
-	
-	DeviceMirrorSearchResultTable getMirrorTable();
-	
-	boolean isMirrorMode();
-	
-	MirrorModeType getMirrorModeType();
-	
-	Set<SearchResultRow> getSelectedSet();
-	
-	enum MirrorModeType {
-		MODIFY_SERVICE,
-		DELETE_SERVICE,
-		DELETE_DEVICE,
-		ADD_SERVICE,
-	}
-	
-	public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceMirrorSearchResultTable.Presenter {
-		
-		void onAddService();
-		
-		void onModifyService();
-		
-		void onDeleteService();
-		
-		void onDeleteDevice();
-		
-		void onAddDevice();
-		
-		void onClearSelection();
-		
-		void onMirrorBack();
-		
-		void onMirrorDeleteAll();
-		
-		long getCounts(MemoryState state);
-		
-		void setQueryState(MemoryState state);
-		
-		MemoryState getQueryState();
-		
+    public void setPresenter(Presenter presenter);
+    
+    public Set<SearchResultRow> getSelectedSet();
+    
+    public void setSelectedRow(SearchResultRow row);
+    
+    public void updateLabels();
+    
+    public interface Presenter extends SearchRangeChangeHandler, MultiSelectionChangeHandler, KnowsPageSize, DeviceSearchResultTableClickHandler {
+        
+        public void onAddMemory();
+        
+        public void onModifyMemory();
+        
+        public void onDeleteMemory();
+        
+        public void onAddMemoryService();
+        
+        public void onModifyMemoryService();
+        
+        public void onDeleteMemoryService();
+        
+        public boolean canDeleteMemory();
+        
+        public boolean canModifyMemory();
+        
+        public boolean canAddMemoryService();
+        
+        public boolean canDeleteMemoryService();
+        
+        public boolean canModifyMemoryService();
+        
+        public void updateSearchResult(Date dateBegin, Date dateEnd);
+        
+        public MemoryState getQueryState();
+        
+        public long getCounts(MemoryState state);
+        
+        public void setQueryState(MemoryState state);
+
 	}
 
 }
