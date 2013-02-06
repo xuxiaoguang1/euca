@@ -2,4 +2,4 @@ eclipse.preferences.version=1
 jarsExcludedFromWebInfLib=
 lastWarOutDir=/home/lzhang/myworks/eucalyptus/clc/modules/www/test-gwt
 warSrcDir=war
-warSrcDirIsOutput=false
+warSrcDirIsOutput=true
