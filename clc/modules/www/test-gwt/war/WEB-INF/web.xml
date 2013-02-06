@@ -39,6 +39,10 @@
     <!-- This is the default servlet, it puts files in session -->
     <servlet-class>com.eucalyptus.webui.server.UploadServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>KeypairServlet</servlet-name>
+    <servlet-class>com.eucalyptus.webui.server.KeypairServlet</servlet-class>
+  </servlet>
 
 	<servlet>
 		<servlet-name>remoteLoggingServiceImpl</servlet-name>
@@ -69,6 +73,11 @@
   <servlet-mapping>
 	<servlet-name>CmdServiceImpl</servlet-name>
 	<url-pattern>/webui/cmdBackend</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+	<servlet-name>KeypairServlet</servlet-name>
+	<url-pattern>/webui/keypair</url-pattern>
   </servlet-mapping>
   
 

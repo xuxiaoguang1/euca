@@ -20,12 +20,14 @@ import com.eucalyptus.webui.client.view.InputField;
 import com.eucalyptus.webui.client.view.InputView;
 import com.eucalyptus.webui.client.view.KeypairView;
 import com.eucalyptus.webui.client.view.FooterView.StatusType;
+import com.eucalyptus.webui.client.view.SearchTableCellClickHandler;
 import com.eucalyptus.webui.shared.checker.ValueChecker;
 import com.eucalyptus.webui.shared.config.EnumService;
 import com.google.common.collect.Lists;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class KeypairActivity extends AbstractSearchActivity implements KeypairView.Presenter, DetailView.Presenter, InputView.Presenter, ConfirmationView.Presenter, AreaView.Presenter {
+public class KeypairActivity extends AbstractSearchActivity implements KeypairView.Presenter, DetailView.Presenter, InputView.Presenter, ConfirmationView.Presenter, AreaView.Presenter, SearchTableCellClickHandler {
   
   public static final String TITLE = "Keypair管理";
   
@@ -105,7 +107,8 @@ public class KeypairActivity extends AbstractSearchActivity implements KeypairVi
       container.setWidget( this.view );
       ( ( KeypairView ) this.view ).clear( );
     }
-    ( (KeypairView ) this.view ).showSearchResult( result );    
+    ( (KeypairView ) this.view ).showSearchResult( result );
+    ( (KeypairView ) this.view ).setCellClickProc( this );
   }
 
   @Override
@@ -171,9 +174,11 @@ public class KeypairActivity extends AbstractSearchActivity implements KeypairVi
             privateKey = result;
             clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "Keypair " + name + " 创建成功", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
             reloadCurrentRange( );
+            /*
             AreaView d = clientFactory.createAreaView();
             d.setPresenter(KeypairActivity.this);
             d.display();
+            */
           }
     });
   }
@@ -227,6 +232,12 @@ public class KeypairActivity extends AbstractSearchActivity implements KeypairVi
   @Override
   public String getText() {
     return privateKey;
+  }
+
+  @Override
+  public void onClick(int rowIndex, int colIndex, SearchResultRow row) {
+    String url = row.getField(colIndex);
+    Window.Location.replace(url);
   }
   
   

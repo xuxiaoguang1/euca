@@ -25,6 +25,14 @@ public class DBTableColName {
 		public final String USER_ID = "user_id";
 	}
 	
+	public interface USER_KEYPAIR {
+	  public final String ID = "user_keypair_id";
+	  public final String NAME = "user_keypair_name";
+	  public final String VALUE = "user_keypair_value";
+	  public final String USER_ID = "user_id";
+	  public final String HASH = "user_keypair_hash";
+	}
+	
 	public interface USER_CERT {
 		public final String ID = "cert_id";
 		public final String CERT_ID = "cert_cert_id";

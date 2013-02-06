@@ -4,6 +4,7 @@ public class DBTableName {
 	public static final String USER = "user";
 	public static final String USER_RESET_PWD = "user_reset_pwd";
 	public static final String USER_KEY = "user_key";
+	public static final String USER_KEYPAIR = "user_keypair";
 	public static final String USER_CERT = "user_cert";
 	public static final String USER_APP = "user_app";
 	public static final String USER_POLICY = "user_policy";

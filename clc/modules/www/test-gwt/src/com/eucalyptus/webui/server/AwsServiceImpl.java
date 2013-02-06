@@ -111,8 +111,9 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 
   public static final ArrayList<SearchResultFieldDesc> KEYPAIR_COMMON_FIELD_DESCS = Lists.newArrayList();
   static {
-    KEYPAIR_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("名称", true, "10%"));
-    KEYPAIR_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("指纹", true, "10%"));
+    KEYPAIR_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("名称", true, "20%"));
+    KEYPAIR_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("指纹", true, "30%"));
+    KEYPAIR_COMMON_FIELD_DESCS.add(new SearchResultFieldDesc("私钥", false, "10%", TableDisplay.MANDATORY, Type.LINK, false, false));
   }
   
   public static final ArrayList<SearchResultFieldDesc> SECURITY_GROUP_COMMON_FIELD_DESCS = Lists.newArrayList();
@@ -183,6 +184,13 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
   
   private int getUserID(Session session) throws EucalyptusServiceException {
     return getLoginUserProfile(session).getUserId();
+  }
+  
+  private int getUserID(Session session, int userID) throws EucalyptusServiceException {
+    if (userID == 0)
+      return getUserID(session);
+    else
+      return userID;
   }
   
   private String[] _getKeys(int userID) throws EucalyptusServiceException {
@@ -352,21 +360,31 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
   @Override
   public SearchResult lookupKeypair(Session session, int userID, String search, SearchRange range) throws EucalyptusServiceException {
     List<SearchResultRow> data = lookupKeypair(session, userID);
+    for (SearchResultRow r: data) {
+      String hash = KeypairService.getInstance().select(getUserID(session, userID), r.getField(0));
+      if (hash != null)
+        r.addField("keypair?hash=" + hash);
+      else 
+        r.addField("");
+    }
     int resultLength = data.size();
     SearchResult result = new SearchResult(data.size(), range);
     result.setDescs(KEYPAIR_COMMON_FIELD_DESCS);
     result.setRows(data.subList(range.getStart(), range.getStart() + resultLength));
     return result;
   }
-
+    
   @Override
   public String addKeypair(Session session, int userID, String name) throws EucalyptusServiceException {
     AmazonEC2 ec2 = verify(session, userID);
     CreateKeyPairRequest req = new CreateKeyPairRequest();
     req.setKeyName(name);
     CreateKeyPairResult ret = ec2.createKeyPair(req);
-    return ret.getKeyPair().getKeyMaterial();
+    String value = ret.getKeyPair().getKeyMaterial();
+    KeypairService.getInstance().insert(getUserID(session, userID), name, value);
+    return "";
   }
+  
 
   @Override
   public void importKeypair(Session session, int userID, String name, String key) throws EucalyptusServiceException{
@@ -510,7 +528,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     sb.append("'").append(id).append("')");
     sb.append("ON DUPLICATE KEY UPDATE ");
     sb.append(OS).append("=VALUES(").append(OS).append("),");
-    sb.append(OS).append("=VALUES(").append(DEL).append("),");
+    sb.append(DEL).append("=VALUES(").append(DEL).append("),");
     sb.append(VER).append("=VALUES(").append(VER).append(")");
     try {
       wrapper.update(sb.toString());

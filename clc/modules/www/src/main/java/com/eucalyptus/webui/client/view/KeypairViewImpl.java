@@ -110,4 +110,10 @@ public class KeypairViewImpl extends Composite implements KeypairView {
     this.selectionModel.clear( );
   }
   
+  @Override
+  public void setCellClickProc(SearchTableCellClickHandler clickHandler) {
+    // TODO Auto-generated method stub
+    this.table.setCellClickHandler(clickHandler);
+  }
+
 }

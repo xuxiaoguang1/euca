@@ -124,11 +124,15 @@ public class SearchResultTable extends Composite {
 	      cellTable.setColumnWidth(checkBoxColumn, desc.getWidth());
       }
       else if (colType == SearchResultFieldDesc.Type.LINK) {
-    	  SearchTableClickableCell preview = new SearchTableClickableCell();
+        SearchTableClickableCell preview = new SearchTableClickableCell();
     	  preview.setColIndex(index);
     	  final Column<SearchResultRow, String> linkColumn = new Column<SearchResultRow, String>(preview) {
     	    public String getValue(SearchResultRow object) {
-    	      return object.getField(index);
+    	      //hack display content
+    	      if (object.getField(index).startsWith("keypair"))
+    	        return "下载";
+    	      else
+    	        return object.getField(index);
     	    }
     	  };
     	  
