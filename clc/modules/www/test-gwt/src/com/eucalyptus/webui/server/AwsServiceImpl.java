@@ -492,6 +492,13 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     ec2.authorizeSecurityGroupIngress(req);
   }
 
+  static Integer parseInt(String s) {
+    Integer n = null;
+    try {
+      n = Integer.parseInt(s);
+    } catch (NumberFormatException e) {}
+    return n;
+  }
   @Override
   public void delSecurityRules(Session session, int userID, List<String> groups, List<String> fromPorts, List<String> toPorts, List<String> protos, List<String> ipRanges) throws EucalyptusServiceException {
     AmazonEC2 ec2 = verify(session, userID);
@@ -499,8 +506,8 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     int len = groups.size();
     for (int i = 0; i < len; ++ i) {
       req.setGroupName(groups.get(i));
-      req.setFromPort(Integer.parseInt(fromPorts.get(i)));
-      req.setToPort(Integer.parseInt(toPorts.get(i)));
+      req.setFromPort(parseInt(fromPorts.get(i)));
+      req.setToPort(parseInt(toPorts.get(i)));
       req.setIpProtocol(protos.get(i));    
       req.setCidrIp(ipRanges.get(i));
       ec2.revokeSecurityGroupIngress(req);
