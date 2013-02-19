@@ -33,6 +33,8 @@ public interface AwsService extends RemoteService {
 	public void bindImage(Session session, int userID, String id, String sysName, String sysVer) throws EucalyptusServiceException;
 	public void unbindImages(Session session, int userID, List<String> ids) throws EucalyptusServiceException;
 	
+	public ArrayList<String> lookupAvailablityZones(Session session) throws EucalyptusServiceException;
+	
 	//run via eucatools
 	
 	public SearchResult lookupNodeCtrl(Session session, String search, SearchRange range) throws EucalyptusServiceException;

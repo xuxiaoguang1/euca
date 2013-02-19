@@ -1,5 +1,7 @@
 package com.eucalyptus.webui.server;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,10 @@ import org.apache.log4j.Logger;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
+import com.eucalyptus.webui.server.db.DBProcWrapper;
+import com.eucalyptus.webui.shared.dictionary.DBTableColName;
+import com.eucalyptus.webui.shared.dictionary.DBTableName;
+import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
 
 public class EucaServiceWrapper {
 
@@ -35,12 +41,12 @@ public class EucaServiceWrapper {
    * @param group string
    * @return euca id of vm
    */
-  /*
-  public String runVM(Session session, int userID, Template template, String keypair, String group, String image) throws EucalyptusServiceException {
+  
+  public String runVM(Session session, int userID, TemplateInfo template, String keypair, String group, String image) throws EucalyptusServiceException {
     //real code about template won't be in old repo
-    return aws.runInstance(session, userID, image, keypair, "m1.small", group);
+    return aws.runInstance(session, userID, image, keypair, "c1.xlarge", group);
   }
-  */
+  
   
   /**
    * get all keypairs' name owned by user
@@ -68,6 +74,56 @@ public class EucaServiceWrapper {
       ret.add(d.getField(0));
     }
     return ret;
+  }
+  
+  public List<String> getAvailabilityZones(Session session) throws EucalyptusServiceException {
+    //TODO: unused filter 
+    return aws.lookupAvailablityZones(session);
+  }
+  
+  public void bindServerWithZone(int serverID, String zone) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("UPDATE ").append(DBTableName.SERVER)
+      .append(" SET ").append(DBTableColName.SERVER.EUCA_ZONE)
+      .append(" = '").append(zone).append("' WHERE ")
+      .append(DBTableColName.SERVER.ID)
+      .append(" = '").append(serverID).append("'");
+    try {
+      DBProcWrapper.Instance().update(sb.toString());
+    } catch (SQLException e) {
+      //TODO
+    }
+  }
+  
+  public int getServerID(Session session, int userID, String instanceID) throws EucalyptusServiceException {
+    String zone = aws.lookupZoneWithInstanceId(session, userID, instanceID);
+    StringBuilder sb = new StringBuilder();
+    sb.append("SELECT ").append(DBTableColName.SERVER.ID)
+      .append(" FROM ").append(DBTableName.SERVER)
+      .append(" WHERE ").append(DBTableColName.SERVER.EUCA_ZONE)
+      .append(" = '").append(zone).append("'");
+    try {
+      ResultSet r = DBProcWrapper.Instance().query(sb.toString()).getResultSet();
+      if (r.first()) {
+        return r.getInt(DBTableColName.SERVER.ID);
+      }
+    } catch (SQLException e) {
+      //TODO
+    }
+    return -1;
+  }
+  
+  public String getServerIp(Session session, int userID, String instanceID) throws EucalyptusServiceException {
+    return aws.lookupInstanceForIp(session, userID, instanceID);
+  }
+    
+  
+  public void acquireResource(int serverID, TemplateInfo t) {
+    
+  }
+  
+  public void releaseResource(int serverID, TemplateInfo t) {
+    
   }
   
 }

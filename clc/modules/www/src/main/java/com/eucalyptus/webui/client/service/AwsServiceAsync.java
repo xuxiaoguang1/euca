@@ -102,4 +102,7 @@ public interface AwsServiceAsync {
   void deregisterStorage(Session session, String part, String name,
       AsyncCallback<Void> callback);
 
+  void lookupAvailablityZones(Session session,
+      AsyncCallback<ArrayList<String>> callback);
+
 }

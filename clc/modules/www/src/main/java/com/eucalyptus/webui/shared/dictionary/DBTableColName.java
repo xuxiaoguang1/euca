@@ -103,6 +103,7 @@ public class DBTableColName {
 		public final String BW = "server_bw";
 		public final String STATE = "server_state";
 		public final String STARTTIME = "server_starttime";
+		public final String EUCA_ZONE = "server_euca_zone";
 	}
 
 	public interface CPU {

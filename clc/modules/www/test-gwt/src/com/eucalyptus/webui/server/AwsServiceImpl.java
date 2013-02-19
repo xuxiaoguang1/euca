@@ -27,7 +27,9 @@ import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
 import com.amazonaws.services.ec2.model.CreateSecurityGroupResult;
 import com.amazonaws.services.ec2.model.DeleteKeyPairRequest;
 import com.amazonaws.services.ec2.model.DeleteSecurityGroupRequest;
+import com.amazonaws.services.ec2.model.DescribeAvailabilityZonesResult;
 import com.amazonaws.services.ec2.model.DescribeImagesResult;
+import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.DescribeKeyPairsResult;
 import com.amazonaws.services.ec2.model.DescribeSecurityGroupsRequest;
@@ -45,6 +47,7 @@ import com.amazonaws.services.ec2.model.SecurityGroup;
 import com.amazonaws.services.ec2.model.StartInstancesRequest;
 import com.amazonaws.services.ec2.model.StopInstancesRequest;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
+import com.amazonaws.services.ec2.model.AvailabilityZone;
 import com.eucalyptus.webui.client.service.AwsService;
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
@@ -227,7 +230,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
 	}
 
 	@Override
-	public SearchResult lookupInstance(Session session, int userID, String search, SearchRange range)  throws EucalyptusServiceException{		
+	public SearchResult lookupInstance(Session session, int userID, String search, SearchRange range)  throws EucalyptusServiceException{
 		AmazonEC2 ec2 = verify(session, userID);
 		DescribeInstancesResult r = ec2.describeInstances();
 		//DescribeInstanceStatusResult rr = ec2.describeInstanceStatus();
@@ -876,5 +879,33 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
       throw new EucalyptusServiceException();
     }
     */
+  }
+
+  @Override
+  public ArrayList<String> lookupAvailablityZones(Session session)
+      throws EucalyptusServiceException {
+    AmazonEC2 ec2 = verify(session, 0);
+    DescribeAvailabilityZonesResult r = ec2.describeAvailabilityZones();
+    ArrayList<String> ret = new ArrayList<String>();
+    for (AvailabilityZone z: r.getAvailabilityZones()) {
+      ret.add(z.getZoneName());
+    }
+    return ret;
+  }
+  
+  public String lookupZoneWithInstanceId(Session session, int userID, String instanceID) throws EucalyptusServiceException {
+    AmazonEC2 ec2 = verify(session, userID);
+    DescribeInstancesRequest req = new DescribeInstancesRequest(); 
+    req.setInstanceIds(Arrays.asList(instanceID));
+    DescribeInstancesResult res = ec2.describeInstances(req);
+    return res.getReservations().get(0).getInstances().get(0).getPlacement().getAvailabilityZone();
+  }
+  
+  public String lookupInstanceForIp(Session session, int userID, String instanceID)  throws EucalyptusServiceException {
+    AmazonEC2 ec2 = verify(session, userID);
+    DescribeInstancesRequest req = new DescribeInstancesRequest(); 
+    req.setInstanceIds(Arrays.asList(instanceID));
+    DescribeInstancesResult res = ec2.describeInstances(req);
+    return res.getReservations().get(0).getInstances().get(0).getPublicIpAddress();    
   }
 }
