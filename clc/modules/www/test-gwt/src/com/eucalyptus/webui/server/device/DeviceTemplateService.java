@@ -26,8 +26,6 @@ import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns.CellTableColumnsRow;
 import com.eucalyptus.webui.shared.resource.device.status.CPUState;
 import com.eucalyptus.webui.shared.resource.device.status.DiskState;
-import com.eucalyptus.webui.shared.resource.device.status.IPState;
-import com.eucalyptus.webui.shared.resource.device.status.IPType;
 import com.eucalyptus.webui.shared.resource.device.status.MemoryState;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
@@ -288,7 +286,7 @@ public class DeviceTemplateService {
         }
     }
     
-    public AppResources createApp(String desc, int cpu_id, int cs_size, int mem_id, long ms_size, int disk_id, long ds_size, String ip_addr, int bw_max, int user_id, Date starttime, Date endtime) throws EucalyptusServiceException {
+    public AppResources createApp(String desc, int cpu_id, int cs_size, int mem_id, long ms_size, int disk_id, long ds_size, int user_id, Date starttime, Date endtime) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -296,10 +294,8 @@ public class DeviceTemplateService {
             int cs_id = DeviceCPUService.getInstance().createCPUService(true, conn, desc, cs_size, CPUState.STOP, starttime, endtime, cpu_id, user_id);
             int ms_id = DeviceMemoryService.getInstance().createMemoryService(true, conn, desc, ms_size, MemoryState.STOP, starttime, endtime, mem_id, user_id);
             int ds_id = DeviceDiskService.getInstance().createDiskService(true, conn, desc, ds_size, DiskState.STOP, starttime, endtime, disk_id, user_id);
-            int ip_id = DeviceIPService.getInstance().createIPService(conn, ip_addr, desc, IPType.PUBLIC, desc, IPState.STOP, starttime, endtime, user_id);
-            int bs_id = DeviceBWService.getInstance().createBWService(true, conn, desc, bw_max, starttime, endtime, ip_id);
             conn.commit();
-            return new AppResources(cs_id, ms_id, ds_id, ip_id, bs_id);
+            return new AppResources(cs_id, ms_id, ds_id, -1, -1);
         }
         catch (Exception e) {
             e.printStackTrace();
