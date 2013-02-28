@@ -51,12 +51,6 @@ public class QuickLinks {
 		for (LinkGroup linkGroup : sysAdminLinkGroups) {
 			quickLinkTag.add(getQuickLinkTag(linkGroup.getTag(), linkGroup.getLinks()));
 		}
-		quickLinkTag.add(getQuickLinkTag("用户管理", Arrays.asList("用户管理", "组管理", "账户管理", "策略管理", "密钥管理", "证书管理", "用户申请管理")));
-		quickLinkTag.add(getQuickLinkTag("设备管理", Arrays.asList("区域管理", "机房管理", "机柜管理", "服务器管理")));
-		quickLinkTag.add(getQuickLinkTag("资源管理", Arrays.asList("CPU管理", "内存管理", "硬盘管理", "带宽管理", "IP管理", "模板管理", "虚拟机管理", "镜像管理", "Keypair管理", "安全组管理", "规则管理", "原模板管理")));
-		quickLinkTag.add(getQuickLinkTag("定价管理", Arrays.asList("CPU定价", "其他设备定价", "模版定价")));
-		quickLinkTag.add(getQuickLinkTag("组件管理", Arrays.asList("节点控制器管理", "集群控制器管理", "存储控制器管理", "Walrus控制器管理")));
-		quickLinkTag.add(getQuickLinkTag("统计管理", Arrays.asList("基本资源统计", "CPU统计", "内存统计", "硬盘统计", "历史使用情况统计")));
 		return quickLinkTag;
 	}
 	

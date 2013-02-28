@@ -177,6 +177,10 @@ public class DBTableColName {
 	
 	public interface VM {
 		public final String ID = "vm_id";
+		public final String IP_OUTER = "vm_ip";
+		public final String IP_INNER = "vm_inner_ip";
+		public final String BW = "vm_bw";
+		public final String SAFE_GROUP_ID = "safegroup_id";
 		public final String MARK = "vm_mark";
 	}
 	
