@@ -78,8 +78,8 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
    * 
    */
   private static final long serialVersionUID = 1L;
-  static final String FALLBACK_ACCESS_KEY="GEHBHS2X2J7E2KBKS7PSJ";
-	static final String FALLBACK_SECRET_KEY="wc65Oy6BnQzRR3Qscm6byU9rclq0awwCDWywvSmn";
+  static final String FALLBACK_ACCESS_KEY="RZ1XFBPJROCXYHUE3EWOP";
+	static final String FALLBACK_SECRET_KEY="SKIdkrQDn8FaF2VnHsMfliadr9YVPQ7Ov8RYi36b";
 	static final String FALLBACK_ENDPOINT="http://166.111.134.30:8773/services/Eucalyptus";
 	static final String FALLBACK_SSH_HOST="root@166.111.134.30";
 	static String ENDPOINT = null;
@@ -907,5 +907,22 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     req.setInstanceIds(Arrays.asList(instanceID));
     DescribeInstancesResult res = ec2.describeInstances(req);
     return res.getReservations().get(0).getInstances().get(0).getPublicIpAddress();    
+  }
+  
+  public List<String[]> lookupIP(int userID) throws EucalyptusServiceException {    
+    AmazonEC2 ec2 = getEC2(_getKeys(userID));
+    List<String[]> ret = new ArrayList<String[]>();
+    try {
+      DescribeInstancesResult r = ec2.describeInstances();
+      for (Instance i: r.getReservations().get(0).getInstances()) {
+        String[] ip = new String[2];
+        ip[0] = i.getPrivateIpAddress();
+        ip[1] = i.getPublicIpAddress();
+        ret.add(ip);
+      }
+    } catch (Exception e) {
+      LOG.error(e);
+    }
+    return ret;
   }
 }

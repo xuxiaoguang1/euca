@@ -13,7 +13,9 @@ import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.shared.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.dictionary.DBTableName;
+import com.eucalyptus.webui.shared.resource.device.IPServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
+import com.eucalyptus.webui.shared.resource.device.status.IPType;
 
 public class EucaServiceWrapper {
 
@@ -117,6 +119,22 @@ public class EucaServiceWrapper {
     return aws.lookupInstanceForIp(session, userID, instanceID);
   }
     
+  public List<IPServiceInfo> getIPServices(int userID) throws EucalyptusServiceException {
+    List<IPServiceInfo> ret = new ArrayList<IPServiceInfo>();
+    List<String[]> addrs = aws.lookupIP(userID);
+    for (String[] a : addrs) {
+      IPServiceInfo e = new IPServiceInfo();
+      e.ip_addr = a[0];
+      e.ip_type = IPType.PRIVATE;
+      ret.add(e);
+      e = new IPServiceInfo();
+      e.ip_addr = a[1];
+      e.ip_type = IPType.PUBLIC;
+      ret.add(e);
+    }
+    return ret;
+  }
+  
   
   public void acquireResource(int serverID, TemplateInfo t) {
     
