@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.amazonaws.services.ec2.model.Address;
 import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
@@ -15,6 +16,7 @@ import com.eucalyptus.webui.shared.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.resource.device.IPServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
+import com.eucalyptus.webui.shared.resource.device.status.IPState;
 import com.eucalyptus.webui.shared.resource.device.status.IPType;
 
 public class EucaServiceWrapper {
@@ -115,20 +117,31 @@ public class EucaServiceWrapper {
     return -1;
   }
   
-  public String getServerIp(Session session, int userID, String instanceID) throws EucalyptusServiceException {
-    return aws.lookupInstanceForIp(session, userID, instanceID);
+  public String getServerIp(int userID, String instanceID) throws EucalyptusServiceException {
+    return aws.lookupInstanceForIp(userID, instanceID);
   }
     
   public List<IPServiceInfo> getIPServices(int userID) throws EucalyptusServiceException {
     List<IPServiceInfo> ret = new ArrayList<IPServiceInfo>();
-    List<String[]> addrs = aws.lookupIP(userID);
-    for (String[] a : addrs) {
+    List<Address> addrs = aws.lookupPublicAddress(userID);
+    for (Address a : addrs) {
       IPServiceInfo e = new IPServiceInfo();
-      e.ip_addr = a[0];
-      e.ip_type = IPType.PRIVATE;
-      ret.add(e);
-      e = new IPServiceInfo();
-      e.ip_addr = a[1];
+      e.ip_addr = a.getPublicIp();
+      String id = a.getInstanceId();
+      if (id.startsWith("nobody")) { 
+        e.is_state = IPState.STOP;
+      } else if (id.startsWith("available")) {
+        e.is_state = IPState.RESERVED;
+      } else {
+        e.is_state = IPState.INUSE;
+        IPServiceInfo _e = new IPServiceInfo();
+        String _id = id.substring(0, id.indexOf(' '));
+        String _ip = getServerIp(userID, _id);
+        _e.is_state = IPState.INUSE;
+        _e.ip_type = IPType.PRIVATE;
+        _e.ip_addr = _ip;
+        ret.add(_e);
+      }            
       e.ip_type = IPType.PUBLIC;
       ret.add(e);
     }

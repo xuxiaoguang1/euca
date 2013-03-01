@@ -35,6 +35,9 @@ public interface AwsService extends RemoteService {
 	
 	public ArrayList<String> lookupAvailablityZones(Session session) throws EucalyptusServiceException;
 	
+	public String allocateAddress(Session session, int userID) throws EucalyptusServiceException;
+	public void associateAddress(Session session, int userID, String ip, String instanceID) throws EucalyptusServiceException;
+	
 	//run via eucatools
 	
 	public SearchResult lookupNodeCtrl(Session session, String search, SearchRange range) throws EucalyptusServiceException;

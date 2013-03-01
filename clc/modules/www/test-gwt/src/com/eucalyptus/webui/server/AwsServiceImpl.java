@@ -20,6 +20,8 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.Address;
+import com.amazonaws.services.ec2.model.AssociateAddressRequest;
 import com.amazonaws.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
 import com.amazonaws.services.ec2.model.CreateKeyPairRequest;
 import com.amazonaws.services.ec2.model.CreateKeyPairResult;
@@ -895,34 +897,64 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
   
   public String lookupZoneWithInstanceId(Session session, int userID, String instanceID) throws EucalyptusServiceException {
     AmazonEC2 ec2 = verify(session, userID);
-    DescribeInstancesRequest req = new DescribeInstancesRequest(); 
-    req.setInstanceIds(Arrays.asList(instanceID));
-    DescribeInstancesResult res = ec2.describeInstances(req);
-    return res.getReservations().get(0).getInstances().get(0).getPlacement().getAvailabilityZone();
-  }
-  
-  public String lookupInstanceForIp(Session session, int userID, String instanceID)  throws EucalyptusServiceException {
-    AmazonEC2 ec2 = verify(session, userID);
-    DescribeInstancesRequest req = new DescribeInstancesRequest(); 
-    req.setInstanceIds(Arrays.asList(instanceID));
-    DescribeInstancesResult res = ec2.describeInstances(req);
-    return res.getReservations().get(0).getInstances().get(0).getPublicIpAddress();    
-  }
-  
-  public List<String[]> lookupIP(int userID) throws EucalyptusServiceException {    
-    AmazonEC2 ec2 = getEC2(_getKeys(userID));
-    List<String[]> ret = new ArrayList<String[]>();
     try {
-      DescribeInstancesResult r = ec2.describeInstances();
-      for (Instance i: r.getReservations().get(0).getInstances()) {
-        String[] ip = new String[2];
-        ip[0] = i.getPrivateIpAddress();
-        ip[1] = i.getPublicIpAddress();
-        ret.add(ip);
-      }
+      DescribeInstancesRequest req = new DescribeInstancesRequest(); 
+      req.setInstanceIds(Arrays.asList(instanceID));
+      DescribeInstancesResult res = ec2.describeInstances(req);
+      return res.getReservations().get(0).getInstances().get(0).getPlacement().getAvailabilityZone();
     } catch (Exception e) {
       LOG.error(e);
+      throw new EucalyptusServiceException("lookup zone error");
     }
-    return ret;
+  }
+  
+  public String lookupInstanceForIp(int userID, String instanceID)  throws EucalyptusServiceException {
+    AmazonEC2 ec2 = getEC2(_getKeys(userID));
+    try {
+      DescribeInstancesRequest req = new DescribeInstancesRequest(); 
+      req.setInstanceIds(Arrays.asList(instanceID));
+      DescribeInstancesResult res = ec2.describeInstances(req);
+      return res.getReservations().get(0).getInstances().get(0).getPublicIpAddress();
+    } catch (Exception e) {
+      LOG.error(e);
+      throw new EucalyptusServiceException("lookup instance ip error");
+    }
+  }
+  
+  public List<Address> lookupPublicAddress(int userID) throws EucalyptusServiceException {    
+    AmazonEC2 ec2 = getEC2(_getKeys(userID));
+    try {
+      return ec2.describeAddresses().getAddresses();
+    } catch (Exception e) {
+      LOG.error(e);
+      throw new EucalyptusServiceException("lookup public ip error");
+    }
+  }
+
+  @Override
+  public String allocateAddress(Session session, int userID)
+      throws EucalyptusServiceException {
+    AmazonEC2 ec2 = verify(session, userID);
+    try {
+      return ec2.allocateAddress().getPublicIp();
+    } catch (Exception e) {
+      LOG.error(e);
+      throw new EucalyptusServiceException("alloc error");
+    }
+  }
+
+  @Override
+  public void associateAddress(Session session, int userID, String ip,
+      String instanceID) throws EucalyptusServiceException {
+    AmazonEC2 ec2 = verify(session, userID);
+    try {
+      AssociateAddressRequest r = new AssociateAddressRequest();
+      r.setInstanceId(instanceID);
+      r.setPublicIp(ip);
+      ec2.associateAddress(r);
+    } catch (Exception e) {
+      LOG.error(e);
+      throw new EucalyptusServiceException("associate error");
+    }
   }
 }

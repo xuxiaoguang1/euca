@@ -105,4 +105,10 @@ public interface AwsServiceAsync {
   void lookupAvailablityZones(Session session,
       AsyncCallback<ArrayList<String>> callback);
 
+  void allocateAddress(Session session, int userID,
+      AsyncCallback<String> callback);
+
+  void associateAddress(Session session, int userID, String ip,
+      String instanceID, AsyncCallback<Void> callback);
+
 }
