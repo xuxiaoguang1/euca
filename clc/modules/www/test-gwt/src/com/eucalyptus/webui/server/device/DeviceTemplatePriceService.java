@@ -50,8 +50,6 @@ public class DeviceTemplatePriceService {
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
 			new SearchResultFieldDesc(false, "8%", new ClientMessage("Total(Y/D)", "单价"),
 					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(false, "8%", new ClientMessage("CPU Name", "CPU名称"),
-            		TableDisplay.MANDATORY, Type.TEXT, false, false),
     		new SearchResultFieldDesc(false, "8%", new ClientMessage("CPU Total", "CPU数量"),
             		TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(false, "8%", new ClientMessage("CPU Price(Y/D)", "CPU单价(元/天)"),
@@ -77,7 +75,6 @@ public class DeviceTemplatePriceService {
 		switch (range.getSortField()) {
 		case CellTableColumns.TEMPLATE_PRICE.TEMPLATE_NAME: return DBTable.TEMPLATE.TEMPLATE_NAME;
         case CellTableColumns.TEMPLATE_PRICE.TEMPLATE_PRICE_DESC: return DBTable.TEMPLATE_PRICE.TEMPLATE_PRICE_DESC;
-        case CellTableColumns.TEMPLATE_PRICE.TEMPLATE_CPU_NAME: return DBTable.TEMPLATE.TEMPLATE_CPU;
         case CellTableColumns.TEMPLATE_PRICE.TEMPLATE_CPU_NCPUS: return DBTable.TEMPLATE.TEMPLATE_NCPUS;
         case CellTableColumns.TEMPLATE_PRICE.TEMPLATE_CPU_PRICE: return DBTable.TEMPLATE_PRICE.TEMPLATE_PRICE_CPU;
         case CellTableColumns.TEMPLATE_PRICE.TEMPLATE_MEM_TOTAL: return DBTable.TEMPLATE.TEMPLATE_MEM;
@@ -107,7 +104,6 @@ public class DeviceTemplatePriceService {
                 	int tp_id = DBData.getInt(rs, TEMPLATE_PRICE.TEMPLATE_PRICE_ID);
     				String template_name = DBData.getString(rs, TEMPLATE.TEMPLATE_NAME);
     				String tp_desc = DBData.getString(rs, TEMPLATE_PRICE.TEMPLATE_PRICE_DESC);
-    				String template_cpu = DBData.getString(rs, TEMPLATE.TEMPLATE_CPU);
     				int template_ncpus = DBData.getInt(rs, TEMPLATE.TEMPLATE_NCPUS);
     				double tp_cpu = DBData.getDouble(rs, TEMPLATE_PRICE.TEMPLATE_PRICE_CPU);
     				long template_mem = DBData.getLong(rs, TEMPLATE.TEMPLATE_MEM);
@@ -126,7 +122,6 @@ public class DeviceTemplatePriceService {
                     row.setColumn(CellTableColumns.TEMPLATE_PRICE.RESERVED_INDEX, index + 1);
                     row.setColumn(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_NAME, template_name);
                     row.setColumn(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_PRICE_DESC, tp_desc);
-                    row.setColumn(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_CPU_NAME, template_cpu);
                     row.setColumn(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_CPU_NCPUS, template_ncpus);
                     row.setColumn(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_CPU_PRICE, tp_cpu);
                     row.setColumn(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_MEM_TOTAL, template_mem);

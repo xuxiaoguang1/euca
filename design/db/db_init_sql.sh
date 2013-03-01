@@ -256,23 +256,19 @@ for ((i=0;i<10;i++)) do
     command insert into template \( \
         template_name, \
         template_desc, \
-        template_cpu, \
         template_ncpus, \
         template_mem, \
         template_disk, \
         template_bw, \
-        template_image, \
         template_creationtime, \
         template_modifiedtime\)
         values \( \
         \"name$i\", \
         \"\", \
-        \"cpu0\", \
         2, \
         $mem, \
         $disk, \
         32, \
-        \"image$i\", \
         \"2012-07-10\"\)
 done
 

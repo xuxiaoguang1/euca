@@ -208,16 +208,14 @@ public class CellTableColumns {
         public static final int RESERVED_INDEX = 2;
     	public static final int TEMPLATE_NAME = 3;
     	public static final int TEMPLATE_DESC = 4;
-    	public static final int TEMPLATE_CPU = 5;
-    	public static final int TEMPLATE_NCPUS = 6;
-    	public static final int TEMPLATE_MEM = 7;
-    	public static final int TEMPLATE_DISK = 8;
-    	public static final int TEMPLATE_BW = 9;
-    	public static final int TEMPLATE_IMAGE = 10;
-    	public static final int TEMPLATE_CREATIONTIME = 11;
-    	public static final int TEMPLATE_MODIFIEDTIME = 12;
+    	public static final int TEMPLATE_NCPUS = 5;
+    	public static final int TEMPLATE_MEM = 6;
+    	public static final int TEMPLATE_DISK = 7;
+    	public static final int TEMPLATE_BW = 8;
+    	public static final int TEMPLATE_CREATIONTIME = 9;
+    	public static final int TEMPLATE_MODIFIEDTIME = 10;
     	
-    	public static final int COLUMN_SIZE = 13;
+    	public static final int COLUMN_SIZE = 11;
     	
     }
     
@@ -244,19 +242,18 @@ public class CellTableColumns {
         public static final int TEMPLATE_NAME = 3;
         public static final int TEMPLATE_PRICE_DESC = 4;
         public static final int TEMPLATE_PRICE_TOTAL = 5;
-        public static final int TEMPLATE_CPU_NAME = 6;
-        public static final int TEMPLATE_CPU_NCPUS = 7;
-        public static final int TEMPLATE_CPU_PRICE = 8; 
-        public static final int TEMPLATE_MEM_TOTAL = 9;
-        public static final int TEMPLATE_MEM_PRICE = 10;
-        public static final int TEMPLATE_DISK_TOTAL = 11;
-        public static final int TEMPLATE_DISK_PRICE = 12;
-        public static final int TEMPLATE_BW_TOTAL = 13;
-        public static final int TEMPLATE_BW_PRICE = 14;
-        public static final int TEMPLATE_PRICE_CREATIONTIME = 15;
-        public static final int TEMPLATE_PRICE_MODIFIEDTIME = 16;
+        public static final int TEMPLATE_CPU_NCPUS = 6;
+        public static final int TEMPLATE_CPU_PRICE = 7; 
+        public static final int TEMPLATE_MEM_TOTAL = 8;
+        public static final int TEMPLATE_MEM_PRICE = 9;
+        public static final int TEMPLATE_DISK_TOTAL = 10;
+        public static final int TEMPLATE_DISK_PRICE = 11;
+        public static final int TEMPLATE_BW_TOTAL = 12;
+        public static final int TEMPLATE_BW_PRICE = 13;
+        public static final int TEMPLATE_PRICE_CREATIONTIME = 14;
+        public static final int TEMPLATE_PRICE_MODIFIEDTIME = 15;
         
-        public static final int COLUMN_SIZE = 17;
+        public static final int COLUMN_SIZE = 16;
         
     }
     

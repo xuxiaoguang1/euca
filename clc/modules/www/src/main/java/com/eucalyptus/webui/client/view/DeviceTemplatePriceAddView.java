@@ -12,7 +12,7 @@ public interface DeviceTemplatePriceAddView extends IsWidget {
 	
 	void setTemplates(Map<String, Integer> template_map);
 	
-	void setTemplate(int template_id, String template_name, String cpu_name, int ncpus, long mem_size, long disk_size, int bw_size);
+	void setTemplate(int template_id, String template_name, int ncpus, long mem_size, long disk_size, int bw_size);
 	
 	public interface Presenter {
 		

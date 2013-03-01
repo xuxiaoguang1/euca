@@ -20,7 +20,6 @@ import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.LongBox;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.uibinder.client.UiField;
 
@@ -33,7 +32,7 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
 	
 	@UiField ListBox templateName;
 	@UiField TextArea templatePriceDesc;
-	@UiField TextBox cpuName;
+	@UiField IntegerBox cpuSize;
 	@UiField DoubleBox cpuPrice;
 	@UiField LongBox memSize;
 	@UiField DoubleBox memPrice;
@@ -143,7 +142,6 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
 	}
 	
 	private void resetTemplateDetail(boolean all) {
-		cpuName.setText("");
 		memSize.setText("");
 		diskSize.setText("");
 		bwSize.setText("");
@@ -185,16 +183,14 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
     }
 
     @Override
-    public void setTemplate(int template_id, String template_name, String cpu_name, int ncpus, long mem_size, long disk_size, int bw_size) {
+    public void setTemplate(int template_id, String template_name, int ncpus, long mem_size, long disk_size, int bw_size) {
         if (getTemplateID() == template_id) {
 			this.template_id = template_id;
 			this.ncpus = ncpus;
 			this.mem_size = mem_size;
 			this.disk_size = disk_size;
 			this.bw_size = bw_size;
-			StringBuilder sb = new StringBuilder();
-	        sb.append("CPU: ").append(cpu_name).append(" x ").append(ncpus);
-			cpuName.setText(sb.toString());
+	        cpuSize.setValue(ncpus);
 			memSize.setValue(mem_size);
 			diskSize.setValue(disk_size);
 			bwSize.setValue(bw_size);

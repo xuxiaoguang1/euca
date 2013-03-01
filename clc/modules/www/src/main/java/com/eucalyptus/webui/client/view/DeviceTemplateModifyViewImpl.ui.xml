@@ -42,13 +42,13 @@
 	<ui:with field="global"
 		type="com.eucalyptus.webui.client.view.GlobalResources" />
 
-	<g:DockLayoutPanel width="654px" height="340px">
+	<g:DockLayoutPanel width="644px" height="250px">
 		<g:center>
 		<g:VerticalPanel horizontalAlignment="ALIGN_LEFT" styleName="{style.background}" verticalAlignment="ALIGN_TOP">
-			<g:HTMLPanel width="650px">
+			<g:HTMLPanel width="640px">
 				<table>
 					<colgroup width="30px" />
-					<colgroup width="590px" />
+					<colgroup width="580px" />
 					<colgroup width="30px" />
 					<tbody>
 						<tr height="10px" />
@@ -81,7 +81,7 @@
 					</tbody>
 				</table>
 			</g:HTMLPanel>
-			<g:AbsolutePanel height="230px" width="640px">
+			<g:AbsolutePanel height="200px" width="640px">
 				<g:at left="30" top="5">
 					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM">模板名称</g:Anchor>
 				</g:at>
@@ -95,21 +95,15 @@
 					<g:TextArea styleName="{style.textArea}" height="2.4EM" width="33EM" ui:field="templateDesc"/>
 				</g:at>
 				<g:at left="30" top="80">
-					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM" text="CPU名称"/>
+					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM" text="CPU数量"/>
 				</g:at>
 				<g:at left="150" top="77">
-					<g:TextBox height="1.4EM" width="12EM" ui:field="templateCPU"/>
+					<g:ListBox height="1.8EM" width="12.2EM" ui:field="templateNCPUs"/>
 				</g:at>
 				<g:at left="350" top="80">
-					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="9EM" text="x"/>
-				</g:at>
-				<g:at left="380" top="77">
-					<g:ListBox height="1.8EM" width="8EM" ui:field="templateNCPUs"/>
-				</g:at>
-				<g:at left="30" top="110">
 					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM" text="内存(MB)"/>
 				</g:at>
-				<g:at left="150" top="107">
+				<g:at left="445" top="77">
 					<g:LongBox height="1.4EM" width="12EM" ui:field="templateMem" alignment="RIGHT"/>
 				</g:at>
 				<g:at left="350" top="110">
@@ -118,24 +112,18 @@
 				<g:at left="445" top="107">
 					<g:LongBox height="1.4EM" width="12EM" ui:field="templateDisk" alignment="RIGHT"/>
 				</g:at>
-				<g:at left="30" top="140">
+				<g:at left="30" top="110">
 					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM" text="带宽(KB)"/>
 				</g:at>
-				<g:at left="150" top="137">
+				<g:at left="150" top="107">
 					<g:IntegerBox height="1.4EM" width="12EM" ui:field="templateBW" alignment="RIGHT"/>
 				</g:at>
-				<g:at left="350" top="140">
-					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="9EM" text="镜像名称"/>
-				</g:at>
-				<g:at left="445" top="137">
-					<g:TextBox height="1.4EM" width="12EM" ui:field="templateImage"/>
-				</g:at>
-				<g:at left="432" top="180" style="font-size:90%;">
+				<g:at left="432" top="150" style="font-size:90%;">
 					<g:Anchor styleName="{global.buttonCss.button}"
 						horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonOK">确&nbsp;定
 					</g:Anchor>
 				</g:at>
-				<g:at left="510" top="180" style="font-size:90%;">
+				<g:at left="510" top="150" style="font-size:90%;">
 					<g:Anchor styleName="{global.buttonCss.button}"
 						horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonCancel">取&nbsp;消
 					</g:Anchor>

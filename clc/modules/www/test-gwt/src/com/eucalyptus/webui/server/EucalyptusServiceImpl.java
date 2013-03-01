@@ -1114,13 +1114,13 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 	
 	@Override
-    public void createDeviceTemplateService(Session session, String template_name, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image) throws EucalyptusServiceException {
-		DeviceTemplateService.getInstance().createTemplate(session, template_name, template_desc, template_cpu, template_ncpus, template_mem, template_disk, template_bw, template_image);
+    public void createDeviceTemplateService(Session session, String template_name, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw) throws EucalyptusServiceException {
+		DeviceTemplateService.getInstance().createTemplate(session, template_name, template_desc, template_ncpus, template_mem, template_disk, template_bw);
     }
 	
 	@Override
-	public void modifyDeviceTemplateService(Session session, int template_id, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image) throws EucalyptusServiceException {
-		DeviceTemplateService.getInstance().modifyTempalte(session, template_id, template_desc, template_cpu, template_ncpus, template_mem, template_disk, template_bw, template_image);
+	public void modifyDeviceTemplateService(Session session, int template_id, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw) throws EucalyptusServiceException {
+		DeviceTemplateService.getInstance().modifyTempalte(session, template_id, template_desc, template_ncpus, template_mem, template_disk, template_bw);
 	}
 	
 	@Override

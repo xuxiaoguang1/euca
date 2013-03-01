@@ -24,7 +24,7 @@ public class DeviceTemplatePriceModifyViewImpl extends DialogBox implements Devi
 	
 	@UiField TextBox templateName;
 	@UiField TextArea templatePriceDesc;
-	@UiField TextBox cpuName;
+	@UiField IntegerBox cpuSize;
 	@UiField DoubleBox cpuPrice;
 	@UiField LongBox memSize;
 	@UiField DoubleBox memPrice;
@@ -98,7 +98,7 @@ public class DeviceTemplatePriceModifyViewImpl extends DialogBox implements Devi
 	}
 
     @Override
-    public void popup(int tp_id, String template_name, String tp_desc, String cpu_name,
+    public void popup(int tp_id, String template_name, String tp_desc,
             int ncpus, double tp_cpu, long mem_size, double tp_mem, long disk_size, double tp_disk,
             int bw_size, double bw_price) {
         this.template_price_id = tp_id;
@@ -108,9 +108,7 @@ public class DeviceTemplatePriceModifyViewImpl extends DialogBox implements Devi
         this.bw_size = bw_size;
         templateName.setText(template_name);
         templatePriceDesc.setText(tp_desc);
-        StringBuilder sb = new StringBuilder();
-        sb.append("CPU: ").append(cpu_name).append(" x ").append(ncpus);
-        cpuName.setText(sb.toString());
+        cpuSize.setValue(ncpus);
         cpuPrice.setValue(tp_cpu);
         memSize.setValue(mem_size);
         memPrice.setValue(tp_mem);

@@ -105,17 +105,10 @@ public class DeviceTemplateActivity extends DeviceActivity implements DeviceTemp
 					templateAddView.setPresenter(new DeviceTemplateAddView.Presenter() {
 						
 						@Override
-						public boolean onOK(String template_name, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image) {
+						public boolean onOK(String template_name, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw) {
 							if (template_name == null || template_name.isEmpty()) {
                                 StringBuilder sb = new StringBuilder();
                                 sb.append(new ClientMessage("Invalid Template Name: ", "模板名称非法")).append(" = (null).").append("\n");
-                                sb.append(new ClientMessage("Please try again.", "请重试."));
-                                Window.alert(sb.toString());
-                                return false;
-                            }
-							if (template_cpu == null || template_cpu.isEmpty()) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("Invalid CPU Name: ", "CPU名称非法")).append(" = (null).").append("\n");
                                 sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
@@ -148,7 +141,7 @@ public class DeviceTemplateActivity extends DeviceActivity implements DeviceTemp
 								Window.alert(sb.toString());
 								return false;
 							}
-							getBackendService().createDeviceTemplateService(getSession(), template_name, template_desc, template_cpu, template_ncpus, template_mem, template_disk, template_bw, template_image, new AsyncCallback<Void>() {
+							getBackendService().createDeviceTemplateService(getSession(), template_name, template_desc, template_ncpus, template_mem, template_disk, template_bw, new AsyncCallback<Void>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
@@ -167,23 +160,6 @@ public class DeviceTemplateActivity extends DeviceActivity implements DeviceTemp
 							return true;
 						}
 
-						@Override
-						public void lookupCPUNames() {
-							getBackendService().lookupDeviceCPUNames(getSession(), new AsyncCallback<List<String>>() {
-
-								@Override
-								public void onFailure(Throwable caught) {
-									onBackendServiceFailure(caught);
-								}
-
-								@Override
-								public void onSuccess(List<String> cpu_name_list) {
-									templateAddView.setCPUNameList(cpu_name_list);
-								}
-								
-							});
-						}
-						
 					});
 				}
 				templateAddView.popup();
@@ -205,7 +181,7 @@ public class DeviceTemplateActivity extends DeviceActivity implements DeviceTemp
 						templateModifyView.setPresenter(new DeviceTemplateModifyView.Presenter() {
 							
 							@Override
-							public boolean onOK(int template_id, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image) {
+							public boolean onOK(int template_id, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw) {
 							    if (template_ncpus <= 0) {
 	                                StringBuilder sb = new StringBuilder();
 	                                sb.append(new ClientMessage("Invalid CPU Total: ", "CPU数量非法")).append(" = ").append(template_ncpus).append(".").append("\n");
@@ -234,7 +210,7 @@ public class DeviceTemplateActivity extends DeviceActivity implements DeviceTemp
 	                                Window.alert(sb.toString());
 	                                return false;
 	                            }
-	                            getBackendService().modifyDeviceTemplateService(getSession(), template_id, template_desc, template_cpu, template_ncpus, template_mem, template_disk, template_bw, template_image, new AsyncCallback<Void>() {
+	                            getBackendService().modifyDeviceTemplateService(getSession(), template_id, template_desc, template_ncpus, template_mem, template_disk, template_bw, new AsyncCallback<Void>() {
 
                                     @Override
                                     public void onFailure(Throwable caught) {
@@ -267,7 +243,7 @@ public class DeviceTemplateActivity extends DeviceActivity implements DeviceTemp
 
                         @Override
                         public void onSuccess(TemplateInfo info) {
-                            templateModifyView.popup(template_id, info.template_name, info.template_desc, info.template_cpu, info.template_ncpus, info.template_mem, info.template_disk, info.template_bw, info.template_image);
+                            templateModifyView.popup(template_id, info.template_name, info.template_desc, info.template_ncpus, info.template_mem, info.template_disk, info.template_bw);
                         }
                         
 					});

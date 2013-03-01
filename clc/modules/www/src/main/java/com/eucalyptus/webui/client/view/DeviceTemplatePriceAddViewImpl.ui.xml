@@ -95,10 +95,10 @@
 					<g:TextArea styleName="{style.textArea}" height="2.4EM" width="33EM" ui:field="templatePriceDesc"/>
 				</g:at>
 				<g:at left="30" top="80">
-					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM" text="CPU名称"/>
+					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="6EM" text="CPU数量"/>
 				</g:at>
 				<g:at left="150" top="77">
-					<g:TextBox height="1.4EM" width="10EM" ui:field="cpuName" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
+					<g:IntegerBox height="1.4EM" width="10EM" ui:field="cpuSize" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
 				</g:at>
 				<g:at left="320" top="80">
 					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="9EM" text="单价(元/天)"/>

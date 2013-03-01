@@ -316,12 +316,10 @@ class DBTableTemplate extends DBTable {
 	public final DBTableColumn TEMPLATE_ID = new DBTableColumn(this, "template_id");
 	public final DBTableColumn TEMPLATE_NAME = new DBTableColumn(this, "template_name");
 	public final DBTableColumn TEMPLATE_DESC = new DBTableColumn(this, "template_desc");
-	public final DBTableColumn TEMPLATE_CPU = new DBTableColumn(this, "template_cpu");
 	public final DBTableColumn TEMPLATE_NCPUS = new DBTableColumn(this, "template_ncpus");
 	public final DBTableColumn TEMPLATE_MEM = new DBTableColumn(this, "template_mem");
 	public final DBTableColumn TEMPLATE_DISK = new DBTableColumn(this, "template_disk");
 	public final DBTableColumn TEMPLATE_BW = new DBTableColumn(this, "template_bw");
-	public final DBTableColumn TEMPLATE_IMAGE = new DBTableColumn(this, "template_image");
 	public final DBTableColumn TEMPLATE_CREATIONTIME = new DBTableColumn(this, "template_creationtime");
 	public final DBTableColumn TEMPLATE_MODIFIEDTIME = new DBTableColumn(this, "template_modifiedtime");
 	

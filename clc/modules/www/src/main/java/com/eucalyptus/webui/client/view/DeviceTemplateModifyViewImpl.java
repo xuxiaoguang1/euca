@@ -22,12 +22,10 @@ public class DeviceTemplateModifyViewImpl extends DialogBox implements DeviceTem
 	
 	@UiField TextBox templateName;
 	@UiField TextArea templateDesc;
-	@UiField TextBox templateCPU;
 	@UiField ListBox templateNCPUs;
 	@UiField LongBox templateMem;
 	@UiField LongBox templateDisk;
 	@UiField IntegerBox templateBW;
-	@UiField TextBox templateImage;
 	
 	public DeviceTemplateModifyViewImpl() {
 		super(false);
@@ -41,10 +39,6 @@ public class DeviceTemplateModifyViewImpl extends DialogBox implements DeviceTem
 	
 	private String getTemplateDesc() {
 		return getInputText(templateDesc);
-	}
-	
-	private String getTemplateCPU() {
-		return getInputText(templateCPU);
 	}
 	
 	private int getTemplateNCPUs() {
@@ -61,18 +55,6 @@ public class DeviceTemplateModifyViewImpl extends DialogBox implements DeviceTem
 	
 	private int getTemplateBW() {
 		return templateBW.getValue();
-	}
-	
-	private String getTemplateImage() {
-		return getInputText(templateImage);
-	}
-	
-	private String getInputText(TextBox textbox) {
-		String text = textbox.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
 	}
 	
 	private String getInputText(TextArea textarea) {
@@ -93,22 +75,20 @@ public class DeviceTemplateModifyViewImpl extends DialogBox implements DeviceTem
 	private int template_id;
 	
 	@Override
-	public void popup(int template_id, String template_name, String template_desc, String template_cpu, int template_ncpus, long template_mem, long template_disk, int template_bw, String template_image) {
+	public void popup(int template_id, String template_name, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw) {
 		this.template_id = template_id;
 		templateName.setText(template_name);
 		templateDesc.setText(template_desc);
-		templateCPU.setText(template_cpu);
 		templateNCPUs.setSelectedIndex(template_ncpus - 1);
 		templateMem.setValue(template_mem);;
 		templateDisk.setValue(template_disk);;
 		templateBW.setValue(template_bw);;
-		templateImage.setText(template_image);;
 		show();
     }
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(template_id, getTemplateDesc(), getTemplateCPU(), getTemplateNCPUs(), getTemplateMem(), getTemplateDisk(), getTemplateBW(), getTemplateImage())) {
+		if (presenter.onOK(template_id, getTemplateDesc(), getTemplateNCPUs(), getTemplateMem(), getTemplateDisk(), getTemplateBW())) {
 			hide();
 		}
 	}
