@@ -215,33 +215,21 @@ public interface EucalyptusServiceAsync {
     void createDeviceCPU(Session session, String cpu_name, String cpu_desc, int cpu_total, int server_id, AsyncCallback<Void> callback);
     void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total, AsyncCallback<Void> callback);
     void deleteDeviceCPU(Session session, List<Integer> cpu_ids, AsyncCallback<Void> callback);
-    void lookupDeviceCPUNames(Session session, AsyncCallback<List<String>> callback);
-    void lookupDeviceCPUNamesByServerID(Session session, int server_id, AsyncCallback<Map<String, Integer>> callback);
     void lookupDeviceCPUByID(Session session, int cpu_id, AsyncCallback<CPUInfo> callback);
     
     void lookupDeviceMemoryByDate(Session session, SearchRange range, MemoryState ms_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
     void lookupDeviceMemoryCounts(Session session, AsyncCallback<Map<Integer, Long>> callback);
     void createDeviceMemory(Session session, String mem_name, String mem_desc, long mem_size, int server_id, AsyncCallback<Void> callback);
-    void createDeviceMemoryService(Session session, String ms_desc, long ms_size, MemoryState ms_state, Date ms_starttime, Date ms_endtime, int mem_id, int user_id, AsyncCallback<Void> callback);
     void modifyDeviceMemory(Session session, int mem_id, String mem_desc, long mem_size, AsyncCallback<Void> callback);
-    void modifyDeviceMemoryService(Session session, int ms_id, String ms_desc, long ms_size, Date ms_starttime, Date ms_endtime, AsyncCallback<Void> callback);
     void deleteDeviceMemory(Session session, List<Integer> mem_ids, AsyncCallback<Void> callback);
-    void deleteDeviceMemoryService(Session session, List<Integer> ms_ids, AsyncCallback<Void> callback);
-    void lookupDeviceMemoryNamesByServerID(Session session, int server_id, AsyncCallback<Map<String, Integer>> callback);
     void lookupDeviceMemoryByID(Session session, int mem_id, AsyncCallback<MemoryInfo> callback);
-    void lookupDeviceMemoryServiceByID(Session session, int ms_id, AsyncCallback<MemoryServiceInfo> callback);
     
     void lookupDeviceDiskByDate(Session session, SearchRange range, DiskState disk_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
     void lookupDeviceDiskCounts(Session session, AsyncCallback<Map<Integer, Long>> callback);
     void createDeviceDisk(Session session, String disk_name, String disk_desc, long disk_size, int server_id, AsyncCallback<Void> callback);
-    void createDeviceDiskService(Session session, String ds_desc, long ds_size, DiskState ds_state, Date ds_starttime, Date ds_endtime, int disk_id, int user_id, AsyncCallback<Void> callback);
     void modifyDeviceDisk(Session session, int disk_id, String disk_desc, long disk_size, AsyncCallback<Void> callback);
-    void modifyDeviceDiskService(Session session, int ds_id, String ds_desc, long ds_size, Date ds_starttime, Date ds_endtime, AsyncCallback<Void> callback);
     void deleteDeviceDisk(Session session, List<Integer> disk_ids, AsyncCallback<Void> callback);
-    void deleteDeviceDiskService(Session session, List<Integer> ds_ids, AsyncCallback<Void> callback);
-    void lookupDeviceDiskNamesByServerID(Session session, int server_id, AsyncCallback<Map<String, Integer>> callback);
     void lookupDeviceDiskByID(Session session, int disk_id, AsyncCallback<DiskInfo> callback);
-    void lookupDeviceDiskServiceByID(Session session, int ds_id, AsyncCallback<DiskServiceInfo> callback);
 
     void lookupDeviceIPByDate(Session session, SearchRange range, IPType ip_type, IPState ip_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
 	void lookupDeviceIPCounts(Session session, IPType ip_type, AsyncCallback<Map<Integer, Integer>> callback);

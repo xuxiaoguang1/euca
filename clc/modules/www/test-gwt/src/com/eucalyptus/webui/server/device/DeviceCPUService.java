@@ -204,36 +204,6 @@ public class DeviceCPUService {
         }
     }
     
-    public List<String> lookupCPUNames() throws EucalyptusServiceException {
-    	Connection conn = null;
-        try {
-            conn = DBProcWrapper.getConnection();
-            return DeviceCPUDBProcWrapper.lookupCPUNames(conn);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            throw new EucalyptusServiceException(e);
-        }
-        finally {
-            DBProcWrapper.close(conn);
-        }
-    }
-    
-    public Map<String, Integer> lookupCPUNamesByServerID(int server_id) throws EucalyptusServiceException {
-        Connection conn = null;
-        try {
-            conn = DBProcWrapper.getConnection();
-            return DeviceCPUDBProcWrapper.lookupCPUNamesByServerID(conn, server_id);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            throw new EucalyptusServiceException(e);
-        }
-        finally {
-            DBProcWrapper.close(conn);
-        }
-    }
-    
     public Map<Integer, Integer> lookupCPUCounts(Session session) throws EucalyptusServiceException {
         Connection conn = null;
         try {
@@ -656,19 +626,6 @@ public class DeviceCPUService {
 class DeviceCPUDBProcWrapper {
     
     private static final Logger log = Logger.getLogger(DeviceCPUDBProcWrapper.class.getName());
-    
-    public static List<String> lookupCPUNames(Connection conn) throws Exception {
-        DBTableCPU CPU = DBTable.CPU;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT DISTINCT(").append(CPU.CPU_NAME).append(")");
-        sb.append(" FROM ").append(CPU).append(" WHERE 1=1");
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        List<String> result = new LinkedList<String>();
-        while (rs.next()) {
-        	result.add(rs.getString(1));
-        }
-        return result;
-    }
     
     public static Map<String, Integer> lookupCPUNamesByServerID(Connection conn, int server_id) throws Exception {
         DBTableCPU CPU = DBTable.CPU;

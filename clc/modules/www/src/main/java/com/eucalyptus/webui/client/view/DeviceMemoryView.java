@@ -26,21 +26,9 @@ public interface DeviceMemoryView extends IsWidget, CanDisplaySearchResult, Clea
         
         public void onDeleteMemory();
         
-        public void onAddMemoryService();
-        
-        public void onModifyMemoryService();
-        
-        public void onDeleteMemoryService();
-        
         public boolean canDeleteMemory();
         
         public boolean canModifyMemory();
-        
-        public boolean canAddMemoryService();
-        
-        public boolean canDeleteMemoryService();
-        
-        public boolean canModifyMemoryService();
         
         public void updateSearchResult(Date dateBegin, Date dateEnd);
         

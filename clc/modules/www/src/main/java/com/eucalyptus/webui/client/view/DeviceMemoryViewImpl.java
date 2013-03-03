@@ -39,9 +39,6 @@ public class DeviceMemoryViewImpl extends Composite implements DeviceMemoryView 
     @UiField Anchor buttonAddMemory;
     @UiField Anchor buttonDeleteMemory;
     @UiField Anchor buttonModifyMemory;
-    @UiField Anchor buttonAddMemoryService;
-    @UiField Anchor buttonDeleteMemoryService;
-    @UiField Anchor buttonModifyMemoryService;
     @UiField Anchor buttonClearSelection;
     @UiField DeviceDateBox dateBegin;
     @UiField DeviceDateBox dateEnd;
@@ -156,11 +153,8 @@ public class DeviceMemoryViewImpl extends Composite implements DeviceMemoryView 
     private void updateSearchResultButtonStatus() {
         int size = selection.getSelectedSet().size();
         buttonAddMemory.setEnabled(true);
-        buttonAddMemoryService.setEnabled(size == 1 && presenter.canAddMemoryService());
         buttonDeleteMemory.setEnabled(size != 0 && presenter.canDeleteMemory());
-        buttonDeleteMemoryService.setEnabled(size != 0 && presenter.canDeleteMemoryService());
         buttonModifyMemory.setEnabled(size == 1 && presenter.canModifyMemory());
-        buttonModifyMemoryService.setEnabled(size == 1 && presenter.canModifyMemoryService());
         buttonClearSelection.setEnabled(size != 0);
     }
     
@@ -305,13 +299,6 @@ public class DeviceMemoryViewImpl extends Composite implements DeviceMemoryView 
         }
     }
     
-    @UiHandler("buttonAddMemoryService")
-    void onButtonAddMemoryService(ClickEvent event) {
-        if (buttonAddMemoryService.isEnabled()) {
-            presenter.onAddMemoryService();
-        }
-    }
-    
     @UiHandler("buttonDeleteMemory")
     void onButtonDeleteMemory(ClickEvent event) {
         if (buttonDeleteMemory.isEnabled()) {
@@ -319,24 +306,10 @@ public class DeviceMemoryViewImpl extends Composite implements DeviceMemoryView 
         }
     }
     
-    @UiHandler("buttonDeleteMemoryService")
-    void onButtonDeleteMemoryService(ClickEvent event) {
-        if (buttonDeleteMemoryService.isEnabled()) {
-            presenter.onDeleteMemoryService();
-        }
-    }
-    
     @UiHandler("buttonModifyMemory")
     void handleButtonModifyMemory(ClickEvent event) {
         if (buttonModifyMemory.isEnabled()) {
             presenter.onModifyMemory();
-        }
-    }
-    
-    @UiHandler("buttonModifyMemoryService")
-    void handleButtonModifyMemoryService(ClickEvent event) {
-        if (buttonModifyMemoryService.isEnabled()) {
-            presenter.onModifyMemoryService();
         }
     }
     

@@ -776,33 +776,21 @@ public interface EucalyptusService extends RemoteService {
     void createDeviceCPU(Session session, String cpu_name, String cpu_desc, int cpu_total, int server_id) throws EucalyptusServiceException ;
     void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total) throws EucalyptusServiceException;
     void deleteDeviceCPU(Session session, List<Integer> cpu_ids) throws EucalyptusServiceException;
-    List<String> lookupDeviceCPUNames(Session session) throws EucalyptusServiceException;
-    Map<String, Integer> lookupDeviceCPUNamesByServerID(Session session, int server_id) throws EucalyptusServiceException;
     public CPUInfo lookupDeviceCPUByID(Session session, int cpu_id) throws EucalyptusServiceException;
     
     SearchResult lookupDeviceMemoryByDate(Session session, SearchRange range, MemoryState ms_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
     Map<Integer, Long> lookupDeviceMemoryCounts(Session session) throws EucalyptusServiceException;
     void createDeviceMemory(Session session, String mem_name, String mem_desc, long mem_size, int server_id) throws EucalyptusServiceException;
-    void createDeviceMemoryService(Session session, String ms_desc, long ms_size, MemoryState ms_state, Date ms_starttime, Date ms_endtime, int mem_id, int user_id) throws EucalyptusServiceException;
     void modifyDeviceMemory(Session session, int mem_id, String mem_desc, long mem_size) throws EucalyptusServiceException;
-    void modifyDeviceMemoryService(Session session, int ms_id, String ms_desc, long ms_size, Date ms_starttime, Date ms_endtime) throws EucalyptusServiceException;
     void deleteDeviceMemory(Session session, List<Integer> mem_ids) throws EucalyptusServiceException;
-    void deleteDeviceMemoryService(Session session, List<Integer> ms_ids) throws EucalyptusServiceException;
-    Map<String, Integer> lookupDeviceMemoryNamesByServerID(Session session, int server_id) throws EucalyptusServiceException;
     MemoryInfo lookupDeviceMemoryByID(Session session, int mem_id) throws EucalyptusServiceException;
-    MemoryServiceInfo lookupDeviceMemoryServiceByID(Session session, int ms_id) throws EucalyptusServiceException;
     
     SearchResult lookupDeviceDiskByDate(Session session, SearchRange range, DiskState ds_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
     Map<Integer, Long> lookupDeviceDiskCounts(Session session) throws EucalyptusServiceException;
     void createDeviceDisk(Session session, String disk_name, String disk_desc, long disk_size, int server_id) throws EucalyptusServiceException;
-    void createDeviceDiskService(Session session, String ds_desc, long ds_size, DiskState ds_state, Date ds_starttime, Date ds_endtime, int disk_id, int user_id) throws EucalyptusServiceException;
     void modifyDeviceDisk(Session session, int disk_id, String disk_desc, long disk_size) throws EucalyptusServiceException;
-    void modifyDeviceDiskService(Session session, int ds_id, String ds_desc, long ds_size, Date ds_starttime, Date ds_endtime) throws EucalyptusServiceException;
     void deleteDeviceDisk(Session session, List<Integer> disk_ids) throws EucalyptusServiceException;
-    void deleteDeviceDiskService(Session session, List<Integer> ds_ids) throws EucalyptusServiceException;
-    Map<String, Integer> lookupDeviceDiskNamesByServerID(Session session, int server_id) throws EucalyptusServiceException;
     DiskInfo lookupDeviceDiskByID(Session session, int disk_id) throws EucalyptusServiceException;
-    DiskServiceInfo lookupDeviceDiskServiceByID(Session session, int ds_id) throws EucalyptusServiceException;
     
     SearchResult lookupDeviceIPByDate(Session session, SearchRange range, IPType ip_type, IPState ip_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
     Map<Integer, Integer> lookupDeviceIPCounts(Session session, IPType ip_type) throws EucalyptusServiceException;
