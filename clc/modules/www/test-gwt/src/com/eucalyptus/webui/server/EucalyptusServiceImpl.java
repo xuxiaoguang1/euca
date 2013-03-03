@@ -872,28 +872,13 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     }
     
     @Override
-    public void createDeviceCPUService(Session session, String cs_desc, int cs_size, CPUState cs_state, Date cs_starttime, Date cs_endtime, int cpu_id, int user_id) throws EucalyptusServiceException {
-    	DeviceCPUService.getInstance().createCPUService(false, session, cs_desc, cs_size, cs_state, cs_starttime, cs_endtime, cpu_id, user_id);
-    }
-    
-    @Override
     public void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total) throws EucalyptusServiceException {
     	DeviceCPUService.getInstance().modifyCPU(false, session, cpu_id, cpu_desc, cpu_total);
     }
     
     @Override
-    public void modifyDeviceCPUService(Session session, int cs_id, String cs_desc, int cs_size, Date cs_starttime, Date cs_endtime) throws EucalyptusServiceException {
-    	DeviceCPUService.getInstance().modifyCPUService(false, session, cs_id, cs_desc, cs_size, cs_starttime, cs_endtime);
-    }
-    
-    @Override
     public void deleteDeviceCPU(Session session, List<Integer> cpu_ids) throws EucalyptusServiceException {
     	DeviceCPUService.getInstance().deleteCPU(false, session, cpu_ids);
-    }
-    
-    @Override
-    public void deleteDeviceCPUService(Session session, List<Integer> cs_ids) throws EucalyptusServiceException {
-    	DeviceCPUService.getInstance().deleteCPUService(false, session, cs_ids);
     }
     
     @Override
@@ -909,11 +894,6 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     @Override
     public CPUInfo lookupDeviceCPUByID(Session session, int cpu_id) throws EucalyptusServiceException {
     	return DeviceCPUService.getInstance().lookupCPUInfoByID(cpu_id);
-    }
-    
-    @Override
-    public CPUServiceInfo lookupDeviceCPUServiceByID(Session session, int cs_id) throws EucalyptusServiceException {
-    	return DeviceCPUService.getInstance().lookupCPUServiceInfoByID(cs_id);
     }
     
     @Override

@@ -213,15 +213,11 @@ public interface EucalyptusServiceAsync {
     void lookupDeviceCPUByDate(Session session, SearchRange range, CPUState cs_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
     void lookupDeviceCPUCounts(Session session, AsyncCallback<Map<Integer, Integer>> callback);
     void createDeviceCPU(Session session, String cpu_name, String cpu_desc, int cpu_total, int server_id, AsyncCallback<Void> callback);
-    void createDeviceCPUService(Session session, String cs_desc, int cs_size, CPUState cs_state, Date cs_starttime, Date cs_endtime, int cpu_id, int user_id, AsyncCallback<Void> callback);
     void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total, AsyncCallback<Void> callback);
-    void modifyDeviceCPUService(Session session, int cs_id, String cs_desc, int cs_size, Date cs_starttime, Date cs_endtime, AsyncCallback<Void> callback);
     void deleteDeviceCPU(Session session, List<Integer> cpu_ids, AsyncCallback<Void> callback);
-    void deleteDeviceCPUService(Session session, List<Integer> cs_ids, AsyncCallback<Void> callback);
     void lookupDeviceCPUNames(Session session, AsyncCallback<List<String>> callback);
     void lookupDeviceCPUNamesByServerID(Session session, int server_id, AsyncCallback<Map<String, Integer>> callback);
     void lookupDeviceCPUByID(Session session, int cpu_id, AsyncCallback<CPUInfo> callback);
-    void lookupDeviceCPUServiceByID(Session session, int cs_id, AsyncCallback<CPUServiceInfo> callback);
     
     void lookupDeviceMemoryByDate(Session session, SearchRange range, MemoryState ms_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
     void lookupDeviceMemoryCounts(Session session, AsyncCallback<Map<Integer, Long>> callback);

@@ -774,15 +774,11 @@ public interface EucalyptusService extends RemoteService {
     SearchResult lookupDeviceCPUByDate(Session session, SearchRange range, CPUState cs_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
     Map<Integer, Integer> lookupDeviceCPUCounts(Session session) throws EucalyptusServiceException;
     void createDeviceCPU(Session session, String cpu_name, String cpu_desc, int cpu_total, int server_id) throws EucalyptusServiceException ;
-    void createDeviceCPUService(Session session, String cs_desc, int cs_size, CPUState cs_state, Date cs_starttime, Date cs_endtime, int cpu_id, int user_id) throws EucalyptusServiceException;
     void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total) throws EucalyptusServiceException;
-    void modifyDeviceCPUService(Session session, int cs_id, String cs_desc, int cs_size, Date cs_starttime, Date cs_endtime) throws EucalyptusServiceException;
     void deleteDeviceCPU(Session session, List<Integer> cpu_ids) throws EucalyptusServiceException;
-    void deleteDeviceCPUService(Session session, List<Integer> cs_ids) throws EucalyptusServiceException;
     List<String> lookupDeviceCPUNames(Session session) throws EucalyptusServiceException;
     Map<String, Integer> lookupDeviceCPUNamesByServerID(Session session, int server_id) throws EucalyptusServiceException;
     public CPUInfo lookupDeviceCPUByID(Session session, int cpu_id) throws EucalyptusServiceException;
-    public CPUServiceInfo lookupDeviceCPUServiceByID(Session session, int cs_id) throws EucalyptusServiceException;
     
     SearchResult lookupDeviceMemoryByDate(Session session, SearchRange range, MemoryState ms_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
     Map<Integer, Long> lookupDeviceMemoryCounts(Session session) throws EucalyptusServiceException;

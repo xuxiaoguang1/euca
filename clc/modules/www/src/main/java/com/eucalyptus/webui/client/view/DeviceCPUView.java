@@ -26,21 +26,9 @@ public interface DeviceCPUView extends IsWidget, CanDisplaySearchResult, Clearab
 		
 		public void onDeleteCPU();
 		
-		public void onAddCPUService();
-		
-		public void onModifyCPUService();
-		
-		public void onDeleteCPUService();
-		
 		public boolean canDeleteCPU();
 		
 		public boolean canModifyCPU();
-		
-		public boolean canAddCPUService();
-		
-		public boolean canDeleteCPUService();
-		
-		public boolean canModifyCPUService();
 		
 		public void updateSearchResult(Date dateBegin, Date dateEnd);
 		

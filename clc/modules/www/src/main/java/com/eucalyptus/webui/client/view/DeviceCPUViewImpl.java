@@ -39,9 +39,6 @@ public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
 	@UiField Anchor buttonAddCPU;
 	@UiField Anchor buttonDeleteCPU;
 	@UiField Anchor buttonModifyCPU;
-	@UiField Anchor buttonAddCPUService;
-	@UiField Anchor buttonDeleteCPUService;
-	@UiField Anchor buttonModifyCPUService;
 	@UiField Anchor buttonClearSelection;
 	@UiField DeviceDateBox dateBegin;
 	@UiField DeviceDateBox dateEnd;
@@ -151,11 +148,8 @@ public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
 	private void updateSearchResultButtonStatus() {
 		int size = selection.getSelectedSet().size();
 		buttonAddCPU.setEnabled(true);
-		buttonAddCPUService.setEnabled(size == 1 && presenter.canAddCPUService());
 		buttonDeleteCPU.setEnabled(size != 0 && presenter.canDeleteCPU());
-		buttonDeleteCPUService.setEnabled(size != 0 && presenter.canDeleteCPUService());
 		buttonModifyCPU.setEnabled(size == 1 && presenter.canModifyCPU());
-		buttonModifyCPUService.setEnabled(size == 1 && presenter.canModifyCPUService());
 		buttonClearSelection.setEnabled(size != 0);
 	}
 	
@@ -300,13 +294,6 @@ public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
 		}
 	}
 	
-	@UiHandler("buttonAddCPUService")
-	void onButtonAddCPUService(ClickEvent event) {
-		if (buttonAddCPUService.isEnabled()) {
-			presenter.onAddCPUService();
-		}
-	}
-	
 	@UiHandler("buttonDeleteCPU")
 	void onButtonDeleteCPU(ClickEvent event) {
 		if (buttonDeleteCPU.isEnabled()) {
@@ -314,24 +301,10 @@ public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
 		}
 	}
 	
-	@UiHandler("buttonDeleteCPUService")
-	void onButtonDeleteCPUService(ClickEvent event) {
-		if (buttonDeleteCPUService.isEnabled()) {
-			presenter.onDeleteCPUService();
-		}
-	}
-	
 	@UiHandler("buttonModifyCPU")
 	void handleButtonModifyCPU(ClickEvent event) {
 		if (buttonModifyCPU.isEnabled()) {
 			presenter.onModifyCPU();
-		}
-	}
-	
-	@UiHandler("buttonModifyCPUService")
-	void handleButtonModifyCPUService(ClickEvent event) {
-		if (buttonModifyCPUService.isEnabled()) {
-			presenter.onModifyCPUService();
 		}
 	}
 	
