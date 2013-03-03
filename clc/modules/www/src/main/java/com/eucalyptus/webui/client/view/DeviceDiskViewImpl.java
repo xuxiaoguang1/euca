@@ -39,9 +39,6 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
     @UiField Anchor buttonAddDisk;
     @UiField Anchor buttonDeleteDisk;
     @UiField Anchor buttonModifyDisk;
-    @UiField Anchor buttonAddDiskService;
-    @UiField Anchor buttonDeleteDiskService;
-    @UiField Anchor buttonModifyDiskService;
     @UiField Anchor buttonClearSelection;
     @UiField DeviceDateBox dateBegin;
     @UiField DeviceDateBox dateEnd;
@@ -156,11 +153,8 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
     private void updateSearchResultButtonStatus() {
         int size = selection.getSelectedSet().size();
         buttonAddDisk.setEnabled(true);
-        buttonAddDiskService.setEnabled(size == 1 && presenter.canAddDiskService());
         buttonDeleteDisk.setEnabled(size != 0 && presenter.canDeleteDisk());
-        buttonDeleteDiskService.setEnabled(size != 0 && presenter.canDeleteDiskService());
         buttonModifyDisk.setEnabled(size == 1 && presenter.canModifyDisk());
-        buttonModifyDiskService.setEnabled(size == 1 && presenter.canModifyDiskService());
         buttonClearSelection.setEnabled(size != 0);
     }
     
@@ -305,13 +299,6 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
         }
     }
     
-    @UiHandler("buttonAddDiskService")
-    void onButtonAddDiskService(ClickEvent event) {
-        if (buttonAddDiskService.isEnabled()) {
-            presenter.onAddDiskService();
-        }
-    }
-    
     @UiHandler("buttonDeleteDisk")
     void onButtonDeleteDisk(ClickEvent event) {
         if (buttonDeleteDisk.isEnabled()) {
@@ -319,24 +306,10 @@ public class DeviceDiskViewImpl extends Composite implements DeviceDiskView {
         }
     }
     
-    @UiHandler("buttonDeleteDiskService")
-    void onButtonDeleteDiskService(ClickEvent event) {
-        if (buttonDeleteDiskService.isEnabled()) {
-            presenter.onDeleteDiskService();
-        }
-    }
-    
     @UiHandler("buttonModifyDisk")
     void handleButtonModifyDisk(ClickEvent event) {
         if (buttonModifyDisk.isEnabled()) {
             presenter.onModifyDisk();
-        }
-    }
-    
-    @UiHandler("buttonModifyDiskService")
-    void handleButtonModifyDiskService(ClickEvent event) {
-        if (buttonModifyDiskService.isEnabled()) {
-            presenter.onModifyDiskService();
         }
     }
     

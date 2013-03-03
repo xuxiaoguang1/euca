@@ -155,7 +155,6 @@
 									<td width="80px" />
 									<td width="80px" />
 									<td width="40px" />
-									<td width="40px" />
 									<td width="360px" />
 								</tr>
 								<tr>
@@ -169,7 +168,6 @@
 									<td>
 										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonModifyCPU" text="编辑CPU"/>
 									</td>
-									<td />
 									<td />
 									<td>
 										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonClearSelection" text="清空选择"/>

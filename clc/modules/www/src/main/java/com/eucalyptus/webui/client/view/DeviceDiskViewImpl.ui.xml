@@ -155,10 +155,6 @@
 									<td width="80px" />
 									<td width="80px" />
 									<td width="40px" />
-									<td width="80px" />
-									<td width="80px" />
-									<td width="80px" />
-									<td width="40px" />
 									<td width="360px" />
 								</tr>
 								<tr>
@@ -171,16 +167,6 @@
 									</td>
 									<td>
 										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonModifyDisk" text="编辑硬盘"/>
-									</td>
-									<td />
-									<td>
-										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonAddDiskService" text="添加服务"/>
-									</td>
-									<td>
-										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonDeleteDiskService" text="删除服务"/>
-									</td>
-									<td>
-										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonModifyDiskService" text="变更服务"/>
 									</td>
 									<td />
 									<td>

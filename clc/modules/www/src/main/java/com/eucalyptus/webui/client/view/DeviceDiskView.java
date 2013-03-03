@@ -26,21 +26,9 @@ public interface DeviceDiskView extends IsWidget, CanDisplaySearchResult, Cleara
         
         public void onDeleteDisk();
         
-        public void onAddDiskService();
-        
-        public void onModifyDiskService();
-        
-        public void onDeleteDiskService();
-        
         public boolean canDeleteDisk();
         
         public boolean canModifyDisk();
-        
-        public boolean canAddDiskService();
-        
-        public boolean canDeleteDiskService();
-        
-        public boolean canModifyDiskService();
         
         public void updateSearchResult(Date dateBegin, Date dateEnd);
         
