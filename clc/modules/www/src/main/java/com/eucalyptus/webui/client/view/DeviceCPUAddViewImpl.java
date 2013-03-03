@@ -14,7 +14,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -34,10 +33,6 @@ public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView 
 	
 	@UiField TextBox cpuName;
 	@UiField TextArea cpuDesc;
-	@UiField TextBox cpuVendor;
-	@UiField TextBox cpuModel;
-	@UiField DoubleBox cpuGHz;
-	@UiField DoubleBox cpuCache;
 	@UiField ListBox numList;
 	
 	private Map<String, Integer> areaMap = new HashMap<String, Integer>();
@@ -81,7 +76,7 @@ public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView 
             }
             
         });
-        for (int i = 1; i <= 64; i ++) {
+        for (int i = 1; i <= 1024; i ++) {
         	numList.addItem(Integer.toString(i));
         }
 		center();
@@ -186,22 +181,6 @@ public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView 
 		return getInputText(cpuDesc);
 	}
 	
-	private String getCPUVendor() {
-		return getInputText(cpuVendor);
-	}
-	
-	private String getCPUModel() {
-		return getInputText(cpuModel);
-	}
-	
-	private double getCPUGHz() {
-		return cpuGHz.getValue();
-	}
-	
-	private double getCPUCache() {
-		return cpuCache.getValue();
-	}
-	
 	private int getCPUTotal() {
 		return numList.getSelectedIndex() + 1;
 	}
@@ -269,10 +248,6 @@ public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView 
 		cpuName.setValue("");
 		cpuName.setValue("");
 		cpuDesc.setValue("");
-		cpuVendor.setValue("");
-		cpuModel.setValue("");
-		cpuGHz.setValue(0.0);
-		cpuCache.setValue(0.0);
 		areaNameList.clear();
 		roomNameList.clear();
 		cabinetNameList.clear();
@@ -284,7 +259,7 @@ public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView 
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(getCPUName(), getCPUDesc(), getCPUTotal(), getCPUVendor(), getCPUModel(), getCPUGHz(), getCPUCache(), getServerID())) {
+		if (presenter.onOK(getCPUName(), getCPUDesc(), getCPUTotal(), getServerID())) {
 			hide();
 		}
 	}

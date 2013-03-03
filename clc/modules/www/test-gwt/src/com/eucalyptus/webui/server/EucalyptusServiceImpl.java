@@ -20,13 +20,12 @@ import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.server.device.DeviceAccountService;
 import com.eucalyptus.webui.server.device.DeviceAreaService;
 import com.eucalyptus.webui.server.device.DeviceBWService;
-import com.eucalyptus.webui.server.device.DeviceCPUPriceService;
 import com.eucalyptus.webui.server.device.DeviceCPUService;
 import com.eucalyptus.webui.server.device.DeviceCabinetService;
 import com.eucalyptus.webui.server.device.DeviceDiskService;
 import com.eucalyptus.webui.server.device.DeviceIPService;
 import com.eucalyptus.webui.server.device.DeviceMemoryService;
-import com.eucalyptus.webui.server.device.DeviceOthersPriceService;
+import com.eucalyptus.webui.server.device.DeviceDevicePriceService;
 import com.eucalyptus.webui.server.device.DeviceRoomService;
 import com.eucalyptus.webui.server.device.DeviceServerService;
 import com.eucalyptus.webui.server.device.DeviceTemplatePriceService;
@@ -43,7 +42,6 @@ import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.resource.device.AreaInfo;
 import com.eucalyptus.webui.shared.resource.device.BWServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.CPUInfo;
-import com.eucalyptus.webui.shared.resource.device.CPUPriceInfo;
 import com.eucalyptus.webui.shared.resource.device.CPUServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.CabinetInfo;
 import com.eucalyptus.webui.shared.resource.device.DiskInfo;
@@ -51,7 +49,7 @@ import com.eucalyptus.webui.shared.resource.device.DiskServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.IPServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.MemoryInfo;
 import com.eucalyptus.webui.shared.resource.device.MemoryServiceInfo;
-import com.eucalyptus.webui.shared.resource.device.OthersPriceInfo;
+import com.eucalyptus.webui.shared.resource.device.DevicePriceInfo;
 import com.eucalyptus.webui.shared.resource.device.RoomInfo;
 import com.eucalyptus.webui.shared.resource.device.ServerInfo;
 import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
@@ -869,8 +867,8 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     }
     
     @Override
-    public void createDeviceCPU(Session session, String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, int server_id) throws EucalyptusServiceException {
-    	DeviceCPUService.getInstance().createCPU(false, session, cpu_name, cpu_desc, cpu_total, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, server_id);
+    public void createDeviceCPU(Session session, String cpu_name, String cpu_desc, int cpu_total, int server_id) throws EucalyptusServiceException {
+    	DeviceCPUService.getInstance().createCPU(false, session, cpu_name, cpu_desc, cpu_total, server_id);
     }
     
     @Override
@@ -879,8 +877,8 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     }
     
     @Override
-    public void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache) throws EucalyptusServiceException {
-    	DeviceCPUService.getInstance().modifyCPU(false, session, cpu_id, cpu_desc, cpu_total, cpu_vendor, cpu_model, cpu_ghz, cpu_cache);
+    public void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total) throws EucalyptusServiceException {
+    	DeviceCPUService.getInstance().modifyCPU(false, session, cpu_id, cpu_desc, cpu_total);
     }
     
     @Override
@@ -1132,65 +1130,45 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	public TemplateInfo lookupDeviceTemplateInfoByID(Session session, int template_id) throws EucalyptusServiceException {
 		return DeviceTemplateService.getInstance().lookupTemplateInfoByID(template_id);
 	}
+	
+	@Override
+	public DevicePriceInfo lookupDeviceCPUPrice(Session session) throws EucalyptusServiceException {
+	    return DeviceDevicePriceService.getInstance().lookupDevicePriceCPU();
+	}
 		
 	@Override
-	public SearchResult lookupDeviceCPUPriceByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
-	    return DeviceCPUPriceService.getInstance().lookupCPUPriceByDate(session, range, dateBegin, dateEnd);
-	}
-
-	@Override
-	public void createDeviceCPUPrice(Session session, String cpu_name, String cp_desc, double cp_price) throws EucalyptusServiceException {
-	    DeviceCPUPriceService.getInstance().createCPUPrice(session, cpu_name, cp_desc, cp_price);
-	}
-
-	@Override
-	public void modifyDeviceCPUPrice(Session session, int cp_id, String cp_desc, double cp_price) throws EucalyptusServiceException {
-	    DeviceCPUPriceService.getInstance().modifyCPUPrice(session, cp_id, cp_desc, cp_price);
+	public DevicePriceInfo lookupDeviceMemoryPrice(Session session) throws EucalyptusServiceException {
+	    return DeviceDevicePriceService.getInstance().lookupDevicePriceMemory();
 	}
 	
 	@Override
-    public void deleteDeviceCPUPrice(Session session, List<Integer> cp_ids) throws EucalyptusServiceException {
-	    DeviceCPUPriceService.getInstance().deleteCPUPrice(session, cp_ids);
+    public DevicePriceInfo lookupDeviceDiskPrice(Session session) throws EucalyptusServiceException {
+        return DeviceDevicePriceService.getInstance().lookupDevicePriceDisk();
     }
 	
 	@Override
-	public List<String> lookupDeviceCPUNamesWithoutPrice(Session session) throws EucalyptusServiceException {
-	    return DeviceCPUPriceService.getInstance().lookupCPUsWithoutPrice();
-	}
-	
-	@Override
-	public CPUPriceInfo lookupDeviceCPUPriceByID(Session session, int cp_id) throws EucalyptusServiceException {
-	    return DeviceCPUPriceService.getInstance().lookupCPUPriceByID(cp_id);
-	}
-	
-	@Override
-	public OthersPriceInfo lookupDeviceMemoryPrice(Session session) throws EucalyptusServiceException {
-	    return DeviceOthersPriceService.getInstance().lookupOthersPriceMemory();
-	}
-	
-	@Override
-    public OthersPriceInfo lookupDeviceDiskPrice(Session session) throws EucalyptusServiceException {
-        return DeviceOthersPriceService.getInstance().lookupOthersPriceDisk();
+    public DevicePriceInfo lookupDeviceBWPrice(Session session) throws EucalyptusServiceException {
+        return DeviceDevicePriceService.getInstance().lookupDevicePriceBandwidth();
     }
 	
 	@Override
-    public OthersPriceInfo lookupDeviceBWPrice(Session session) throws EucalyptusServiceException {
-        return DeviceOthersPriceService.getInstance().lookupOthersPriceBandwidth();
+    public void modifyDeviceCPUPrice(Session session, String op_desc, double op_price) throws EucalyptusServiceException {
+        DeviceDevicePriceService.getInstance().modifyDevicePriceCPU(session, op_desc, op_price);
     }
 	
 	@Override
 	public void modifyDeviceMemoryPrice(Session session, String op_desc, double op_price) throws EucalyptusServiceException {
-	    DeviceOthersPriceService.getInstance().modifyOthersPriceMemory(session, op_desc, op_price);
+	    DeviceDevicePriceService.getInstance().modifyDevicePriceMemory(session, op_desc, op_price);
 	}
 	
 	@Override
     public void modifyDeviceDiskPrice(Session session, String op_desc, double op_price) throws EucalyptusServiceException {
-        DeviceOthersPriceService.getInstance().modifyOthersPriceDisk(session, op_desc, op_price);
+        DeviceDevicePriceService.getInstance().modifyDevicePriceDisk(session, op_desc, op_price);
     }
 	
 	@Override
     public void modifyDeviceBWPrice(Session session, String op_desc, double op_price) throws EucalyptusServiceException {
-        DeviceOthersPriceService.getInstance().modifyOthersPriceBandwidth(session, op_desc, op_price);
+        DeviceDevicePriceService.getInstance().modifyDevicePriceBandwidth(session, op_desc, op_price);
     }
 	
 	@Override

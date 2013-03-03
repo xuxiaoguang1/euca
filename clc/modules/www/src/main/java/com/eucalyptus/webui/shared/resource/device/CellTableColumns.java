@@ -90,14 +90,10 @@ public class CellTableColumns {
         public static final int CPU_SERVICE_CREATIONTIME = 15;
         public static final int CPU_SERVICE_MODIFIEDTIME = 16;
         public static final int CPU_DESC = 17;
-        public static final int CPU_VENDOR = 18;
-        public static final int CPU_MODEL = 19;
-        public static final int CPU_GHZ = 20;
-        public static final int CPU_CACHE = 21;
-        public static final int CPU_CREATIONTIME = 22;
-        public static final int CPU_MODIFIEDTIME = 23;
+        public static final int CPU_CREATIONTIME = 18;
+        public static final int CPU_MODIFIEDTIME = 19;
         
-        public static final int COLUMN_SIZE = 24;
+        public static final int COLUMN_SIZE = 20;
         
     }
     

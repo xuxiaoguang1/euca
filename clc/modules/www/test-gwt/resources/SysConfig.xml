@@ -1001,16 +1001,10 @@
 		</link>
 			
 		<link>
-			<name>CPU定价</name>
+			<name>设备定价</name>
 			<desc>device</desc>
 			<image>device</image>
-			<query_type_enum>device_cpu_price</query_type_enum>
-		</link>
-		<link>
-			<name>其他设备定价</name>
-			<desc>device</desc>
-			<image>device</image>
-			<query_type_enum>device_others_price</query_type_enum>
+			<query_type_enum>device_device_price</query_type_enum>
 		</link>
 		<link>
 			<name>模版定价</name>
@@ -1136,9 +1130,8 @@
 				<link>原模板管理</link>
 			</tag>
 			<tag name="定价管理">
-				<link>CPU定价</link>
-				<link>其他设备定价</link>
 				<link>模版定价</link>
+				<link>设备定价</link>
 			</tag>
 			<tag name="组件管理">
 				<link>节点控制器管理</link>

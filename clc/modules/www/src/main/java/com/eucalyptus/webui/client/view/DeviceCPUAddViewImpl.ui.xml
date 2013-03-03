@@ -33,7 +33,7 @@
 	<ui:with field="global"
 		type="com.eucalyptus.webui.client.view.GlobalResources" />
 		
-	<g:DockLayoutPanel width="614px" height="365px">
+	<g:DockLayoutPanel width="614px" height="305px">
 		<g:center>
 			<g:VerticalPanel horizontalAlignment="ALIGN_LEFT" styleName="{style.background}" verticalAlignment="ALIGN_TOP">
 				<g:HTMLPanel width="610px">
@@ -72,7 +72,7 @@
 						</tbody>
 					</table>
 				</g:HTMLPanel>
-				<g:AbsolutePanel height="318px" width="610px">
+				<g:AbsolutePanel height="258px" width="610px">
 					<g:at left="30" top="5">
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">所属区域</g:Anchor>
 					</g:at>
@@ -109,42 +109,18 @@
 					<g:at left="120" top="152">
 						<g:TextArea styleName="{style.textArea}" height="2.4EM" width="32EM" ui:field="cpuDesc"/>
 					</g:at>
-					<g:at left="30" top="200">
-						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">CPU厂家</g:Anchor>
-					</g:at>
-					<g:at left="120" top="197">
-						<g:TextBox ui:field="cpuVendor" maxLength="50" height="1.4EM" width="12EM"/>
-					</g:at>
-					<g:at left="30" top="230">
-						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">CPU类型</g:Anchor>
-					</g:at>
-					<g:at left="120" top="227">
-						<g:TextBox ui:field="cpuModel" maxLength="50" height="1.4EM" width="12EM"/>
-					</g:at>
-					<g:at left="330" top="200">
-						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">主频(GHz)</g:Anchor>
-					</g:at>
-					<g:at left="420" top="197">
-						<g:DoubleBox ui:field="cpuGHz" maxLength="50" height="1.4EM" width="10.5EM"/>
-					</g:at>
-					<g:at left="330" top="230">
-						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">缓存(MB)</g:Anchor>
-					</g:at>
-					<g:at left="420" top="227">
-						<g:DoubleBox ui:field="cpuCache" maxLength="50" height="1.4EM" width="10.5EM"/>
-					</g:at>
-					<g:at left="50" top="260">
+					<g:at left="50" top="200">
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">数量</g:Anchor>
 					</g:at>
-					<g:at left="120" top="255">
+					<g:at left="120" top="195">
 						<g:ListBox ui:field="numList" height="1.8EM" width="8EM"/>
 					</g:at>
-					<g:at left="400" top="270" style="font-size:90%;">
+					<g:at left="400" top="210" style="font-size:90%;">
 						<g:Anchor styleName="{global.buttonCss.button}"
 							horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonOK">确&nbsp;定
 						</g:Anchor>
 					</g:at>
-					<g:at left="480" top="270" style="font-size:90%;">
+					<g:at left="480" top="210" style="font-size:90%;">
 						<g:Anchor styleName="{global.buttonCss.button}"
 							horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonCancel">取&nbsp;消
 						</g:Anchor>

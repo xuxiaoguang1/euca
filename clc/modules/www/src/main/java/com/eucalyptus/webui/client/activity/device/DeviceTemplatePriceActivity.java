@@ -18,6 +18,7 @@ import com.eucalyptus.webui.client.view.DeviceTemplatePriceModifyViewImpl;
 import com.eucalyptus.webui.client.view.DeviceTemplatePriceView;
 import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
+import com.eucalyptus.webui.shared.resource.device.DevicePriceInfo;
 import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
 import com.eucalyptus.webui.shared.resource.device.TemplatePriceInfo;
 import com.google.gwt.user.client.Window;
@@ -98,10 +99,71 @@ public class DeviceTemplatePriceActivity extends DeviceActivity implements Devic
 		getView().setSelectedRow(row);
 	}
 	
+	private double default_tp_cpu = 0;
+	private double default_tp_mem = 0;
+	private double default_tp_disk = 0;
+	private double default_tp_bw = 0;
+	
+	private void reload() {
+        getBackendService().lookupDeviceCPUPrice(getSession(), new AsyncCallback<DevicePriceInfo>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                onBackendServiceFailure(caught);
+            }
+
+            @Override
+            public void onSuccess(DevicePriceInfo info) {
+                default_tp_cpu = info.op_price;
+            }
+            
+        });
+        getBackendService().lookupDeviceMemoryPrice(getSession(), new AsyncCallback<DevicePriceInfo>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                onBackendServiceFailure(caught);
+            }
+
+            @Override
+            public void onSuccess(DevicePriceInfo info) {
+                default_tp_mem = info.op_price;
+            }
+            
+        });
+        getBackendService().lookupDeviceDiskPrice(getSession(), new AsyncCallback<DevicePriceInfo>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                onBackendServiceFailure(caught);
+            }
+
+            @Override
+            public void onSuccess(DevicePriceInfo info) {
+                default_tp_disk = info.op_price;
+            }
+            
+        });
+        getBackendService().lookupDeviceBWPrice(getSession(), new AsyncCallback<DevicePriceInfo>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                onBackendServiceFailure(caught);
+            }
+
+            @Override
+            public void onSuccess(DevicePriceInfo info) {
+                default_tp_bw = info.op_price;
+            }
+            
+        });
+	}
+	
 	@Override
 	public void onAddTemplatePrice() {
 		try {
 		    if (Window.confirm(new ClientMessage("Create a new Template Price.", "确认创建新模板定价.").toString())) {
+		        reload();
 				if (templatePriceAddView == null) {
 					templatePriceAddView = new DeviceTemplatePriceAddViewImpl();
 					templatePriceAddView.setPresenter(new DeviceTemplatePriceAddView.Presenter() {
@@ -183,7 +245,7 @@ public class DeviceTemplatePriceActivity extends DeviceActivity implements Devic
 
                                 @Override
                                 public void onSuccess(TemplateInfo info) {
-                                    templatePriceAddView.setTemplate(template_id, info.template_name, info.template_ncpus, info.template_mem, info.template_disk, info.template_bw);
+                                    templatePriceAddView.setTemplate(template_id, info.template_name, info.template_ncpus, default_tp_cpu, info.template_mem, default_tp_mem, info.template_disk, default_tp_disk, info.template_bw, default_tp_bw);
                                 }
                                 
 						    });

@@ -16,8 +16,6 @@ import com.eucalyptus.webui.client.view.DeviceAreaView;
 import com.eucalyptus.webui.client.view.DeviceAreaViewImpl;
 import com.eucalyptus.webui.client.view.DeviceBWView;
 import com.eucalyptus.webui.client.view.DeviceBWViewImpl;
-import com.eucalyptus.webui.client.view.DeviceCPUPriceView;
-import com.eucalyptus.webui.client.view.DeviceCPUPriceViewImpl;
 import com.eucalyptus.webui.client.view.DeviceCPUView;
 import com.eucalyptus.webui.client.view.DeviceCPUViewImpl;
 import com.eucalyptus.webui.client.view.DeviceCabinetView;
@@ -28,8 +26,8 @@ import com.eucalyptus.webui.client.view.DeviceIPView;
 import com.eucalyptus.webui.client.view.DeviceIPViewImpl;
 import com.eucalyptus.webui.client.view.DeviceMemoryView;
 import com.eucalyptus.webui.client.view.DeviceMemoryViewImpl;
-import com.eucalyptus.webui.client.view.DeviceOthersPriceView;
-import com.eucalyptus.webui.client.view.DeviceOthersPriceViewImpl;
+import com.eucalyptus.webui.client.view.DeviceDevicePriceView;
+import com.eucalyptus.webui.client.view.DeviceDevicePriceView;
 import com.eucalyptus.webui.client.view.DeviceRoomView;
 import com.eucalyptus.webui.client.view.DeviceRoomViewImpl;
 import com.eucalyptus.webui.client.view.DeviceServerView;
@@ -97,8 +95,7 @@ public class ClientFactoryImpl implements ClientFactory {
 	private DeviceAreaView deviceAreaView;
 	private DeviceRoomView deviceRoomView;
 	private DeviceCabinetView deviceCabinetView;
-	private DeviceCPUPriceView deviceCPUPriceView;
-	private DeviceOthersPriceView deviceOthersPriceView;
+	private DeviceDevicePriceView deviceDevicePriceView;
 	private DeviceTemplatePriceView deviceTemplatePriceView;
 	private DeviceServerView deviceServerView;
 	private DeviceCPUView deviceCPUView;
@@ -458,14 +455,6 @@ public class ClientFactoryImpl implements ClientFactory {
 	}
 	
 	@Override
-	public DeviceCPUPriceView getDeviceCPUPriceView() {
-		if (deviceCPUPriceView == null) {
-			deviceCPUPriceView = new DeviceCPUPriceViewImpl();
-		}
-		return deviceCPUPriceView;
-	}
-	
-	@Override
 	public DeviceTemplatePriceView getDeviceTemplatePriceView() {
 	    if (deviceTemplatePriceView == null) {
 	        deviceTemplatePriceView = new DeviceTemplatePriceViewImpl();
@@ -474,11 +463,11 @@ public class ClientFactoryImpl implements ClientFactory {
 	}
 	
 	@Override
-	public DeviceOthersPriceView getDeviceOthersPriceView() {
-	    if (deviceOthersPriceView == null) {
-	        deviceOthersPriceView = new DeviceOthersPriceViewImpl();
+	public DeviceDevicePriceView getDeviceDevicePriceView() {
+	    if (deviceDevicePriceView == null) {
+	        deviceDevicePriceView = new DeviceDevicePriceViewImpl();
 	    }
-	    return deviceOthersPriceView;
+	    return deviceDevicePriceView;
 	}
 	
 	@Override

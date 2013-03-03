@@ -12,48 +12,48 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.uibinder.client.UiField;
 
-public class DeviceOthersPriceModifyViewImpl extends DialogBox implements DeviceOthersPriceModifyView {
+public class DeviceDevicePriceModifyViewImpl extends DialogBox implements DeviceDevicePriceModifyView {
 
-	private static DeviceOthersPriceModifyViewImplUiBinder uiBinder = GWT.create(DeviceOthersPriceModifyViewImplUiBinder.class);
+	private static DeviceDevicePriceModifyViewImplUiBinder uiBinder = GWT.create(DeviceDevicePriceModifyViewImplUiBinder.class);
 	
-	interface DeviceOthersPriceModifyViewImplUiBinder extends UiBinder<Widget, DeviceOthersPriceModifyViewImpl> {
+	interface DeviceDevicePriceModifyViewImplUiBinder extends UiBinder<Widget, DeviceDevicePriceModifyViewImpl> {
 	}
 
-	@UiField Label othersPriceTitle;
-	@UiField Anchor othersPriceUnit;
-	@UiField DoubleBox othersPrice;
-	@UiField TextArea othersPriceDesc;
+	@UiField Label devicePriceTitle;
+	@UiField Anchor devicePriceUnit;
+	@UiField DoubleBox devicePrice;
+	@UiField TextArea devicePriceDesc;
 
-	public DeviceOthersPriceModifyViewImpl() {
+	public DeviceDevicePriceModifyViewImpl() {
 		super(false);
 		setWidget(uiBinder.createAndBindUi(this));
 		center();
 		hide();
 	}
 	
-	private DeviceOthersPriceModifyView.Presenter presenter;
+	private DeviceDevicePriceModifyView.Presenter presenter;
 	
     @Override
     public void popup(String title, String price_unit, String op_desc, double op_price, Presenter presenter) {
         if (!isShowing()) {
-        	othersPriceTitle.setText(title);
-            othersPriceUnit.setText(price_unit);
+        	devicePriceTitle.setText(title);
+            devicePriceUnit.setText(price_unit);
             if (op_desc == null) {
                 op_desc = "";
             }
-            othersPriceDesc.setText(op_desc);
-            othersPrice.setValue(op_price);
+            devicePriceDesc.setText(op_desc);
+            devicePrice.setValue(op_price);
             this.presenter = presenter;
             show();
         }
     }
     
-    private double getOthersPriceValue() {
-        return othersPrice.getValue();
+    private double getDevicePriceValue() {
+        return devicePrice.getValue();
     }
     
-    private String getOthersPriceDesc() {
-        String text = othersPriceDesc.getText();
+    private String getDevicePriceDesc() {
+        String text = devicePriceDesc.getText();
         if (text == null) {
             return "";
         }
@@ -62,7 +62,7 @@ public class DeviceOthersPriceModifyViewImpl extends DialogBox implements Device
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-	    if (presenter.onOK(getOthersPriceDesc(), getOthersPriceValue())) {
+	    if (presenter.onOK(getDevicePriceDesc(), getDevicePriceValue())) {
 	        hide();
 	    }
 	}

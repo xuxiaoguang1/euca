@@ -133,7 +133,7 @@ public class DeviceCPUActivity extends DeviceActivity implements DeviceCPUView.P
 					cpuAddView.setPresenter(new DeviceCPUAddView.Presenter() {
 						
 						@Override
-						public boolean onOK(String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, int server_id) {
+						public boolean onOK(String cpu_name, String cpu_desc, int cpu_total, int server_id) {
 						    if (cpu_name == null || cpu_name.isEmpty()) {
                                 StringBuilder sb = new StringBuilder();
                                 sb.append(new ClientMessage("Invalid CPU Name: ", "CPU名称非法")).append(" = (null).").append("\n");
@@ -148,7 +148,7 @@ public class DeviceCPUActivity extends DeviceActivity implements DeviceCPUView.P
                                 Window.alert(sb.toString());
                                 return false;
                             }
-							getBackendService().createDeviceCPU(getSession(), cpu_name, cpu_desc, cpu_total, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, server_id, new AsyncCallback<Void>() {
+							getBackendService().createDeviceCPU(getSession(), cpu_name, cpu_desc, cpu_total, server_id, new AsyncCallback<Void>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
@@ -284,7 +284,7 @@ public class DeviceCPUActivity extends DeviceActivity implements DeviceCPUView.P
 				        cpuModifyView.setPresenter(new DeviceCPUModifyView.Presenter() {
                             
                             @Override
-                            public boolean onOK(int cpu_id, String cpu_desc, int cpu_total, int cs_used, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache) {
+                            public boolean onOK(int cpu_id, String cpu_desc, int cpu_total, int cs_used) {
                                 if (cpu_total <= 0 || cpu_total < cs_used) {
                                     StringBuilder sb = new StringBuilder();
                                     sb.append(new ClientMessage("Invalid CPU Total: ", "CPU数量非法")).append(" = ").append(cpu_total).append(".").append("\n");
@@ -292,7 +292,7 @@ public class DeviceCPUActivity extends DeviceActivity implements DeviceCPUView.P
                                     Window.alert(sb.toString());
                                     return false;
                                 }
-                                getBackendService().modifyDeviceCPU(getSession(), cpu_id, cpu_desc, cpu_total, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, new AsyncCallback<Void>() {
+                                getBackendService().modifyDeviceCPU(getSession(), cpu_id, cpu_desc, cpu_total, new AsyncCallback<Void>() {
 
                                     @Override
                                     public void onFailure(Throwable caught) {
@@ -326,7 +326,7 @@ public class DeviceCPUActivity extends DeviceActivity implements DeviceCPUView.P
 
                         @Override
                         public void onSuccess(final CPUInfo info) {
-                            cpuModifyView.popup(cpu_id, info.cpu_name, info.cpu_desc, info.cpu_total, info.cpu_total - info.cs_reserved, info.cpu_vendor, info.cpu_model, info.cpu_ghz, info.cpu_cache, server_name); 
+                            cpuModifyView.popup(cpu_id, info.cpu_name, info.cpu_desc, info.cpu_total, info.cpu_total - info.cs_reserved, server_name); 
                         }
                         
                     });

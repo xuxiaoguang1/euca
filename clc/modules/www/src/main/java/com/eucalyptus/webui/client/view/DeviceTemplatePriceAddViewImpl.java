@@ -183,7 +183,7 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
     }
 
     @Override
-    public void setTemplate(int template_id, String template_name, int ncpus, long mem_size, long disk_size, int bw_size) {
+    public void setTemplate(int template_id, String template_name, int ncpus, double tp_cpu, long mem_size, double tp_mem, long disk_size, double tp_disk, int bw_size, double tp_bw) {
         if (getTemplateID() == template_id) {
 			this.template_id = template_id;
 			this.ncpus = ncpus;
@@ -194,10 +194,10 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
 			memSize.setValue(mem_size);
 			diskSize.setValue(disk_size);
 			bwSize.setValue(bw_size);
-			cpuPrice.setValue(0.0);
-            memPrice.setValue(0.0);
-            diskPrice.setValue(0.0);
-            bwPrice.setValue(0.0);
+			cpuPrice.setValue(tp_cpu);
+            memPrice.setValue(tp_mem);
+            diskPrice.setValue(tp_disk);
+            bwPrice.setValue(tp_bw);
             totalPrice.setValue(0.0);
 			updateTotalPrice();
 		}

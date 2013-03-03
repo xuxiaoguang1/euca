@@ -62,7 +62,7 @@
 							<g:HTMLPanel>
 								<table>
 									<tr class="{style.top}">
-										<td>其他定价管理</td>
+										<td>设备定价管理</td>
 									</tr>
 								</table>
 							</g:HTMLPanel>
@@ -106,6 +106,22 @@
 						<td width="50EM">&nbsp;</td>
 						<td/>
 					</tr>
+                   <tr height="2EM">
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td><g:Anchor horizontalAlignment="ALIGN_CENTER" text="CPU"/></td>
+                        <td/>
+                        <td><g:DoubleBox alignment="RIGHT" width="8EM" height="1.4EM" readOnly="true" styleName="{style.box1}" ui:field="cpuPrice"/></td>
+                        <td/>
+                        <td><g:Anchor horizontalAlignment="ALIGN_LEFT" text=" 元/MB/天"/></td>
+                        <td/>
+                        <td><g:TextBox alignment="LEFT" width="24EM" height="1.4EM" readOnly="true" styleName="{style.textBox}" ui:field="cpuPriceDesc"/></td>
+                        <td/>
+                        <td><g:Label styleName="{style.box2}" ui:field="cpuPriceModifiedtime"/></td>
+                        <td/>
+                        <td><d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="5EM" text="编 辑" ui:field="cpuPriceModify"/></td>
+                    </tr>
 					<tr height="2EM">
 						<td>&nbsp;</td>
 					</tr>

@@ -3,7 +3,7 @@ package com.eucalyptus.webui.shared.resource.device;
 import java.io.Serializable;
 import java.util.Date;
 
-public class OthersPriceInfo implements Serializable {
+public class DevicePriceInfo implements Serializable {
 
     private static final long serialVersionUID = -8523479379621055990L;
     
@@ -12,11 +12,11 @@ public class OthersPriceInfo implements Serializable {
     public double op_price;
     public Date op_modifiedtime;
     
-    public OthersPriceInfo() {
+    public DevicePriceInfo() {
         /* do nothing */
     }
     
-    public OthersPriceInfo(String op_name, String op_desc, double op_price, Date op_modifiedtime) {
+    public DevicePriceInfo(String op_name, String op_desc, double op_price, Date op_modifiedtime) {
         this.op_name = op_name;
         this.op_desc = op_desc;
         this.op_price = op_price;

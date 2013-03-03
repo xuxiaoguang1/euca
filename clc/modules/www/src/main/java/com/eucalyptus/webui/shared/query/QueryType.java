@@ -51,8 +51,7 @@ public enum QueryType {
 	device_room,
 	device_cabinet,
 	
-	device_cpu_price,
-	device_others_price,
+	device_device_price,
 	device_template_price,
 	
 	res_stat,

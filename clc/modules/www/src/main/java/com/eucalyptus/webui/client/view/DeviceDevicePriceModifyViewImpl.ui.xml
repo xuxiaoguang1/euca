@@ -59,7 +59,7 @@
 										<tbody class="{style.title}">
 											<tr>
 												<td />
-												<td><g:Label text="编辑定价：" ui:field="othersPriceTitle"/></td>
+												<td><g:Label text="编辑定价：" ui:field="devicePriceTitle"/></td>
 												<td />
 											</tr>
 											<tr height="5px">
@@ -79,16 +79,16 @@
 			</g:HTMLPanel>
 			<g:AbsolutePanel height="158px" width="610px">
 				<g:at left="30" top="5">
-					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px" ui:field="othersPriceUnit" text="单价"/>
+					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px" ui:field="devicePriceUnit" text="单价"/>
 				</g:at>
 				<g:at left="150" top="2">
-					<g:DoubleBox height="1.4EM" width="28EM" ui:field="othersPrice"/>
+					<g:DoubleBox height="1.4EM" width="28EM" ui:field="devicePrice"/>
 				</g:at>
 				<g:at left="30" top="35">
 					<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">定价描述</g:Anchor>
 				</g:at>
 				<g:at left="150" top="32">
-					<g:TextArea height="2.4EM" width="28EM" styleName="{style.textArea}" ui:field="othersPriceDesc"/>
+					<g:TextArea height="2.4EM" width="28EM" styleName="{style.textArea}" ui:field="devicePriceDesc"/>
 				</g:at>
 				<g:at left="400" top="90" style="font-size:90%;">
 					<g:Anchor styleName="{global.buttonCss.button}"

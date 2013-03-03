@@ -237,10 +237,6 @@ public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
         addNode(descs, device, new ClientMessage("", "总数量"), CellTableColumns.CPU.CPU_TOTAL);
         addNode(descs, device, new ClientMessage("", "硬件描述"), CellTableColumns.CPU.CPU_DESC);
         addNode(descs, device, new ClientMessage("", "所属服务器"), CellTableColumns.CPU.SERVER_NAME);
-        addNode(descs, device, new ClientMessage("", "生产厂家"), CellTableColumns.CPU.CPU_VENDOR);
-        addNode(descs, device, new ClientMessage("", "产品型号"), CellTableColumns.CPU.CPU_MODEL);
-        addNode(descs, device, new ClientMessage("", "主频(GHz)"), CellTableColumns.CPU.CPU_GHZ);
-        addNode(descs, device, new ClientMessage("", "缓存大小(MB)"), CellTableColumns.CPU.CPU_CACHE);
         addNode(descs, device, new ClientMessage("", "添加时间"), CellTableColumns.CPU.CPU_CREATIONTIME);
         addNode(descs, device, new ClientMessage("", "修改时间"), CellTableColumns.CPU.CPU_MODIFIEDTIME);
         panel.reload();

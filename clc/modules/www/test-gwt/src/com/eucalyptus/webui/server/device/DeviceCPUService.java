@@ -80,14 +80,6 @@ public class DeviceCPUService {
             		TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(false, "0%", new ClientMessage("Desc(HW)", "硬件描述"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "0%", new ClientMessage("Vendor", "生产厂家"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "0%", new ClientMessage("Model", "产品型号"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "0%", new ClientMessage("Frequency", "主频(GHz)"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "0%", new ClientMessage("Cache", "缓存(MB)"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "0%", new ClientMessage("Create(HW)", "硬件添加时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "0%", new ClientMessage("Modify(HW)", "硬件修改时间"),
@@ -101,10 +93,6 @@ public class DeviceCPUService {
         case CellTableColumns.CPU.CPU_NAME: return DBTable.CPU.CPU_NAME;
         case CellTableColumns.CPU.CPU_TOTAL: return DBTable.CPU.CPU_TOTAL;
         case CellTableColumns.CPU.CPU_SERVICE_USED: return DBTable.CPU_SERVICE.CPU_SERVICE_USED;
-        case CellTableColumns.CPU.CPU_VENDOR: return DBTable.CPU.CPU_VENDOR;
-        case CellTableColumns.CPU.CPU_MODEL: return DBTable.CPU.CPU_MODEL;
-        case CellTableColumns.CPU.CPU_GHZ: return DBTable.CPU.CPU_GHZ;
-        case CellTableColumns.CPU.CPU_CACHE: return DBTable.CPU.CPU_CACHE;
         case CellTableColumns.CPU.CPU_CREATIONTIME: return DBTable.CPU.CPU_CREATIONTIME;
         case CellTableColumns.CPU.CPU_MODIFIEDTIME: return DBTable.CPU.CPU_MODIFIEDTIME;
         case CellTableColumns.CPU.CPU_SERVICE_STARTTIME: return DBTable.CPU_SERVICE.CPU_SERVICE_STARTTIME;
@@ -152,10 +140,6 @@ public class DeviceCPUService {
                     String cpu_desc = DBData.getString(rs, CPU.CPU_DESC);
                     int cpu_total = DBData.getInt(rs, CPU.CPU_TOTAL);
                     String server_name = DBData.getString(rs, SERVER.SERVER_NAME);
-                    String cpu_vendor = DBData.getString(rs, CPU.CPU_VENDOR);
-                    String cpu_model = DBData.getString(rs, CPU.CPU_MODEL);
-                    double cpu_ghz = DBData.getDouble(rs, CPU.CPU_GHZ);
-                    double cpu_cache = DBData.getDouble(rs, CPU.CPU_CACHE);
                     Date cpu_creationtime = DBData.getDate(rs, CPU.CPU_CREATIONTIME);
                     Date cpu_modifiedtime = DBData.getDate(rs, CPU.CPU_MODIFIEDTIME);
                     cs_state = CPUState.getCPUState(DBData.getInt(rs, CPU_SERVICE.CPU_SERVICE_STATE));
@@ -200,10 +184,6 @@ public class DeviceCPUService {
                     row.setColumn(CellTableColumns.CPU.CPU_SERVICE_CREATIONTIME, cs_creationtime);
                     row.setColumn(CellTableColumns.CPU.CPU_SERVICE_MODIFIEDTIME, cs_modifiedtime);
                     row.setColumn(CellTableColumns.CPU.CPU_DESC, cpu_desc);
-                    row.setColumn(CellTableColumns.CPU.CPU_VENDOR, cpu_vendor);
-                    row.setColumn(CellTableColumns.CPU.CPU_MODEL, cpu_model);
-                    row.setColumn(CellTableColumns.CPU.CPU_GHZ, cpu_ghz);
-                    row.setColumn(CellTableColumns.CPU.CPU_CACHE, cpu_cache);
                     row.setColumn(CellTableColumns.CPU.CPU_CREATIONTIME, cpu_creationtime);
                     row.setColumn(CellTableColumns.CPU.CPU_MODIFIEDTIME, cpu_modifiedtime);
                     rows.add(new SearchResultRow(row.toList()));
@@ -294,16 +274,12 @@ public class DeviceCPUService {
             String cpu_name = DBData.getString(rs, CPU.CPU_NAME);
             String cpu_desc = DBData.getString(rs, CPU.CPU_DESC);
             int cpu_total = DBData.getInt(rs, CPU.CPU_TOTAL);
-            String cpu_vendor = DBData.getString(rs, CPU.CPU_VENDOR);
-            String cpu_model = DBData.getString(rs, CPU.CPU_MODEL);
-            double cpu_ghz = DBData.getDouble(rs, CPU.CPU_GHZ);
-            double cpu_cache = DBData.getDouble(rs, CPU.CPU_CACHE);
             Date cpu_creationtime = DBData.getDate(rs, CPU.CPU_CREATIONTIME);
             Date cpu_modifiedtime = DBData.getDate(rs, CPU.CPU_MODIFIEDTIME);
             int server_id = DBData.getInt(rs, CPU.SERVER_ID);
             rs = DeviceCPUDBProcWrapper.lookupCPUServiceReservedByID(conn, false, cpu_id);
             int cs_reserved = rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString());
-            return new CPUInfo(cpu_id, cpu_name, cpu_desc, cpu_total, cs_reserved, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, cpu_creationtime, cpu_modifiedtime, server_id);
+            return new CPUInfo(cpu_id, cpu_name, cpu_desc, cpu_total, cs_reserved, cpu_creationtime, cpu_modifiedtime, server_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -340,7 +316,7 @@ public class DeviceCPUService {
         }
     }
     
-    public void createCPU(boolean force, Session session, String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, int server_id) throws EucalyptusServiceException {
+    public void createCPU(boolean force, Session session, String cpu_name, String cpu_desc, int cpu_total, int server_id) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -352,7 +328,7 @@ public class DeviceCPUService {
         try {
             conn = DBProcWrapper.getConnection();
             conn.setAutoCommit(false);
-            int cpu_id = DeviceCPUDBProcWrapper.createCPU(conn, cpu_name, cpu_desc, cpu_total, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, server_id);
+            int cpu_id = DeviceCPUDBProcWrapper.createCPU(conn, cpu_name, cpu_desc, cpu_total, server_id);
             DeviceCPUDBProcWrapper.createCPUService(conn, null, cpu_total, null, null, CPUState.RESERVED, cpu_id, -1);
             conn.commit();
         }
@@ -486,18 +462,12 @@ public class DeviceCPUService {
     	}
     }
     
-    public void modifyCPU(boolean force, Session session, int cpu_id, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache) throws EucalyptusServiceException {
+    public void modifyCPU(boolean force, Session session, int cpu_id, String cpu_desc, int cpu_total) throws EucalyptusServiceException {
     	if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
     	if (cpu_desc == null) {
     		cpu_desc = "";
-    	}
-    	if (cpu_vendor == null) {
-    		cpu_vendor = "";
-    	}
-    	if (cpu_model == null) {
-    		cpu_model = "";
     	}
     	cpu_total = Math.max(0, cpu_total);
         Connection conn = null;
@@ -510,10 +480,6 @@ public class DeviceCPUService {
             int resize = cpu_total - rs.getInt(CPU.CPU_TOTAL.toString());
             rs.updateInt(CPU.CPU_TOTAL.toString(), cpu_total);
             rs.updateString(CPU.CPU_DESC.toString(), cpu_desc);
-            rs.updateString(CPU.CPU_VENDOR.toString(), cpu_vendor);
-            rs.updateString(CPU.CPU_MODEL.toString(), cpu_model);
-            rs.updateDouble(CPU.CPU_GHZ.toString(), cpu_ghz);
-            rs.updateDouble(CPU.CPU_CACHE.toString(), cpu_cache);
             rs.updateString(CPU.CPU_MODIFIEDTIME.toString(), DBStringBuilder.getDate());
             rs.updateRow();
             if (resize != 0) {
@@ -807,17 +773,13 @@ class DeviceCPUDBProcWrapper {
         return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
     }
     
-    public static int createCPU(Connection conn, String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, int server_id) throws Exception {
+    public static int createCPU(Connection conn, String cpu_name, String cpu_desc, int cpu_total, int server_id) throws Exception {
         DBTableCPU CPU = DBTable.CPU;
         DBStringBuilder sb = new DBStringBuilder();
         sb.append("INSERT INTO ").append(CPU).append(" ("); {
             sb.append(CPU.CPU_NAME).append(", ");
             sb.append(CPU.CPU_DESC).append(", ");
             sb.append(CPU.CPU_TOTAL).append(", ");
-            sb.append(CPU.CPU_VENDOR).append(", ");
-            sb.append(CPU.CPU_MODEL).append(", ");
-            sb.append(CPU.CPU_GHZ).append(", ");
-            sb.append(CPU.CPU_CACHE).append(", ");
             sb.append(CPU.SERVER_ID).append(", ");
             sb.append(CPU.CPU_CREATIONTIME).append(", ");
             sb.append(CPU.CPU_MODIFIEDTIME);
@@ -826,10 +788,6 @@ class DeviceCPUDBProcWrapper {
             sb.appendString(cpu_name).append(", ");
             sb.appendString(cpu_desc).append(", ");
             sb.append(cpu_total).append(", ");
-            sb.appendString(cpu_vendor).append(", ");
-            sb.appendString(cpu_model).append(", ");
-            sb.append(cpu_ghz).append(", ");
-            sb.append(cpu_cache).append(", ");
             sb.append(server_id).append(", ");
             sb.appendDate().append(", ");
             sb.appendNull();

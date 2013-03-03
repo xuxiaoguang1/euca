@@ -32,8 +32,7 @@ public class DBTable {
 	
 	public static final DBTableTemplate TEMPLATE = new DBTableTemplate();
 	
-	public static final DBTableCPUPrice CPU_PRICE = new DBTableCPUPrice();
-	public static final DBTableOthersPrice OTHERS_PRICE = new DBTableOthersPrice();
+	public static final DBTableDevicePrice DEVICE_PRICE = new DBTableDevicePrice();
 	public static final DBTableTemplatePrice TEMPLATE_PRICE = new DBTableTemplatePrice();
 	
 	public final DBTableColumn ANY = new DBTableColumn(this, "*"); 
@@ -163,10 +162,6 @@ class DBTableCPU extends DBTable {
 	public final DBTableColumn CPU_NAME = new DBTableColumn(this, "cpu_name");
 	public final DBTableColumn CPU_DESC = new DBTableColumn(this, "cpu_desc");
 	public final DBTableColumn CPU_TOTAL = new DBTableColumn(this, "cpu_total");
-	public final DBTableColumn CPU_VENDOR = new DBTableColumn(this, "cpu_vendor");
-	public final DBTableColumn CPU_MODEL = new DBTableColumn(this, "cpu_model");
-	public final DBTableColumn CPU_GHZ = new DBTableColumn(this, "cpu_ghz");
-	public final DBTableColumn CPU_CACHE = new DBTableColumn(this, "cpu_cache");
 	public final DBTableColumn CPU_CREATIONTIME = new DBTableColumn(this, "cpu_creationtime");
 	public final DBTableColumn CPU_MODIFIEDTIME = new DBTableColumn(this, "cpu_modifiedtime");
 	public final DBTableColumn SERVER_ID = new DBTableColumn(this, "server_id");
@@ -325,31 +320,16 @@ class DBTableTemplate extends DBTable {
 	
 }
 
-class DBTableCPUPrice extends DBTable {
-
-	public DBTableCPUPrice() {
-		super("cpu_price");
-	}
-	
-	public final DBTableColumn CPU_PRICE_ID = new DBTableColumn(this, "cpu_price_id");
-	public final DBTableColumn CPU_NAME = new DBTableColumn(this, "cpu_name");
-	public final DBTableColumn CPU_PRICE_DESC = new DBTableColumn(this, "cpu_price_desc");
-	public final DBTableColumn CPU_PRICE = new DBTableColumn(this, "cpu_price");
-	public final DBTableColumn CPU_PRICE_CREATIONTIME = new DBTableColumn(this, "cpu_price_creationtime");
-	public final DBTableColumn CPU_PRICE_MODIFIEDTIME = new DBTableColumn(this, "cpu_price_modifiedtime");
-	
-}
-
-class DBTableOthersPrice extends DBTable {
+class DBTableDevicePrice extends DBTable {
     
-    public DBTableOthersPrice() {
-        super("others_price");
+    public DBTableDevicePrice() {
+        super("device_price");
     }
     
-    public final DBTableColumn OTHERS_PRICE_NAME = new DBTableColumn(this, "others_price_name");
-    public final DBTableColumn OTHERS_PRICE = new DBTableColumn(this, "others_price");
-    public final DBTableColumn OTHERS_PRICE_DESC = new DBTableColumn(this, "others_price_desc");
-    public final DBTableColumn OTHERS_PRICE_MODIFIEDTIME = new DBTableColumn(this, "others_price_modifiedtime");
+    public final DBTableColumn DEVICE_PRICE_NAME = new DBTableColumn(this, "device_price_name");
+    public final DBTableColumn DEVICE_PRICE = new DBTableColumn(this, "device_price");
+    public final DBTableColumn DEVICE_PRICE_DESC = new DBTableColumn(this, "device_price_desc");
+    public final DBTableColumn DEVICE_PRICE_MODIFIEDTIME = new DBTableColumn(this, "device_price_modifiedtime");
     
 }
 

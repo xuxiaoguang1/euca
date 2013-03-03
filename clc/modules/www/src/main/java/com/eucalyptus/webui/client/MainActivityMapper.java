@@ -32,12 +32,11 @@ import com.eucalyptus.webui.client.activity.WalrusCtrlActivity;
 import com.eucalyptus.webui.client.activity.device.DeviceAreaActivity;
 import com.eucalyptus.webui.client.activity.device.DeviceBWActivity;
 import com.eucalyptus.webui.client.activity.device.DeviceCPUActivity;
-import com.eucalyptus.webui.client.activity.device.DeviceCPUPriceActivity;
 import com.eucalyptus.webui.client.activity.device.DeviceCabinetActivity;
 import com.eucalyptus.webui.client.activity.device.DeviceDiskActivity;
 import com.eucalyptus.webui.client.activity.device.DeviceIPActivity;
 import com.eucalyptus.webui.client.activity.device.DeviceMemoryActivity;
-import com.eucalyptus.webui.client.activity.device.DeviceOthersPriceActivity;
+import com.eucalyptus.webui.client.activity.device.DeviceDevicePriceActivity;
 import com.eucalyptus.webui.client.activity.device.DeviceRoomActivity;
 import com.eucalyptus.webui.client.activity.device.DeviceServerActivity;
 import com.eucalyptus.webui.client.activity.device.DeviceTemplateActivity;
@@ -75,12 +74,11 @@ import com.eucalyptus.webui.client.place.WalrusCtrlPlace;
 import com.eucalyptus.webui.client.place.device.DeviceAreaPlace;
 import com.eucalyptus.webui.client.place.device.DeviceBWPlace;
 import com.eucalyptus.webui.client.place.device.DeviceCPUPlace;
-import com.eucalyptus.webui.client.place.device.DeviceCPUPricePlace;
 import com.eucalyptus.webui.client.place.device.DeviceCabinetPlace;
 import com.eucalyptus.webui.client.place.device.DeviceDiskPlace;
 import com.eucalyptus.webui.client.place.device.DeviceIPPlace;
 import com.eucalyptus.webui.client.place.device.DeviceMemoryPlace;
-import com.eucalyptus.webui.client.place.device.DeviceOthersPricePlace;
+import com.eucalyptus.webui.client.place.device.DeviceDevicePricePlace;
 import com.eucalyptus.webui.client.place.device.DeviceRoomPlace;
 import com.eucalyptus.webui.client.place.device.DeviceServerPlace;
 import com.eucalyptus.webui.client.place.device.DeviceTemplatePlace;
@@ -161,11 +159,8 @@ public class MainActivityMapper implements ActivityMapper {
 		else if (place instanceof DeviceCabinetPlace) {
 			return new DeviceCabinetActivity((DeviceCabinetPlace)place, this.clientFactory);
 		}
-		else if (place instanceof DeviceCPUPricePlace) {
-			return new DeviceCPUPriceActivity((DeviceCPUPricePlace)place, this.clientFactory);
-		}
-		else if (place instanceof DeviceOthersPricePlace) {
-		    return new DeviceOthersPriceActivity((DeviceOthersPricePlace)place, this.clientFactory);
+		else if (place instanceof DeviceDevicePricePlace) {
+		    return new DeviceDevicePriceActivity((DeviceDevicePricePlace)place, this.clientFactory);
 		}
 		else if (place instanceof DeviceTemplatePricePlace) {
 		    return new DeviceTemplatePriceActivity((DeviceTemplatePricePlace)place, this.clientFactory);

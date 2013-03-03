@@ -8,11 +8,10 @@ import com.eucalyptus.webui.client.place.ClusterCtrlPlace;
 import com.eucalyptus.webui.client.place.device.DeviceAreaPlace;
 import com.eucalyptus.webui.client.place.device.DeviceBWPlace;
 import com.eucalyptus.webui.client.place.device.DeviceCPUPlace;
-import com.eucalyptus.webui.client.place.device.DeviceCPUPricePlace;
 import com.eucalyptus.webui.client.place.device.DeviceCabinetPlace;
 import com.eucalyptus.webui.client.place.device.DeviceDiskPlace;
 import com.eucalyptus.webui.client.place.device.DeviceMemoryPlace;
-import com.eucalyptus.webui.client.place.device.DeviceOthersPricePlace;
+import com.eucalyptus.webui.client.place.device.DeviceDevicePricePlace;
 import com.eucalyptus.webui.client.place.device.DeviceRoomPlace;
 import com.eucalyptus.webui.client.place.device.DeviceServerPlace;
 import com.eucalyptus.webui.client.place.device.DeviceIPPlace;
@@ -69,8 +68,7 @@ import com.google.gwt.place.shared.WithTokenizers;
   DeviceAreaPlace.Tokenizer.class,
   DeviceRoomPlace.Tokenizer.class,
   DeviceCabinetPlace.Tokenizer.class,
-  DeviceCPUPricePlace.Tokenizer.class,
-  DeviceOthersPricePlace.Tokenizer.class,
+  DeviceDevicePricePlace.Tokenizer.class,
   DeviceTemplatePricePlace.Tokenizer.class,
   DeviceServerPlace.Tokenizer.class,
   DeviceCPUPlace.Tokenizer.class,

@@ -12,7 +12,6 @@ import com.eucalyptus.webui.shared.resource.VMImageType;
 import com.eucalyptus.webui.shared.resource.device.AreaInfo;
 import com.eucalyptus.webui.shared.resource.device.BWServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.CPUInfo;
-import com.eucalyptus.webui.shared.resource.device.CPUPriceInfo;
 import com.eucalyptus.webui.shared.resource.device.CPUServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.CabinetInfo;
 import com.eucalyptus.webui.shared.resource.device.DiskInfo;
@@ -20,7 +19,7 @@ import com.eucalyptus.webui.shared.resource.device.DiskServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.IPServiceInfo;
 import com.eucalyptus.webui.shared.resource.device.MemoryInfo;
 import com.eucalyptus.webui.shared.resource.device.MemoryServiceInfo;
-import com.eucalyptus.webui.shared.resource.device.OthersPriceInfo;
+import com.eucalyptus.webui.shared.resource.device.DevicePriceInfo;
 import com.eucalyptus.webui.shared.resource.device.RoomInfo;
 import com.eucalyptus.webui.shared.resource.device.ServerInfo;
 import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
@@ -774,9 +773,9 @@ public interface EucalyptusService extends RemoteService {
     
     SearchResult lookupDeviceCPUByDate(Session session, SearchRange range, CPUState cs_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
     Map<Integer, Integer> lookupDeviceCPUCounts(Session session) throws EucalyptusServiceException;
-    void createDeviceCPU(Session session, String cpu_name, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache, int server_id) throws EucalyptusServiceException ;
+    void createDeviceCPU(Session session, String cpu_name, String cpu_desc, int cpu_total, int server_id) throws EucalyptusServiceException ;
     void createDeviceCPUService(Session session, String cs_desc, int cs_size, CPUState cs_state, Date cs_starttime, Date cs_endtime, int cpu_id, int user_id) throws EucalyptusServiceException;
-    void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total, String cpu_vendor, String cpu_model, double cpu_ghz, double cpu_cache) throws EucalyptusServiceException;
+    void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total) throws EucalyptusServiceException;
     void modifyDeviceCPUService(Session session, int cs_id, String cs_desc, int cs_size, Date cs_starttime, Date cs_endtime) throws EucalyptusServiceException;
     void deleteDeviceCPU(Session session, List<Integer> cpu_ids) throws EucalyptusServiceException;
     void deleteDeviceCPUService(Session session, List<Integer> cs_ids) throws EucalyptusServiceException;
@@ -833,16 +832,11 @@ public interface EucalyptusService extends RemoteService {
     void deleteDeviceTemplateService(Session session, List<Integer> template_ids) throws EucalyptusServiceException;
     TemplateInfo lookupDeviceTemplateInfoByID(Session session, int template_id) throws EucalyptusServiceException;
     
-	SearchResult lookupDeviceCPUPriceByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
-	void createDeviceCPUPrice(Session session, String cpu_name, String cp_desc, double cp_price) throws EucalyptusServiceException;
-	void modifyDeviceCPUPrice(Session session, int cp_id, String cp_desc, double cp_price) throws EucalyptusServiceException;
-	void deleteDeviceCPUPrice(Session session, List<Integer> cp_ids) throws EucalyptusServiceException;
-	List<String> lookupDeviceCPUNamesWithoutPrice(Session session) throws EucalyptusServiceException;
-	CPUPriceInfo lookupDeviceCPUPriceByID(Session session, int cp_id) throws EucalyptusServiceException;
-
-	OthersPriceInfo lookupDeviceMemoryPrice(Session session) throws EucalyptusServiceException;
-	OthersPriceInfo lookupDeviceDiskPrice(Session session) throws EucalyptusServiceException;
-	OthersPriceInfo lookupDeviceBWPrice(Session session) throws EucalyptusServiceException;
+	DevicePriceInfo lookupDeviceCPUPrice(Session session) throws EucalyptusServiceException;
+	DevicePriceInfo lookupDeviceMemoryPrice(Session session) throws EucalyptusServiceException;
+	DevicePriceInfo lookupDeviceDiskPrice(Session session) throws EucalyptusServiceException;
+	DevicePriceInfo lookupDeviceBWPrice(Session session) throws EucalyptusServiceException;
+	void modifyDeviceCPUPrice(Session session, String op_desc, double op_price) throws EucalyptusServiceException;
 	void modifyDeviceMemoryPrice(Session session, String op_desc, double op_price) throws EucalyptusServiceException;
 	void modifyDeviceDiskPrice(Session session, String op_desc, double op_price) throws EucalyptusServiceException;
 	void modifyDeviceBWPrice(Session session, String op_desc, double op_price) throws EucalyptusServiceException;

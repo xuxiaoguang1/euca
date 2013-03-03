@@ -32,9 +32,8 @@ command 'delete from mem_service where 1=1'
 command 'delete from memory where 1=1'
 command 'delete from cpu_service where 1=1'
 command 'delete from cpu where 1=1'
-command 'delete from cpu_price where 1=1'
 command 'delete from server where 1=1'
-command 'delete from others_price where 1=1'
+command 'delete from device_price where 1=1'
 command 'delete from cabinet where 1=1'
 command 'delete from room where 1=1'
 command 'delete from area where 1=1'
@@ -106,10 +105,10 @@ for ((i=0;i<5;i++)) do
             values \(\"room$i\", \"room_desc$i\", \"2012-07-07\", \"$id\"\)
     fi
 done
-
-command insert into others_price \(others_price_name, others_price, others_price_desc\) values \(\"memory\", \"12.3\", \"\"\)
-command insert into others_price \(others_price_name, others_price, others_price_desc\) values \(\"disk\", \"23.4\", \"\"\)
-command insert into others_price \(others_price_name, others_price, others_price_desc\) values \(\"bandwidth\", \"34.5\", \"\"\)
+command insert into device_price \(device_price_name, device_price, device_price_desc\) values \(\"cpu\", \"1.2\", \"\"\)
+command insert into device_price \(device_price_name, device_price, device_price_desc\) values \(\"memory\", \"12.3\", \"\"\)
+command insert into device_price \(device_price_name, device_price, device_price_desc\) values \(\"disk\", \"23.4\", \"\"\)
+command insert into device_price \(device_price_name, device_price, device_price_desc\) values \(\"bandwidth\", \"34.5\", \"\"\)
 
 id=`getvalue room room_id room_name room0`
 
@@ -139,15 +138,8 @@ for ((i=0;i<40;i++)) do
     let j="$i%5";
     let x="$i%3";
     id=`getvalue server server_id server_name name$x`
-    let mod="i%3";
-    if [ $mod -ne 0 ]; then
-        vendor="intel"
-    else
-        vendor="amd"
-    fi
-    let cache="2 << $i % 5";
-    command insert into cpu \(cpu_name, cpu_desc, cpu_total, cpu_vendor, cpu_model, cpu_ghz, cpu_cache, cpu_creationtime, cpu_modifiedtime, server_id\) \
-        values \(\"cpu$i\", \"\", \"10\", \"$vendor\", \"model$j\", \"2.$j\", \"$cache\", \"2012-02-0$j\", \"\", \"$id\"\)
+    command insert into cpu \(cpu_name, cpu_desc, cpu_total, cpu_creationtime, cpu_modifiedtime, server_id\) \
+        values \(\"cpu$i\", \"\", \"10\", \"2012-02-0$j\", \"\", \"$id\"\)
 done
 
 # insert cpu_service

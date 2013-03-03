@@ -15,24 +15,28 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.DoubleBox;
 
-public class DeviceOthersPriceViewImpl extends Composite implements DeviceOthersPriceView {
+public class DeviceDevicePriceViewImpl extends Composite implements DeviceDevicePriceView {
 	
-	private static DeviceOthersPriceViewImplUiBinder uiBinder = GWT.create(DeviceOthersPriceViewImplUiBinder.class);
+	private static DeviceDevicePriceViewImplUiBinder uiBinder = GWT.create(DeviceDevicePriceViewImplUiBinder.class);
 	
+	@UiField DoubleBox cpuPrice;
 	@UiField DoubleBox memoryPrice;
 	@UiField DoubleBox diskPrice;
 	@UiField DoubleBox bandwidthPrice;
+	@UiField TextBox cpuPriceDesc;
 	@UiField TextBox memoryPriceDesc;
 	@UiField TextBox diskPriceDesc;
 	@UiField TextBox bandwidthPriceDesc;
+	@UiField Label cpuPriceModifiedtime;
 	@UiField Label memoryPriceModifiedtime;
 	@UiField Label diskPriceModifiedtime;
 	@UiField Label bandwidthPriceModifiedtime;
+	@UiField Anchor cpuPriceModify;
 	@UiField Anchor memoryPriceModify;
 	@UiField Anchor diskPriceModify;
 	@UiField Anchor bandwidthPriceModify;
     
-    interface DeviceOthersPriceViewImplUiBinder extends UiBinder<Widget, DeviceOthersPriceViewImpl> {
+    interface DeviceDevicePriceViewImplUiBinder extends UiBinder<Widget, DeviceDevicePriceViewImpl> {
     }
     
     private DateTimeFormat format = DateTimeFormat.getFormat("yyyy-MM-dd");
@@ -71,12 +75,14 @@ public class DeviceOthersPriceViewImpl extends Composite implements DeviceOthers
 	
 	private Presenter presenter;
 	
+	private Column cpuColumn;
 	private Column memoryColumn;
 	private Column diskColumn;
 	private Column bandwidthColumn;
 	
-	public DeviceOthersPriceViewImpl() {
+	public DeviceDevicePriceViewImpl() {
 		initWidget(uiBinder.createAndBindUi(this));
+		cpuColumn = new Column(cpuPrice, cpuPriceDesc, cpuPriceModifiedtime, cpuPriceModify);
 		memoryColumn = new Column(memoryPrice, memoryPriceDesc, memoryPriceModifiedtime, memoryPriceModify);
 		diskColumn = new Column(diskPrice, diskPriceDesc, diskPriceModifiedtime, diskPriceModify);
 		bandwidthColumn = new Column(bandwidthPrice, bandwidthPriceDesc, bandwidthPriceModifiedtime, bandwidthPriceModify);
@@ -91,6 +97,11 @@ public class DeviceOthersPriceViewImpl extends Composite implements DeviceOthers
 		this.presenter = presenter;
 	}
 	
+	@Override
+    public void setCPUPrice(String op_desc, double op_price, Date op_modifiedtime) {
+        cpuColumn.setValue(op_desc, op_price, op_modifiedtime);
+    }
+	
     @Override
     public void setMemoryPrice(String op_desc, double op_price, Date op_modifiedtime) {
         memoryColumn.setValue(op_desc, op_price, op_modifiedtime);
@@ -104,6 +115,11 @@ public class DeviceOthersPriceViewImpl extends Composite implements DeviceOthers
     @Override
     public void setBWPrice(String op_desc, double op_price, Date op_modifiedtime) {
         bandwidthColumn.setValue(op_desc, op_price, op_modifiedtime);
+    }
+    
+    @UiHandler("cpuPriceModify")
+    void handleCPUPriceModify(ClickEvent event) {
+        presenter.onModifyCPUPrice(cpuColumn.price_desc.getText(), cpuColumn.price.getValue());
     }
     
     @UiHandler("memoryPriceModify")

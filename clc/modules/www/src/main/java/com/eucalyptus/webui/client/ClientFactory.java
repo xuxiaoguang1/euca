@@ -17,13 +17,12 @@ import com.eucalyptus.webui.client.view.ConfigView;
 import com.eucalyptus.webui.client.view.ConfirmationView;
 import com.eucalyptus.webui.client.view.DeviceAreaView;
 import com.eucalyptus.webui.client.view.DeviceBWView;
-import com.eucalyptus.webui.client.view.DeviceCPUPriceView;
 import com.eucalyptus.webui.client.view.DeviceCPUView;
 import com.eucalyptus.webui.client.view.DeviceCabinetView;
 import com.eucalyptus.webui.client.view.DeviceDiskView;
 import com.eucalyptus.webui.client.view.DeviceIPView;
 import com.eucalyptus.webui.client.view.DeviceMemoryView;
-import com.eucalyptus.webui.client.view.DeviceOthersPriceView;
+import com.eucalyptus.webui.client.view.DeviceDevicePriceView;
 import com.eucalyptus.webui.client.view.DeviceRoomView;
 import com.eucalyptus.webui.client.view.DeviceServerView;
 import com.eucalyptus.webui.client.view.DeviceTemplatePriceView;
@@ -221,9 +220,7 @@ public interface ClientFactory {
 	
 	DeviceCabinetView getDeviceCabinetView();
 	
-	DeviceCPUPriceView getDeviceCPUPriceView();
-	
-	DeviceOthersPriceView getDeviceOthersPriceView();
+	DeviceDevicePriceView getDeviceDevicePriceView();
 	
 	DeviceTemplatePriceView getDeviceTemplatePriceView();
 	
