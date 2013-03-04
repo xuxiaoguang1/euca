@@ -6,6 +6,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -269,7 +270,73 @@ public class DeviceTemplateService {
             int ms_id = DeviceMemoryService.getInstance().createMemoryService(true, conn, desc, ms_size, MemoryState.STOP, starttime, endtime, mem_id, user_id);
             int ds_id = DeviceDiskService.getInstance().createDiskService(true, conn, desc, ds_size, DiskState.STOP, starttime, endtime, disk_id, user_id);
             conn.commit();
-            return new AppResources(cs_id, ms_id, ds_id, -1, -1);
+            return new AppResources(cs_id, ms_id, ds_id);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            DBProcWrapper.rollback(conn);
+            throw new EucalyptusServiceException(e);
+        }
+        finally {
+            DBProcWrapper.close(conn);
+        }
+    }
+    
+    public void startApp(AppResources app) throws EucalyptusServiceException {
+        Connection conn = null;
+        try {
+            conn = DBProcWrapper.getConnection();
+            conn.setAutoCommit(false);
+            DeviceCPUService.getInstance().modifyCPUState(true, null, app.cs_id, CPUState.INUSE);
+            DeviceMemoryService.getInstance().modifyMemoryServiceState(true, null, app.ms_id, MemoryState.INUSE);
+            DeviceDiskService.getInstance().modifyDiskServiceState(true, null, app.ds_id, DiskState.INUSE);
+            conn.commit();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            DBProcWrapper.rollback(conn);
+            throw new EucalyptusServiceException(e);
+        }
+        finally {
+            DBProcWrapper.close(conn);
+        }
+    }
+    
+    public void stopApp(AppResources app) throws EucalyptusServiceException {
+        Connection conn = null;
+        try {
+            conn = DBProcWrapper.getConnection();
+            conn.setAutoCommit(false);
+            DeviceCPUService.getInstance().modifyCPUState(true, null, app.cs_id, CPUState.STOP);
+            DeviceMemoryService.getInstance().modifyMemoryServiceState(true, null, app.ms_id, MemoryState.STOP);
+            DeviceDiskService.getInstance().modifyDiskServiceState(true, null, app.ds_id, DiskState.STOP);
+            conn.commit();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            DBProcWrapper.rollback(conn);
+            throw new EucalyptusServiceException(e);
+        }
+        finally {
+            DBProcWrapper.close(conn);
+        }
+    }
+    
+    private List<Integer> toList(int id) {
+        List<Integer> list = new LinkedList<Integer>();
+        list.add(id);
+        return list;
+    }
+    
+    public void deleteApp(AppResources app) throws EucalyptusServiceException {
+        Connection conn = null;
+        try {
+            conn = DBProcWrapper.getConnection();
+            conn.setAutoCommit(false);
+            DeviceCPUService.getInstance().deleteCPUService(true, null, toList(app.cs_id));
+            DeviceMemoryService.getInstance().deleteMemoryService(true, null, toList(app.ms_id));
+            DeviceDiskService.getInstance().deleteDiskService(true, null, toList(app.ds_id));
+            conn.commit();
         }
         catch (Exception e) {
             e.printStackTrace();
