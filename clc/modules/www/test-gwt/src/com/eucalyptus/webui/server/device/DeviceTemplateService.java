@@ -6,8 +6,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
@@ -261,6 +263,21 @@ public class DeviceTemplateService {
         }
     }
     
+    public Map<String, Integer> lookupTemplates() throws EucalyptusServiceException {
+        Connection conn = null;
+        try {
+            conn = DBProcWrapper.getConnection();
+            return DeviceTemplateDBProcWrapper.lookupTemplates(conn);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new EucalyptusServiceException(e);
+        }
+        finally {
+            DBProcWrapper.close(conn);
+        }
+    }
+    
     public AppResources createApp(String desc, int cpu_id, int cs_size, int mem_id, long ms_size, int disk_id, long ds_size, int user_id, Date starttime, Date endtime) throws EucalyptusServiceException {
         Connection conn = null;
         try {
@@ -353,6 +370,20 @@ public class DeviceTemplateService {
 class DeviceTemplateDBProcWrapper {
     
     private static final Logger log = Logger.getLogger(DeviceTemplateDBProcWrapper.class.getName());
+    
+    public static Map<String, Integer> lookupTemplates(Connection conn) throws Exception {
+        DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
+        DBStringBuilder sb = new DBStringBuilder();
+        sb.append("SELECT ");
+        sb.append(TEMPLATE.TEMPLATE_NAME).append(", ").append(TEMPLATE.TEMPLATE_ID);
+        sb.append(" FROM ").append(TEMPLATE).append(" WHERE 1=1");
+        ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+        Map<String, Integer> result = new HashMap<String, Integer>();
+        while (rs.next()) {
+            result.put(rs.getString(1), rs.getInt(2));
+        }
+        return result;
+    }
     
     public static ResultSet lookupTemplateByID(Connection conn, boolean updatable, int template_id) throws Exception {
         DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
