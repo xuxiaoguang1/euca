@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.shared.aws.ImageType;
+import com.eucalyptus.webui.shared.resource.device.status.IPType;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -35,7 +36,6 @@ public interface AwsService extends RemoteService {
 	
 	public ArrayList<String> lookupAvailablityZones(Session session) throws EucalyptusServiceException;
 	
-	public String allocateAddress(Session session, int userID) throws EucalyptusServiceException;
 	public void associateAddress(Session session, int userID, String ip, String instanceID) throws EucalyptusServiceException;
 	
 	//run via eucatools
