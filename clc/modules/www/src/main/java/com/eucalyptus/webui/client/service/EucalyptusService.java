@@ -815,6 +815,7 @@ public interface EucalyptusService extends RemoteService {
     void modifyDeviceTemplateService(Session session, int template_id, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw) throws EucalyptusServiceException;
     void deleteDeviceTemplateService(Session session, List<Integer> template_ids) throws EucalyptusServiceException;
     TemplateInfo lookupDeviceTemplateInfoByID(Session session, int template_id) throws EucalyptusServiceException;
+    Map<String, Integer> lookupTemplates(Session session) throws EucalyptusServiceException;
     
 	DevicePriceInfo lookupDeviceCPUPrice(Session session) throws EucalyptusServiceException;
 	DevicePriceInfo lookupDeviceMemoryPrice(Session session) throws EucalyptusServiceException;

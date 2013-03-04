@@ -263,7 +263,7 @@ public class DeviceTemplateService {
         }
     }
     
-    public Map<String, Integer> lookupTemplates() throws EucalyptusServiceException {
+    public Map<String, Integer> lookupTemplates(Session session) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();

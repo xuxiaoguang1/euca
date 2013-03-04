@@ -251,6 +251,7 @@ public interface EucalyptusServiceAsync {
 	void modifyDeviceTemplateService(Session session, int template_id, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw, AsyncCallback<Void> callback);
 	void deleteDeviceTemplateService(Session session, List<Integer> template_ids, AsyncCallback<Void> callback);
 	void lookupDeviceTemplateInfoByID(Session session, int template_id, AsyncCallback<TemplateInfo> callback);
+    void lookupTemplates(Session session, AsyncCallback<Map<String, Integer>> callback);
 	
 	void lookupDeviceCPUPrice(Session session, AsyncCallback<DevicePriceInfo> callback);
 	void lookupDeviceMemoryPrice(Session session, AsyncCallback<DevicePriceInfo> callback);
