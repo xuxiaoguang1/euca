@@ -1047,6 +1047,11 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 	
 	@Override
+	public Map<String, Integer> lookupTemplates(Session session) throws EucalyptusServiceException {
+	    return DeviceTemplateService.getInstance().lookupTemplates(session);
+	}
+	
+	@Override
 	public TemplateInfo lookupDeviceTemplateInfoByID(Session session, int template_id) throws EucalyptusServiceException {
 		return DeviceTemplateService.getInstance().lookupTemplateInfoByID(template_id);
 	}
