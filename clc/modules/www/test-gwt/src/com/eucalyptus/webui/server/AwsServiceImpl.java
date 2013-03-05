@@ -71,6 +71,7 @@ import com.eucalyptus.webui.shared.query.QueryParser;
 import com.eucalyptus.webui.shared.query.QueryParsingException;
 import com.eucalyptus.webui.shared.query.QueryType;
 import com.eucalyptus.webui.shared.query.SearchQuery;
+import com.eucalyptus.webui.shared.resource.device.status.IPType;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -931,12 +932,13 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     }
   }
 
-  @Override
-  public String allocateAddress(Session session, int userID)
+  public List<String> allocateAddress(int userID, IPType type, int count)
       throws EucalyptusServiceException {
-    AmazonEC2 ec2 = verify(session, userID);
+    AmazonEC2 ec2 = getEC2(_getKeys(userID));
     try {
-      return ec2.allocateAddress().getPublicIp();
+      List<String> ret = new ArrayList<String>();
+      ret.add(ec2.allocateAddress().getPublicIp());
+      return ret;
     } catch (Exception e) {
       LOG.error(e);
       throw new EucalyptusServiceException("alloc error");

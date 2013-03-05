@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.shared.aws.ImageType;
+import com.eucalyptus.webui.shared.resource.device.status.IPType;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface AwsServiceAsync {
@@ -104,9 +105,6 @@ public interface AwsServiceAsync {
 
   void lookupAvailablityZones(Session session,
       AsyncCallback<ArrayList<String>> callback);
-
-  void allocateAddress(Session session, int userID,
-      AsyncCallback<String> callback);
 
   void associateAddress(Session session, int userID, String ip,
       String instanceID, AsyncCallback<Void> callback);

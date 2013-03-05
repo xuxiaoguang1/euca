@@ -148,6 +148,10 @@ public class EucaServiceWrapper {
     return ret;
   }
   
+  public List<String> allocateAddress(int userID, IPType type, int count) throws EucalyptusServiceException {
+    return aws.allocateAddress(userID, type, count);
+  }
+  
   
   public void acquireResource(int serverID, TemplateInfo t) {
     
