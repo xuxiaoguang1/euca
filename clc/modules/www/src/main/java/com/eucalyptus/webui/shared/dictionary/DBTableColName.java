@@ -226,4 +226,45 @@ public class DBTableColName {
 		public final String USER_ID = "history_user_id";
 		public final String VM_ID = "history_vm_id";
 	}
+	
+	public interface MAP_ACCOUNT{
+		public final String ACCOUNT_ID = "account_id";
+		public final String EUCA_ACCOUNT_NUMBER = "euca_account_id";
+		public final String EUCA_ACCOUNT_NAME = "euca_account_name";
+	}
+	
+	public interface MAP_USER{
+		public final String USER_ID = "user_id";
+		public final String EUCA_USER_ID = "euca_user_id";
+		public final String EUCA_USER_NAME = "euca_user_name";
+	}
+	
+	public interface MAP_GROUP{
+		public final String GROUP_ID = "group_id";
+		public final String EUCA_GROUP_ID = "euca_group_id";
+		public final String EUCA_GROUP_NAME = "euca_group_name";
+	}
+	
+	
+	public interface MAP_KEY{
+		public final String KEY_ID = "key_id";
+		public final String EUCA_KEY_ID = "euca_key_id";
+	}
+	
+	public interface MAP_CERT{
+		public final String CERT_ID = "cert_id";
+		public final String EUCA_CERT_ID = "euca_cert_id";
+		public final String EUCA_CERT_USER_ID = "euca_cert_user_id";
+	}
+	
+	public interface MAP_POLICY{
+		public final String POLICY_ID = "policy_id";
+		public final String EUCA_POLICY_ID = "euca_policy_id";
+		public final String EUCA_POLICY_NAME = "euca_policy_name";
+		public final String EUCA_POLICY_ACCOUNT_NAME = "euca_policy_account_name";
+		public final String EUCA_POLICY_GROUP_NAME = "euca_policy_group_name";
+		public final String EUCA_POLICY_USER_NAME = "euca_policy_user_name";
+	}
+	
+	
 }

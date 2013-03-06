@@ -1,6 +1,7 @@
 package com.eucalyptus.webui.client.view;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.eucalyptus.webui.client.view.InputField.ValueType;
@@ -20,6 +21,7 @@ import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -152,7 +154,16 @@ public class InputViewImpl extends DialogBox implements InputView {
       }
       grid.setText( i, 0, field.getTitle( ) );
       
-      HasValueWidget widget = getHasValueWidget( field.getType( ), field.getChecker( ) );
+      HasValueWidget widget = null;
+      if (field.getType() == ValueType.LISTBOX) {
+        try {
+          widget = getHasValueListBox(((InputListField)field).getItems());
+        } catch (Exception e) {
+          LOG.log(Level.WARNING, "fail to build listbox");
+        }
+      } else {
+        widget = getHasValueWidget( field.getType( ), field.getChecker( ) );
+      }
       if ( widget == null ) {
         LOG.log( Level.WARNING, "Invalid field type: " + field.getType( ) );
         continue;
@@ -166,6 +177,28 @@ public class InputViewImpl extends DialogBox implements InputView {
     this.contentPanel.setWidget( grid );
   }
 
+  private HasValueWidget getHasValueListBox(final List<String> items) {
+    return new HasValueWidget() {
+      private ListBox input = new ListBox();
+      
+      {
+        for (String s: items) {
+          input.addItem(s);
+        }
+      }
+      
+      @Override
+      public Widget getWidget() {
+        return input;
+      }
+
+      @Override
+      public String getValue() {
+        return input.getValue(input.getSelectedIndex());
+      }
+    };
+  }
+  
   private HasValueWidget getHasValueWidget( ValueType type, final ValueChecker checker ) {
     switch ( type ) {
       case TEXT:

@@ -41,6 +41,7 @@ import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.ec2.model.IpPermission;
 import com.amazonaws.services.ec2.model.KeyPairInfo;
+import com.amazonaws.services.ec2.model.ReleaseAddressRequest;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.RevokeSecurityGroupIngressRequest;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
@@ -491,8 +492,8 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     AmazonEC2 ec2 = verify(session, userID);
     AuthorizeSecurityGroupIngressRequest req = new AuthorizeSecurityGroupIngressRequest();
     req.setGroupName(group);
-    req.setFromPort(Integer.parseInt(fromPort));
-    req.setToPort(Integer.parseInt(toPort));
+    req.setFromPort(parseInt(fromPort));
+    req.setToPort(parseInt(toPort));
     req.setIpProtocol(proto);    
     req.setCidrIp(ipRange);
     ec2.authorizeSecurityGroupIngress(req);
@@ -935,13 +936,30 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
   public List<String> allocateAddress(int userID, IPType type, int count)
       throws EucalyptusServiceException {
     AmazonEC2 ec2 = getEC2(_getKeys(userID));
+    if (type == IPType.PRIVATE)
+      throw new EucalyptusServiceException("not implemented");
     try {
       List<String> ret = new ArrayList<String>();
-      ret.add(ec2.allocateAddress().getPublicIp());
+      for (int i = 0; i < count; ++i)
+        ret.add(ec2.allocateAddress().getPublicIp());
       return ret;
     } catch (Exception e) {
       LOG.error(e);
       throw new EucalyptusServiceException("alloc error");
+    }
+  }
+  
+  public void releaseAddress(int userID, IPType type, String addr) throws EucalyptusServiceException {
+    AmazonEC2 ec2 = getEC2(_getKeys(userID));
+    if (type == IPType.PRIVATE)
+      throw new EucalyptusServiceException("not implemented");
+    try {
+      ReleaseAddressRequest r = new ReleaseAddressRequest();
+      r.setPublicIp(addr);
+      ec2.releaseAddress(r);
+    } catch (Exception e) {
+      LOG.error(e);
+      throw new EucalyptusServiceException("release error");
     }
   }
 
@@ -958,5 +976,64 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
       LOG.error(e);
       throw new EucalyptusServiceException("associate error");
     }
+  }
+
+  @Override
+  public List<String> lookupOwnAddress(Session session, int userID)
+      throws EucalyptusServiceException {
+    AmazonEC2 ec2 = verify(session, userID);
+    List<String> ret = new ArrayList<String>();
+    try {
+      for (Address a: ec2.describeAddresses().getAddresses()) {
+        String s = a.getInstanceId();
+        if (s.startsWith("available") &&  
+            //getUserID(session, userID) == getUserID(getEucaAccountID(s), getUserName(s))) {
+            true) {
+          ret.add(a.getPublicIp());
+        }
+      }
+    } catch (Exception e) {
+      LOG.error(e);
+    }
+    return ret;
+  }
+
+  private int getUserID(String eucaAccountID, String user) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("SELECT " + DBTableColName.USER.ID + " FROM ")
+      .append(DBTableName.USER).append(",").append(DBTableName.MAP_ACCOUNT)
+      .append(" WHERE ") 
+      .append(DBTableColName.MAP_ACCOUNT.EUCA_ACCOUNT_NUMBER).append(" = '").append(eucaAccountID)
+      .append("' AND ").append(DBTableColName.USER.NAME).append(" = '").append(user).append("'");
+    try {
+      ResultSet ret = wrapper.query(sb.toString()).getResultSet();
+      if (ret.first()) {
+        return ret.getInt(DBTableColName.USER.ID);
+      }
+    } catch (SQLException e) {
+      LOG.error(e);
+    }
+    return 0;
+  }
+  private String getEucaAccountID(String addr) {
+    String ret = "";
+    if (addr.startsWith("available")) {
+      try {
+        ret = addr.split(":+")[3];        
+      } catch (Exception e) { }
+    }
+    return ret;
+  }
+  
+  private String getUserName(String addr) {
+    String ret = "";
+    if (addr.startsWith("available")) {
+      try {
+        ret = addr.split("/")[1];
+        //trim last char ')'
+        ret = ret.substring(0, ret.length() - 1);
+      } catch (Exception e) { }
+    }
+    return ret;
   }
 }

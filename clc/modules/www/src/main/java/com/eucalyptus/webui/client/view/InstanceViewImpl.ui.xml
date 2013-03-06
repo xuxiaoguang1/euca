@@ -13,6 +13,7 @@
     <g:DockLayoutPanel unit="PX">
         <g:north size="41">
         	<g:FlowPanel >
+        		<g:Button text="关联IP" ui:field="associateButton"/>
         	    <!-- 
         		<g:Button text="产品体验"/>
         		<g:Button text="管理密钥"/>
