@@ -2,6 +2,7 @@ package com.eucalyptus.webui.client.activity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +21,8 @@ import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.resource.VMImageType;
+import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
+import com.eucalyptus.webui.shared.resource.device.TemplatePriceInfo;
 import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
@@ -144,27 +147,26 @@ public class UserAppActivity extends AbstractSearchActivity
   public void onCreateUserApp() {
   	// TODO Auto-generated method stub
 	clientFactory.getUserAppAddView().setPresenter(this);
+	clientFactory.getUserAppAddView().setClientFactory(clientFactory);
 	
 	final int lan = LanguageSelection.instance().getCurLanguage().ordinal();
-	// FIXME lzhang
-	if (true) {
-		throw new RuntimeException("UPDATED!!");
-	}
-//  	this.clientFactory.getBackendService().lookupDeviceTemplate(clientFactory.getLocalSession().getSession(), search, range, null, null, new AsyncCallback<SearchResult>() {
-//
-//		        @Override
-//		        public void onFailure(Throwable caught) {
-//			        // TODO Auto-generated method stub
-//		        	clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
-//		    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES[lan] + ":" + caught.getMessage( ) );
-//		        }
-//
-//		        @Override
-//		        public void onSuccess(SearchResult result) {
-//			        // TODO Auto-generated method stub;
-//			        clientFactory.getUserAppAddView().showSearchResult(result);
-//		        }
-//	 });
+	clientFactory.getUserAppAddView().display();
+	
+  	this.clientFactory.getBackendService().lookupDeviceTemplates(clientFactory.getLocalSession().getSession(), new AsyncCallback<Map<String, Integer>>() {
+
+		        @Override
+		        public void onFailure(Throwable caught) {
+			        // TODO Auto-generated method stub
+		        	clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES[lan], FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+		    		clientFactory.getShellView( ).getLogView( ).log( LogType.ERROR, FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES[lan] + ":" + caught.getMessage( ) );
+		        }
+
+		        @Override
+		        public void onSuccess(Map<String, Integer> result) {
+			        // TODO Auto-generated method stub;
+		        	clientFactory.getUserAppAddView().setDeviceTemplates(result);
+		        }
+	 });
   	
   	this.clientFactory.getBackendService().queryVMImageType(clientFactory.getLocalSession().getSession(), new AsyncCallback<ArrayList<VMImageType>>() {
 

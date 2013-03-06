@@ -5,45 +5,75 @@
 		
 	</ui:style>
 	<g:HTMLPanel>
-				<g:LayoutPanel height="123px" width="782px">
-					<g:layer left="30px" width="110px" top="18px" height="16px">
+				<g:LayoutPanel height="187px" width="788px">
+					<g:layer left="30px" width="110px" top="15px" height="30px">
 						<g:Label text="服务开始时间"/>
 					</g:layer>
-					<g:layer left="160px" width="190px" top="15px" height="25px">
+					<g:layer left="160px" width="190px" top="15px" height="30px">
 						<p1:DateBox ui:field="startingTime"/>
 					</g:layer>
-					<g:layer left="400px" width="110px" top="18px" height="16px">
+					<g:layer left="30px" width="110px" top="50px" height="30px">
 						<g:Label text="服务结束时间"/>
 					</g:layer>
-					<g:layer left="530px" width="190px" top="15px" height="20px">
+					<g:layer left="160px" width="190px" top="50px" height="30px">
 						<p1:DateBox ui:field="endingTime"/>
 					</g:layer>
-					<g:layer left="30px" width="110px" top="53px" height="16px">
+					<g:layer left="30px" width="110px" top="85px" height="30px">
 						<g:Label text="虚拟机镜像类型"/>
 					</g:layer>
-					<g:layer left="160px" width="190px" top="50px" height="25px">
+					<g:layer left="160px" width="190px" top="85px" height="30px">
 						<g:ListBox ui:field="VMImageTypeList"/>
 					</g:layer>
-					<g:layer left="30px" width="110px" top="88px" height="16px">
+					<g:layer left="30px" width="110px" top="120px" height="30px">
 						<g:Label text="Keypair"/>
 					</g:layer>
-					<g:layer left="160px" width="190px" top="85px" height="25px">
+					<g:layer left="160px" width="190px" top="120px" height="30px">
 						<g:ListBox ui:field="keyPairList"/>
 					</g:layer>
-					<g:layer left="400px" width="110px" top="88px" height="16px">
+					<g:layer left="30px" width="110px" top="155px" height="30px">
 						<g:Label text="安全组"/>
 					</g:layer>
-					<g:layer left="530px" width="190px" top="85px" height="20px">
+					<g:layer left="160px" width="190px" top="155px" height="30px">
 						<g:ListBox ui:field="securityGroupList"/>
 					</g:layer>
+					
+					<g:layer left="400px" width="110px" top="15px" height="30px">
+						<g:Label text="模板"/>
+					</g:layer>
+					<g:layer left="530px" width="190px" top="15px" height="30px">
+						<g:ListBox ui:field="TemplateList"/>
+					</g:layer>
+					<g:layer left="400px" width="110px" top="50px" height="16px">
+						<g:Label text="CPU"/>
+					</g:layer>
+					<g:layer left="530px" width="190px" top="50px" height="25px">
+						<g:TextBox ui:field="template_ncpus" />
+					</g:layer>
+					<g:layer left="400px" width="110px" top="85px" height="16px">
+						<g:Label text="内存"/>
+					</g:layer>
+					<g:layer left="530px" width="190px" top="85px" height="25px">
+						<g:TextBox ui:field="template_mem" />
+					</g:layer>
+					<g:layer left="400px" width="110px" top="120px" height="16px">
+						<g:Label text="磁盘"/>
+					</g:layer>
+					<g:layer left="530px" width="190px" top="120px" height="25px">
+						<g:TextBox ui:field="template_disk" />
+					</g:layer>
+					<g:layer left="400px" width="110px" top="155px" height="16px">
+						<g:Label text="带宽"/>
+					</g:layer>
+					<g:layer left="530px" width="190px" top="155px" height="25px">
+						<g:TextBox ui:field="template_bw" />
+					</g:layer>
+					
 		</g:LayoutPanel>
-		<g:LayoutPanel width="781px" height="291px" ui:field="tablePanel">
-		</g:LayoutPanel>
-		<g:LayoutPanel width="783px" height="55px">
-			<g:layer left="693px" width="103px" top="16px" height="25px">
+		<g:LayoutPanel width="788px" height="55px">
+			<g:layer left="693px" width="60px" top="16px" height="30px">
 				<g:Button text="确定" ui:field="buttonOk"/>
 			</g:layer>
-			<g:layer left="625px" width="54px" top="16px" height="25px">
+			<g:layer left="625px" width="60px" top="16px" height="30px">
 				<g:Button text="取消" ui:field="buttonCancle"/>
 			</g:layer>
 		</g:LayoutPanel>

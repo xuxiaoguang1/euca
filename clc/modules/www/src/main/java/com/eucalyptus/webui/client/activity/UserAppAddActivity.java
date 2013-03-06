@@ -6,14 +6,10 @@ import com.eucalyptus.webui.client.place.SearchPlace;
 import com.eucalyptus.webui.client.service.SearchRange;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.ViewSearchTableClientConfig;
-import com.eucalyptus.webui.client.view.FooterView;
-import com.eucalyptus.webui.client.view.UserAppAddView;
 import com.eucalyptus.webui.client.view.HasValueWidget;
-import com.eucalyptus.webui.client.view.FooterView.StatusType;
-import com.eucalyptus.webui.client.view.LogView.LogType;
+import com.eucalyptus.webui.client.view.UserAppView;
 import com.eucalyptus.webui.shared.config.EnumService;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class UserAppAddActivity extends AbstractSearchActivity {
 
@@ -62,11 +58,11 @@ public class UserAppAddActivity extends AbstractSearchActivity {
   @Override
   protected void showView( SearchResult result ) {
     if ( this.view == null ) {
-      this.view = this.clientFactory.getUserAppAddView();
-      ((UserAppAddView)this.view).clear( );
+      this.view = this.clientFactory.getUserAppView();
+      ((UserAppView)this.view).clear( );
     }
     
-    ((UserAppAddView)this.view).showSearchResult( result );
+    ((UserAppView)this.view).showSearchResult( result );
   }
 
 	@Override

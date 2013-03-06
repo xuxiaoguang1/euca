@@ -1,34 +1,32 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.Map;
 import java.util.logging.Logger;
 
-import com.eucalyptus.webui.client.service.SearchResult;
-import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
-import com.eucalyptus.webui.client.service.SearchResultRow;
+import com.eucalyptus.webui.client.ClientFactory;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.resource.VMImageType;
+import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.view.client.SelectionChangeEvent;
-import com.google.gwt.view.client.SelectionChangeEvent.Handler;
-import com.google.gwt.view.client.SingleSelectionModel;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.client.ui.ListBox;
 
-public class UserAppAddViewImpl extends DialogBox implements UserAppAddView {
+public class UserAppAddViewImpl extends DialogBox implements UserAppAddView, ChangeHandler {
 
 	interface UserAppAddViewImplUiBinder extends
 			UiBinder<Widget, UserAppAddViewImpl> {
@@ -36,19 +34,17 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView {
 
 	public UserAppAddViewImpl() {
 		setWidget(uiBinder.createAndBindUi(this));
-		this.currentSelected = null;
 		
 		this.startingTime.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getShortDateFormat()));
 		this.endingTime.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getShortDateFormat()));
 		
 		setGlassEnabled(true);
+		
+		this.TemplateList.addChangeHandler(this);
 	}
 
 	@UiHandler("buttonOk")
 	void onButtonOkClick(ClickEvent event) {
-			
-		if (this.currentSelected == null)
-			return;
 		
 		if (this.startingTime.getValue() == null || this.endingTime.getValue() == null)
 			return;
@@ -56,12 +52,15 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView {
 		if (this.startingTime.getValue().getTime() - this.endingTime.getValue().getTime() > 0)
 			return;
 		
-		int templateId = Integer.parseInt(this.currentSelected.getField(0));
-		
 		int vmImageTypeId = 0;
 		int vitListSelIndex = this.VMImageTypeList.getSelectedIndex();
 		if (vitListSelIndex >= 0)
 			vmImageTypeId = Integer.parseInt(this.VMImageTypeList.getValue(vitListSelIndex));
+		
+		int templateId = 0;
+		int temListSelIndex = this.TemplateList.getSelectedIndex();
+		if (temListSelIndex >= 0)
+			templateId = Integer.parseInt(this.TemplateList.getValue(temListSelIndex));
 		
 		String keyPair = null;
 		int keyPairListSelIndex = this.keyPairList.getSelectedIndex();
@@ -100,25 +99,9 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView {
 		this.hide();
 		clearSelection();
 	}
-
-	@Override
-	public void showSearchResult(SearchResult result) {
+	
+	private void clearSelection() {
 		// TODO Auto-generated method stub
-		if ( this.table == null ) {
-			initializeTable( this.presenter.getPageSize( ), result.getDescs( ) );
-		}
-    
-		table.setData( result );
-		
-		this.center();
-		this.show();
-	}
-
-	@Override
-	public void clearSelection() {
-		// TODO Auto-generated method stub
-		this.tablePanel.clear( );
-		this.table = null;
 		this.VMImageTypeList.clear();
 		this.keyPairList.clear();
 		this.securityGroupList.clear();
@@ -128,6 +111,26 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView {
 	public void setPresenter(Presenter presenter) {
 		// TODO Auto-generated method stub
 		this.presenter = presenter;
+	}
+	
+	@Override
+	public void setClientFactory(ClientFactory clientFactory) {
+		// TODO Auto-generated method stub
+		this.clientFactory = clientFactory;
+	}
+	
+	@Override
+	public void setDeviceTemplates(Map<String, Integer> templates) {
+		// TODO Auto-generated method stub
+		if (templates == null)
+			return;
+		
+		for (Map.Entry<String, Integer> entry : templates.entrySet()) {
+			String name = entry.getKey().toString();
+			Integer id = entry.getValue();
+			
+			this.TemplateList.addItem(name, id.toString());
+		}
 	}
 	
 	@Override
@@ -164,42 +167,69 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView {
 		}
 	}
 	
-	private void initializeTable( int pageSize,  ArrayList<SearchResultFieldDesc> fieldDescs ) {
-		tablePanel.clear( );
-		selectionModel = new SingleSelectionModel<SearchResultRow>( SearchResultRow.KEY_PROVIDER );
-		selectionModel.addSelectionChangeHandler( new Handler( ) {
+	@Override
+	public void display() {
+		// TODO Auto-generated method stub
+		clearInputField();
+			
+		this.center();
+		this.show();
+	}
+	
+	@Override
+	public void onChange(ChangeEvent event) {
+		// TODO Auto-generated method stub
+		 int selectedIndex = this.TemplateList.getSelectedIndex();
+		 
+		 if (selectedIndex < 0)
+			 return;
+		 
+		 int id = Integer.parseInt(this.TemplateList.getValue(selectedIndex));
+		 
+		 clientFactory.getBackendService().lookupDeviceTemplateInfoByID(clientFactory.getLocalSession().getSession(), id, new AsyncCallback<TemplateInfo>() {
+
 			@Override
-			public void onSelectionChange( SelectionChangeEvent event ) {
-				currentSelected = selectionModel.getSelectedObject();
-		        LOG.log( Level.INFO, "Selection changed: " + currentSelected );
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
 			}
-		} );
-    
-		table = new SearchResultTable( pageSize, fieldDescs, this.presenter, selectionModel );
-		tablePanel.add( table );
-		table.load( );
+
+			@Override
+			public void onSuccess(TemplateInfo result) {
+				// TODO Auto-generated method stub
+				template_ncpus.setValue(Integer.toString(result.template_ncpus));
+				template_mem.setValue(Long.toString(result.template_mem));
+				template_disk.setValue(Long.toString(result.template_disk));
+				template_bw.setValue(Integer.toString(result.template_bw));
+			}});
+	}
+	
+	private void clearInputField() {
+		
 	}
 	
 	private static UserAppAddViewImplUiBinder uiBinder = GWT
 			.create(UserAppAddViewImplUiBinder.class);
 	
 	private static final Logger LOG = Logger.getLogger( UserViewImpl.class.getName( ) );
-	
-	@UiField LayoutPanel tablePanel;
 	@UiField DateBox startingTime;
 	@UiField DateBox endingTime;
 	@UiField Button buttonOk;
 	@UiField Button buttonCancle;
 	@UiField ListBox VMImageTypeList;
+	@UiField ListBox TemplateList;
 	@UiField ListBox keyPairList;
 	@UiField ListBox securityGroupList;
-
-	private SingleSelectionModel<SearchResultRow> selectionModel;
-	private SearchResultTable table;
 	
-	private SearchResultRow currentSelected;
+	@UiField TextBox template_ncpus;
+	@UiField TextBox template_mem;
+	@UiField TextBox template_disk;
+	@UiField TextBox template_bw;
 	
 	private Presenter presenter;
+	private ClientFactory clientFactory;
 	
 	private static String[] USER_APP_PARA_ERROR = {"Creating user application para error", "创建用户申请参数错误"};
+
+	
 }
