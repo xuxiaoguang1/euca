@@ -118,6 +118,7 @@ public class InstanceActivity extends AbstractSearchActivity
       @Override
       public void onSuccess(Void result) {
         clientFactory.getShellView( ).getFooterView( ).showStatus( StatusType.NONE, "关联IP成功", FooterView.DEFAULT_STATUS_CLEAR_DELAY );
+        InstanceActivity.this.reloadCurrentRange();
       }
     });
   }
