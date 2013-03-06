@@ -1003,8 +1003,8 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     sb.append("SELECT " + DBTableColName.USER.ID + " FROM ")
       .append(DBTableName.USER).append(",").append(DBTableName.MAP_ACCOUNT)
       .append(" WHERE ") 
-      .append(DBTableColName.MAP_ACCOUNT.EUCA_ACCOUNT_ID).append(" = ").append(eucaAccountID)
-      .append(" AND ").append(DBTableColName.USER.NAME).append(" = ").append(user);
+      .append(DBTableColName.MAP_ACCOUNT.EUCA_ACCOUNT_NUMBER).append(" = '").append(eucaAccountID)
+      .append("' AND ").append(DBTableColName.USER.NAME).append(" = '").append(user).append("'");
     try {
       ResultSet ret = wrapper.query(sb.toString()).getResultSet();
       if (ret.first()) {

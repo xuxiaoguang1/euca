@@ -25,6 +25,13 @@ public class DBTableName {
 	public static final String BW_SERVICE = "bw_service";
 	public static final String TEMPLATE = "template";
 	public static final String HISTORY = "history";
+	
 	public static final String MAP_ACCOUNT = "map_account";
+	public static final String MAP_GROUP = "map_group";
+	public static final String MAP_USER = "map_user";
+	
+	public static final String MAP_KEY = "map_key";
+	public static final String MAP_CERT = "map_cert";
+	public static final String MAP_POLICY = "map_policy";
 	
 }
