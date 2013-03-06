@@ -959,4 +959,63 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
       throw new EucalyptusServiceException("associate error");
     }
   }
+
+  @Override
+  public List<String> lookupOwnAddress(Session session, int userID)
+      throws EucalyptusServiceException {
+    AmazonEC2 ec2 = verify(session, userID);
+    List<String> ret = new ArrayList<String>();
+    try {
+      for (Address a: ec2.describeAddresses().getAddresses()) {
+        String s = a.getInstanceId();
+        if (s.startsWith("available") &&  
+            //getUserID(session, userID) == getUserID(getEucaAccountID(s), getUserName(s))) {
+            true) {
+          ret.add(a.getPublicIp());
+        }
+      }
+    } catch (Exception e) {
+      LOG.error(e);
+    }
+    return ret;
+  }
+
+  private int getUserID(String eucaAccountID, String user) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("SELECT " + DBTableColName.USER.ID + " FROM ")
+      .append(DBTableName.USER).append(",").append(DBTableName.MAP_ACCOUNT)
+      .append(" WHERE ") 
+      .append(DBTableColName.MAP_ACCOUNT.EUCA_ACCOUNT_ID).append(" = ").append(eucaAccountID)
+      .append(" AND ").append(DBTableColName.USER.NAME).append(" = ").append(user);
+    try {
+      ResultSet ret = wrapper.query(sb.toString()).getResultSet();
+      if (ret.first()) {
+        return ret.getInt(DBTableColName.USER.ID);
+      }
+    } catch (SQLException e) {
+      LOG.error(e);
+    }
+    return 0;
+  }
+  private String getEucaAccountID(String addr) {
+    String ret = "";
+    if (addr.startsWith("available")) {
+      try {
+        ret = addr.split(":+")[3];        
+      } catch (Exception e) { }
+    }
+    return ret;
+  }
+  
+  private String getUserName(String addr) {
+    String ret = "";
+    if (addr.startsWith("available")) {
+      try {
+        ret = addr.split("/")[1];
+        //trim last char ')'
+        ret = ret.substring(0, ret.length() - 1);
+      } catch (Exception e) { }
+    }
+    return ret;
+  }
 }

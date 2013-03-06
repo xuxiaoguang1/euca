@@ -13,6 +13,7 @@ public interface InstanceView extends IsWidget, CanDisplaySearchResult, Clearabl
 	  void onStopInstances( );
 	  void onTerminateInstances( );
 	  void onRunInstance( );
+	  void onAssociateAddress( );
   }
   
 }

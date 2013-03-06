@@ -226,4 +226,9 @@ public class DBTableColName {
 		public final String USER_ID = "history_user_id";
 		public final String VM_ID = "history_vm_id";
 	}
+	
+	public interface MAP_ACCOUNT {
+	  public final String ACCOUNT_ID = "account_id";
+	  public final String EUCA_ACCOUNT_ID = "euca_account_id";
+	}
 }

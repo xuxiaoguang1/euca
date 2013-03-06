@@ -54,6 +54,10 @@ public class InstanceViewImpl extends Composite implements InstanceView {
     this.presenter.onRunInstance();
   }
   */
+  @UiHandler( "associateButton" )
+  void handleAssociateButtonClick( ClickEvent e ) {
+    this.presenter.onAssociateAddress();
+  }
 
   public InstanceViewImpl( ) {
     initWidget( uiBinder.createAndBindUi( this ) );

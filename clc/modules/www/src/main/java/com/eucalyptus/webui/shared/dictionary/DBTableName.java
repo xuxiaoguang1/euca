@@ -25,5 +25,6 @@ public class DBTableName {
 	public static final String BW_SERVICE = "bw_service";
 	public static final String TEMPLATE = "template";
 	public static final String HISTORY = "history";
+	public static final String MAP_ACCOUNT = "map_account";
 	
 }
