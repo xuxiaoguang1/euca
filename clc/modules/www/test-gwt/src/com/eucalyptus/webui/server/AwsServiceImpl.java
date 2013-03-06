@@ -492,8 +492,8 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     AmazonEC2 ec2 = verify(session, userID);
     AuthorizeSecurityGroupIngressRequest req = new AuthorizeSecurityGroupIngressRequest();
     req.setGroupName(group);
-    req.setFromPort(Integer.parseInt(fromPort));
-    req.setToPort(Integer.parseInt(toPort));
+    req.setFromPort(parseInt(fromPort));
+    req.setToPort(parseInt(toPort));
     req.setIpProtocol(proto);    
     req.setCidrIp(ipRange);
     ec2.authorizeSecurityGroupIngress(req);
