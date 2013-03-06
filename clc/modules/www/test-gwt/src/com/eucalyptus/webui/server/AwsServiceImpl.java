@@ -41,6 +41,7 @@ import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceType;
 import com.amazonaws.services.ec2.model.IpPermission;
 import com.amazonaws.services.ec2.model.KeyPairInfo;
+import com.amazonaws.services.ec2.model.ReleaseAddressRequest;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.RevokeSecurityGroupIngressRequest;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
@@ -935,13 +936,30 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
   public List<String> allocateAddress(int userID, IPType type, int count)
       throws EucalyptusServiceException {
     AmazonEC2 ec2 = getEC2(_getKeys(userID));
+    if (type == IPType.PRIVATE)
+      throw new EucalyptusServiceException("not implemented");
     try {
       List<String> ret = new ArrayList<String>();
-      ret.add(ec2.allocateAddress().getPublicIp());
+      for (int i = 0; i < count; ++i)
+        ret.add(ec2.allocateAddress().getPublicIp());
       return ret;
     } catch (Exception e) {
       LOG.error(e);
       throw new EucalyptusServiceException("alloc error");
+    }
+  }
+  
+  public void releaseAddress(int userID, IPType type, String addr) throws EucalyptusServiceException {
+    AmazonEC2 ec2 = getEC2(_getKeys(userID));
+    if (type == IPType.PRIVATE)
+      throw new EucalyptusServiceException("not implemented");
+    try {
+      ReleaseAddressRequest r = new ReleaseAddressRequest();
+      r.setPublicIp(addr);
+      ec2.releaseAddress(r);
+    } catch (Exception e) {
+      LOG.error(e);
+      throw new EucalyptusServiceException("release error");
     }
   }
 
