@@ -1180,23 +1180,22 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 	
 	@Override
-	//public void modifyUserApp(Session session, ArrayList<UserApp> userApps)	throws EucalyptusServiceException {
 	public void confirmUserApp(Session session, List<String> userAppIdList, EnumUserAppStatus userAppStatus) throws EucalyptusServiceException {
 		// TODO Auto-generated method stub
 		verifySession(session);
 		
 		for (String userAppId : userAppIdList) {
-			String euca_vi_key = null;
+			String euca_instance_id = null;
 			//When approving user application, run relative VM instance
-			//we must do it firstly, becuase we need obtain vm instance key by runVMInstance function 
+			//we must do it firstly, becuase we need obtain vm instance key (id) by runVMInstance function 
 			if (userAppStatus == EnumUserAppStatus.APPROVED) {
-				euca_vi_key = userAppServiceProc.runVMInstance(session, Integer.parseInt(userAppId));
+				euca_instance_id = userAppServiceProc.runVMInstance(session, Integer.parseInt(userAppId));
 			}
 			
 			UserApp userApp = new UserApp();	
 			userApp.setUAId(Integer.parseInt(userAppId));
 			userApp.setStatus(userAppStatus);
-			userApp.setEucaVMInstanceKey(euca_vi_key);
+			userApp.setEucaVMInstanceKey(euca_instance_id);
 			  
 			userAppServiceProc.updateUserApp(userApp);
 		}

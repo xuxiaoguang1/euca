@@ -26,6 +26,7 @@ import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.config.SearchTableCol;
 import com.eucalyptus.webui.shared.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
+import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
 import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserApp;
@@ -42,12 +43,11 @@ public class UserAppServiceProcImpl {
 		  userApp.setAppTime(date);
 		  
 		  long srvDuration = userApp.getSrvEndingTime().getTime() - userApp.getSrvStartingTime().getTime();
+		  
+		  if (srvDuration < 0)
+			  throw new EucalyptusServiceException("service time error");;
+		  
 		  try {
-			  //update device state by user application
-			  // DeviceTemplateService.getInstance().actionTemplate(session, userApp.getUserId(), userApp.getTemplateId(), (int)srvDuration);
-		      System.err.println("not finish yet!!!");
-		      System.exit(0);
-		      
 			  userAppDBProc.addUserApp(userApp);
 		  }
 		  catch (UserAppSyncException e) {
@@ -109,6 +109,9 @@ public class UserAppServiceProcImpl {
 		  }
 	  }
 	  /**
+	   * 1. get vm instance id
+	   * 2. call createApp, and sync resources
+	   * 
 	   * @param session
 	   * @param userAppId
 	   * @return eucalyptus vm instance key
@@ -120,6 +123,7 @@ public class UserAppServiceProcImpl {
 			  
 			  int templateId = userApp.getTemplateId();
 			  
+			  int userId = userApp.getUserId();
 			  String keyPair = userApp.getKeyPair();
 			  String securityGroup = userApp.getSecurityGroup();
 			  
@@ -127,38 +131,25 @@ public class UserAppServiceProcImpl {
 			  VmImageType vit = this.vitDBProc.lookupVIT(userApp.getVmIdImageTypeId());
 			  if (vit != null)
 				  euca_vit_id = vit.getEucaVITId();
-			  
-			  throw new RuntimeException("NOT FINISH YET!! PLEASE USE TemplateInfo INSTEAD!!!");
-			  /* *
-			   * !![NOT FINISH YET!! PLEASE USE TemplateInfo INSTEAD!!!]
 
-			  Template template = DeviceTemplateService.getInstance().lookupTemplateByID(session, templateId);
+			  TemplateInfo template = DeviceTemplateService.getInstance().lookupTemplateInfoByID(templateId);
 			  
 			  if (keyPair != null && securityGroup != null && euca_vit_id != null) {
-			    //FIXME userID
-				  String euca_vi_key = EucaServiceWrapper.getInstance().runVM(session, 0, template, keyPair, securityGroup, euca_vit_id);
+				  String euca_intance_id = EucaServiceWrapper.getInstance().runVM(session, userId, template, keyPair, securityGroup, euca_vit_id);
 				  
-				  if (euca_vi_key != null) {
-					  return euca_vi_key;
+				  if (euca_intance_id != null) {
+					  //obtain the server id where the resources are allocated
+					  int serverId = EucaServiceWrapper.getInstance().getServerID(session, userId, euca_intance_id); 
+					  
+					  //!!! call createApp function
+					  
+					  return euca_intance_id;
 				  }
 				  else
 					  throw new EucalyptusServiceException("Failed to get eucalyptus vm instance key");
 			  }
 			  else
 				  throw new EucalyptusServiceException("User's key_pair or security group para error");
-			  */
-			  
-			  
-			  
-			  
-			  
-			  
-			  
-			  
-			  
-			  
-			  
-			  
 		  } catch (UserAppSyncException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

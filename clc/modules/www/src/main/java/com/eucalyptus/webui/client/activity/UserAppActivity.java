@@ -21,8 +21,6 @@ import com.eucalyptus.webui.client.view.FooterView.StatusType;
 import com.eucalyptus.webui.client.view.LogView.LogType;
 import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.resource.VMImageType;
-import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
-import com.eucalyptus.webui.shared.resource.device.TemplatePriceInfo;
 import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
