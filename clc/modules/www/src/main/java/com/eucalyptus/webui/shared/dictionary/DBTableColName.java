@@ -109,75 +109,6 @@ public class DBTableColName {
 		public final String EUCA_ZONE = "server_euca_zone";
 	}
 
-	public interface CPU {
-		public final String ID = "cpu_id";
-		public final String NAME = "cpu_name";
-		public final String VENDOR = "cpu_vendor";
-		public final String MODEL = "cpu_model";
-		public final String GHZ = "cpu_ghz";
-		public final String CACHE = "cpu_cache";
-		public final String SERVER_ID = "server_id";
-	}
-
-	public interface CPU_SERVICE {
-		public final String ID = "cs_id";
-		public final String STARTTIME = "cs_starttime";
-		public final String LIFE = "cs_life";
-		public final String STATE = "cs_state";
-		public final String CPU_ID = "cpu_id";
-		public final String USER_ID = "user_id";
-	}
-	
-	public interface MEMORY {
-		public final String ID = "mem_id";
-		public final String NAME = "mem_name";
-		public final String TOTAL = "mem_total";
-		public final String SERVER_ID = "server_id";
-	}
-	
-	public interface MEM_SERVICE {
-		public final String ID = "ms_id";
-		public final String USED = "ms_used";
-		public final String STARTTIME = "ms_starttime";
-		public final String LIFE = "ms_life";
-		public final String STATE = "ms_state";
-		public final String USER_ID = "user_id";
-		public final String MEM_ID = "mem_id";
-	}
-	
-	public interface DISK {
-		public final String ID = "disk_id";
-		public final String NAME = "disk_name";
-		public final String TOTAL = "disk_total";
-		public final String SERVER_ID = "server_id";
-	}
-	
-	public interface DISK_SERVICE {
-		public final String ID = "ds_id";
-		public final String USED = "ds_used";
-		public final String STARTTIME = "ds_starttime";
-		public final String LIFE = "ds_life";
-		public final String STATE = "ds_state";
-		public final String USER_ID = "user_id";
-		public final String DISK_ID = "disk_id";
-	}
-	
-	public interface IP {
-		public final String ID = "ip_id";
-		public final String ADDR = "ip_addr";
-		public final String TYPE = "ip_type";
-	}
-	
-	public interface IP_SERVICE {
-		public final String ID = "is_id";
-		public final String STARTTIME = "is_starttime";
-		public final String LIFE = "is_life";
-		public final String STATE = "is_state";
-		public final String IP_ID = "ip_id";
-		public final String VM_ID = "vm_id";
-		public final String USER_ID = "user_id";
-	}
-	
 	public interface VM {
 		public final String ID = "vm_id";
 		public final String IP_OUTER = "vm_ip";
@@ -198,15 +129,6 @@ public class DBTableColName {
 		public final String VER = "vit_ver";
 		public final String DEL = "vit_del";
 		public final String EUCA_VIT_ID = "euca_vit_id";
-	}
-	
-	public interface BW_SERVICE {
-		public final String ID = "bs_id";
-		public final String STARTTIME = "bs_starttime";
-		public final String LIFE = "bs_life";
-		public final String IP_ID = "ip_id";
-		public final String USER_ID = "user_id";
-		public final String BANDWIDTH = "bs_bw";
 	}
 	
 	public interface TEMPLATE {
