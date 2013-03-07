@@ -2,7 +2,6 @@ package com.eucalyptus.webui.server.user;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -453,8 +452,6 @@ public class UserAppDBProcWrapper {
 				append(", ").
 				append(DBTableName.USER).append(".*").
 				append(", ").
-				append(DBTableName.TEMPLATE).append(".*").
-				append(", ").
 				append(DBTableName.VM_IMAGE_TYPE).append(".*").
 				
 				append(" FROM ").
@@ -475,13 +472,6 @@ public class UserAppDBProcWrapper {
 				append(DBTableName.USER).append(".").append(DBTableColName.USER.ACCOUNT_ID).
 				append(" = ").
 				append(DBTableName.ACCOUNT).append(".").append(DBTableColName.ACCOUNT.ID).
-				
-				append(" LEFT JOIN ").
-				append(DBTableName.TEMPLATE).
-				append(" ON ").
-				append(DBTableName.TEMPLATE).append(".").append(DBTableColName.TEMPLATE.ID).
-				append(" = ").
-				//append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.TEMPLATE_ID).
 				
 				append(" LEFT JOIN ").
 				append(DBTableName.VM_IMAGE_TYPE).

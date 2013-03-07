@@ -124,6 +124,8 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView, Cha
 		if (templates == null)
 			return;
 		
+		this.TemplateList.clear();
+		
 		for (Map.Entry<String, Integer> entry : templates.entrySet()) {
 			String name = entry.getKey().toString();
 			Integer id = entry.getValue();
@@ -138,6 +140,8 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView, Cha
 		if (vmTypeList == null)
 			return;
 		
+		this.VMImageTypeList.clear();
+		
 		for (VMImageType vm : vmTypeList) {
 			String item = vm.getOs() + " (" + vm.getVer() + ")";
 			this.VMImageTypeList.addItem(item, Integer.valueOf(vm.getId()).toString());
@@ -149,6 +153,8 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView, Cha
 		// TODO Auto-generated method stub
 		if (keyPairList == null)
 			return;
+		
+		this.keyPairList.clear();
 		
 		for (String keyPair : keyPairList) {
 			this.keyPairList.addItem(keyPair);

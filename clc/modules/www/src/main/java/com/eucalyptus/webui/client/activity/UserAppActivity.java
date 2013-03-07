@@ -42,7 +42,7 @@ public class UserAppActivity extends AbstractSearchActivity
 	public static final String[] DEL_USER_APP_CAPTION = {"Add users", "删除申请"};
 	public static final String[] DEL_USER_APP_SUBJECT = {"Are you sure to add user?", "确定删除所选用户申请"};
 	
-	private final String[] FOOTERVIEW_USER_NO_SELECTION = {"Must select users", "必须选择至少一个用户"};
+	private final String[] FOOTERVIEW_USER_NO_SELECTION = {"Must select user applications", "必须选择至少一个用户申请"};
 	private final String[] FOOTERVIEW_FAILED_TO_QUERY_TEMPLATES = {"Failed to query templates", "查询模板库失败"};
 
 	private final String[] FOOTERVIEW_FAILED_TO_QUERY_VM_IMAGE_TYPE = {"Failed to query VM image type", "查询虚拟机镜像类型失败"};
