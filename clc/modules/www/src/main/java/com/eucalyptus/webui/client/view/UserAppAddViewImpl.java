@@ -57,10 +57,7 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView, Cha
 		if (vitListSelIndex >= 0)
 			vmImageTypeId = Integer.parseInt(this.VMImageTypeList.getValue(vitListSelIndex));
 		
-		int templateId = 0;
 		int temListSelIndex = this.TemplateList.getSelectedIndex();
-		if (temListSelIndex >= 0)
-			templateId = Integer.parseInt(this.TemplateList.getValue(temListSelIndex));
 		
 		String keyPair = null;
 		int keyPairListSelIndex = this.keyPairList.getSelectedIndex();
@@ -72,7 +69,7 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView, Cha
 		if (securityGroupListSelIndex >= 0)
 			securityGroup = this.securityGroupList.getValue(securityGroupListSelIndex);
 		
-		if (vmImageTypeId != 0 && keyPair != null && securityGroup != null) {
+		if (temListSelIndex >= 0 && vmImageTypeId != 0 && keyPair != null && securityGroup != null) {
 			
 			UserApp userApp = new UserApp();
 			userApp.setVmImageTypeId(vmImageTypeId);
@@ -80,6 +77,11 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView, Cha
 			userApp.setSrvEndingingTime(this.endingTime.getValue());
 			userApp.setKeyPair(keyPair);
 			userApp.setSecurityGroup(securityGroup);
+			
+			userApp.setNcpus(Integer.parseInt(this.template_ncpus.getValue()));
+			userApp.setMem(Integer.parseInt(this.template_mem.getValue()));
+			userApp.setDisk(Integer.parseInt(this.template_disk.getValue()));
+			userApp.setBw(Integer.parseInt(this.template_bw.getValue()));
 			
 			this.presenter.doCreateUserApp(userApp);
 			

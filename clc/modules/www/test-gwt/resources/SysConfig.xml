@@ -471,18 +471,6 @@
 				<db_field>ua_comment</db_field>
 			</col>
 			<col>
-				<title language="ENGLISH">CPU</title>
-				<title language="CHINESE">CPU</title>
-				<sortable>false</sortable>
-				<width>0%</width>
-				<display>MANDATORY</display>
-				<text>TEXT</text>
-				<editable>false</editable>
-				<hidden>true</hidden>
-				<selected>false</selected>
-				<db_field>template_cpu</db_field>
-			</col>
-			<col>
 				<title language="ENGLISH">NCPUS</title>
 				<title language="CHINESE">CPU数量</title>
 				<sortable>false</sortable>
@@ -492,7 +480,7 @@
 				<editable>false</editable>
 				<hidden>false</hidden>
 				<selected>false</selected>
-				<db_field>template_ncpus</db_field>
+				<db_field>ua_ncpus</db_field>
 			</col>
 			<col>
 				<title language="ENGLISH">Mem</title>
@@ -504,7 +492,7 @@
 				<editable>false</editable>
 				<hidden>false</hidden>
 				<selected>false</selected>
-				<db_field>template_mem</db_field>
+				<db_field>ua_mem</db_field>
 			</col>
 			<col>
 				<title language="ENGLISH">Disk</title>
@@ -516,7 +504,19 @@
 				<editable>false</editable>
 				<hidden>false</hidden>
 				<selected>false</selected>
-				<db_field>template_disk</db_field>
+				<db_field>ua_disk</db_field>
+			</col>
+			<col>
+				<title language="ENGLISH">BindWidth</title>
+				<title language="CHINESE">带宽</title>
+				<sortable>false</sortable>
+				<width>0%</width>
+				<display>MANDATORY</display>
+				<text>TEXT</text>
+				<editable>false</editable>
+				<hidden>false</hidden>
+				<selected>false</selected>
+				<db_field>ua_bw</db_field>
 			</col>
 			<col>
 				<title language="ENGLISH">OS</title>
