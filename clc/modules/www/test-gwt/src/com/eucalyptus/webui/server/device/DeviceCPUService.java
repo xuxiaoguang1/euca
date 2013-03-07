@@ -284,6 +284,9 @@ public class DeviceCPUService {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
+        if (cpu_desc == null) {
+            cpu_desc = "";
+        }
         int resize = Math.max(0, cpu_total);
         Connection conn = null;
         try {

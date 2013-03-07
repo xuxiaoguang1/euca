@@ -724,133 +724,133 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 	
 	@Override
-	public SearchResult lookupDeviceAreaByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
-		return DeviceAreaService.getInstance().lookupAreaByDate(session, range, dateBegin, dateEnd);
+	public SearchResult lookupDeviceArea(Session session, SearchRange range) throws EucalyptusServiceException {
+		return DeviceAreaService.lookupArea(session, range);
 	}
 	
 	@Override
 	public void createDeviceArea(Session session, String area_name, String area_desc) throws EucalyptusServiceException {
-	    DeviceAreaService.getInstance().createArea(false, session, area_name, area_desc);
+	    DeviceAreaService.createArea(false, session, area_name, area_desc);
 	}
 	
 	@Override
 	public void modifyDeviceArea(Session session, int area_id, String area_desc) throws EucalyptusServiceException {
-	    DeviceAreaService.getInstance().modifyArea(false, session, area_id, area_desc);
+	    DeviceAreaService.modifyArea(false, session, area_id, area_desc);
 	}
 
 	@Override
 	public void deleteDeviceArea(Session session, List<Integer> area_ids) throws EucalyptusServiceException {
-	    DeviceAreaService.getInstance().deleteArea(false, session, area_ids);
+	    DeviceAreaService.deleteArea(false, session, area_ids);
 	}
 	
 	@Override
 	public Map<String, Integer> lookupDeviceAreaNames(Session session) throws EucalyptusServiceException {
-	    return DeviceAreaService.getInstance().lookupAreaNames();
+	    return DeviceAreaService.lookupAreaNames();
 	}
 	
 	@Override
 	public AreaInfo lookupDeviceAreaByID(Session session, int area_id) throws EucalyptusServiceException {
-	    return DeviceAreaService.getInstance().lookupAreaByID(area_id);
+	    return DeviceAreaService.lookupAreaByID(area_id);
 	}
 	
 	@Override
-	public SearchResult lookupDeviceRoomByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
-		return DeviceRoomService.getInstance().lookupRoomByDate(session, range, dateBegin, dateEnd);
+	public SearchResult lookupDeviceRoom(Session session, SearchRange range) throws EucalyptusServiceException {
+		return DeviceRoomService.lookupRoom(session, range);
 	}
 	
 	@Override
 	public void createDeviceRoom(Session session, String room_name, String room_desc, int area_id) throws EucalyptusServiceException {
-	    DeviceRoomService.getInstance().createRoom(false, session, room_name, room_desc, area_id);
+	    DeviceRoomService.createRoom(false, session, room_name, room_desc, area_id);
 	}
 	
 	@Override
 	public void modifyDeviceRoom(Session session, int room_id, String room_desc) throws EucalyptusServiceException {
-	    DeviceRoomService.getInstance().modifyRoom(false, session, room_id, room_desc);
+	    DeviceRoomService.modifyRoom(false, session, room_id, room_desc);
 	}
 	
 	@Override
 	public void deleteDeviceRoom(Session session, List<Integer> room_ids) throws EucalyptusServiceException {
-	    DeviceRoomService.getInstance().deleteRoom(false, session, room_ids);
+	    DeviceRoomService.deleteRoom(false, session, room_ids);
 	}
 	
 	@Override
 	public Map<String, Integer> lookupDeviceRoomNamesByAreaID(Session session, int area_id) throws EucalyptusServiceException {
-	    return DeviceRoomService.getInstance().lookupRoomNamesByAreaID(area_id);
+	    return DeviceRoomService.lookupRoomNamesByAreaID(area_id);
 	}
 	
 	@Override
 	public RoomInfo lookupDeviceRoomByID(Session session, int room_id) throws EucalyptusServiceException {
-	    return DeviceRoomService.getInstance().lookupRoomByID(room_id);
+	    return DeviceRoomService.lookupRoomByID(room_id);
 	}
 	
 	@Override
-	public SearchResult lookupDeviceCabinetByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
-		return DeviceCabinetService.getInstance().lookupCabinetByDate(session, range, dateBegin, dateEnd);
+	public SearchResult lookupDeviceCabinet(Session session, SearchRange range) throws EucalyptusServiceException {
+		return DeviceCabinetService.lookupCabinet(session, range);
 	}
 	
 	@Override
 	public void createDeviceCabinet(Session session, String cabinet_name, String cabinet_desc, int room_id) throws EucalyptusServiceException {
-	    DeviceCabinetService.getInstance().createCabinet(false, session, cabinet_name, cabinet_desc, room_id);
+	    DeviceCabinetService.createCabinet(false, session, cabinet_name, cabinet_desc, room_id);
 	}
 	
 	@Override
 	public void modifyDeviceCabinet(Session session, int cabinet_id, String cabinet_desc) throws EucalyptusServiceException {
-	    DeviceCabinetService.getInstance().modifyCabinet(false, session, cabinet_id, cabinet_desc);
+	    DeviceCabinetService.modifyCabinet(false, session, cabinet_id, cabinet_desc);
 	}
 
 	@Override
 	public void deleteDeviceCabinet(Session session, List<Integer> cabinet_ids) throws EucalyptusServiceException {
-	    DeviceCabinetService.getInstance().deleteCabinet(false, session, cabinet_ids);
+	    DeviceCabinetService.deleteCabinet(false, session, cabinet_ids);
 	}
 	
 	@Override
 	public Map<String, Integer> lookupDeviceCabinetNamesByRoomID(Session session, int room_id) throws EucalyptusServiceException {
-	    return DeviceCabinetService.getInstance().lookupCabinetNamesByRoomID(room_id);
+	    return DeviceCabinetService.lookupCabinetNamesByRoomID(room_id);
 	}
 	
 	@Override
 	public CabinetInfo lookupDeviceCabinetByID(Session session, int cabinet_id) throws EucalyptusServiceException {
-	    return DeviceCabinetService.getInstance().lookupCabinetByID(cabinet_id);
+	    return DeviceCabinetService.lookupCabinetByID(cabinet_id);
 	}
 	
 	@Override
-	public  SearchResult lookupDeviceServerByDate(Session session, SearchRange range, ServerState server_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
-	    return DeviceServerService.getInstance().lookupServerByDate(session, range, server_state, dateBegin, dateEnd);
+	public  SearchResult lookupDeviceServer(Session session, SearchRange range, ServerState server_state) throws EucalyptusServiceException {
+	    return DeviceServerService.lookupServer(session, range, server_state);
 	}
 	
     @Override
     public Map<Integer, Integer> lookupDeviceServerCounts(Session session) throws EucalyptusServiceException {
-        return DeviceServerService.getInstance().lookupServerCountsByState(session);
+        return DeviceServerService.lookupServerCountsByState(session);
     }
    
     @Override
     public void createDeviceServer(Session session, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws EucalyptusServiceException {
-        DeviceServerService.getInstance().createServer(false, session, server_name, server_desc, server_ip, server_bw, server_state, cabinet_id);
+        DeviceServerService.createServer(false, session, server_name, server_desc, server_ip, server_bw, server_state, cabinet_id);
     }
     
     @Override
     public void modifyDeviceServer(Session session, int server_id, String server_desc, String server_ip, int server_bw) throws EucalyptusServiceException {
-        DeviceServerService.getInstance().modifyServer(false, session, server_id, server_desc, server_ip, server_bw);
+        DeviceServerService.modifyServer(false, session, server_id, server_desc, server_ip, server_bw);
     }
     
     @Override
     public void modifyDeviceServerState(Session session, int server_id, ServerState server_state) throws EucalyptusServiceException {
-        DeviceServerService.getInstance().modifyServerState(false, session, server_id, server_state);
+        DeviceServerService.modifyServerState(false, session, server_id, server_state);
     }
     
     @Override
     public void deleteDeviceServer(Session session, List<Integer> server_ids) throws EucalyptusServiceException {
-        DeviceServerService.getInstance().deleteServer(false, session, server_ids);
+        DeviceServerService.deleteServer(false, session, server_ids);
     }
     
     @Override
     public Map<String, Integer> lookupDeviceServerNamesByCabinetID(Session session, int cabinet_id) throws EucalyptusServiceException {
-        return DeviceServerService.getInstance().lookupServerNamesByCabinetID(cabinet_id);
+        return DeviceServerService.lookupServerNamesByCabinetID(cabinet_id);
     }
     
     @Override
     public ServerInfo lookupDeviceServerByID(Session session, int server_id) throws EucalyptusServiceException {
-        return DeviceServerService.getInstance().lookupServerInfoByID(server_id);
+        return DeviceServerService.lookupServerInfoByID(server_id);
     }
     
     @Override

@@ -29,21 +29,11 @@ import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
 public class DeviceAreaService {
     
-    private static DeviceAreaService instance = new DeviceAreaService();
-    
-    public static DeviceAreaService getInstance() {
-        return instance;
-    }
-    
-    private DeviceAreaService() {
-        /* do nothing */
-    }
-    
-    private LoginUserProfile getUser(Session session) {
+    private static LoginUserProfile getUser(Session session) {
         return LoginUserProfileStorer.instance().get(session.getId());
     }
 
-    private List<SearchResultFieldDesc> FIELDS_DESC = Arrays.asList(
+    private static List<SearchResultFieldDesc> FIELDS_DESC = Arrays.asList(
             new SearchResultFieldDesc("0%", false, null),
             new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
             new SearchResultFieldDesc(false, "3EM", new ClientMessage("Index", "序号"),
@@ -57,7 +47,7 @@ public class DeviceAreaService {
             new SearchResultFieldDesc(true, "8%", new ClientMessage("Modify", "修改时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false));
     
-    private DBTableColumn getSortColumn(SearchRange range) {
+    private static DBTableColumn getSortColumn(SearchRange range) {
         switch (range.getSortField()) {
         case CellTableColumns.AREA.AREA_NAME: return DBTable.AREA.AREA_NAME;
         case CellTableColumns.AREA.AREA_DESC: return DBTable.AREA.AREA_DESC;
@@ -67,7 +57,7 @@ public class DeviceAreaService {
         return null;
     }
     
-    public SearchResult lookupAreaByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd)  throws EucalyptusServiceException {
+    public static SearchResult lookupArea(Session session, SearchRange range)  throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -75,7 +65,7 @@ public class DeviceAreaService {
         try {
             conn = DBProcWrapper.getConnection();
             DBTableArea AREA = DBTable.AREA;
-            ResultSet rs = DeviceAreaDBProcWrapper.lookupAreaByDate(conn, dateBegin, dateEnd, getSortColumn(range), range.isAscending());
+            ResultSet rs = DeviceAreaDBProcWrapper.lookupArea(conn, getSortColumn(range), range.isAscending());
             ArrayList<SearchResultRow> rows = new ArrayList<SearchResultRow>();
             int index, start = range.getStart(), end = start + range.getLength();
             for (index = 0; rs.next(); index ++) {
@@ -111,7 +101,7 @@ public class DeviceAreaService {
         }
     }
     
-    public Map<String, Integer> lookupAreaNames() throws EucalyptusServiceException {
+    public static Map<String, Integer> lookupAreaNames() throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -126,7 +116,7 @@ public class DeviceAreaService {
         }
     }
 
-    public AreaInfo lookupAreaByID(int area_id) throws EucalyptusServiceException {
+    public static AreaInfo lookupAreaByID(int area_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -147,7 +137,7 @@ public class DeviceAreaService {
         }
     }
     
-    public void createArea(boolean force, Session session, String area_name, String area_desc) throws EucalyptusServiceException {
+    public static void createArea(boolean force, Session session, String area_name, String area_desc) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -168,7 +158,7 @@ public class DeviceAreaService {
         }
     }
     
-    public void deleteArea(boolean force, Session session, List<Integer> area_ids) throws EucalyptusServiceException {
+    public static void deleteArea(boolean force, Session session, List<Integer> area_ids) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -178,7 +168,7 @@ public class DeviceAreaService {
                 conn = DBProcWrapper.getConnection();
                 conn.setAutoCommit(false);
                 for (int area_id : area_ids) {
-                	DeviceAreaDBProcWrapper.lookupAreaByID(conn, true, area_id).deleteRow();
+                    DeviceAreaDBProcWrapper.lookupAreaByID(conn, true, area_id).deleteRow();
                 }
                 conn.commit();
             }
@@ -193,7 +183,7 @@ public class DeviceAreaService {
         }
     }
     
-    public void modifyArea(boolean force, Session session, int area_id, String area_desc) throws EucalyptusServiceException {
+    public static void modifyArea(boolean force, Session session, int area_id, String area_desc) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -218,75 +208,67 @@ public class DeviceAreaService {
         }
     }
     
-}
-
-class DeviceAreaDBProcWrapper {
-    
-    private static final Logger log = Logger.getLogger(DeviceAreaDBProcWrapper.class.getName());
-    
-    public static Map<String, Integer> lookupAreaNames(Connection conn) throws Exception {
-        DBTableArea AREA = DBTable.AREA;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ");
-        sb.append(AREA.AREA_NAME).append(", ").append(AREA.AREA_ID);
-        sb.append(" FROM ").append(AREA).append(" WHERE 1=1");
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        Map<String, Integer> result = new HashMap<String, Integer>();
-        while (rs.next()) {
-            result.put(rs.getString(1), rs.getInt(2));
+    static class DeviceAreaDBProcWrapper {
+        
+        private static final Logger log = Logger.getLogger(DeviceAreaDBProcWrapper.class.getName());
+        
+        public static Map<String, Integer> lookupAreaNames(Connection conn) throws Exception {
+            DBTableArea AREA = DBTable.AREA;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT ");
+            sb.append(AREA.AREA_NAME).append(", ").append(AREA.AREA_ID);
+            sb.append(" FROM ").append(AREA).append(" WHERE 1=1");
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+            Map<String, Integer> result = new HashMap<String, Integer>();
+            while (rs.next()) {
+                result.put(rs.getString(1), rs.getInt(2));
+            }
+            return result;
         }
-        return result;
-    }
-    
-    public static ResultSet lookupAreaByID(Connection conn, boolean updatable, int area_id) throws Exception {
-        DBTableArea AREA = DBTable.AREA;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT * FROM ").append(AREA);
-        sb.append(" WHERE ").append(AREA.AREA_ID).append(" = ").append(area_id);
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
-        rs.next();
-        return rs;
-    }
-    
-    public static ResultSet lookupAreaByDate(Connection conn, Date beg, Date end, DBTableColumn sorted, boolean isAscending) throws Exception {
-        DBTableArea AREA = DBTable.AREA;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT * FROM ").append(AREA).append(" WHERE 1=1");
-        if (beg != null || end != null) {
-            sb.append(" AND ("); {
-                sb.appendDateBound(AREA.AREA_CREATIONTIME, beg, end);
-                sb.append(" OR ");
-                sb.appendDateBound(AREA.AREA_MODIFIEDTIME, beg, end);
+        
+        public static ResultSet lookupAreaByID(Connection conn, boolean updatable, int area_id) throws Exception {
+            DBTableArea AREA = DBTable.AREA;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT * FROM ").append(AREA);
+            sb.append(" WHERE ").append(AREA.AREA_ID).append(" = ").append(area_id);
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
+            rs.next();
+            return rs;
+        }
+        
+        public static ResultSet lookupArea(Connection conn, DBTableColumn sorted, boolean isAscending) throws Exception {
+            DBTableArea AREA = DBTable.AREA;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT * FROM ").append(AREA).append(" WHERE 1=1");
+            if (sorted != null) {
+                sb.append(" ORDER BY ").append(sorted).append(isAscending ? " ASC" : " DESC");
+            }
+            return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+        }
+        
+        public static int createArea(Connection conn, String area_name, String area_desc) throws Exception {
+            DBTableArea AREA = DBTable.AREA;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("INSERT INTO ").append(AREA).append(" ("); {
+                sb.append(AREA.AREA_NAME).append(", ");
+                sb.append(AREA.AREA_DESC).append(", ");
+                sb.append(AREA.AREA_CREATIONTIME).append(", ");
+                sb.append(AREA.AREA_MODIFIEDTIME);
+            }
+            sb.append(") VALUES ("); {
+                sb.appendString(area_name).append(", ");
+                sb.appendString(area_desc).append(", ");
+                sb.appendDate().append(", ");
+                sb.appendNull();
             }
             sb.append(")");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(sb.toSql(log), new String[]{AREA.AREA_ID.toString()});
+            ResultSet rs = stat.getGeneratedKeys();
+            rs.next();
+            return rs.getInt(1);
         }
-        if (sorted != null) {
-            sb.append(" ORDER BY ").append(sorted).append(isAscending ? " ASC" : " DESC");
-        }
-        return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-    }
-    
-    public static int createArea(Connection conn, String area_name, String area_desc) throws Exception {
-        DBTableArea AREA = DBTable.AREA;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("INSERT INTO ").append(AREA).append(" ("); {
-            sb.append(AREA.AREA_NAME).append(", ");
-            sb.append(AREA.AREA_DESC).append(", ");
-            sb.append(AREA.AREA_CREATIONTIME).append(", ");
-            sb.append(AREA.AREA_MODIFIEDTIME);
-        }
-        sb.append(") VALUES ("); {
-            sb.appendString(area_name).append(", ");
-            sb.appendString(area_desc).append(", ");
-            sb.appendDate().append(", ");
-            sb.appendNull();
-        }
-        sb.append(")");
-        Statement stat = conn.createStatement();
-        stat.executeUpdate(sb.toSql(log), new String[]{AREA.AREA_ID.toString()});
-        ResultSet rs = stat.getGeneratedKeys();
-        rs.next();
-        return rs.getInt(1);
+
     }
 
 }

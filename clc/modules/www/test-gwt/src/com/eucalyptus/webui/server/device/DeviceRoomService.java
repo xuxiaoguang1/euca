@@ -29,37 +29,27 @@ import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
 public class DeviceRoomService {
     
-    private static DeviceRoomService instance = new DeviceRoomService();
-    
-    public static DeviceRoomService getInstance() {
-        return instance;
-    }
-    
-    private DeviceRoomService() {
-        /* do nothing */
-    }
-    
-    private LoginUserProfile getUser(Session session) {
+    private static LoginUserProfile getUser(Session session) {
         return LoginUserProfileStorer.instance().get(session.getId());
     }
     
-	private List<SearchResultFieldDesc> FIELDS_DESC = Arrays.asList(
-			new SearchResultFieldDesc("0%", false, null),
-			new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
-			new SearchResultFieldDesc(false, "3EM", new ClientMessage("Index", "序号"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Name", "名称"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Desc", "描述"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Area", "所在区域"),
+    private static List<SearchResultFieldDesc> FIELDS_DESC = Arrays.asList(
+            new SearchResultFieldDesc("0%", false, null),
+            new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
+            new SearchResultFieldDesc(false, "3EM", new ClientMessage("Index", "序号"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Create", "创建时间"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Modify", "修改时间"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false));
-	
-    private DBTableColumn getSortColumn(SearchRange range) {
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Name", "名称"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Desc", "描述"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Area", "所在区域"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Create", "创建时间"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Modify", "修改时间"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false));
+    
+    private static DBTableColumn getSortColumn(SearchRange range) {
         switch (range.getSortField()) {
         case CellTableColumns.ROOM.ROOM_NAME: return DBTable.ROOM.ROOM_NAME;
         case CellTableColumns.ROOM.ROOM_DESC: return DBTable.ROOM.ROOM_DESC;
@@ -70,7 +60,7 @@ public class DeviceRoomService {
         return null;
     }
     
-    public SearchResult lookupRoomByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+    public static SearchResult lookupRoom(Session session, SearchRange range) throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -79,7 +69,7 @@ public class DeviceRoomService {
             conn = DBProcWrapper.getConnection();
             DBTableArea AREA = DBTable.AREA;
             DBTableRoom ROOM = DBTable.ROOM;
-            ResultSet rs = DeviceRoomDBProcWrapper.lookupRoomByDate(conn, dateBegin, dateEnd, getSortColumn(range), range.isAscending());
+            ResultSet rs = DeviceRoomDBProcWrapper.lookupRoom(conn, getSortColumn(range), range.isAscending());
             ArrayList<SearchResultRow> rows = new ArrayList<SearchResultRow>();
             int index, start = range.getStart(), end = start + range.getLength();
             for (index = 0; rs.next(); index ++) {
@@ -117,7 +107,7 @@ public class DeviceRoomService {
         }
     }
     
-    public Map<String, Integer> lookupRoomNamesByAreaID(int area_id) throws EucalyptusServiceException {
+    public static Map<String, Integer> lookupRoomNamesByAreaID(int area_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -132,7 +122,7 @@ public class DeviceRoomService {
         }
     }
     
-    public RoomInfo lookupRoomByID(int room_id) throws EucalyptusServiceException {
+    public static RoomInfo lookupRoomByID(int room_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -154,7 +144,7 @@ public class DeviceRoomService {
         }
     }
     
-    public void createRoom(boolean force, Session session, String room_name, String room_desc, int area_id) throws EucalyptusServiceException {
+    public static void createRoom(boolean force, Session session, String room_name, String room_desc, int area_id) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -175,7 +165,7 @@ public class DeviceRoomService {
         }
     }
     
-    public void deleteRoom(boolean force, Session session, List<Integer> room_ids) throws EucalyptusServiceException {
+    public static void deleteRoom(boolean force, Session session, List<Integer> room_ids) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -185,7 +175,7 @@ public class DeviceRoomService {
                 conn = DBProcWrapper.getConnection();
                 conn.setAutoCommit(false);
                 for (int room_id : room_ids) {
-                	DeviceRoomDBProcWrapper.lookupRoomByID(conn, true, room_id).deleteRow();
+                    DeviceRoomDBProcWrapper.lookupRoomByID(conn, true, room_id).deleteRow();
                 }
                 conn.commit();
             }
@@ -200,7 +190,7 @@ public class DeviceRoomService {
         }
     }
     
-    public void modifyRoom(boolean force, Session session, int room_id, String room_desc) throws EucalyptusServiceException {
+    public static void modifyRoom(boolean force, Session session, int room_id, String room_desc) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -228,84 +218,75 @@ public class DeviceRoomService {
         }
     }
     
-}
-
-class DeviceRoomDBProcWrapper {
-    
-    private static final Logger log = Logger.getLogger(DeviceRoomDBProcWrapper.class.getName());
-    
-    public static Map<String, Integer> lookupRoomNamesByAreaID(Connection conn, int area_id) throws Exception {
-        DBTableRoom ROOM = DBTable.ROOM;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ");
-        sb.append(ROOM.ROOM_NAME).append(", ").append(ROOM.ROOM_ID);
-        sb.append(" FROM ").append(ROOM);
-        sb.append(" WHERE ").append(ROOM.AREA_ID).append(" = ").append(area_id);
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        Map<String, Integer> result = new HashMap<String, Integer>();
-        while (rs.next()) {
-            result.put(rs.getString(1), rs.getInt(2));
+    static class DeviceRoomDBProcWrapper {
+        
+        private static final Logger log = Logger.getLogger(DeviceRoomDBProcWrapper.class.getName());
+        
+        public static Map<String, Integer> lookupRoomNamesByAreaID(Connection conn, int area_id) throws Exception {
+            DBTableRoom ROOM = DBTable.ROOM;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT ");
+            sb.append(ROOM.ROOM_NAME).append(", ").append(ROOM.ROOM_ID);
+            sb.append(" FROM ").append(ROOM);
+            sb.append(" WHERE ").append(ROOM.AREA_ID).append(" = ").append(area_id);
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+            Map<String, Integer> result = new HashMap<String, Integer>();
+            while (rs.next()) {
+                result.put(rs.getString(1), rs.getInt(2));
+            }
+            return result;
         }
-        return result;
-    }
-    
-    public static ResultSet lookupRoomByID(Connection conn, boolean updatable, int room_id) throws Exception {
-        DBTableRoom ROOM = DBTable.ROOM;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT * FROM ").append(ROOM);
-        sb.append(" WHERE ").append(ROOM.ROOM_ID).append(" = ").append(room_id);
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
-        rs.next();
-        return rs;
-    }
-
-    public static ResultSet lookupRoomByDate(Connection conn, Date beg, Date end, DBTableColumn sorted,
-            boolean isAscending) throws Exception {
-        DBTableArea AREA = DBTable.AREA;
-        DBTableRoom ROOM = DBTable.ROOM;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ").append(ROOM.ANY).append(", ").append(AREA.AREA_NAME).append(" FROM "); {
-            sb.append(ROOM).append(" LEFT JOIN ").append(AREA);
-            sb.append(" ON ").append(ROOM.AREA_ID).append(" = ").append(AREA.AREA_ID);
+        
+        public static ResultSet lookupRoomByID(Connection conn, boolean updatable, int room_id) throws Exception {
+            DBTableRoom ROOM = DBTable.ROOM;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT * FROM ").append(ROOM);
+            sb.append(" WHERE ").append(ROOM.ROOM_ID).append(" = ").append(room_id);
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
+            rs.next();
+            return rs;
         }
-        sb.append(" WHERE 1=1");
-        if (beg != null || end != null) {
-            sb.append(" AND ("); {
-                sb.appendDateBound(ROOM.ROOM_CREATIONTIME, beg, end);
-                sb.append(" OR ");
-                sb.appendDateBound(ROOM.ROOM_MODIFIEDTIME, beg, end);
+
+        public static ResultSet lookupRoom(Connection conn, DBTableColumn sorted, boolean isAscending) throws Exception {
+            DBTableArea AREA = DBTable.AREA;
+            DBTableRoom ROOM = DBTable.ROOM;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT ").append(ROOM.ANY).append(", ").append(AREA.AREA_NAME).append(" FROM "); {
+                sb.append(ROOM).append(" LEFT JOIN ").append(AREA);
+                sb.append(" ON ").append(ROOM.AREA_ID).append(" = ").append(AREA.AREA_ID);
+            }
+            sb.append(" WHERE 1=1");
+            if (sorted != null) {
+                sb.append(" ORDER BY ").append(sorted).append(isAscending ? " ASC" : " DESC");
+            }
+            return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+        }
+        
+        public static int createRoom(Connection conn, String room_name, String room_desc, int area_id) throws Exception {
+            DBTableRoom ROOM = DBTable.ROOM;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("INSERT INTO ").append(ROOM).append(" ("); {
+                sb.append(ROOM.ROOM_NAME).append(", ");
+                sb.append(ROOM.ROOM_DESC).append(", ");
+                sb.append(ROOM.AREA_ID).append(", ");
+                sb.append(ROOM.ROOM_CREATIONTIME).append(", ");
+                sb.append(ROOM.ROOM_MODIFIEDTIME);
+            }
+            sb.append(") VALUES ("); {
+                sb.appendString(room_name).append(", ");
+                sb.appendString(room_desc).append(", ");
+                sb.append(area_id).append(", ");
+                sb.appendDate().append(", ");
+                sb.appendNull();
             }
             sb.append(")");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(sb.toSql(log), new String[]{ROOM.ROOM_ID.toString()});
+            ResultSet rs = stat.getGeneratedKeys();
+            rs.next();
+            return rs.getInt(1);
         }
-        if (sorted != null) {
-            sb.append(" ORDER BY ").append(sorted).append(isAscending ? " ASC" : " DESC");
-        }
-        return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+
     }
     
-    public static int createRoom(Connection conn, String room_name, String room_desc, int area_id) throws Exception {
-        DBTableRoom ROOM = DBTable.ROOM;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("INSERT INTO ").append(ROOM).append(" ("); {
-            sb.append(ROOM.ROOM_NAME).append(", ");
-            sb.append(ROOM.ROOM_DESC).append(", ");
-            sb.append(ROOM.AREA_ID).append(", ");
-            sb.append(ROOM.ROOM_CREATIONTIME).append(", ");
-            sb.append(ROOM.ROOM_MODIFIEDTIME);
-        }
-        sb.append(") VALUES ("); {
-            sb.appendString(room_name).append(", ");
-            sb.appendString(room_desc).append(", ");
-            sb.append(area_id).append(", ");
-            sb.appendDate().append(", ");
-            sb.appendNull();
-        }
-        sb.append(")");
-        Statement stat = conn.createStatement();
-        stat.executeUpdate(sb.toSql(log), new String[]{ROOM.ROOM_ID.toString()});
-        ResultSet rs = stat.getGeneratedKeys();
-        rs.next();
-        return rs.getInt(1);
-    }
-
 }

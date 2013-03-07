@@ -30,43 +30,33 @@ import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
 public class DeviceServerService {
     
-    private static DeviceServerService instance = new DeviceServerService();
-    
-    public static DeviceServerService getInstance() {
-        return instance;
-    }
-    
-    private DeviceServerService() {
-        /* do nothing */
-    }
-    
-    private LoginUserProfile getUser(Session session) {
+    private static LoginUserProfile getUser(Session session) {
         return LoginUserProfileStorer.instance().get(session.getId());
     }
     
-	private static final List<SearchResultFieldDesc> FIELDS_DESC = Arrays.asList(
-			new SearchResultFieldDesc(null, "0%",false),
-			new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
-			new SearchResultFieldDesc(false, "3EM", new ClientMessage("Index", "序号"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Name", "名称"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Desc", "描述"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Cabinet", "所在机柜"),
+    private static final List<SearchResultFieldDesc> FIELDS_DESC = Arrays.asList(
+            new SearchResultFieldDesc(null, "0%",false),
+            new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
+            new SearchResultFieldDesc(false, "3EM", new ClientMessage("Index", "序号"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-	        new SearchResultFieldDesc(true, "8%", new ClientMessage("IP", "IP地址"),
-	                TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Name", "名称"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Desc", "描述"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Cabinet", "所在机柜"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("IP", "IP地址"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("Bandwidth", "带宽(KB)"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("State", "状态"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Create", "创建时间"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Modify", "修改时间"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false));
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("State", "状态"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Create", "创建时间"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Modify", "修改时间"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false));
 
-    private DBTableColumn getSortColumn(SearchRange range) {
+    private static DBTableColumn getSortColumn(SearchRange range) {
         switch (range.getSortField()) {
         case CellTableColumns.SERVER.SERVER_NAME: return DBTable.SERVER.SERVER_NAME;
         case CellTableColumns.SERVER.SERVER_DESC: return DBTable.SERVER.SERVER_DESC;
@@ -80,7 +70,7 @@ public class DeviceServerService {
         return null;
     }
     
-    public SearchResult lookupServerByDate(Session session, SearchRange range, ServerState state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+    public static SearchResult lookupServer(Session session, SearchRange range, ServerState state) throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -89,7 +79,7 @@ public class DeviceServerService {
             conn = DBProcWrapper.getConnection();
             DBTableCabinet CABINET = DBTable.CABINET;
             DBTableServer SERVER = DBTable.SERVER;
-            ResultSet rs = DeviceServerDBProcWrapper.lookupServerByDate(conn, state, dateBegin, dateEnd, getSortColumn(range), range.isAscending());
+            ResultSet rs = DeviceServerDBProcWrapper.lookupServer(conn, state, getSortColumn(range), range.isAscending());
             ArrayList<SearchResultRow> rows = new ArrayList<SearchResultRow>();
             int index, start = range.getStart(), end = start + range.getLength();
             for (index = 0; rs.next(); index ++) {
@@ -133,7 +123,7 @@ public class DeviceServerService {
         }
     }
     
-    public Map<String, Integer> lookupServerNamesByCabinetID(int cabinet_id) throws EucalyptusServiceException {
+    public static Map<String, Integer> lookupServerNamesByCabinetID(int cabinet_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -148,7 +138,7 @@ public class DeviceServerService {
         }
     }
     
-    public Map<Integer, Integer> lookupServerCountsByState(Session session) throws EucalyptusServiceException {
+    public static Map<Integer, Integer> lookupServerCountsByState(Session session) throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -166,7 +156,7 @@ public class DeviceServerService {
         }
     }
     
-    public ServerInfo lookupServerInfoByID(int server_id) throws EucalyptusServiceException {
+    public static ServerInfo lookupServerInfoByID(int server_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -191,7 +181,7 @@ public class DeviceServerService {
         }
     }
     
-    public void createServer(boolean force, Session session, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws EucalyptusServiceException {
+    public static void createServer(boolean force, Session session, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -216,7 +206,7 @@ public class DeviceServerService {
         }
     }
     
-    public void deleteServer(boolean force, Session session, List<Integer> server_ids) throws EucalyptusServiceException {
+    public static void deleteServer(boolean force, Session session, List<Integer> server_ids) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -242,7 +232,7 @@ public class DeviceServerService {
         }
     }
     
-    public void modifyServer(boolean force, Session session, int server_id, String server_desc, String server_ip, int server_bw) throws EucalyptusServiceException {
+    public static void modifyServer(boolean force, Session session, int server_id, String server_desc, String server_ip, int server_bw) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -278,7 +268,7 @@ public class DeviceServerService {
         }
     }
     
-    public void modifyServerState(boolean force, Session session, int server_id, ServerState server_state) throws EucalyptusServiceException {
+    public static void modifyServerState(boolean force, Session session, int server_id, ServerState server_state) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -309,113 +299,105 @@ public class DeviceServerService {
         }
     }
     
-}
-
-class DeviceServerDBProcWrapper {
-    
-    private static final Logger log = Logger.getLogger(DeviceCabinetDBProcWrapper.class.getName());
-    
-    public static Map<String, Integer> lookupServerNamesByCabinetID(Connection conn, int cabinet_id) throws Exception {
-        DBTableServer SERVER = DBTable.SERVER;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ");
-        sb.append(SERVER.SERVER_NAME).append(", ").append(SERVER.SERVER_ID);
-        sb.append(" FROM ").append(SERVER);
-        sb.append(" WHERE ").append(SERVER.CABINET_ID).append(" = ").append(cabinet_id);
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        Map<String, Integer> result = new HashMap<String, Integer>();
-        while (rs.next()) {
-            result.put(rs.getString(1), rs.getInt(2));
+    static class DeviceServerDBProcWrapper {
+        
+        private static final Logger log = Logger.getLogger(DeviceServerDBProcWrapper.class.getName());
+        
+        public static Map<String, Integer> lookupServerNamesByCabinetID(Connection conn, int cabinet_id) throws Exception {
+            DBTableServer SERVER = DBTable.SERVER;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT ");
+            sb.append(SERVER.SERVER_NAME).append(", ").append(SERVER.SERVER_ID);
+            sb.append(" FROM ").append(SERVER);
+            sb.append(" WHERE ").append(SERVER.CABINET_ID).append(" = ").append(cabinet_id);
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+            Map<String, Integer> result = new HashMap<String, Integer>();
+            while (rs.next()) {
+                result.put(rs.getString(1), rs.getInt(2));
+            }
+            return result;
         }
-        return result;
-    }
-    
-    public static ResultSet lookupServerByID(Connection conn, boolean updatable, int server_id) throws Exception {
-        DBTableServer SERVER = DBTable.SERVER;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT * FROM ").append(SERVER);
-        sb.append(" WHERE ").append(SERVER.SERVER_ID).append(" = ").append(server_id);
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
-        rs.next();
-        return rs;
-    }
-    
-    public static ResultSet lookupServerByDate(Connection conn, ServerState state, Date beg, Date end, DBTableColumn sorted, boolean isAscending) throws Exception {
-        DBTableCabinet CABINET = DBTable.CABINET;
-        DBTableServer SERVER = DBTable.SERVER;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ").append(SERVER.ANY).append(", ").append(CABINET.CABINET_NAME).append(" FROM "); {
-            sb.append(SERVER).append(" LEFT JOIN ").append(CABINET);
-            sb.append(" ON ").append(SERVER.CABINET_ID).append(" = ").append(CABINET.CABINET_ID);
+        
+        public static ResultSet lookupServerByID(Connection conn, boolean updatable, int server_id) throws Exception {
+            DBTableServer SERVER = DBTable.SERVER;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT * FROM ").append(SERVER);
+            sb.append(" WHERE ").append(SERVER.SERVER_ID).append(" = ").append(server_id);
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
+            rs.next();
+            return rs;
         }
-        sb.append(" WHERE 1=1");
-        if (state != null) {
-            sb.append(" AND ").append(SERVER.SERVER_STATE).append(" = ").append(state.getValue());
+        
+        public static ResultSet lookupServer(Connection conn, ServerState state, DBTableColumn sorted, boolean isAscending) throws Exception {
+            DBTableCabinet CABINET = DBTable.CABINET;
+            DBTableServer SERVER = DBTable.SERVER;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT ").append(SERVER.ANY).append(", ").append(CABINET.CABINET_NAME).append(" FROM "); {
+                sb.append(SERVER).append(" LEFT JOIN ").append(CABINET);
+                sb.append(" ON ").append(SERVER.CABINET_ID).append(" = ").append(CABINET.CABINET_ID);
+            }
+            sb.append(" WHERE 1=1");
+            if (state != null) {
+                sb.append(" AND ").append(SERVER.SERVER_STATE).append(" = ").append(state.getValue());
+            }
+            if (sorted != null) {
+                sb.append(" ORDER BY ").append(sorted).append(isAscending ? " ASC" : " DESC");
+            }
+            return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
         }
-        if (beg != null || end != null) {
-            sb.append(" AND ("); {
-                sb.appendDateBound(SERVER.SERVER_CREATIONTIME, beg, end);
-                sb.append(" OR ");
-                sb.appendDateBound(SERVER.SERVER_MODIFIEDTIME, beg, end);
+        
+        public static int createServer(Connection conn, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws Exception {
+            DBTableServer SERVER = DBTable.SERVER;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("INSERT INTO ").append(SERVER).append(" ("); {
+                sb.append(SERVER.SERVER_NAME).append(", ");
+                sb.append(SERVER.SERVER_DESC).append(", ");
+                sb.append(SERVER.SERVER_IP).append(", ");
+                sb.append(SERVER.SERVER_BW).append(", ");
+                sb.append(SERVER.SERVER_STATE).append(", ");
+                sb.append(SERVER.CABINET_ID).append(", ");
+                sb.append(SERVER.SERVER_CREATIONTIME).append(", ");
+                sb.append(SERVER.SERVER_MODIFIEDTIME);
+            }
+            sb.append(") VALUES ("); {
+                sb.appendString(server_name).append(", ");
+                sb.appendString(server_desc).append(", ");
+                sb.appendString(server_ip).append(", ");
+                sb.append(Math.max(0, server_bw)).append(", ");
+                sb.append(server_state != null ? server_state.getValue() : ServerState.STOP.getValue()).append(", ");
+                sb.append(cabinet_id).append(", ");
+                sb.appendDate().append(", ");
+                sb.appendNull();
             }
             sb.append(")");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(sb.toSql(log), new String[]{SERVER.SERVER_ID.toString()});
+            ResultSet rs = stat.getGeneratedKeys();
+            rs.next();
+            return rs.getInt(1);
         }
-        if (sorted != null) {
-            sb.append(" ORDER BY ").append(sorted).append(isAscending ? " ASC" : " DESC");
+            
+        public static Map<Integer, Integer> lookupServerCountsByState(Connection conn) throws Exception {
+            DBTableServer SERVER = DBTable.SERVER;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT ");
+            sb.append(SERVER.SERVER_STATE).append(", count(*)");
+            sb.append(" FROM ").append(SERVER);
+            sb.append(" WHERE 1=1").append(" GROUP BY ").append(SERVER.SERVER_STATE);
+            
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+            Map<Integer, Integer> result = new HashMap<Integer, Integer>();
+            int sum = 0;
+            while (rs.next()) {
+                int state = rs.getInt(1);
+                int count = rs.getInt(2);
+                sum += count;
+                result.put(state, count);
+            }
+            result.put(-1, sum);
+            return result;
         }
-        return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-    }
-    
-    public static int createServer(Connection conn, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws Exception {
-        DBTableServer SERVER = DBTable.SERVER;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("INSERT INTO ").append(SERVER).append(" ("); {
-            sb.append(SERVER.SERVER_NAME).append(", ");
-            sb.append(SERVER.SERVER_DESC).append(", ");
-            sb.append(SERVER.SERVER_IP).append(", ");
-            sb.append(SERVER.SERVER_BW).append(", ");
-            sb.append(SERVER.SERVER_STATE).append(", ");
-            sb.append(SERVER.CABINET_ID).append(", ");
-            sb.append(SERVER.SERVER_CREATIONTIME).append(", ");
-            sb.append(SERVER.SERVER_MODIFIEDTIME);
-        }
-        sb.append(") VALUES ("); {
-            sb.appendString(server_name).append(", ");
-            sb.appendString(server_desc).append(", ");
-            sb.appendString(server_ip).append(", ");
-            sb.append(Math.max(0, server_bw)).append(", ");
-            sb.append(server_state != null ? server_state.getValue() : ServerState.STOP.getValue()).append(", ");
-            sb.append(cabinet_id).append(", ");
-            sb.appendDate().append(", ");
-            sb.appendNull();
-        }
-        sb.append(")");
-        Statement stat = conn.createStatement();
-        stat.executeUpdate(sb.toSql(log), new String[]{SERVER.SERVER_ID.toString()});
-        ResultSet rs = stat.getGeneratedKeys();
-        rs.next();
-        return rs.getInt(1);
-    }
         
-    public static Map<Integer, Integer> lookupServerCountsByState(Connection conn) throws Exception {
-        DBTableServer SERVER = DBTable.SERVER;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ");
-        sb.append(SERVER.SERVER_STATE).append(", count(*)");
-        sb.append(" FROM ").append(SERVER);
-        sb.append(" WHERE 1=1").append(" GROUP BY ").append(SERVER.SERVER_STATE);
-        
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        Map<Integer, Integer> result = new HashMap<Integer, Integer>();
-        int sum = 0;
-        while (rs.next()) {
-            int state = rs.getInt(1);
-            int count = rs.getInt(2);
-            sum += count;
-            result.put(state, count);
-        }
-        result.put(-1, sum);
-        return result;
     }
     
 }

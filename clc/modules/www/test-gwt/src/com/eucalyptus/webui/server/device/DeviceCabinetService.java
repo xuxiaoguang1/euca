@@ -29,37 +29,27 @@ import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
 public class DeviceCabinetService {
     
-    private static DeviceCabinetService instance = new DeviceCabinetService();
-    
-    public static DeviceCabinetService getInstance() {
-        return instance;
-    }
-    
-    private DeviceCabinetService() {
-        /* do nothing */
-    }
-    
-    private LoginUserProfile getUser(Session session) {
+    private static LoginUserProfile getUser(Session session) {
         return LoginUserProfileStorer.instance().get(session.getId());
     }
     
-	private List<SearchResultFieldDesc> FIELDS_DESC = Arrays.asList(
-			new SearchResultFieldDesc("0%", false, null),
-			new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
-			new SearchResultFieldDesc(false, "3EM", new ClientMessage("Index", "序号"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Name", "名称"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Desc", "描述"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Room", "所在机房"),
+    private static List<SearchResultFieldDesc> FIELDS_DESC = Arrays.asList(
+            new SearchResultFieldDesc("0%", false, null),
+            new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
+            new SearchResultFieldDesc(false, "3EM", new ClientMessage("Index", "序号"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Create", "创建时间"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false),
-			new SearchResultFieldDesc(true, "8%", new ClientMessage("Modify", "修改时间"),
-					TableDisplay.MANDATORY, Type.TEXT, false, false));
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Name", "名称"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Desc", "描述"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Room", "所在机房"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Create", "创建时间"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Modify", "修改时间"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false));
 
-    private DBTableColumn getSortColumn(SearchRange range) {
+    private static DBTableColumn getSortColumn(SearchRange range) {
         switch (range.getSortField()) {
         case CellTableColumns.CABINET.CABINET_NAME: return DBTable.CABINET.CABINET_NAME;
         case CellTableColumns.CABINET.CABINET_DESC: return DBTable.CABINET.CABINET_DESC;
@@ -70,7 +60,7 @@ public class DeviceCabinetService {
         return null;
     }
     
-    public SearchResult lookupCabinetByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+    public static SearchResult lookupCabinet(Session session, SearchRange range) throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -79,7 +69,7 @@ public class DeviceCabinetService {
             conn = DBProcWrapper.getConnection();
             DBTableRoom ROOM = DBTable.ROOM;
             DBTableCabinet CABINET = DBTable.CABINET;
-            ResultSet rs = DeviceCabinetDBProcWrapper.lookupCabinetByDate(conn, dateBegin, dateEnd, getSortColumn(range), range.isAscending());
+            ResultSet rs = DeviceCabinetDBProcWrapper.lookupCabinet(conn, getSortColumn(range), range.isAscending());
             ArrayList<SearchResultRow> rows = new ArrayList<SearchResultRow>();
             int index, start = range.getStart(), end = start + range.getLength();
             for (index = 0; rs.next(); index ++) {
@@ -117,7 +107,7 @@ public class DeviceCabinetService {
         }
     }
     
-    public Map<String, Integer> lookupCabinetNamesByRoomID(int room_id) throws EucalyptusServiceException {
+    public static Map<String, Integer> lookupCabinetNamesByRoomID(int room_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -132,7 +122,7 @@ public class DeviceCabinetService {
         }
     }
     
-    public CabinetInfo lookupCabinetByID(int cabinet_id) throws EucalyptusServiceException {
+    public static CabinetInfo lookupCabinetByID(int cabinet_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -154,7 +144,7 @@ public class DeviceCabinetService {
         }
     }
     
-    public void createCabinet(boolean force, Session session, String cabinet_name, String cabinet_desc, int room_id) throws EucalyptusServiceException {
+    public static void createCabinet(boolean force, Session session, String cabinet_name, String cabinet_desc, int room_id) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -175,7 +165,7 @@ public class DeviceCabinetService {
         }
     }
     
-    public void deleteCabinet(boolean force, Session session, List<Integer> cabinet_ids) throws EucalyptusServiceException {
+    public static void deleteCabinet(boolean force, Session session, List<Integer> cabinet_ids) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -185,7 +175,7 @@ public class DeviceCabinetService {
                 conn = DBProcWrapper.getConnection();
                 conn.setAutoCommit(false);
                 for (int cabinet_id : cabinet_ids) {
-                	DeviceCabinetDBProcWrapper.lookupCabinetByID(conn, true, cabinet_id).deleteRow();
+                    DeviceCabinetDBProcWrapper.lookupCabinetByID(conn, true, cabinet_id).deleteRow();
                 }
                 conn.commit();
             }
@@ -200,7 +190,7 @@ public class DeviceCabinetService {
         }
     }
     
-    public void modifyCabinet(boolean force, Session session, int cabinet_id, String cabinet_desc) throws EucalyptusServiceException {
+    public static void modifyCabinet(boolean force, Session session, int cabinet_id, String cabinet_desc) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -227,84 +217,76 @@ public class DeviceCabinetService {
             DBProcWrapper.close(conn);
         }
     }
-
-}
-
-class DeviceCabinetDBProcWrapper {
     
-    private static final Logger log = Logger.getLogger(DeviceCabinetDBProcWrapper.class.getName());
-    
-    public static Map<String, Integer> lookupCabinetNamesByRoomID(Connection conn, int room_id) throws Exception {
-        DBTableCabinet CABINET = DBTable.CABINET;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ");
-        sb.append(CABINET.CABINET_NAME).append(", ").append(CABINET.CABINET_ID);
-        sb.append(" FROM ").append(CABINET);
-        sb.append(" WHERE ").append(CABINET.ROOM_ID).append(" = ").append(room_id);
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        Map<String, Integer> result = new HashMap<String, Integer>();
-        while (rs.next()) {
-            result.put(rs.getString(1), rs.getInt(2));
+    static class DeviceCabinetDBProcWrapper {
+        
+        private static final Logger log = Logger.getLogger(DeviceCabinetDBProcWrapper.class.getName());
+        
+        public static Map<String, Integer> lookupCabinetNamesByRoomID(Connection conn, int room_id) throws Exception {
+            DBTableCabinet CABINET = DBTable.CABINET;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT ");
+            sb.append(CABINET.CABINET_NAME).append(", ").append(CABINET.CABINET_ID);
+            sb.append(" FROM ").append(CABINET);
+            sb.append(" WHERE ").append(CABINET.ROOM_ID).append(" = ").append(room_id);
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+            Map<String, Integer> result = new HashMap<String, Integer>();
+            while (rs.next()) {
+                result.put(rs.getString(1), rs.getInt(2));
+            }
+            return result;
         }
-        return result;
-    }
-    
-    public static ResultSet lookupCabinetByID(Connection conn, boolean updatable, int cabinet_id) throws Exception {
-        DBTableCabinet CABINET = DBTable.CABINET;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT * FROM ").append(CABINET);
-        sb.append(" WHERE ").append(CABINET.CABINET_ID).append(" = ").append(cabinet_id);
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
-        rs.next();
-        return rs;
-    }
-    
-    public static ResultSet lookupCabinetByDate(Connection conn, Date beg, Date end, DBTableColumn sorted, boolean isAscending) throws Exception {
-        DBTableRoom ROOM = DBTable.ROOM;
-        DBTableCabinet CABINET = DBTable.CABINET;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ").append(CABINET.ANY).append(", ").append(ROOM.ROOM_NAME).append(" FROM "); {
-            sb.append(CABINET).append(" LEFT JOIN ").append(ROOM);
-            sb.append(" ON ").append(CABINET.ROOM_ID).append(" = ").append(ROOM.ROOM_ID);
+        
+        public static ResultSet lookupCabinetByID(Connection conn, boolean updatable, int cabinet_id) throws Exception {
+            DBTableCabinet CABINET = DBTable.CABINET;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT * FROM ").append(CABINET);
+            sb.append(" WHERE ").append(CABINET.CABINET_ID).append(" = ").append(cabinet_id);
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
+            rs.next();
+            return rs;
         }
-        sb.append(" WHERE 1=1");
-        if (beg != null || end != null) {
-            sb.append(" AND ("); {
-                sb.appendDateBound(CABINET.CABINET_CREATIONTIME, beg, end);
-                sb.append(" OR ");
-                sb.appendDateBound(CABINET.CABINET_MODIFIEDTIME, beg, end);
+        
+        public static ResultSet lookupCabinet(Connection conn, DBTableColumn sorted, boolean isAscending) throws Exception {
+            DBTableRoom ROOM = DBTable.ROOM;
+            DBTableCabinet CABINET = DBTable.CABINET;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT ").append(CABINET.ANY).append(", ").append(ROOM.ROOM_NAME).append(" FROM "); {
+                sb.append(CABINET).append(" LEFT JOIN ").append(ROOM);
+                sb.append(" ON ").append(CABINET.ROOM_ID).append(" = ").append(ROOM.ROOM_ID);
+            }
+            sb.append(" WHERE 1=1");
+            if (sorted != null) {
+                sb.append(" ORDER BY ").append(sorted).append(isAscending ? " ASC" : " DESC");
+            }
+            return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+        }
+        
+        public static int createCabinet(Connection conn, String cabinet_name, String cabinet_desc, int room_id) throws Exception {
+            DBTableCabinet CABINET = DBTable.CABINET;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("INSERT INTO ").append(CABINET).append(" ("); {
+                sb.append(CABINET.CABINET_NAME).append(", ");
+                sb.append(CABINET.CABINET_DESC).append(", ");
+                sb.append(CABINET.ROOM_ID).append(", ");
+                sb.append(CABINET.CABINET_CREATIONTIME).append(", ");
+                sb.append(CABINET.CABINET_MODIFIEDTIME);
+            }
+            sb.append(") VALUES ("); {
+                sb.appendString(cabinet_name).append(", ");
+                sb.appendString(cabinet_desc).append(", ");
+                sb.append(room_id).append(", ");
+                sb.appendDate().append(", ");
+                sb.appendNull();
             }
             sb.append(")");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(sb.toSql(log), new String[]{CABINET.CABINET_ID.toString()});
+            ResultSet rs = stat.getGeneratedKeys();
+            rs.next();
+            return rs.getInt(1);
         }
-        if (sorted != null) {
-            sb.append(" ORDER BY ").append(sorted).append(isAscending ? " ASC" : " DESC");
-        }
-        return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+        
     }
-    
-    public static int createCabinet(Connection conn, String cabinet_name, String cabinet_desc, int room_id) throws Exception {
-        DBTableCabinet CABINET = DBTable.CABINET;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("INSERT INTO ").append(CABINET).append(" ("); {
-            sb.append(CABINET.CABINET_NAME).append(", ");
-            sb.append(CABINET.CABINET_DESC).append(", ");
-            sb.append(CABINET.ROOM_ID).append(", ");
-            sb.append(CABINET.CABINET_CREATIONTIME).append(", ");
-            sb.append(CABINET.CABINET_MODIFIEDTIME);
-        }
-        sb.append(") VALUES ("); {
-            sb.appendString(cabinet_name).append(", ");
-            sb.appendString(cabinet_desc).append(", ");
-            sb.append(room_id).append(", ");
-            sb.appendDate().append(", ");
-            sb.appendNull();
-        }
-        sb.append(")");
-        Statement stat = conn.createStatement();
-        stat.executeUpdate(sb.toSql(log), new String[]{CABINET.CABINET_ID.toString()});
-        ResultSet rs = stat.getGeneratedKeys();
-        rs.next();
-        return rs.getInt(1);
-    }
-    
+
 }
