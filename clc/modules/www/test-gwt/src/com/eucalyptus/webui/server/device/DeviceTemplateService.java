@@ -278,7 +278,7 @@ public class DeviceTemplateService {
         }
     }
     
-    public AppResources createApp(String desc, TemplateInfo info, int server_id) throws EucalyptusServiceException {
+    public AppResources createApp(String desc, int ncpus, long mem_size, long disk_size, int server_id, int user_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
 //            conn = DBProcWrapper.getConnection();
