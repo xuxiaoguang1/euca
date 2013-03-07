@@ -32,16 +32,6 @@ import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
 public class DeviceCPUService {
     
-    private static DeviceCPUService instance = new DeviceCPUService();
-    
-    public static DeviceCPUService getInstance() {
-        return instance;
-    }
-    
-    private DeviceCPUService() {
-        /* do nothing */
-    }
-    
     private static LoginUserProfile getUser(Session session) {
         return LoginUserProfileStorer.instance().get(session.getId());
     }
@@ -83,7 +73,7 @@ public class DeviceCPUService {
             new SearchResultFieldDesc(true, "0%", new ClientMessage("Modify(HW)", "硬件修改时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false));
     
-    private DBTableColumn getSortColumn(SearchRange range) {
+    private static DBTableColumn getSortColumn(SearchRange range) {
         switch (range.getSortField()) {
         case CellTableColumns.CPU.ACCOUNT_NAME: return DBTable.ACCOUNT.ACCOUNT_NAME;
         case CellTableColumns.CPU.USER_NAME: return DBTable.USER.USER_NAME;
@@ -102,7 +92,7 @@ public class DeviceCPUService {
         return null;
     }
     
-    public SearchResult lookupCPUByDate(Session session, SearchRange range, CPUState cs_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+    public static SearchResult lookupCPU(Session session, SearchRange range, CPUState cs_state) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             LoginUserProfile user = getUser(session);
@@ -126,7 +116,7 @@ public class DeviceCPUService {
             DBTableServer SERVER = DBTable.SERVER;
             DBTableCPU CPU = DBTable.CPU;
             DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-            ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUByDate(conn, cs_state, dateBegin, dateEnd, getSortColumn(range), range.isAscending(), account_id, user_id);
+            ResultSet rs = DeviceCPUDBProcWrapper.lookupCPU(conn, cs_state, getSortColumn(range), range.isAscending(), account_id, user_id);
             ArrayList<SearchResultRow> rows = new ArrayList<SearchResultRow>();
             int index, start = range.getStart(), end = start + range.getLength();
             for (index = 0; rs.next(); index ++) {
@@ -199,7 +189,7 @@ public class DeviceCPUService {
         }
     }
     
-    public Map<Integer, Integer> lookupCPUCounts(Session session) throws EucalyptusServiceException {
+    public static Map<Integer, Integer> lookupCPUCounts(Session session) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             LoginUserProfile user = getUser(session);
@@ -229,7 +219,7 @@ public class DeviceCPUService {
         }
     }
     
-    public CPUInfo lookupCPUInfoByID(int cpu_id) throws EucalyptusServiceException {
+    public static CPUInfo lookupCPUInfoByID(int cpu_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -254,7 +244,7 @@ public class DeviceCPUService {
         }
     }
     
-    public CPUServiceInfo lookupCPUServiceInfoByID(int cs_id) throws EucalyptusServiceException {
+    public static CPUServiceInfo lookupCPUServiceInfoByID(int cs_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -530,7 +520,7 @@ public class DeviceCPUService {
             return rs;
         }
         
-        public static ResultSet lookupCPUByDate(Connection conn, CPUState state, Date beg, Date end, DBTableColumn sorted, boolean isAscending, int account_id, int user_id) throws Exception {
+        public static ResultSet lookupCPU(Connection conn, CPUState state, DBTableColumn sorted, boolean isAscending, int account_id, int user_id) throws Exception {
             DBTableAccount ACCOUNT = DBTable.ACCOUNT;
             DBTableUser USER = DBTable.USER;
             DBTableServer SERVER = DBTable.SERVER;
@@ -555,14 +545,6 @@ public class DeviceCPUService {
             }
             if (account_id >= 0) {
                 sb.append(" AND ").append(USER.ACCOUNT_ID).append(" = ").append(account_id);
-            }
-            if (beg != null || end != null) {
-                sb.append(" AND ("); {
-                    sb.appendDateBound(CPU_SERVICE.CPU_SERVICE_CREATIONTIME, beg, end);
-                    sb.append(" OR ");
-                    sb.appendDateBound(CPU_SERVICE.CPU_SERVICE_MODIFIEDTIME, beg, end);
-                }
-                sb.append(")");
             }
             if (sorted != null) {
                 sb.append(" ORDER BY ").append(sorted).append(isAscending ? " ASC" : " DESC");

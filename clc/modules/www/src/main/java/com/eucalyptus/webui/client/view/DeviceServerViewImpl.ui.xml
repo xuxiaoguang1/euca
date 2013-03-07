@@ -35,7 +35,7 @@
         type="com.eucalyptus.webui.client.view.GlobalResources" />
         
     <g:DockLayoutPanel unit="EM">
-        <g:north size="10.5">
+        <g:north size="10.3">
             <g:DockLayoutPanel unit="EM">
                 <g:north size="2">
                     <g:DockLayoutPanel unit="EM">

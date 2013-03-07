@@ -854,13 +854,13 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     }
     
     @Override
-    public SearchResult lookupDeviceCPUByDate(Session session, SearchRange range, CPUState cs_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
-        return DeviceCPUService.getInstance().lookupCPUByDate(session, range, cs_state, dateBegin, dateEnd);
+    public SearchResult lookupDeviceCPU(Session session, SearchRange range, CPUState cs_state) throws EucalyptusServiceException {
+        return DeviceCPUService.lookupCPU(session, range, cs_state);
     }
     
     @Override
     public Map<Integer, Integer> lookupDeviceCPUCounts(Session session) throws EucalyptusServiceException {
-    	return DeviceCPUService.getInstance().lookupCPUCounts(session);
+    	return DeviceCPUService.lookupCPUCounts(session);
     }
     
     @Override
@@ -880,7 +880,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     
     @Override
     public CPUInfo lookupDeviceCPUByID(Session session, int cpu_id) throws EucalyptusServiceException {
-    	return DeviceCPUService.getInstance().lookupCPUInfoByID(cpu_id);
+    	return DeviceCPUService.lookupCPUInfoByID(cpu_id);
     }
     
     @Override

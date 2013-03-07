@@ -1,14 +1,12 @@
 package com.eucalyptus.webui.client.view;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.activity.device.DevicePageSize;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
 import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
 import com.eucalyptus.webui.shared.resource.device.status.CPUState;
@@ -30,190 +28,138 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 
 public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
 
-	private static CPUViewImplUiBinder uiBinder = GWT.create(CPUViewImplUiBinder.class);
+    private static CPUViewImplUiBinder uiBinder = GWT.create(CPUViewImplUiBinder.class);
 
-	interface CPUViewImplUiBinder extends UiBinder<Widget, DeviceCPUViewImpl> {
-	}
-	
-	@UiField LayoutPanel resultPanel;
-	@UiField Anchor buttonAddCPU;
-	@UiField Anchor buttonDeleteCPU;
-	@UiField Anchor buttonModifyCPU;
-	@UiField Anchor buttonClearSelection;
-	@UiField DeviceDateBox dateBegin;
-	@UiField DeviceDateBox dateEnd;
-	@UiField Anchor buttonClearDate;
-	@UiField Anchor labelAll;
-	@UiField Anchor labelStop;
-	@UiField Anchor labelInuse;
-	@UiField Anchor labelReserved;
-	@UiField Anchor columnButton;
-	@UiField ListBox pageSizeList;
-	
-	private Presenter presenter;
-	private MultiSelectionModel<SearchResultRow> selection;
-	private DeviceSearchResultTable table;
-	private DevicePopupPanel popup = new DevicePopupPanel();
-	
-	public DeviceCPUViewImpl() {
-		initWidget(uiBinder.createAndBindUi(this));
-		
-		for (String pageSize : DevicePageSize.getPageSizeList()) {
-			pageSizeList.addItem(pageSize);
-		}
-		pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
-		pageSizeList.addChangeHandler(new ChangeHandler() {
-
-			@Override
-			public void onChange(ChangeEvent event) {
-				DevicePageSize.setPageSizeSelectedIndex(pageSizeList.getSelectedIndex());
-				if (table != null) {
-					table.setPageSize(DevicePageSize.getPageSize());
-				}
-			}
-			
-		});
-		
-		selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
-		selection.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-
-			@Override
-			public void onSelectionChange(SelectionChangeEvent event) {
-				updateSearchResultButtonStatus();
-				presenter.onSelectionChange(selection.getSelectedSet());
-			}
-			
-		});
-		
-		updateSearchResultButtonStatus();
-		
-		popup.setAutoHideEnabled(true);
+    interface CPUViewImplUiBinder extends UiBinder<Widget, DeviceCPUViewImpl> {
+    }
+    
+    @UiField LayoutPanel resultPanel;
+    @UiField Anchor buttonAddCPU;
+    @UiField Anchor buttonDeleteCPU;
+    @UiField Anchor buttonModifyCPU;
+    @UiField Anchor buttonClearSelection;
+    @UiField Anchor labelAll;
+    @UiField Anchor labelStop;
+    @UiField Anchor labelInuse;
+    @UiField Anchor labelReserved;
+    @UiField Anchor columnButton;
+    @UiField ListBox pageSizeList;
+    
+    private Presenter presenter;
+    private MultiSelectionModel<SearchResultRow> selection;
+    private DeviceSearchResultTable table;
+    private DevicePopupPanel popup = new DevicePopupPanel();
+    
+    public DeviceCPUViewImpl() {
+        initWidget(uiBinder.createAndBindUi(this));
         
-		for (final DeviceDateBox dateBox : new DeviceDateBox[]{dateBegin, dateEnd}) {
-			dateBox.setErrorHandler(new Handler() {
+        for (String pageSize : DevicePageSize.getPageSizeList()) {
+            pageSizeList.addItem(pageSize);
+        }
+        pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
+        pageSizeList.addChangeHandler(new ChangeHandler() {
 
-				@Override
-				public void onErrorHappens() {
-					updateDateButtonStatus();
-					int x = dateBox.getAbsoluteLeft();
-		            int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
-					popup.setHTML(x, y, "30EM", "3EM", DeviceDateBox.getDateErrorHTML(dateBox));
-				}
+            @Override
+            public void onChange(ChangeEvent event) {
+                DevicePageSize.setPageSizeSelectedIndex(pageSizeList.getSelectedIndex());
+                if (table != null) {
+                    table.setPageSize(DevicePageSize.getPageSize());
+                }
+            }
+            
+        });
+        
+        selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
+        selection.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
 
-				@Override
-				public void onValueChanged() {
-					updateDateButtonStatus();
-	            	int x = dateBox.getAbsoluteLeft();
-		            int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
-	                DeviceDateBox pair;
-	                pair = (dateBox != dateBegin ? dateBegin : dateEnd);
-	                if (!pair.hasError()) {
-	                	Date date0 = dateBegin.getValue(), date1 = dateEnd.getValue();
-	                	if (date0 != null && date1 != null) {
-	                		if (date0.getTime() > date1.getTime()) {
-	                			popup.setHTML(x, y, "20EM", "2EM", DeviceDateBox.getDateErrorHTML(dateBegin, dateEnd));
-	                			return;
-	                		}
-	                	}
-	                	updateSearchRange();
-	                }
-				}
-			});
-		}
-		
-		updateDateButtonStatus();
-	}
-	
-	private String getLabel(boolean highlight, String msg) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("<font color='").append(highlight ? "red" : "darkblue").append("'>").append(msg).append("</font>");
-		return sb.toString();
-	}
+            @Override
+            public void onSelectionChange(SelectionChangeEvent event) {
+                updateSearchResultButtonStatus();
+                presenter.onSelectionChange(selection.getSelectedSet());
+            }
+            
+        });
+        
+        updateSearchResultButtonStatus();
+        
+        popup.setAutoHideEnabled(true);
+    }
+    
+    private String getLabel(boolean highlight, String msg) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<font color='").append(highlight ? "red" : "darkblue").append("'>").append(msg).append("</font>");
+        return sb.toString();
+    }
 
-	@Override
-	public void updateLabels() {
-		final String[] prefix = {"全部CPU数量： ", "预留CPU数量： ", "使用中CPU数量： ", "未使用CPU数量： "};
-		final String suffix = " 台";
-		final CPUState[] states = {null, CPUState.RESERVED, CPUState.INUSE, CPUState.STOP};
-		CPUState state = presenter.getQueryState();
-		Anchor[] labels = new Anchor[]{labelAll, labelReserved, labelInuse, labelStop};
-		for (int i = 0; i < labels.length; i ++) {
-			if (labels[i] != null) {
-				int value = presenter.getCounts(states[i]);
-				labels[i].setHTML(getLabel(state == states[i], prefix[i] + value + suffix));
-			}
-		}
-	}
-	
-	private void updateSearchResultButtonStatus() {
-		int size = selection.getSelectedSet().size();
-		buttonAddCPU.setEnabled(true);
-		buttonDeleteCPU.setEnabled(size != 0 && presenter.canDeleteCPU());
-		buttonModifyCPU.setEnabled(size == 1 && presenter.canModifyCPU());
-		buttonClearSelection.setEnabled(size != 0);
-	}
-	
-	private void updateDateButtonStatus() {
-		if (isEmpty(dateBegin.getText()) && isEmpty(dateEnd.getText())) {
-			buttonClearDate.setEnabled(false);
-		}
-		else {
-            buttonClearDate.setEnabled(true);
-		}
-	}
-	
-	public boolean isEmpty(String s) {
-		return s == null || s.length() == 0;
-	}
-	
-	private void updateSearchRange() {
-		if (!dateBegin.hasError() && !dateEnd.hasError()) {
-			presenter.updateSearchResult(dateBegin.getValue(), dateEnd.getValue());
-		}
-	}
-	
-	@UiHandler("labelAll")
-	void handleLabelAll(ClickEvent event) {
-		presenter.setQueryState(null);
-	}
+    @Override
+    public void updateLabels() {
+        final String[] prefix = {"全部CPU数量： ", "预留CPU数量： ", "使用中CPU数量： ", "未使用CPU数量： "};
+        final String suffix = " 台";
+        final CPUState[] states = {null, CPUState.RESERVED, CPUState.INUSE, CPUState.STOP};
+        CPUState state = presenter.getQueryState();
+        Anchor[] labels = new Anchor[]{labelAll, labelReserved, labelInuse, labelStop};
+        for (int i = 0; i < labels.length; i ++) {
+            if (labels[i] != null) {
+                int value = presenter.getCounts(states[i]);
+                labels[i].setHTML(getLabel(state == states[i], prefix[i] + value + suffix));
+            }
+        }
+    }
+    
+    private void updateSearchResultButtonStatus() {
+        int size = selection.getSelectedSet().size();
+        buttonAddCPU.setEnabled(true);
+        buttonDeleteCPU.setEnabled(size != 0 && presenter.canDeleteCPU());
+        buttonModifyCPU.setEnabled(size == 1 && presenter.canModifyCPU());
+        buttonClearSelection.setEnabled(size != 0);
+    }
+    
+    public boolean isEmpty(String s) {
+        return s == null || s.length() == 0;
+    }
+    
+    @UiHandler("labelAll")
+    void handleLabelAll(ClickEvent event) {
+        presenter.setQueryState(null);
+    }
 
-	@UiHandler("labelStop")
-	void handleLabelReserved(ClickEvent event) {
-		presenter.setQueryState(CPUState.STOP);
-	}
+    @UiHandler("labelStop")
+    void handleLabelReserved(ClickEvent event) {
+        presenter.setQueryState(CPUState.STOP);
+    }
 
-	@UiHandler("labelInuse")
-	void handleLabelInuse(ClickEvent event) {
-		presenter.setQueryState(CPUState.INUSE);
-	}
+    @UiHandler("labelInuse")
+    void handleLabelInuse(ClickEvent event) {
+        presenter.setQueryState(CPUState.INUSE);
+    }
 
-	@UiHandler("labelReserved")
-	void handleLabelStop(ClickEvent event) {
-		presenter.setQueryState(CPUState.RESERVED);
-	}
-	
-	@Override
-	public Set<SearchResultRow> getSelectedSet() {
-		return selection.getSelectedSet();
-	}
-	
-	@Override
-	public void setSelectedRow(SearchResultRow row) {
-		boolean selected = true;
-		Set<SearchResultRow> set = selection.getSelectedSet();
-		if (set != null && set.contains(row)) {
-			selected = false;
-		}
-		clearSelection();
-		selection.setSelected(row, selected);
-		updateSearchResultButtonStatus();
-	}
-	
-	private DeviceColumnPopupPanel.Node addNode(ArrayList<SearchResultFieldDesc> descs, DeviceColumnPopupPanel.Node parent, ClientMessage msg, int column) {
-	    return parent.addNode(msg, column, DeviceSearchResultTable.isVisible(descs.get(column).getWidth()));
-	}
-	
-	private void initColumnPanel(ArrayList<SearchResultFieldDesc> descs, DeviceColumnPopupPanel panel) {
+    @UiHandler("labelReserved")
+    void handleLabelStop(ClickEvent event) {
+        presenter.setQueryState(CPUState.RESERVED);
+    }
+    
+    @Override
+    public Set<SearchResultRow> getSelectedSet() {
+        return selection.getSelectedSet();
+    }
+    
+    @Override
+    public void setSelectedRow(SearchResultRow row) {
+        boolean selected = true;
+        Set<SearchResultRow> set = selection.getSelectedSet();
+        if (set != null && set.contains(row)) {
+            selected = false;
+        }
+        clearSelection();
+        selection.setSelected(row, selected);
+        updateSearchResultButtonStatus();
+    }
+    
+    private DeviceColumnPopupPanel.Node addNode(ArrayList<SearchResultFieldDesc> descs, DeviceColumnPopupPanel.Node parent, ClientMessage msg, int column) {
+        return parent.addNode(msg, column, DeviceSearchResultTable.isVisible(descs.get(column).getWidth()));
+    }
+    
+    private void initColumnPanel(ArrayList<SearchResultFieldDesc> descs, DeviceColumnPopupPanel panel) {
         DeviceColumnPopupPanel.Node account = panel.addNode(new ClientMessage("", "账户信息"));
         addNode(descs, account, new ClientMessage("", "账户名称"), CellTableColumns.CPU.ACCOUNT_NAME);
         addNode(descs, account, new ClientMessage("", "用户名称"), CellTableColumns.CPU.USER_NAME);
@@ -234,26 +180,26 @@ public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
         addNode(descs, device, new ClientMessage("", "修改时间"), CellTableColumns.CPU.CPU_MODIFIEDTIME);
         panel.reload();
     }
-	
-	@Override
-	public void showSearchResult(SearchResult result) {
-		if (table == null) {
-			table = new DeviceSearchResultTable(result.getDescs(), selection);
-			table.setRangeChangeHandler(presenter);
-			table.setClickHandler(presenter);
-			table.load();
-			resultPanel.add(table);
-			final DeviceColumnPopupPanel panel = new DeviceColumnPopupPanel(new DeviceColumnPopupPanel.Presenter() {
-	            
-	            @Override
-	            public void onValueChange(int column, boolean value) {
-	            	if (table != null) {
-	            		table.setVisible(column, value);
-	            	}
-	            }
-	            
-	        });
-			columnButton.addClickHandler(new ClickHandler() {
+    
+    @Override
+    public void showSearchResult(SearchResult result) {
+        if (table == null) {
+            table = new DeviceSearchResultTable(result.getDescs(), selection);
+            table.setRangeChangeHandler(presenter);
+            table.setClickHandler(presenter);
+            table.load();
+            resultPanel.add(table);
+            final DeviceColumnPopupPanel panel = new DeviceColumnPopupPanel(new DeviceColumnPopupPanel.Presenter() {
+                
+                @Override
+                public void onValueChange(int column, boolean value) {
+                    if (table != null) {
+                        table.setVisible(column, value);
+                    }
+                }
+                
+            });
+            columnButton.addClickHandler(new ClickHandler() {
 
                 @Override
                 public void onClick(ClickEvent event) {
@@ -261,67 +207,57 @@ public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
                 }
                 
             });
-			initColumnPanel(result.getDescs(), panel);
-		}
-		table.setData(result);
-		if (table.getPageSize() != DevicePageSize.getPageSize()) {
-			table.setPageSize(DevicePageSize.getPageSize());
-			pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
-		}
-	}
-	
-	@Override
-	public void clear() {
-		resultPanel.clear();
-		table = null;
-	}
-	
-	@Override
-	public void clearSelection() {
-		selection.clear();
-	}
+            initColumnPanel(result.getDescs(), panel);
+        }
+        table.setData(result);
+        if (table.getPageSize() != DevicePageSize.getPageSize()) {
+            table.setPageSize(DevicePageSize.getPageSize());
+            pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
+        }
+    }
+    
+    @Override
+    public void clear() {
+        resultPanel.clear();
+        table = null;
+    }
+    
+    @Override
+    public void clearSelection() {
+        selection.clear();
+    }
 
-	@Override
-	public void setPresenter(Presenter presenter) {
-		this.presenter = presenter;
-	}
-	
-	@UiHandler("buttonAddCPU")
-	void onButtonAddCPU(ClickEvent event) {
-		if (buttonAddCPU.isEnabled()) {
-			presenter.onAddCPU();
-		}
-	}
-	
-	@UiHandler("buttonDeleteCPU")
-	void onButtonDeleteCPU(ClickEvent event) {
-		if (buttonDeleteCPU.isEnabled()) {
-			presenter.onDeleteCPU();
-		}
-	}
-	
-	@UiHandler("buttonModifyCPU")
-	void handleButtonModifyCPU(ClickEvent event) {
-		if (buttonModifyCPU.isEnabled()) {
-			presenter.onModifyCPU();
-		}
-	}
-	
-	@UiHandler("buttonClearSelection")
-	void handleButtonClearSelection(ClickEvent event) {
-		if (buttonClearSelection.isEnabled()) {
-			clearSelection();
-		}
-	}
-	
-	@UiHandler("buttonClearDate")
-	void handleButtonClearDate(ClickEvent event) {
-	    if (buttonClearDate.isEnabled()) {
-	    	dateBegin.setValue(null);
-    	    dateEnd.setValue(null);
-    	    updateDateButtonStatus();
-    	    updateSearchRange();
-	    }
-	}
-	
+    @Override
+    public void setPresenter(Presenter presenter) {
+        this.presenter = presenter;
+    }
+    
+    @UiHandler("buttonAddCPU")
+    void onButtonAddCPU(ClickEvent event) {
+        if (buttonAddCPU.isEnabled()) {
+            presenter.onAddCPU();
+        }
+    }
+    
+    @UiHandler("buttonDeleteCPU")
+    void onButtonDeleteCPU(ClickEvent event) {
+        if (buttonDeleteCPU.isEnabled()) {
+            presenter.onDeleteCPU();
+        }
+    }
+    
+    @UiHandler("buttonModifyCPU")
+    void handleButtonModifyCPU(ClickEvent event) {
+        if (buttonModifyCPU.isEnabled()) {
+            presenter.onModifyCPU();
+        }
+    }
+    
+    @UiHandler("buttonClearSelection")
+    void handleButtonClearSelection(ClickEvent event) {
+        if (buttonClearSelection.isEnabled()) {
+            clearSelection();
+        }
+    }
+    
 }
