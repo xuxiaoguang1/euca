@@ -284,7 +284,8 @@ public class DeviceServerService {
             rs.updateInt(SERVER.SERVER_STATE.toString(), server_state.getValue());
             rs.updateRow();
             if (server_state != ServerState.INUSE) {
-                DeviceMemoryService.getInstance().stopMemoryServiceByServerID(force, session, server_id);
+                DeviceCPUService.stopCPUServiceByServerID(conn, server_id);
+                DeviceMemoryService.stopMemoryServiceByServerID(conn, server_id);
                 DeviceDiskService.getInstance().stopDiskServiceByServerID(force, session, server_id);
             }
             conn.commit();

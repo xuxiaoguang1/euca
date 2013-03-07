@@ -194,7 +194,6 @@ class DBTableMemory extends DBTable {
     }
     
     public final DBTableColumn MEMORY_ID = new DBTableColumn(this, "mem_id");
-    public final DBTableColumn MEMORY_NAME = new DBTableColumn(this, "mem_name");
     public final DBTableColumn MEMORY_DESC = new DBTableColumn(this, "mem_desc");
     public final DBTableColumn MEMORY_TOTAL = new DBTableColumn(this, "mem_total");
     public final DBTableColumn MEMORY_CREATIONTIME = new DBTableColumn(this, "mem_creationtime");

@@ -102,24 +102,23 @@ public class CellTableColumns {
         public static final int MEMORY_ID = 1;
         public static final int RESERVED_CHECKBOX = 2;
         public static final int RESERVED_INDEX = 3;
-        public static final int MEMORY_NAME = 4;
-        public static final int SERVER_NAME = 5;
-        public static final int MEMORY_SERVICE_STATE = 6;
-        public static final int ACCOUNT_NAME = 7;
-        public static final int USER_NAME = 8;
-        public static final int MEMORY_SERVICE_DESC = 9;
-        public static final int MEMORY_TOTAL = 10;
-        public static final int MEMORY_SERVICE_USED = 11;
-        public static final int MEMORY_SERVICE_STARTTIME = 12;
-        public static final int MEMORY_SERVICE_ENDTIME = 13;
-        public static final int MEMORY_SERVICE_LIFE = 14;
-        public static final int MEMORY_SERVICE_CREATIONTIME = 15;
-        public static final int MEMORY_SERVICE_MODIFIEDTIME = 16;
-        public static final int MEMORY_DESC = 17;
-        public static final int MEMORY_CREATIONTIME = 18;
-        public static final int MEMORY_MODIFIEDTIME = 19;
+        public static final int SERVER_NAME = 4;
+        public static final int MEMORY_SERVICE_STATE = 5;
+        public static final int ACCOUNT_NAME = 6;
+        public static final int USER_NAME = 7;
+        public static final int MEMORY_SERVICE_DESC = 8;
+        public static final int MEMORY_TOTAL = 9;
+        public static final int MEMORY_SERVICE_USED = 10;
+        public static final int MEMORY_SERVICE_STARTTIME = 11;
+        public static final int MEMORY_SERVICE_ENDTIME = 12;
+        public static final int MEMORY_SERVICE_LIFE = 13;
+        public static final int MEMORY_SERVICE_CREATIONTIME = 14;
+        public static final int MEMORY_SERVICE_MODIFIEDTIME = 15;
+        public static final int MEMORY_DESC = 16;
+        public static final int MEMORY_CREATIONTIME = 17;
+        public static final int MEMORY_MODIFIEDTIME = 18;
         
-        public static final int COLUMN_SIZE = 20;
+        public static final int COLUMN_SIZE = 19;
         
     }
     

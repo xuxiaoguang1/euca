@@ -1,119 +1,113 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p1="urn:import:com.google.gwt.user.datepicker.client">
+    xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:p1="urn:import:com.google.gwt.user.datepicker.client">
 
-	<ui:style>
-		.title {
-			font-size: 110%;
-			font-weight: bold;
-			color: darkblue;
-			border-bottom: 1px solid #AAAAAA;
-		}
-		
-		.border {
-			border-bottom: 1px solid #AAAAAA;
-			border-top: 1px solid #AAAAAA;
-			border-left: 1px solid #AAAAAA;
-			border-right: 1px solid #AAAAAA;
-		}
-		
-		.background {
-			backgroupd-color: #DDDDDD;
-			border-bottom: 2px solid #AAAAAA;
-			border-top: 2px solid #AAAAAA;
-			border-left: 2px solid #AAAAAA;
-			border-right: 2px solid #AAAAAA;
-		}
+    <ui:style>
+        .title {
+            font-size: 110%;
+            font-weight: bold;
+            color: darkblue;
+            border-bottom: 1px solid #AAAAAA;
+        }
+        
+        .border {
+            border-bottom: 1px solid #AAAAAA;
+            border-top: 1px solid #AAAAAA;
+            border-left: 1px solid #AAAAAA;
+            border-right: 1px solid #AAAAAA;
+        }
+        
+        .background {
+            backgroupd-color: #DDDDDD;
+            border-bottom: 2px solid #AAAAAA;
+            border-top: 2px solid #AAAAAA;
+            border-left: 2px solid #AAAAAA;
+            border-right: 2px solid #AAAAAA;
+        }
 
-		.textArea {
-			resize:none;
-		}
-		
-		.textBoxStyle-readonly {
+        .textArea {
+            resize:none;
+        }
+        
+        .textBoxStyle-readonly {
             background-color:lightgray;
         }
-	</ui:style>
+    </ui:style>
 
-	<ui:with field="global"
-		type="com.eucalyptus.webui.client.view.GlobalResources" />
-		
-	<g:DockLayoutPanel width="614px" height="215px">
-		<g:center>
-			<g:VerticalPanel horizontalAlignment="ALIGN_LEFT" styleName="{style.background}" verticalAlignment="ALIGN_TOP">
-				<g:HTMLPanel width="610px">
-					<table>
-						<colgroup width="30px" />
-						<colgroup width="550px" />
-						<colgroup width="30px" />
-						<tbody>
-							<tr height="10px" />
-							<tr>
-								<td />
-								<td>
-									<g:HTMLPanel>
-										<table>
-											<colgroup width="20px" />
-											<colgroup width="510px" />
-											<colgroup width="20px" />
-											<tbody class="{style.title}">
-												<tr>
-													<td />
-													<td>编辑内存：</td>
-													<td />
-												</tr>
-												<tr height="5px">
-													<td />
-													<td />
-													<td />
-												</tr>
-											</tbody>
-										</table>
-									</g:HTMLPanel>
-								</td>
-								<td />
-							</tr>
-							<tr height="10px" />
-						</tbody>
-					</table>
-				</g:HTMLPanel>
-				<g:AbsolutePanel height="168px" width="610px">
-					<g:at left="30" top="5">
-						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">所属服务器</g:Anchor>
-					</g:at>
-					<g:at left="120" top="2">
-						<g:TextBox ui:field="serverName" maxLength="50" height="1.4EM" width="32EM" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
-					</g:at>
-					<g:at left="30" top="35">
-						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">内存名称</g:Anchor>
-					</g:at>
-					<g:at left="120" top="32">
-						<g:TextBox ui:field="memName" maxLength="50" height="1.4EM" width="32EM" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
-					</g:at>
-					<g:at left="30" top="65">
-						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">内存描述</g:Anchor>
-					</g:at>
-					<g:at left="120" top="62">
-						<g:TextArea styleName="{style.textArea}" height="2.4EM" width="32EM" ui:field="memDesc"/>
-					</g:at>
-					<g:at left="30" top="110">
-						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">容量(MB)</g:Anchor>
-					</g:at>
-					<g:at left="120" top="107">
-						<g:LongBox ui:field="memSize" maxLength="50" height="1.4EM" width="14EM" alignment="RIGHT"/>
-					</g:at>
-					<g:at left="400" top="120" style="font-size:90%;">
-						<g:Anchor styleName="{global.buttonCss.button}"
-							horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonOK">确&nbsp;定
-						</g:Anchor>
-					</g:at>
-					<g:at left="480" top="120" style="font-size:90%;">
-						<g:Anchor styleName="{global.buttonCss.button}"
-							horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonCancel">取&nbsp;消
-						</g:Anchor>
-					</g:at>
-				</g:AbsolutePanel>
-			</g:VerticalPanel>
-		</g:center>
-	</g:DockLayoutPanel>
+    <ui:with field="global"
+        type="com.eucalyptus.webui.client.view.GlobalResources" />
+        
+    <g:DockLayoutPanel width="614px" height="185px">
+        <g:center>
+            <g:VerticalPanel horizontalAlignment="ALIGN_LEFT" styleName="{style.background}" verticalAlignment="ALIGN_TOP">
+                <g:HTMLPanel width="610px">
+                    <table>
+                        <colgroup width="30px" />
+                        <colgroup width="550px" />
+                        <colgroup width="30px" />
+                        <tbody>
+                            <tr height="10px" />
+                            <tr>
+                                <td />
+                                <td>
+                                    <g:HTMLPanel>
+                                        <table>
+                                            <colgroup width="20px" />
+                                            <colgroup width="510px" />
+                                            <colgroup width="20px" />
+                                            <tbody class="{style.title}">
+                                                <tr>
+                                                    <td />
+                                                    <td>编辑内存：</td>
+                                                    <td />
+                                                </tr>
+                                                <tr height="5px">
+                                                    <td />
+                                                    <td />
+                                                    <td />
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </g:HTMLPanel>
+                                </td>
+                                <td />
+                            </tr>
+                            <tr height="10px" />
+                        </tbody>
+                    </table>
+                </g:HTMLPanel>
+                <g:AbsolutePanel height="138px" width="610px">
+                    <g:at left="30" top="5">
+                        <g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">所属服务器</g:Anchor>
+                    </g:at>
+                    <g:at left="120" top="2">
+                        <g:TextBox ui:field="serverName" maxLength="50" height="1.4EM" width="32EM" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
+                    </g:at>
+                    <g:at left="30" top="35">
+                        <g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">内存描述</g:Anchor>
+                    </g:at>
+                    <g:at left="120" top="32">
+                        <g:TextArea styleName="{style.textArea}" height="2.4EM" width="32EM" ui:field="memDesc"/>
+                    </g:at>
+                    <g:at left="30" top="80">
+                        <g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">容量(MB)</g:Anchor>
+                    </g:at>
+                    <g:at left="120" top="77">
+                        <g:LongBox ui:field="memSize" maxLength="50" height="1.4EM" width="14EM" alignment="RIGHT"/>
+                    </g:at>
+                    <g:at left="400" top="90" style="font-size:90%;">
+                        <g:Anchor styleName="{global.buttonCss.button}"
+                            horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonOK">确&nbsp;定
+                        </g:Anchor>
+                    </g:at>
+                    <g:at left="480" top="90" style="font-size:90%;">
+                        <g:Anchor styleName="{global.buttonCss.button}"
+                            horizontalAlignment="ALIGN_CENTER" width="60px" ui:field="buttonCancel">取&nbsp;消
+                        </g:Anchor>
+                    </g:at>
+                </g:AbsolutePanel>
+            </g:VerticalPanel>
+        </g:center>
+    </g:DockLayoutPanel>
 
 </ui:UiBinder> 

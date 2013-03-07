@@ -17,34 +17,32 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.LongBox;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DeviceMemoryAddViewImpl extends DialogBox implements DeviceMemoryAddView {
-	
-	private static DeviceMemoryAddViewImplUiBinder uiBinder = GWT.create(DeviceMemoryAddViewImplUiBinder.class);
-	
-	interface DeviceMemoryAddViewImplUiBinder extends UiBinder<Widget, DeviceMemoryAddViewImpl> {
-	}
-	
-	@UiField ListBox areaNameList;
-	@UiField ListBox roomNameList;
-	@UiField ListBox cabinetNameList;
-	@UiField ListBox serverNameList;
-	
-	@UiField TextBox memName;
-	@UiField TextArea memDesc;
-	@UiField LongBox memSize;
-	
+    
+    private static DeviceMemoryAddViewImplUiBinder uiBinder = GWT.create(DeviceMemoryAddViewImplUiBinder.class);
+    
+    interface DeviceMemoryAddViewImplUiBinder extends UiBinder<Widget, DeviceMemoryAddViewImpl> {
+    }
+    
+    @UiField ListBox areaNameList;
+    @UiField ListBox roomNameList;
+    @UiField ListBox cabinetNameList;
+    @UiField ListBox serverNameList;
+    
+    @UiField TextArea memDesc;
+    @UiField LongBox memSize;
+    
     private Map<String, Integer> areaMap = new HashMap<String, Integer>();
     private Map<String, Integer> roomMap = new HashMap<String, Integer>();
     private Map<String, Integer> cabinetMap = new HashMap<String, Integer>();
     private Map<String, Integer> serverMap = new HashMap<String, Integer>();
-		
-	public DeviceMemoryAddViewImpl() {
-		super(false);
-		setWidget(uiBinder.createAndBindUi(this));
-		areaNameList.addChangeHandler(new ChangeHandler() {
+        
+    public DeviceMemoryAddViewImpl() {
+        super(false);
+        setWidget(uiBinder.createAndBindUi(this));
+        areaNameList.addChangeHandler(new ChangeHandler() {
 
             @Override
             public void onChange(ChangeEvent event) {
@@ -77,10 +75,10 @@ public class DeviceMemoryAddViewImpl extends DialogBox implements DeviceMemoryAd
             }
             
         });
-		center();
-		hide();
-	}
-	
+        center();
+        hide();
+    }
+    
     @Override
     public void setAreaNames(Map<String, Integer> area_map) {
         areaNameList.clear();
@@ -170,19 +168,15 @@ public class DeviceMemoryAddViewImpl extends DialogBox implements DeviceMemoryAd
             }
         }
     }
-	
-	private String getMemoryName() {
-		return getInputText(memName);
-	}
-	
-	private String getMemoryDesc() {
-		return getInputText(memDesc);
-	}
-	
-	private long getMemorySize() {
-		return memSize.getValue();
-	}
-	
+    
+    private String getMemoryDesc() {
+        return getInputText(memDesc);
+    }
+    
+    private long getMemorySize() {
+        return memSize.getValue();
+    }
+    
     private int getID(Map<String, Integer> map, String name) {
         if (name == null || name.isEmpty()) {
             return -1;
@@ -209,61 +203,52 @@ public class DeviceMemoryAddViewImpl extends DialogBox implements DeviceMemoryAd
     private int getServerID() {
         return getID(serverMap, getSelectedText(serverNameList));
     }
-	
-	private String getInputText(TextBox textbox) {
-		String text = textbox.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
-	private String getInputText(TextArea textarea) {
-		String text = textarea.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
-	private String getSelectedText(ListBox listbox) {
-	    int index = listbox.getSelectedIndex();
-	    if (index == -1) {
-	    	return "";
-	    }
-	    return listbox.getItemText(index);
-	}
-	
-	private DeviceMemoryAddView.Presenter presenter;
-	
-	@Override
-    public void setPresenter(Presenter presenter) {
-		this.presenter = presenter;
+    
+    private String getInputText(TextArea textarea) {
+        String text = textarea.getText();
+        if (text == null) {
+            return "";
+        }
+        return text;
     }
-	
-	@Override
+    
+    private String getSelectedText(ListBox listbox) {
+        int index = listbox.getSelectedIndex();
+        if (index == -1) {
+            return "";
+        }
+        return listbox.getItemText(index);
+    }
+    
+    private DeviceMemoryAddView.Presenter presenter;
+    
+    @Override
+    public void setPresenter(Presenter presenter) {
+        this.presenter = presenter;
+    }
+    
+    @Override
     public void popup() {
-		memName.setValue("");
-		memDesc.setValue("");
-		memSize.setValue(0L);
-		areaNameList.clear();
-		roomNameList.clear();
-		cabinetNameList.clear();
-		serverNameList.clear();
-		presenter.lookupAreaNames();
-		show();
+        memDesc.setValue("");
+        memSize.setValue(0L);
+        areaNameList.clear();
+        roomNameList.clear();
+        cabinetNameList.clear();
+        serverNameList.clear();
+        presenter.lookupAreaNames();
+        show();
     }
 
-	@UiHandler("buttonOK")
-	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(getMemoryName(), getMemoryDesc(), getMemorySize(), getServerID())) {
-			hide();
-		}
-	}
-	
-	@UiHandler("buttonCancel")
-	void handleButtonCancel(ClickEvent event) {
-		hide();
-	}
+    @UiHandler("buttonOK")
+    void handleButtonOK(ClickEvent event) {
+        if (presenter.onOK(getMemoryDesc(), getMemorySize(), getServerID())) {
+            hide();
+        }
+    }
+    
+    @UiHandler("buttonCancel")
+    void handleButtonCancel(ClickEvent event) {
+        hide();
+    }
 
 }

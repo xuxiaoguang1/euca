@@ -775,9 +775,9 @@ public interface EucalyptusService extends RemoteService {
     void deleteDeviceCPU(Session session, List<Integer> cpu_ids) throws EucalyptusServiceException;
     public CPUInfo lookupDeviceCPUByID(Session session, int cpu_id) throws EucalyptusServiceException;
     
-    SearchResult lookupDeviceMemoryByDate(Session session, SearchRange range, MemoryState ms_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
+    SearchResult lookupDeviceMemory(Session session, SearchRange range, MemoryState ms_state) throws EucalyptusServiceException;
     Map<Integer, Long> lookupDeviceMemoryCounts(Session session) throws EucalyptusServiceException;
-    void createDeviceMemory(Session session, String mem_name, String mem_desc, long mem_size, int server_id) throws EucalyptusServiceException;
+    void createDeviceMemory(Session session, String mem_desc, long mem_size, int server_id) throws EucalyptusServiceException;
     void modifyDeviceMemory(Session session, int mem_id, String mem_desc, long mem_size) throws EucalyptusServiceException;
     void deleteDeviceMemory(Session session, List<Integer> mem_ids) throws EucalyptusServiceException;
     MemoryInfo lookupDeviceMemoryByID(Session session, int mem_id) throws EucalyptusServiceException;

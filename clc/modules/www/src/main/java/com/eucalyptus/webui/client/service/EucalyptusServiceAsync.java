@@ -214,9 +214,9 @@ public interface EucalyptusServiceAsync {
     void deleteDeviceCPU(Session session, List<Integer> cpu_ids, AsyncCallback<Void> callback);
     void lookupDeviceCPUByID(Session session, int cpu_id, AsyncCallback<CPUInfo> callback);
     
-    void lookupDeviceMemoryByDate(Session session, SearchRange range, MemoryState ms_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
+    void lookupDeviceMemory(Session session, SearchRange range, MemoryState ms_state, AsyncCallback<SearchResult> callback);
     void lookupDeviceMemoryCounts(Session session, AsyncCallback<Map<Integer, Long>> callback);
-    void createDeviceMemory(Session session, String mem_name, String mem_desc, long mem_size, int server_id, AsyncCallback<Void> callback);
+    void createDeviceMemory(Session session, String mem_desc, long mem_size, int server_id, AsyncCallback<Void> callback);
     void modifyDeviceMemory(Session session, int mem_id, String mem_desc, long mem_size, AsyncCallback<Void> callback);
     void deleteDeviceMemory(Session session, List<Integer> mem_ids, AsyncCallback<Void> callback);
     void lookupDeviceMemoryByID(Session session, int mem_id, AsyncCallback<MemoryInfo> callback);

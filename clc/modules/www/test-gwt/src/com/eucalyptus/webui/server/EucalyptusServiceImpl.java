@@ -884,33 +884,33 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     }
     
     @Override
-    public SearchResult lookupDeviceMemoryByDate(Session session, SearchRange range, MemoryState memory_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
-        return DeviceMemoryService.getInstance().lookupMemoryByDate(session, range, memory_state, dateBegin, dateEnd);
+    public SearchResult lookupDeviceMemory(Session session, SearchRange range, MemoryState memory_state) throws EucalyptusServiceException {
+        return DeviceMemoryService.lookupMemory(session, range, memory_state);
     }
     
     @Override
     public Map<Integer, Long> lookupDeviceMemoryCounts(Session session) throws EucalyptusServiceException {
-    	return DeviceMemoryService.getInstance().lookupMemoryCounts(session);
+    	return DeviceMemoryService.lookupMemoryCounts(session);
     }
     
     @Override
-    public void createDeviceMemory(Session session, String mem_name, String mem_desc, long mem_size, int server_id) throws EucalyptusServiceException {
-    	DeviceMemoryService.getInstance().createMemory(false, session, mem_name, mem_desc, mem_size, server_id);
+    public void createDeviceMemory(Session session, String mem_desc, long mem_size, int server_id) throws EucalyptusServiceException {
+    	DeviceMemoryService.addMemory(false, session, mem_desc, mem_size, server_id);
     }
     
     @Override
     public void modifyDeviceMemory(Session session, int mem_id, String mem_desc, long mem_size) throws EucalyptusServiceException {
-    	DeviceMemoryService.getInstance().modifyMemory(false, session, mem_id, mem_desc, mem_size);
+    	DeviceMemoryService.modifyMemory(false, session, mem_id, mem_desc, mem_size);
     }
     
     @Override
     public void deleteDeviceMemory(Session session, List<Integer> mem_ids) throws EucalyptusServiceException {
-    	DeviceMemoryService.getInstance().deleteMemory(false, session, mem_ids);
+    	DeviceMemoryService.delMemory(false, session, mem_ids);
     }
     
     @Override
     public MemoryInfo lookupDeviceMemoryByID(Session session, int mem_id) throws EucalyptusServiceException {
-    	return DeviceMemoryService.getInstance().lookupMemoryInfoByID(mem_id);
+    	return DeviceMemoryService.lookupMemoryInfoByID(mem_id);
     }
     
     @Override

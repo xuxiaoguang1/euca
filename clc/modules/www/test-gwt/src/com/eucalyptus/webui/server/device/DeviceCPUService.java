@@ -65,7 +65,7 @@ public class DeviceCPUService {
             new SearchResultFieldDesc(true, "0%", new ClientMessage("Create", "添加时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "0%", new ClientMessage("Modify", "修改时间"),
-            		TableDisplay.MANDATORY, Type.TEXT, false, false),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(false, "0%", new ClientMessage("Desc(HW)", "硬件描述"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "0%", new ClientMessage("Create(HW)", "硬件添加时间"),
@@ -441,8 +441,8 @@ public class DeviceCPUService {
     }
     
     static void stopCPUServiceByServerID(Connection conn, int server_id) throws Exception {
-        int cpu_id = DeviceCPUDBProcWrapper.lookupCPUIDByServerID(conn, server_id);
         DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
+        int cpu_id = DeviceCPUDBProcWrapper.lookupCPUIDByServerID(conn, server_id);
         for (int cs_id : DeviceCPUDBProcWrapper.lookupCPUServiceIDsByID(conn, cpu_id)) {
             ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceByID(conn, true, cs_id);
             rs.updateInt(CPU_SERVICE.CPU_SERVICE_STATE.toString(), CPUState.STOP.getValue());
