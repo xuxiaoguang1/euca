@@ -209,7 +209,7 @@ public interface EucalyptusServiceAsync {
     
     void lookupDeviceCPUByDate(Session session, SearchRange range, CPUState cs_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
     void lookupDeviceCPUCounts(Session session, AsyncCallback<Map<Integer, Integer>> callback);
-    void createDeviceCPU(Session session, String cpu_name, String cpu_desc, int cpu_total, int server_id, AsyncCallback<Void> callback);
+    void createDeviceCPU(Session session, String cpu_desc, int cpu_total, int server_id, AsyncCallback<Void> callback);
     void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total, AsyncCallback<Void> callback);
     void deleteDeviceCPU(Session session, List<Integer> cpu_ids, AsyncCallback<Void> callback);
     void lookupDeviceCPUByID(Session session, int cpu_id, AsyncCallback<CPUInfo> callback);

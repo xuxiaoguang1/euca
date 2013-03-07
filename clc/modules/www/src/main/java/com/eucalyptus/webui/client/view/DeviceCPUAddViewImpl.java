@@ -16,7 +16,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView {
@@ -31,7 +30,6 @@ public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView 
 	@UiField ListBox cabinetNameList;
 	@UiField ListBox serverNameList;
 	
-	@UiField TextBox cpuName;
 	@UiField TextArea cpuDesc;
 	@UiField ListBox numList;
 	
@@ -173,10 +171,6 @@ public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView 
         }
     }
 
-	private String getCPUName() {
-		return getInputText(cpuName);
-	}
-	
 	private String getCPUDesc() {
 		return getInputText(cpuDesc);
 	}
@@ -212,14 +206,6 @@ public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView 
         return getID(serverMap, getSelectedText(serverNameList));
     }
 
-	private String getInputText(TextBox textbox) {
-		String text = textbox.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
 	private String getInputText(TextArea textarea) {
 		String text = textarea.getText();
 		if (text == null) {
@@ -245,8 +231,6 @@ public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView 
 	
 	@Override
     public void popup() {
-		cpuName.setValue("");
-		cpuName.setValue("");
 		cpuDesc.setValue("");
 		areaNameList.clear();
 		roomNameList.clear();
@@ -259,7 +243,7 @@ public class DeviceCPUAddViewImpl extends DialogBox implements DeviceCPUAddView 
 
 	@UiHandler("buttonOK")
 	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(getCPUName(), getCPUDesc(), getCPUTotal(), getServerID())) {
+		if (presenter.onOK(getCPUDesc(), getCPUTotal(), getServerID())) {
 			hide();
 		}
 	}

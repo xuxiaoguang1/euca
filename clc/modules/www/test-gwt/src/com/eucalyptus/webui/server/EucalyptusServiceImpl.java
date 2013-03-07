@@ -864,18 +864,18 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     }
     
     @Override
-    public void createDeviceCPU(Session session, String cpu_name, String cpu_desc, int cpu_total, int server_id) throws EucalyptusServiceException {
-    	DeviceCPUService.getInstance().createCPU(false, session, cpu_name, cpu_desc, cpu_total, server_id);
+    public void createDeviceCPU(Session session, String cpu_desc, int cpu_total, int server_id) throws EucalyptusServiceException {
+        DeviceCPUService.addCPU(false, session, cpu_desc, cpu_total, server_id);
     }
     
     @Override
     public void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total) throws EucalyptusServiceException {
-    	DeviceCPUService.getInstance().modifyCPU(false, session, cpu_id, cpu_desc, cpu_total);
+    	DeviceCPUService.modifyCPU(false, session, cpu_id, cpu_desc, cpu_total);
     }
     
     @Override
     public void deleteDeviceCPU(Session session, List<Integer> cpu_ids) throws EucalyptusServiceException {
-    	DeviceCPUService.getInstance().deleteCPU(false, session, cpu_ids);
+        DeviceCPUService.delCPU(false, session, cpu_ids);
     }
     
     @Override

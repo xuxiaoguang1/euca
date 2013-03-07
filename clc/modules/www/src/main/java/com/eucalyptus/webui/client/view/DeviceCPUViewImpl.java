@@ -218,7 +218,6 @@ public class DeviceCPUViewImpl extends Composite implements DeviceCPUView {
         addNode(descs, account, new ClientMessage("", "账户名称"), CellTableColumns.CPU.ACCOUNT_NAME);
         addNode(descs, account, new ClientMessage("", "用户名称"), CellTableColumns.CPU.USER_NAME);
         DeviceColumnPopupPanel.Node service = panel.addNode(new ClientMessage("", "服务信息"));
-        addNode(descs, service, new ClientMessage("", "CPU名称"), CellTableColumns.CPU.CPU_NAME);
         addNode(descs, service, new ClientMessage("", "服务状态"), CellTableColumns.CPU.CPU_SERVICE_STATE);
         addNode(descs, service, new ClientMessage("", "服务描述"), CellTableColumns.CPU.CPU_SERVICE_DESC);
         addNode(descs, service, new ClientMessage("", "占用数量"), CellTableColumns.CPU.CPU_SERVICE_USED);

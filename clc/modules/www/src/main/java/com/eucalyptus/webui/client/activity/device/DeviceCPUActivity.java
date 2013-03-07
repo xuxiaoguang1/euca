@@ -126,14 +126,7 @@ public class DeviceCPUActivity extends DeviceActivity implements DeviceCPUView.P
 					cpuAddView.setPresenter(new DeviceCPUAddView.Presenter() {
 						
 						@Override
-						public boolean onOK(String cpu_name, String cpu_desc, int cpu_total, int server_id) {
-						    if (cpu_name == null || cpu_name.isEmpty()) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("Invalid CPU Name: ", "CPU名称非法")).append(" = (null).").append("\n");
-                                sb.append(new ClientMessage("Please try again.", "请重试."));
-                                Window.alert(sb.toString());
-                                return false;
-                            }
+						public boolean onOK(String cpu_desc, int cpu_total, int server_id) {
 						    if (server_id == -1) {
                                 StringBuilder sb = new StringBuilder();
                                 sb.append(new ClientMessage("Invalid Server Name.", "服务器名称非法.")).append("\n");
@@ -141,7 +134,7 @@ public class DeviceCPUActivity extends DeviceActivity implements DeviceCPUView.P
                                 Window.alert(sb.toString());
                                 return false;
                             }
-							getBackendService().createDeviceCPU(getSession(), cpu_name, cpu_desc, cpu_total, server_id, new AsyncCallback<Void>() {
+							getBackendService().createDeviceCPU(getSession(), cpu_desc, cpu_total, server_id, new AsyncCallback<Void>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
@@ -319,7 +312,7 @@ public class DeviceCPUActivity extends DeviceActivity implements DeviceCPUView.P
 
                         @Override
                         public void onSuccess(final CPUInfo info) {
-                            cpuModifyView.popup(cpu_id, info.cpu_name, info.cpu_desc, info.cpu_total, info.cpu_total - info.cs_reserved, server_name); 
+                            cpuModifyView.popup(cpu_id, info.cpu_desc, info.cpu_total, info.cpu_total - info.cs_reserved, server_name); 
                         }
                         
                     });
@@ -410,11 +403,6 @@ public class DeviceCPUActivity extends DeviceActivity implements DeviceCPUView.P
 				try {
 					CPUState cpu_state = CPUState.parse(row.getField(CellTableColumns.CPU.CPU_SERVICE_STATE));
 					if (cpu_state != CPUState.RESERVED) {
-						return false;
-					}
-					int cpu_total = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_TOTAL));
-					int cs_used = Integer.parseInt(row.getField(CellTableColumns.CPU.CPU_SERVICE_USED));
-					if (cpu_total != cs_used) {
 						return false;
 					}
 				}

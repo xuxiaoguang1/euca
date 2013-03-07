@@ -201,10 +201,14 @@ public class DeviceServerService {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
-            DeviceServerDBProcWrapper.createServer(conn, server_name, server_desc, server_ip, server_bw, server_state, cabinet_id);
+            conn.setAutoCommit(false);
+            int server_id = DeviceServerDBProcWrapper.createServer(conn, server_name, server_desc, server_ip, server_bw, server_state, cabinet_id);
+            DeviceCPUService.createCPUByServerID(conn, server_desc, server_id);
+            conn.commit();
         }
         catch (Exception e) {
             e.printStackTrace();
+            DBProcWrapper.rollback(conn);
             throw new EucalyptusServiceException(e);
         }
         finally {
@@ -222,7 +226,8 @@ public class DeviceServerService {
                 conn = DBProcWrapper.getConnection();
                 conn.setAutoCommit(false);
                 for (int server_id : server_ids) {
-                	DeviceServerDBProcWrapper.lookupServerByID(conn, true, server_id).deleteRow();
+                    DeviceCPUService.deleteCPUByServerID(conn, server_id);
+                    DeviceServerDBProcWrapper.lookupServerByID(conn, true, server_id).deleteRow();
                 }
                 conn.commit();
             }

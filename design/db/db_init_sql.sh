@@ -134,34 +134,13 @@ done
 
 # insert cpu
 
-for ((i=0;i<40;i++)) do
-    let j="$i%5";
-    let x="$i%3";
-    id=`getvalue server server_id server_name name$x`
+for ((i=0;i<20;i++)) do
+    server_id=`getvalue server server_id server_name name$i`
     command insert into cpu \(cpu_name, cpu_desc, cpu_total, cpu_creationtime, cpu_modifiedtime, server_id\) \
-        values \(\"cpu$i\", \"\", \"10\", \"2012-02-0$j\", \"\", \"$id\"\)
-done
-
-# insert cpu_service
-
-for ((i=0;i<40;i++)) do
-    cpuid=`getvalue cpu cpu_id cpu_name cpu$i`
-    userid=`getvalue user user_id user_name admin`
-    let d="10+$i%20";
-    let x="$i%3";
-    if [ $x -ne 2 ]; then
-        command insert into cpu_service \(cs_desc, cs_used, cs_starttime, cs_endtime, cs_state, \
-            cs_creationtime, cs_modifiedtime, cpu_id, user_id\) \
-            values \(\"\", \"8\", \"2012-03-$d\", \"2012-04-$d\", \"$x\", \"2012-01-$d\", \"\", \"$cpuid\", \"$userid\"\)
-        command insert into cpu_service \(cs_desc, cs_used, cs_starttime, cs_endtime, cs_state, \
-            cs_creationtime, cs_modifiedtime, cpu_id, user_id\) \
-            values \(\"\", \"2\", \"2012-03-$d\", \"2012-04-$d\", \"$x\", \"2012-01-$d\", \"\", \"$cpuid\", \"$userid\"\)
-        command insert into cpu_service \(cs_desc, cs_used, cs_state, cpu_id\) \
-            values \(\"\", \"0\", \"2\", \"$cpuid\"\)
-    else
-        command insert into cpu_service \(cs_desc, cs_used, cs_state, cpu_id\) \
-            values \(\"\", \"10\", \"$x\", \"$cpuid\"\)
-    fi
+        values \(\"cpu$i\", \"\", \"10\", \"2012-02-0$j\", \"\", \"$server_id\"\)
+    cpu_id=`getvalue cpu cpu_id server_id $server_id`
+    command insert into cpu_service \(cs_desc, cs_used, cs_state, cpu_id\) \
+        values \(\"\", \"10\", \"2\", \"$cpu_id\"\)
 done
 
 # insert memory

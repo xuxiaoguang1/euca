@@ -159,7 +159,6 @@ class DBTableCPU extends DBTable {
 	}
 	
 	public final DBTableColumn CPU_ID = new DBTableColumn(this, "cpu_id");
-	public final DBTableColumn CPU_NAME = new DBTableColumn(this, "cpu_name");
 	public final DBTableColumn CPU_DESC = new DBTableColumn(this, "cpu_desc");
 	public final DBTableColumn CPU_TOTAL = new DBTableColumn(this, "cpu_total");
 	public final DBTableColumn CPU_CREATIONTIME = new DBTableColumn(this, "cpu_creationtime");

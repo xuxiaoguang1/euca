@@ -42,7 +42,7 @@ public class DeviceCPUService {
         /* do nothing */
     }
     
-    private LoginUserProfile getUser(Session session) {
+    private static LoginUserProfile getUser(Session session) {
         return LoginUserProfileStorer.instance().get(session.getId());
     }
     
@@ -51,8 +51,6 @@ public class DeviceCPUService {
             new SearchResultFieldDesc(null, "0%",false),
             new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
             new SearchResultFieldDesc(false, "3EM", new ClientMessage("Index", "序号"),
-                    TableDisplay.MANDATORY, Type.TEXT, false, false),
-            new SearchResultFieldDesc(true, "8%", new ClientMessage("Name", "CPU名称"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
             new SearchResultFieldDesc(true, "8%", new ClientMessage("Server", "所属服务器"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false),
@@ -90,7 +88,6 @@ public class DeviceCPUService {
         case CellTableColumns.CPU.ACCOUNT_NAME: return DBTable.ACCOUNT.ACCOUNT_NAME;
         case CellTableColumns.CPU.USER_NAME: return DBTable.USER.USER_NAME;
         case CellTableColumns.CPU.SERVER_NAME: return DBTable.SERVER.SERVER_NAME;
-        case CellTableColumns.CPU.CPU_NAME: return DBTable.CPU.CPU_NAME;
         case CellTableColumns.CPU.CPU_TOTAL: return DBTable.CPU.CPU_TOTAL;
         case CellTableColumns.CPU.CPU_SERVICE_USED: return DBTable.CPU_SERVICE.CPU_SERVICE_USED;
         case CellTableColumns.CPU.CPU_CREATIONTIME: return DBTable.CPU.CPU_CREATIONTIME;
@@ -136,7 +133,6 @@ public class DeviceCPUService {
                 if (start <= index && index < end) {
                     int cpu_id = DBData.getInt(rs, CPU.CPU_ID);
                     int cs_id = DBData.getInt(rs, CPU_SERVICE.CPU_SERVICE_ID);
-                    String cpu_name = DBData.getString(rs, CPU.CPU_NAME);
                     String cpu_desc = DBData.getString(rs, CPU.CPU_DESC);
                     int cpu_total = DBData.getInt(rs, CPU.CPU_TOTAL);
                     String server_name = DBData.getString(rs, SERVER.SERVER_NAME);
@@ -170,7 +166,6 @@ public class DeviceCPUService {
                     row.setColumn(CellTableColumns.CPU.CPU_ID, cpu_id);
                     row.setColumn(CellTableColumns.CPU.RESERVED_CHECKBOX, "");
                     row.setColumn(CellTableColumns.CPU.RESERVED_INDEX, index + 1);
-                    row.setColumn(CellTableColumns.CPU.CPU_NAME, cpu_name);
                     row.setColumn(CellTableColumns.CPU.SERVER_NAME, server_name);
                     row.setColumn(CellTableColumns.CPU.CPU_SERVICE_STATE, cs_state.toString());
                     row.setColumn(CellTableColumns.CPU.ACCOUNT_NAME, account_name);
@@ -241,7 +236,6 @@ public class DeviceCPUService {
             DBTableCPU CPU = DBTable.CPU;
             DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
             ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUByID(conn, false, cpu_id);
-            String cpu_name = DBData.getString(rs, CPU.CPU_NAME);
             String cpu_desc = DBData.getString(rs, CPU.CPU_DESC);
             int cpu_total = DBData.getInt(rs, CPU.CPU_TOTAL);
             Date cpu_creationtime = DBData.getDate(rs, CPU.CPU_CREATIONTIME);
@@ -249,7 +243,7 @@ public class DeviceCPUService {
             int server_id = DBData.getInt(rs, CPU.SERVER_ID);
             rs = DeviceCPUDBProcWrapper.lookupCPUServiceReservedByID(conn, false, cpu_id);
             int cs_reserved = rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString());
-            return new CPUInfo(cpu_id, cpu_name, cpu_desc, cpu_total, cs_reserved, cpu_creationtime, cpu_modifiedtime, server_id);
+            return new CPUInfo(cpu_id, cpu_desc, cpu_total, cs_reserved, cpu_creationtime, cpu_modifiedtime, server_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -286,300 +280,28 @@ public class DeviceCPUService {
         }
     }
     
-    public void createCPU(boolean force, Session session, String cpu_name, String cpu_desc, int cpu_total, int server_id) throws EucalyptusServiceException {
+    public static void addCPU(boolean force, Session session, String cpu_desc, int cpu_total, int server_id) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
-        if (cpu_name == null || cpu_name.isEmpty()) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("CPU Name", "CPU名称"));
-        }
-        cpu_total = Math.max(0, cpu_total);
-        Connection conn = null;
-        try {
-            conn = DBProcWrapper.getConnection();
-            conn.setAutoCommit(false);
-            int cpu_id = DeviceCPUDBProcWrapper.createCPU(conn, cpu_name, cpu_desc, cpu_total, server_id);
-            DeviceCPUDBProcWrapper.createCPUService(conn, null, cpu_total, null, null, CPUState.RESERVED, cpu_id, -1);
-            conn.commit();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            DBProcWrapper.rollback(conn);
-            throw new EucalyptusServiceException(e);
-        }
-        finally {
-            DBProcWrapper.close(conn);
-        }
-    }
-    
-    public void createCPUService(boolean force, Session session, String cs_desc, int cs_size, CPUState cs_state, Date cs_starttime, Date cs_endtime, int cpu_id, int user_id) throws EucalyptusServiceException {
-    	if (!force && !getUser(session).isSystemAdmin()) {
-            throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
-        }
-        Connection conn = null;
-        try {
-            conn = DBProcWrapper.getConnection();
-            conn.setAutoCommit(false);
-            createCPUService(force, conn, cs_desc, cs_size, cs_state, cs_starttime, cs_endtime, cpu_id, user_id);
-            conn.commit();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            DBProcWrapper.rollback(conn);
-            throw new EucalyptusServiceException(e);
-        }
-        finally {
-            DBProcWrapper.close(conn);
-        }
-    }
-    
-    protected int createCPUService(boolean force, Connection conn, String cs_desc, int cs_size, CPUState cs_state, Date cs_starttime, Date cs_endtime, int cpu_id, int user_id) throws Exception {
-        if (cs_size <= 0) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("CPU Size", "CPU大小"));
-        }
-        if (cs_state == null || cs_state == CPUState.RESERVED) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("CPU Service State", "CPU服务状态"));
-        }
-        if (cs_starttime == null) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("Start Time", "开始日期"));
-        }
-        if (cs_endtime == null) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("End Time", "结束日期"));
-        }
-        if (DBData.calcLife(cs_endtime, cs_starttime) <= 0) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("Date Value", "服务日期"));
-        }
-        if (user_id == -1) {
-            throw new EucalyptusServiceException(new ClientMessage("User Name", "用户名称"));
-        }
-        int cs_used = cs_size;
-        DBTableCPU CPU = DBTable.CPU;
-        DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-        ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceReservedByID(conn, true, cpu_id);
-        int reserved = rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString());
-        if (reserved >= cs_used) {
-            rs.updateInt(CPU_SERVICE.CPU_SERVICE_USED.toString(), reserved - cs_used);
-            rs.updateRow();
-        }
-        else if (force) {
-            rs.updateLong(CPU_SERVICE.CPU_SERVICE_USED.toString(), 0);
-            rs.updateRow();
-            rs = DeviceCPUDBProcWrapper.lookupCPUByID(conn, true, cpu_id);
-            rs.updateLong(CPU.CPU_TOTAL.toString(), rs.getLong(CPU.CPU_TOTAL.toString()) + cs_used - reserved);
-            rs.updateRow();
-        }
-        else {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("CPU Size", "CPU大小"));
-        }
-        return DeviceCPUDBProcWrapper.createCPUService(conn, cs_desc, cs_used, cs_starttime, cs_endtime, cs_state, cpu_id, user_id);
-    }
-    
-    public void deleteCPU(boolean force, Session session, List<Integer> cpu_ids) throws EucalyptusServiceException {
-    	if (!force && !getUser(session).isSystemAdmin()) {
-            throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
-        }
-    	if (cpu_ids != null && !cpu_ids.isEmpty()) {
-    		Connection conn = null;
-            try {
-                conn = DBProcWrapper.getConnection();
-                conn.setAutoCommit(false);
-                for (int cpu_id : cpu_ids) {
-                	DeviceCPUDBProcWrapper.lookupCPUServiceReservedByID(conn, true, cpu_id).deleteRow();
-                	DeviceCPUDBProcWrapper.lookupCPUByID(conn, true, cpu_id).deleteRow();
-                }
-                conn.commit();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                DBProcWrapper.rollback(conn);
-                throw new EucalyptusServiceException(e);
-            }
-            finally {
-                DBProcWrapper.close(conn);
-            }
-    	}
-    }
-    
-    public void deleteCPUService(boolean force, Session session, List<Integer> cs_ids) throws EucalyptusServiceException {
-    	if (!force && !getUser(session).isSystemAdmin()) {
-            throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
-        }
-    	if (cs_ids != null && !cs_ids.isEmpty()) {
-    		Connection conn = null;
-            try {
-                conn = DBProcWrapper.getConnection();
-                conn.setAutoCommit(false);
-    			DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-    			for (int cs_id : cs_ids) {
-                	ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceByID(conn, true, cs_id);
-                	int cpu_id = rs.getInt(CPU_SERVICE.CPU_ID.toString());
-                	int cs_used = rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString());
-                	rs.deleteRow();
-                	rs = DeviceCPUDBProcWrapper.lookupCPUServiceReservedByID(conn, true, cpu_id);
-                	rs.updateInt(CPU_SERVICE.CPU_SERVICE_USED.toString(), rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString()) + cs_used);  
-                    rs.updateRow();
-                }
-                conn.commit();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-                DBProcWrapper.rollback(conn);
-                throw new EucalyptusServiceException(e);
-            }
-            finally {
-                DBProcWrapper.close(conn);
-            }
-    	}
-    }
-    
-    public void modifyCPU(boolean force, Session session, int cpu_id, String cpu_desc, int cpu_total) throws EucalyptusServiceException {
-    	if (!force && !getUser(session).isSystemAdmin()) {
-            throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
-        }
-    	if (cpu_desc == null) {
-    		cpu_desc = "";
-    	}
-    	cpu_total = Math.max(0, cpu_total);
+        int resize = Math.max(0, cpu_total);
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
             conn.setAutoCommit(false);
             DBTableCPU CPU = DBTable.CPU;
             DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
+            int cpu_id = DeviceCPUDBProcWrapper.lookupCPUIDByServerID(conn, server_id);
             ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUByID(conn, true, cpu_id);
-            int resize = cpu_total - rs.getInt(CPU.CPU_TOTAL.toString());
-            rs.updateInt(CPU.CPU_TOTAL.toString(), cpu_total);
+            if (resize != 0) {
+                rs.updateInt(CPU.CPU_TOTAL.toString(), rs.getInt(CPU.CPU_TOTAL.toString()) + resize);
+            }
             rs.updateString(CPU.CPU_DESC.toString(), cpu_desc);
             rs.updateString(CPU.CPU_MODIFIEDTIME.toString(), DBStringBuilder.getDate());
             rs.updateRow();
             if (resize != 0) {
-            	rs = DeviceCPUDBProcWrapper.lookupCPUServiceReservedByID(conn, true, cpu_id);
-            	int reserved = rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString()) + resize;
-            	if (reserved >= 0) {
-            		rs.updateInt(CPU_SERVICE.CPU_SERVICE_USED.toString(), reserved);
-                    rs.updateRow();
-            	}
-            	else {
-            		throw new EucalyptusServiceException(ClientMessage.invalidValue("CPU Size", "CPU大小"));
-            	}
-            }
-            conn.commit();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            DBProcWrapper.rollback(conn);
-            throw new EucalyptusServiceException(e);
-        }
-        finally {
-            DBProcWrapper.close(conn);
-        }
-    }
-    
-    public void modifyCPUService(boolean force, Session session, int cs_id, String cs_desc, int cs_size, Date cs_starttime, Date cs_endtime) throws EucalyptusServiceException {
-    	if (!force && !getUser(session).isSystemAdmin()) {
-            throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
-        }
-    	if (cs_starttime == null) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("Start Time", "开始日期"));
-        }
-        if (cs_endtime == null) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("End Time", "结束日期"));
-        }
-        if (DBData.calcLife(cs_endtime, cs_starttime) <= 0) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("Date Value", "服务日期"));
-        }
-        if (cs_desc == null) {
-    		cs_desc = "";
-    	}
-        int cs_used = Math.max(0, cs_size);
-        Connection conn = null;
-        try {
-            conn = DBProcWrapper.getConnection();
-            conn.setAutoCommit(false);
-            DBTableCPU CPU = DBTable.CPU;
-            DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-            ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceByID(conn, true, cs_id);
-            int resize = cs_used - rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString());
-            rs.updateInt(CPU_SERVICE.CPU_SERVICE_USED.toString(), cs_used);
-            rs.updateString(CPU_SERVICE.CPU_SERVICE_DESC.toString(), cs_desc);
-            rs.updateString(CPU_SERVICE.CPU_SERVICE_STARTTIME.toString(), DBStringBuilder.getDate(cs_starttime));
-            rs.updateString(CPU_SERVICE.CPU_SERVICE_ENDTIME.toString(), DBStringBuilder.getDate(cs_endtime));
-            rs.updateString(CPU_SERVICE.CPU_SERVICE_MODIFIEDTIME.toString(), DBStringBuilder.getDate());
-            rs.updateRow();
-            if (resize != 0) {
-            	int cpu_id = rs.getInt(CPU_SERVICE.CPU_ID.toString());
-            	rs = DeviceCPUDBProcWrapper.lookupCPUServiceReservedByID(conn, true, cpu_id);
-            	int reserved = rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString()) - resize;
-            	if (reserved >= 0) {
-            		rs.updateInt(CPU_SERVICE.CPU_SERVICE_USED.toString(), reserved);
-                    rs.updateRow();
-            	}
-            	else if (force) {
-            		rs.updateInt(CPU_SERVICE.CPU_SERVICE_USED.toString(), 0);
-                    rs.updateRow();
-            		rs = DeviceCPUDBProcWrapper.lookupCPUByID(conn, true, cpu_id);
-            		rs.updateInt(CPU.CPU_TOTAL.toString(), rs.getInt(CPU.CPU_TOTAL.toString()) - reserved);
-                    rs.updateRow();
-            	}
-            	else {
-	                throw new EucalyptusServiceException(ClientMessage.invalidValue("CPU Size", "CPU大小"));
-            	}
-            }
-            conn.commit();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            DBProcWrapper.rollback(conn);
-            throw new EucalyptusServiceException(e);
-        }
-        finally {
-            DBProcWrapper.close(conn);
-        }
-    }
-    
-    public void stopCPUServiceByServerID(boolean force, Session session, int server_id) throws EucalyptusServiceException {
-    	if (!force && !getUser(session).isSystemAdmin()) {
-            throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
-        }
-        Connection conn = null;
-        try {
-            conn = DBProcWrapper.getConnection();
-            conn.setAutoCommit(false);
-            for (Map.Entry<String, Integer> entry : DeviceCPUDBProcWrapper.lookupCPUNamesByServerID(conn, server_id).entrySet()) {
-            	DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-            	for (int cs_id : DeviceCPUDBProcWrapper.lookupCPUServiceIDsByCPUID(conn, entry.getValue())) {
-            		ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceByID(conn, true, cs_id);
-            		rs.updateInt(CPU_SERVICE.CPU_SERVICE_STATE.toString(), CPUState.STOP.getValue());
-                    rs.updateRow();
-            	}
-            }
-            conn.commit();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            DBProcWrapper.rollback(conn);
-            throw new EucalyptusServiceException(e);
-        }
-        finally {
-            DBProcWrapper.close(conn);
-        }
-    }
-    
-    public void modifyCPUState(boolean force, Session session, int cpu_id, CPUState cs_state) throws EucalyptusServiceException {
-    	if (!force && !getUser(session).isSystemAdmin()) {
-            throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
-        }
-    	if (cs_state == null || cs_state == CPUState.RESERVED) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("CPU Service State", "CPU服务状态"));
-        }
-    	Connection conn = null;
-        try {
-            conn = DBProcWrapper.getConnection();
-            conn.setAutoCommit(false);
-            DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-            for (int cs_id : DeviceCPUDBProcWrapper.lookupCPUServiceIDsByCPUID(conn, cpu_id)) {
-            	ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceByID(conn, true, cs_id);
-            	rs.updateInt(CPU_SERVICE.CPU_SERVICE_STATE.toString(), cs_state.getValue());
+                rs = DeviceCPUDBProcWrapper.lookupCPUServiceReservedByID(conn, true, cpu_id);
+                rs.updateInt(CPU_SERVICE.CPU_SERVICE_USED.toString(), rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString()) + resize);
                 rs.updateRow();
             }
             conn.commit();
@@ -594,21 +316,31 @@ public class DeviceCPUService {
         }
     }
     
-    public void modifyCPUServiceState(boolean force, Session session, int cs_id, CPUState cs_state) throws EucalyptusServiceException {
-    	if (!force && !getUser(session).isSystemAdmin()) {
+    public static void delCPU(boolean force, Session session, List<Integer> cpu_ids) throws EucalyptusServiceException {
+        if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
-        if (cs_state == null || cs_state == CPUState.RESERVED) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("CPU Service State", "CPU服务状态"));
+        if (cpu_ids == null || cpu_ids.isEmpty()) {
+            return;
         }
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
             conn.setAutoCommit(false);
+            DBTableCPU CPU = DBTable.CPU;
             DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-            ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceByID(conn, true, cs_id);
-            rs.updateInt(CPU_SERVICE.CPU_SERVICE_STATE.toString(), cs_state.getValue());
-            rs.updateRow();
+            for (int cpu_id : cpu_ids) {
+                ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceReservedByID(conn, true, cpu_id);
+                int resize = rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString());
+                if (resize > 0) {
+                    rs.updateInt(CPU_SERVICE.CPU_SERVICE_USED.toString(), 0);
+                    rs.updateRow();
+                    rs = DeviceCPUDBProcWrapper.lookupCPUByID(conn, true, cpu_id);
+                    rs.updateInt(CPU.CPU_TOTAL.toString(), rs.getInt(CPU.CPU_TOTAL.toString()) - resize);
+                    rs.updateString(CPU.CPU_MODIFIEDTIME.toString(), DBStringBuilder.getDate());
+                    rs.updateRow();
+                }
+            }
             conn.commit();
         }
         catch (Exception e) {
@@ -621,211 +353,316 @@ public class DeviceCPUService {
         }
     }
     
-}
-
-class DeviceCPUDBProcWrapper {
-    
-    private static final Logger log = Logger.getLogger(DeviceCPUDBProcWrapper.class.getName());
-    
-    public static Map<String, Integer> lookupCPUNamesByServerID(Connection conn, int server_id) throws Exception {
-        DBTableCPU CPU = DBTable.CPU;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ");
-        sb.append(CPU.CPU_NAME).append(", ").append(CPU.CPU_ID);
-        sb.append(" FROM ").append(CPU);
-        sb.append(" WHERE ").append(CPU.SERVER_ID).append(" = ").append(server_id);
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        Map<String, Integer> result = new HashMap<String, Integer>();
-        while (rs.next()) {
-        	result.put(rs.getString(1), rs.getInt(2));
+    public static void modifyCPU(boolean force, Session session, int cpu_id, String cpu_desc, int cpu_total) throws EucalyptusServiceException {
+        if (!force && !getUser(session).isSystemAdmin()) {
+            throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
-        return result;
-    }
-    
-    public static List<Integer> lookupCPUServiceIDsByCPUID(Connection conn, int cpu_id) throws Exception {
-        DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ");
-        sb.append(CPU_SERVICE.CPU_SERVICE_ID);
-        sb.append(" FROM ").append(CPU_SERVICE);
-        sb.append(" WHERE ").append(CPU_SERVICE.CPU_ID).append(" = ").append(cpu_id);
-        sb.append(" AND ").append(CPU_SERVICE.CPU_SERVICE_STATE).append(" != ").append(CPUState.RESERVED.getValue());
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        List<Integer> result = new LinkedList<Integer>();
-        while (rs.next()) {
-            result.add(rs.getInt(1));
+        if (cpu_desc == null) {
+            cpu_desc = "";
         }
-        return result;
-    }
-    
-    public static ResultSet lookupCPUByID(Connection conn, boolean updatable, int cpu_id) throws Exception {
-        DBTableCPU CPU = DBTable.CPU;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT * FROM ").append(CPU);
-        sb.append(" WHERE ").append(CPU.CPU_ID).append(" = ").append(cpu_id);
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
-        rs.next();
-        return rs;
-    }
-    
-    public static ResultSet lookupCPUServiceByID(Connection conn, boolean updatable, int cs_id) throws Exception {
-        DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT * FROM ").append(CPU_SERVICE);
-        sb.append(" WHERE ").append(CPU_SERVICE.CPU_SERVICE_ID).append(" = ").append(cs_id);
-        sb.append(" AND ").append(CPU_SERVICE.CPU_SERVICE_STATE).append(" != ").append(CPUState.RESERVED.getValue());
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
-        rs.next();
-        return rs;
-    }
-    
-    public static ResultSet lookupCPUServiceReservedByID(Connection conn, boolean updatable, int cpu_id) throws Exception {
-        DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT * FROM ").append(CPU_SERVICE);
-        sb.append(" WHERE ").append(CPU_SERVICE.CPU_ID).append(" = ").append(cpu_id);
-        sb.append(" AND ").append(CPU_SERVICE.CPU_SERVICE_STATE).append(" = ").append(CPUState.RESERVED.getValue());
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
-        rs.next();
-        return rs;
-    }
-    
-    public static ResultSet lookupCPUByDate(Connection conn, CPUState state, Date beg, Date end, DBTableColumn sorted, boolean isAscending, int account_id, int user_id) throws Exception {
-        DBTableAccount ACCOUNT = DBTable.ACCOUNT;
-        DBTableUser USER = DBTable.USER;
-        DBTableServer SERVER = DBTable.SERVER;
-        DBTableCPU CPU = DBTable.CPU;
-        DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ").append(CPU.ANY).append(", ").append(CPU_SERVICE.ANY).append(", ");
-        sb.append(SERVER.SERVER_NAME).append(", ").append(ACCOUNT.ACCOUNT_NAME).append(", ").append(USER.USER_NAME).append(", ");
-        sb.appendDateLifeRemains(CPU_SERVICE.CPU_SERVICE_STARTTIME, CPU_SERVICE.CPU_SERVICE_ENDTIME, CPU_SERVICE.CPU_SERVICE_LIFE).append(" FROM "); {
-            sb.append(CPU_SERVICE);
-            sb.append(" LEFT JOIN ").append(USER).append(" ON ").append(CPU_SERVICE.USER_ID).append(" = ").append(USER.USER_ID);
-            sb.append(" LEFT JOIN ").append(ACCOUNT).append(" ON ").append(USER.ACCOUNT_ID).append(" = ").append(ACCOUNT.ACCOUNT_ID);
-            sb.append(" LEFT JOIN ").append(CPU).append(" ON ").append(CPU_SERVICE.CPU_ID).append(" = ").append(CPU.CPU_ID);
-            sb.append(" LEFT JOIN ").append(SERVER).append(" ON ").append(CPU.SERVER_ID).append(" = ").append(SERVER.SERVER_ID);
-        }
-        sb.append(" WHERE ").append(CPU_SERVICE.CPU_SERVICE_USED).append(" != ").append(0);
-        if (state != null) {
-            sb.append(" AND ").append(CPU_SERVICE.CPU_SERVICE_STATE).append(" = ").append(state.getValue());
-        }
-        if (user_id >= 0) {
-            sb.append(" AND ").append(CPU_SERVICE.USER_ID).append(" = ").append(user_id);
-        }
-        if (account_id >= 0) {
-            sb.append(" AND ").append(USER.ACCOUNT_ID).append(" = ").append(account_id);
-        }
-        if (beg != null || end != null) {
-            sb.append(" AND ("); {
-                sb.appendDateBound(CPU_SERVICE.CPU_SERVICE_CREATIONTIME, beg, end);
-                sb.append(" OR ");
-                sb.appendDateBound(CPU_SERVICE.CPU_SERVICE_MODIFIEDTIME, beg, end);
+        cpu_total = Math.max(0, cpu_total);
+        Connection conn = null;
+        try {
+            conn = DBProcWrapper.getConnection();
+            conn.setAutoCommit(false);
+            DBTableCPU CPU = DBTable.CPU;
+            DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
+            ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUByID(conn, true, cpu_id);
+            int resize = cpu_total - rs.getInt(CPU.CPU_TOTAL.toString());
+            rs.updateInt(CPU.CPU_TOTAL.toString(), cpu_total);
+            rs.updateString(CPU.CPU_DESC.toString(), cpu_desc);
+            rs.updateString(CPU.CPU_MODIFIEDTIME.toString(), DBStringBuilder.getDate());
+            rs.updateRow();
+            if (resize != 0) {
+                rs = DeviceCPUDBProcWrapper.lookupCPUServiceReservedByID(conn, true, cpu_id);
+                int reserved = rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString()) + resize;
+                if (reserved >= 0) {
+                    rs.updateInt(CPU_SERVICE.CPU_SERVICE_USED.toString(), reserved);
+                    rs.updateRow();
+                }
+                else {
+                    throw new EucalyptusServiceException(ClientMessage.invalidValue("CPU Size", "CPU大小"));
+                }
             }
-            sb.append(")");
+            conn.commit();
         }
-        if (sorted != null) {
-            sb.append(" ORDER BY ").append(sorted).append(isAscending ? " ASC" : " DESC");
+        catch (Exception e) {
+            e.printStackTrace();
+            DBProcWrapper.rollback(conn);
+            throw new EucalyptusServiceException(e);
         }
-        return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+        finally {
+            DBProcWrapper.close(conn);
+        }
     }
     
-    public static int createCPU(Connection conn, String cpu_name, String cpu_desc, int cpu_total, int server_id) throws Exception {
+    static void createCPUByServerID(Connection conn, String server_desc, int server_id) throws Exception {
+        int cpu_id = DeviceCPUDBProcWrapper.createCPU(conn, server_desc, 0, server_id);
+        DeviceCPUDBProcWrapper.createCPUService(conn, null, 0, null, null, CPUState.RESERVED, cpu_id, -1);
+    }
+    
+    static void deleteCPUByServerID(Connection conn, int server_id) throws Exception {
+        int cpu_id = DeviceCPUDBProcWrapper.lookupCPUIDByServerID(conn, server_id);
+        DeviceCPUDBProcWrapper.lookupCPUServiceReservedByID(conn, true, cpu_id).deleteRow();
+        DeviceCPUDBProcWrapper.lookupCPUByID(conn, true, cpu_id).deleteRow();
+    }
+    
+    static int createCPUService(Connection conn, int cs_used, CPUState cs_state, int user_id, int server_id) throws Exception {
+        if (cs_used <= 0) {
+            throw new EucalyptusServiceException(ClientMessage.invalidValue("CPU Size", "CPU大小"));
+        }
+        if (cs_state == null || cs_state == CPUState.RESERVED) {
+            throw new EucalyptusServiceException(ClientMessage.invalidValue("CPU Service State", "CPU服务状态"));
+        }
+        if (user_id == -1) {
+            throw new EucalyptusServiceException(new ClientMessage("User Name", "用户名称"));
+        }
+        int cpu_id = DeviceCPUDBProcWrapper.lookupCPUIDByServerID(conn, server_id);
         DBTableCPU CPU = DBTable.CPU;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("INSERT INTO ").append(CPU).append(" ("); {
-            sb.append(CPU.CPU_NAME).append(", ");
-            sb.append(CPU.CPU_DESC).append(", ");
-            sb.append(CPU.CPU_TOTAL).append(", ");
-            sb.append(CPU.SERVER_ID).append(", ");
-            sb.append(CPU.CPU_CREATIONTIME).append(", ");
-            sb.append(CPU.CPU_MODIFIEDTIME);
+        DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
+        ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceReservedByID(conn, true, cpu_id);
+        int reserved = rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString());
+        if (reserved >= cs_used) {
+            rs.updateInt(CPU_SERVICE.CPU_SERVICE_USED.toString(), reserved - cs_used);
+            rs.updateRow();
         }
-        sb.append(") VALUES ("); {
-            sb.appendString(cpu_name).append(", ");
-            sb.appendString(cpu_desc).append(", ");
-            sb.append(cpu_total).append(", ");
-            sb.append(server_id).append(", ");
-            sb.appendDate().append(", ");
-            sb.appendNull();
+        else {
+            rs.updateInt(CPU_SERVICE.CPU_SERVICE_USED.toString(), 0);
+            rs.updateRow();
+            rs = DeviceCPUDBProcWrapper.lookupCPUByID(conn, true, cpu_id);
+            rs.updateInt(CPU.CPU_TOTAL.toString(), rs.getInt(CPU.CPU_TOTAL.toString()) + cs_used - reserved);
+            rs.updateRow();
         }
-        sb.append(")");
-        Statement stat = conn.createStatement();
-        stat.executeUpdate(sb.toSql(log), new String[]{CPU.CPU_ID.toString()});
-        ResultSet rs = stat.getGeneratedKeys();
-        rs.next();
-        return rs.getInt(1);
+        return DeviceCPUDBProcWrapper.createCPUService(conn, null, cs_used, null, null, cs_state, cpu_id, user_id);
     }
     
-    public static int createCPUService(Connection conn, String cs_desc, int cs_used, Date cs_starttime, Date cs_endtime, CPUState state, int cpu_id, int user_id) throws Exception {
+    static void deleteCPUService(Connection conn, int cs_id) throws Exception {
         DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("INSERT INTO ").append(CPU_SERVICE).append(" ("); {
-            sb.append(CPU_SERVICE.CPU_SERVICE_DESC).append(", ");
-            sb.append(CPU_SERVICE.CPU_SERVICE_USED).append(", ");
-            sb.append(CPU_SERVICE.CPU_SERVICE_STARTTIME).append(", ");
-            sb.append(CPU_SERVICE.CPU_SERVICE_ENDTIME).append(", ");
-            sb.append(CPU_SERVICE.CPU_SERVICE_STATE).append(", ");
-            sb.append(CPU_SERVICE.CPU_SERVICE_CREATIONTIME).append(", ");
-            sb.append(CPU_SERVICE.CPU_SERVICE_MODIFIEDTIME).append(", ");
-            sb.append(CPU_SERVICE.CPU_ID).append(", ");
-            sb.append(CPU_SERVICE.USER_ID);
+        ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceByID(conn, true, cs_id);
+        int cpu_id = rs.getInt(CPU_SERVICE.CPU_ID.toString());
+        int resize = rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString());
+        rs.deleteRow();
+        rs = DeviceCPUDBProcWrapper.lookupCPUServiceReservedByID(conn, true, cpu_id);
+        rs.updateInt(CPU_SERVICE.CPU_SERVICE_USED.toString(), rs.getInt(CPU_SERVICE.CPU_SERVICE_USED.toString()) + resize);  
+        rs.updateRow();
+    }
+    
+    static void stopCPUServiceByServerID(Connection conn, int server_id) throws Exception {
+        int cpu_id = DeviceCPUDBProcWrapper.lookupCPUIDByServerID(conn, server_id);
+        DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
+        for (int cs_id : DeviceCPUDBProcWrapper.lookupCPUServiceIDsByID(conn, cpu_id)) {
+            ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceByID(conn, true, cs_id);
+            rs.updateInt(CPU_SERVICE.CPU_SERVICE_STATE.toString(), CPUState.STOP.getValue());
+            rs.updateRow();
         }
-        sb.append(") VALUES ("); {
-            sb.appendString(cs_desc).append(", ");
-            sb.append(cs_used).append(", ");
-            sb.appendDate(cs_starttime).append(", ");
-            sb.appendDate(cs_endtime).append(", ");
-            sb.append(state.getValue()).append(", ");
-            sb.appendDate().append(", ");
-            sb.appendNull().append(", ");
-            sb.append(cpu_id).append(", ");
-            if (user_id == -1) {
+    }
+    
+    static void modifyCPUServiceState(Connection conn, int cs_id, CPUState cs_state) throws Exception {
+        if (cs_state == null || cs_state == CPUState.RESERVED) {
+            throw new EucalyptusServiceException(ClientMessage.invalidValue("CPU Service State", "CPU服务状态"));
+        }
+        DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
+        ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceByID(conn, true, cs_id);
+        rs.updateInt(CPU_SERVICE.CPU_SERVICE_STATE.toString(), cs_state.getValue());
+        rs.updateRow();
+    }
+    
+    private static class DeviceCPUDBProcWrapper {
+        
+        private static final Logger log = Logger.getLogger(DeviceCPUDBProcWrapper.class.getName());
+        
+        public static int lookupCPUIDByServerID(Connection conn, int server_id) throws Exception {
+            DBTableCPU CPU = DBTable.CPU;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT ").append(CPU.CPU_ID).append(" FROM ").append(CPU);
+            sb.append(" WHERE ").append(CPU.SERVER_ID).append(" = ").append(server_id);
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+            rs.next();
+            return rs.getInt(1);
+        }
+        
+        public static List<Integer> lookupCPUServiceIDsByID(Connection conn, int cpu_id) throws Exception {
+            DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT ").append(CPU_SERVICE.CPU_SERVICE_ID).append(" FROM ").append(CPU_SERVICE);
+            sb.append(" WHERE ").append(CPU_SERVICE.CPU_ID).append(" = ").append(cpu_id);
+            sb.append(" AND ").append(CPU_SERVICE.CPU_SERVICE_STATE).append(" != ").append(CPUState.RESERVED.getValue());
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+            List<Integer> result = new LinkedList<Integer>();
+            while (rs.next()) {
+                result.add(rs.getInt(1));
+            }
+            return result;
+        }
+        
+        public static ResultSet lookupCPUByID(Connection conn, boolean updatable, int cpu_id) throws Exception {
+            DBTableCPU CPU = DBTable.CPU;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT * FROM ").append(CPU);
+            sb.append(" WHERE ").append(CPU.CPU_ID).append(" = ").append(cpu_id);
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
+            rs.next();
+            return rs;
+        }
+        
+        public static ResultSet lookupCPUServiceByID(Connection conn, boolean updatable, int cs_id) throws Exception {
+            DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT * FROM ").append(CPU_SERVICE);
+            sb.append(" WHERE ").append(CPU_SERVICE.CPU_SERVICE_ID).append(" = ").append(cs_id);
+            sb.append(" AND ").append(CPU_SERVICE.CPU_SERVICE_STATE).append(" != ").append(CPUState.RESERVED.getValue());
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
+            rs.next();
+            return rs;
+        }
+        
+        public static ResultSet lookupCPUServiceReservedByID(Connection conn, boolean updatable, int cpu_id) throws Exception {
+            DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT * FROM ").append(CPU_SERVICE);
+            sb.append(" WHERE ").append(CPU_SERVICE.CPU_ID).append(" = ").append(cpu_id);
+            sb.append(" AND ").append(CPU_SERVICE.CPU_SERVICE_STATE).append(" = ").append(CPUState.RESERVED.getValue());
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
+            rs.next();
+            return rs;
+        }
+        
+        public static ResultSet lookupCPUByDate(Connection conn, CPUState state, Date beg, Date end, DBTableColumn sorted, boolean isAscending, int account_id, int user_id) throws Exception {
+            DBTableAccount ACCOUNT = DBTable.ACCOUNT;
+            DBTableUser USER = DBTable.USER;
+            DBTableServer SERVER = DBTable.SERVER;
+            DBTableCPU CPU = DBTable.CPU;
+            DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT ").append(CPU.ANY).append(", ").append(CPU_SERVICE.ANY).append(", ");
+            sb.append(SERVER.SERVER_NAME).append(", ").append(ACCOUNT.ACCOUNT_NAME).append(", ").append(USER.USER_NAME).append(", ");
+            sb.appendDateLifeRemains(CPU_SERVICE.CPU_SERVICE_STARTTIME, CPU_SERVICE.CPU_SERVICE_ENDTIME, CPU_SERVICE.CPU_SERVICE_LIFE).append(" FROM "); {
+                sb.append(CPU_SERVICE);
+                sb.append(" LEFT JOIN ").append(USER).append(" ON ").append(CPU_SERVICE.USER_ID).append(" = ").append(USER.USER_ID);
+                sb.append(" LEFT JOIN ").append(ACCOUNT).append(" ON ").append(USER.ACCOUNT_ID).append(" = ").append(ACCOUNT.ACCOUNT_ID);
+                sb.append(" LEFT JOIN ").append(CPU).append(" ON ").append(CPU_SERVICE.CPU_ID).append(" = ").append(CPU.CPU_ID);
+                sb.append(" LEFT JOIN ").append(SERVER).append(" ON ").append(CPU.SERVER_ID).append(" = ").append(SERVER.SERVER_ID);
+            }
+            sb.append(" WHERE ").append(CPU_SERVICE.CPU_SERVICE_USED).append(" != ").append(0);
+            if (state != null) {
+                sb.append(" AND ").append(CPU_SERVICE.CPU_SERVICE_STATE).append(" = ").append(state.getValue());
+            }
+            if (user_id >= 0) {
+                sb.append(" AND ").append(CPU_SERVICE.USER_ID).append(" = ").append(user_id);
+            }
+            if (account_id >= 0) {
+                sb.append(" AND ").append(USER.ACCOUNT_ID).append(" = ").append(account_id);
+            }
+            if (beg != null || end != null) {
+                sb.append(" AND ("); {
+                    sb.appendDateBound(CPU_SERVICE.CPU_SERVICE_CREATIONTIME, beg, end);
+                    sb.append(" OR ");
+                    sb.appendDateBound(CPU_SERVICE.CPU_SERVICE_MODIFIEDTIME, beg, end);
+                }
+                sb.append(")");
+            }
+            if (sorted != null) {
+                sb.append(" ORDER BY ").append(sorted).append(isAscending ? " ASC" : " DESC");
+            }
+            return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+        }
+        
+        public static int createCPU(Connection conn, String cpu_desc, int cpu_total, int server_id) throws Exception {
+            DBTableCPU CPU = DBTable.CPU;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("INSERT INTO ").append(CPU).append(" ("); {
+                sb.append(CPU.CPU_DESC).append(", ");
+                sb.append(CPU.CPU_TOTAL).append(", ");
+                sb.append(CPU.SERVER_ID).append(", ");
+                sb.append(CPU.CPU_CREATIONTIME).append(", ");
+                sb.append(CPU.CPU_MODIFIEDTIME);
+            }
+            sb.append(") VALUES ("); {
+                sb.appendString(cpu_desc).append(", ");
+                sb.append(cpu_total).append(", ");
+                sb.append(server_id).append(", ");
+                sb.appendDate().append(", ");
                 sb.appendNull();
             }
-            else {
-                sb.append(user_id);
-            }
+            sb.append(")");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(sb.toSql(log), new String[]{CPU.CPU_ID.toString()});
+            ResultSet rs = stat.getGeneratedKeys();
+            rs.next();
+            return rs.getInt(1);
         }
-        sb.append(")");
-        Statement stat = conn.createStatement();
-        stat.executeUpdate(sb.toSql(log), new String[]{CPU_SERVICE.CPU_SERVICE_ID.toString()});
-        ResultSet rs = stat.getGeneratedKeys();
-        rs.next();
-        return rs.getInt(1);
-    }
-    
-    public static Map<Integer, Integer> lookupCPUCounts(Connection conn, int account_id, int user_id) throws Exception {
-        DBTableUser USER = DBTable.USER;
-        DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ");
-        sb.append(CPU_SERVICE.CPU_SERVICE_STATE).append(", sum(").append(CPU_SERVICE.CPU_SERVICE_USED).append(")").append(" FROM ");
-        sb.append(CPU_SERVICE);
-        if (account_id >= 0) {
-            sb.append(" LEFT JOIN ").append(USER).append(" ON ");
-            sb.append(CPU_SERVICE.USER_ID).append(" = ").append(USER.USER_ID);
-        }
-        sb.append(" WHERE 1=1");
-        if (user_id >= 0) {
-            sb.append(" AND ").append(CPU_SERVICE.USER_ID).append(" = ").append(user_id);
-        }
-        if (account_id >= 0) {
-            sb.append(" AND ").append(USER.ACCOUNT_ID).append(" = ").append(account_id);
-        }
-        sb.append(" GROUP BY ").append(CPU_SERVICE.CPU_SERVICE_STATE);
         
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        Map<Integer, Integer> result = new HashMap<Integer, Integer>();
-        int sum = 0;
-        while (rs.next()) {
-            int state = rs.getInt(1);
-            int count = rs.getInt(2);
-            sum += count;
-            result.put(state, count);
+        public static int createCPUService(Connection conn, String cs_desc, int cs_used, Date cs_starttime, Date cs_endtime, CPUState state, int cpu_id, int user_id) throws Exception {
+            DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("INSERT INTO ").append(CPU_SERVICE).append(" ("); {
+                sb.append(CPU_SERVICE.CPU_SERVICE_DESC).append(", ");
+                sb.append(CPU_SERVICE.CPU_SERVICE_USED).append(", ");
+                sb.append(CPU_SERVICE.CPU_SERVICE_STARTTIME).append(", ");
+                sb.append(CPU_SERVICE.CPU_SERVICE_ENDTIME).append(", ");
+                sb.append(CPU_SERVICE.CPU_SERVICE_STATE).append(", ");
+                sb.append(CPU_SERVICE.CPU_SERVICE_CREATIONTIME).append(", ");
+                sb.append(CPU_SERVICE.CPU_SERVICE_MODIFIEDTIME).append(", ");
+                sb.append(CPU_SERVICE.CPU_ID).append(", ");
+                sb.append(CPU_SERVICE.USER_ID);
+            }
+            sb.append(") VALUES ("); {
+                sb.appendString(cs_desc).append(", ");
+                sb.append(cs_used).append(", ");
+                sb.appendDate(cs_starttime).append(", ");
+                sb.appendDate(cs_endtime).append(", ");
+                sb.append(state.getValue()).append(", ");
+                sb.appendDate().append(", ");
+                sb.appendNull().append(", ");
+                sb.append(cpu_id).append(", ");
+                if (user_id == -1) {
+                    sb.appendNull();
+                }
+                else {
+                    sb.append(user_id);
+                }
+            }
+            sb.append(")");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(sb.toSql(log), new String[]{CPU_SERVICE.CPU_SERVICE_ID.toString()});
+            ResultSet rs = stat.getGeneratedKeys();
+            rs.next();
+            return rs.getInt(1);
         }
-        result.put(-1, sum);
-        return result;
+        
+        public static Map<Integer, Integer> lookupCPUCounts(Connection conn, int account_id, int user_id) throws Exception {
+            DBTableUser USER = DBTable.USER;
+            DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT ");
+            sb.append(CPU_SERVICE.CPU_SERVICE_STATE).append(", sum(").append(CPU_SERVICE.CPU_SERVICE_USED).append(")").append(" FROM ");
+            sb.append(CPU_SERVICE);
+            if (account_id >= 0) {
+                sb.append(" LEFT JOIN ").append(USER).append(" ON ");
+                sb.append(CPU_SERVICE.USER_ID).append(" = ").append(USER.USER_ID);
+            }
+            sb.append(" WHERE 1=1");
+            if (user_id >= 0) {
+                sb.append(" AND ").append(CPU_SERVICE.USER_ID).append(" = ").append(user_id);
+            }
+            if (account_id >= 0) {
+                sb.append(" AND ").append(USER.ACCOUNT_ID).append(" = ").append(account_id);
+            }
+            sb.append(" GROUP BY ").append(CPU_SERVICE.CPU_SERVICE_STATE);
+            
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+            Map<Integer, Integer> result = new HashMap<Integer, Integer>();
+            int sum = 0;
+            while (rs.next()) {
+                int state = rs.getInt(1);
+                int count = rs.getInt(2);
+                sum += count;
+                result.put(state, count);
+            }
+            result.put(-1, sum);
+            return result;
+        }
+        
     }
     
 }

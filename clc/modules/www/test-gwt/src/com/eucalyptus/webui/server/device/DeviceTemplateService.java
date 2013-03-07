@@ -281,13 +281,13 @@ public class DeviceTemplateService {
     public AppResources createApp(String desc, int ncpus, long mem_size, long disk_size, int server_id, int user_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
-//            conn = DBProcWrapper.getConnection();
-//            conn.setAutoCommit(false);
-//            int cs_id = DeviceCPUService.getInstance().createCPUService(true, conn, desc, cs_size, CPUState.STOP, starttime, endtime, cpu_id, user_id);
+            conn = DBProcWrapper.getConnection();
+            conn.setAutoCommit(false);
+            int cs_id = DeviceCPUService.createCPUService(conn, ncpus, CPUState.STOP, user_id, server_id);
 //            int ms_id = DeviceMemoryService.getInstance().createMemoryService(true, conn, desc, ms_size, MemoryState.STOP, starttime, endtime, mem_id, user_id);
 //            int ds_id = DeviceDiskService.getInstance().createDiskService(true, conn, desc, ds_size, DiskState.STOP, starttime, endtime, disk_id, user_id);
-//            conn.commit();
-            return new AppResources(-1, -1, -1);
+            conn.commit();
+            return new AppResources(cs_id, -1, -1);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -304,7 +304,7 @@ public class DeviceTemplateService {
         try {
             conn = DBProcWrapper.getConnection();
             conn.setAutoCommit(false);
-            DeviceCPUService.getInstance().modifyCPUState(true, null, app.cs_id, CPUState.INUSE);
+            DeviceCPUService.modifyCPUServiceState(conn, app.cs_id, CPUState.INUSE);
             DeviceMemoryService.getInstance().modifyMemoryServiceState(true, null, app.ms_id, MemoryState.INUSE);
             DeviceDiskService.getInstance().modifyDiskServiceState(true, null, app.ds_id, DiskState.INUSE);
             conn.commit();
@@ -324,7 +324,7 @@ public class DeviceTemplateService {
         try {
             conn = DBProcWrapper.getConnection();
             conn.setAutoCommit(false);
-            DeviceCPUService.getInstance().modifyCPUState(true, null, app.cs_id, CPUState.STOP);
+            DeviceCPUService.modifyCPUServiceState(conn, app.cs_id, CPUState.STOP);
             DeviceMemoryService.getInstance().modifyMemoryServiceState(true, null, app.ms_id, MemoryState.STOP);
             DeviceDiskService.getInstance().modifyDiskServiceState(true, null, app.ds_id, DiskState.STOP);
             conn.commit();
@@ -350,7 +350,7 @@ public class DeviceTemplateService {
         try {
             conn = DBProcWrapper.getConnection();
             conn.setAutoCommit(false);
-            DeviceCPUService.getInstance().deleteCPUService(true, null, toList(app.cs_id));
+            DeviceCPUService.deleteCPUService(conn, app.cs_id);
             DeviceMemoryService.getInstance().deleteMemoryService(true, null, toList(app.ms_id));
             DeviceDiskService.getInstance().deleteDiskService(true, null, toList(app.ds_id));
             conn.commit();

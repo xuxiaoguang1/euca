@@ -20,7 +20,7 @@ public interface DeviceCPUAddView extends IsWidget {
 	
 	public interface Presenter {
 		
-		public boolean onOK(String cpu_name, String cpu_desc, int cpu_total, int server_id);
+		public boolean onOK(String cpu_desc, int cpu_total, int server_id);
 		
 		public void lookupAreaNames();
         

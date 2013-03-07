@@ -770,7 +770,7 @@ public interface EucalyptusService extends RemoteService {
     
     SearchResult lookupDeviceCPUByDate(Session session, SearchRange range, CPUState cs_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
     Map<Integer, Integer> lookupDeviceCPUCounts(Session session) throws EucalyptusServiceException;
-    void createDeviceCPU(Session session, String cpu_name, String cpu_desc, int cpu_total, int server_id) throws EucalyptusServiceException ;
+    void createDeviceCPU(Session session, String cpu_desc, int cpu_total, int server_id) throws EucalyptusServiceException ;
     void modifyDeviceCPU(Session session, int cpu_id, String cpu_desc, int cpu_total) throws EucalyptusServiceException;
     void deleteDeviceCPU(Session session, List<Integer> cpu_ids) throws EucalyptusServiceException;
     public CPUInfo lookupDeviceCPUByID(Session session, int cpu_id) throws EucalyptusServiceException;

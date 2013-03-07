@@ -19,7 +19,6 @@ public class DeviceCPUModifyViewImpl extends DialogBox implements DeviceCPUModif
 	}
 	
 	@UiField TextBox serverName;
-	@UiField TextBox cpuName;
 	@UiField TextArea cpuDesc;
 	@UiField ListBox numList;
 
@@ -58,11 +57,10 @@ public class DeviceCPUModifyViewImpl extends DialogBox implements DeviceCPUModif
 	private int cs_used;
 
 	@Override
-	public void popup(int cpu_id, String cpu_name, String cpu_desc, int cpu_total, int cs_used, String server_name) {
+	public void popup(int cpu_id, String cpu_desc, int cpu_total, int cs_used, String server_name) {
 		this.cpu_id = cpu_id;
 		this.cpu_total_base = Math.max(1, cs_used);
 		this.cs_used = cs_used;
-		cpuName.setValue(cpu_name);
 		cpuDesc.setValue(cpu_desc);
 		serverName.setValue(server_name);
 		numList.clear();
