@@ -13,8 +13,12 @@ public class UserApp implements java.io.Serializable {
 	private String keyPair;
 	private String securityGroup;
 	
+	private int ncpus;
+	private int mem;
+	private int disk;
+	private int bw;
+	
 	private int userId;
-	private int templateId;
 	private int vmImageTypeId;
 	
 	private Date srvStartingTime;
@@ -26,17 +30,21 @@ public class UserApp implements java.io.Serializable {
 		
 	}
 	
-	public UserApp(int id, Date apptime, EnumUserAppStatus status, int del, String comment, 
-					String keyPair, String securityGroup, int userId, int templateId, int vmImageTypeId, Date srvStartingTime, Date srvEndingTime, String euca_vm_instance_key) {
+	public UserApp(int id, Date apptime, EnumUserAppStatus status, int del, String comment,
+					int ncpus, int mem, int disk, int bw,
+					String keyPair, String securityGroup, int userId, int vmImageTypeId, Date srvStartingTime, Date srvEndingTime, String euca_vm_instance_key) {
 		this.setUAId(id);
 		this.setAppTime(apptime);
 		this.setSrvStartingTime(srvStartingTime);
 		this.setSrvEndingingTime(srvEndingTime);
 		this.setComment(comment);
+		this.setNcpus(ncpus);
+		this.setMem(mem);
+		this.setDisk(disk);
+		this.setBw(bw);
 		this.setKeyPair(keyPair);
 		this.setSecurityGroup(securityGroup);
 		this.setUserId(userId);
-		this.setTemplateId(templateId);
 		this.setVmImageTypeId(vmImageTypeId);
 		this.setEucaVMInstanceKey(euca_vm_instance_key);
 	}
@@ -69,18 +77,39 @@ public class UserApp implements java.io.Serializable {
 		return this.comment;
 	}
 	
+	public void setNcpus(int ncpus) {
+		this.ncpus = ncpus;
+	}
+	public int getNcpus() {
+		return this.ncpus;
+	}
+	
+	public void setMem(int mem) {
+		this.mem = mem;
+	}
+	public int getMem() {
+		return this.mem;
+	}
+	
+	public void setDisk(int disk) {
+		this.disk = disk;
+	}
+	public int getDisk() {
+		return this.disk;
+	}
+	
+	public void setBw(int bw) {
+		this.bw = bw;
+	}
+	public int getBw() {
+		return this.bw;
+	}
+	
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
 	public int getUserId() {
 		return this.userId;
-	}
-	
-	public void setTemplateId(int templateId) {
-		this.templateId = templateId;
-	}
-	public int getTemplateId() {
-		return this.templateId;
 	}
 	
 	public void setVmImageTypeId(int vmImageTypeId) {

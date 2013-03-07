@@ -54,7 +54,6 @@ public class DeviceTemplateListViewImpl extends DialogBox implements DeviceTempl
 		int vmImageTypeId = Integer.parseInt(this.VMImageTypeList.getValue(this.VMImageTypeList.getSelectedIndex()));
 		
 		UserApp userApp = new UserApp();
-		userApp.setTemplateId(templateId);
 		userApp.setVmImageTypeId(vmImageTypeId);
 		userApp.setSrvStartingTime(this.startingTime.getValue());
 		userApp.setSrvEndingingTime(this.endingTime.getValue());

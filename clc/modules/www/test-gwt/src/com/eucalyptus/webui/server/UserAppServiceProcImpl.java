@@ -15,7 +15,6 @@ import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.server.config.ViewSearchTableServerConfig;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
-import com.eucalyptus.webui.server.device.DeviceTemplateService;
 import com.eucalyptus.webui.server.user.UserAppDBProcWrapper;
 import com.eucalyptus.webui.server.user.UserAppSyncException;
 import com.eucalyptus.webui.server.vm.VITDBProcWrapper;
@@ -120,9 +119,7 @@ public class UserAppServiceProcImpl {
 	  public String runVMInstance(Session session, int userAppId) throws EucalyptusServiceException {
 		  try {
 			  UserApp userApp = this.userAppDBProc.lookupUserApp(userAppId);
-			  
-			  int templateId = userApp.getTemplateId();
-			  
+			  			  
 			  int userId = userApp.getUserId();
 			  String keyPair = userApp.getKeyPair();
 			  String securityGroup = userApp.getSecurityGroup();
@@ -131,10 +128,9 @@ public class UserAppServiceProcImpl {
 			  VmImageType vit = this.vitDBProc.lookupVIT(userApp.getVmIdImageTypeId());
 			  if (vit != null)
 				  euca_vit_id = vit.getEucaVITId();
-
-			  TemplateInfo template = DeviceTemplateService.getInstance().lookupTemplateInfoByID(templateId);
 			  
 			  if (keyPair != null && securityGroup != null && euca_vit_id != null) {
+				  TemplateInfo template = null;
 				  String euca_intance_id = EucaServiceWrapper.getInstance().runVM(session, userId, template, keyPair, securityGroup, euca_vit_id);
 				  
 				  if (euca_intance_id != null) {

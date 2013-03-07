@@ -75,7 +75,6 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView, Cha
 		if (vmImageTypeId != 0 && keyPair != null && securityGroup != null) {
 			
 			UserApp userApp = new UserApp();
-			userApp.setTemplateId(templateId);
 			userApp.setVmImageTypeId(vmImageTypeId);
 			userApp.setSrvStartingTime(this.startingTime.getValue());
 			userApp.setSrvEndingingTime(this.endingTime.getValue());

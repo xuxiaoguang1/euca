@@ -76,62 +76,32 @@ public class UserAppDBProcWrapper {
 				else
 				{	
 					int id = Integer.valueOf(rs.getString(DBTableColName.USER_APP.ID));
-					String appTimeStr = rs.getString(DBTableColName.USER_APP.APP_TIME);
-					String startingTimeStr = rs.getString(DBTableColName.USER_APP.SRV_STARTINGTIME);
-					String endingTimeStr = rs.getString(DBTableColName.USER_APP.SRV_ENDINGTIME);
+					Date appTime = rs.getDate(DBTableColName.USER_APP.APP_TIME);
+					Date startingTime = rs.getDate(DBTableColName.USER_APP.SRV_STARTINGTIME);
+					Date endingTime = rs.getDate(DBTableColName.USER_APP.SRV_ENDINGTIME);
 					String state = rs.getString(DBTableColName.USER_APP.STATUS);
-					String delStr = rs.getString(DBTableColName.USER_APP.DEL);
+					int del = rs.getInt(DBTableColName.USER_APP.DEL);
 					String keyPair = rs.getString(DBTableColName.USER_APP.KEYPAIR);
 					String securityGroup = rs.getString(DBTableColName.USER_APP.SECURITY_GROUP);
 					String comment = rs.getString(DBTableColName.USER_APP.COMMENT);
-					String userIdStr = rs.getString(DBTableColName.USER_APP.USER_ID);
-					String tempelateIdStr = rs.getString(DBTableColName.USER_APP.TEMPLATE_ID);
-					String vitIdStr = rs.getString(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID);
+					int userId = rs.getInt(DBTableColName.USER_APP.USER_ID);
+					int ncpus = rs.getInt(DBTableColName.USER_APP.NCPUS);
+					int mem = rs.getInt(DBTableColName.USER_APP.MEM);
+					int disk = rs.getInt(DBTableColName.USER_APP.DISK);
+					int bw = rs.getInt(DBTableColName.USER_APP.BW);
+					
+					int vitId = rs.getInt(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID);
 					String euca_vi_key = rs.getString(DBTableColName.USER_APP.EUCA_VI_KEY);
 					
-					int del = 0;
-					int userId = 0;
-					int templateId = 0;
-					int vitId = 0;
-					
 					EnumUserAppStatus userAppRegStatus = EnumUserAppStatus.NONE;
-					
-					Date appTime = null;
-					Date srvStartingTime = null;
-					Date srvEndingTime = null;
-					try {
-						if (!Strings.isNullOrEmpty(appTimeStr))
-								appTime = this.dateformat.parse(appTimeStr);
-						
-						if (!Strings.isNullOrEmpty(startingTimeStr))
-							srvStartingTime = this.dateformat.parse(startingTimeStr);
-						
-						if (!Strings.isNullOrEmpty(endingTimeStr))
-							srvEndingTime = this.dateformat.parse(endingTimeStr);
-					} catch (ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
 					if (!Strings.isNullOrEmpty(state))
 						userAppRegStatus = EnumUserAppStatus.values()[Integer.valueOf(state)];
-					
-					if (!Strings.isNullOrEmpty(delStr))
-						del = Integer.valueOf(delStr);
-					
-					if (!Strings.isNullOrEmpty(userIdStr))
-						userId = Integer.valueOf(userIdStr);
-					
-					if (!Strings.isNullOrEmpty(tempelateIdStr))
-						templateId = Integer.valueOf(tempelateIdStr);
-					
-					if (!Strings.isNullOrEmpty(vitIdStr))
-						vitId = Integer.valueOf(vitIdStr);
-					
+										
 					rsw.close();
 					
-					UserApp userApp = new UserApp(id, appTime, userAppRegStatus, del, comment, 
-							keyPair, securityGroup, userId, templateId, vitId, srvStartingTime, srvEndingTime, euca_vi_key);
+					UserApp userApp = new UserApp(id, appTime, userAppRegStatus, del, comment,
+										ncpus, mem, disk, bw,
+										keyPair, securityGroup, userId, vitId, startingTime, endingTime, euca_vi_key);
 					
 					return userApp; 
 				}
@@ -298,8 +268,11 @@ public class UserAppDBProcWrapper {
 		append(DBTableColName.USER_APP.KEYPAIR).append(", ").
 		append(DBTableColName.USER_APP.SECURITY_GROUP).append(", ").
 		append(DBTableColName.USER_APP.COMMENT).append(", ").
+		append(DBTableColName.USER_APP.NCPUS).append(", ").
+		append(DBTableColName.USER_APP.MEM).append(", ").
+		append(DBTableColName.USER_APP.DISK).append(", ").
+		append(DBTableColName.USER_APP.BW).append(", ").
 		append(DBTableColName.USER_APP.USER_ID).append(", ").
-		append(DBTableColName.USER_APP.TEMPLATE_ID).append(", ").
 		append(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID).
 		append(") VALUES (null, ");
 		
@@ -343,10 +316,19 @@ public class UserAppDBProcWrapper {
 			str.append("', ");
 		}
 		
-		str.append(userApp.getUserId());
+		str.append(userApp.getNcpus());
 		str.append(", ");
 		
-		str.append(userApp.getTemplateId());
+		str.append(userApp.getMem());
+		str.append(", ");
+		
+		str.append(userApp.getDisk());
+		str.append(", ");
+		
+		str.append(userApp.getBw());
+		str.append(", ");
+		
+		str.append(userApp.getUserId());
 		str.append(", ");
 		
 		str.append(userApp.getVmIdImageTypeId());
@@ -401,9 +383,27 @@ public class UserAppDBProcWrapper {
 			append("', ");
 		}
 		
-		if (userApp.getTemplateId() != 0) {
-			str.append(DBTableColName.USER_APP.TEMPLATE_ID).append(" = ").
-			append(userApp.getTemplateId()).
+		if (userApp.getNcpus() != 0) {
+			str.append(DBTableColName.USER_APP.NCPUS).append(" = ").
+			append(userApp.getNcpus()).
+			append(", ");
+		}
+		
+		if (userApp.getMem() != 0) {
+			str.append(DBTableColName.USER_APP.MEM).append(" = ").
+			append(userApp.getMem()).
+			append(", ");
+		}
+		
+		if (userApp.getDisk() != 0) {
+			str.append(DBTableColName.USER_APP.DISK).append(" = ").
+			append(userApp.getDisk()).
+			append(", ");
+		}
+		
+		if (userApp.getBw() != 0) {
+			str.append(DBTableColName.USER_APP.BW).append(" = ").
+			append(userApp.getBw()).
 			append(", ");
 		}
 		
@@ -481,7 +481,7 @@ public class UserAppDBProcWrapper {
 				append(" ON ").
 				append(DBTableName.TEMPLATE).append(".").append(DBTableColName.TEMPLATE.ID).
 				append(" = ").
-				append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.TEMPLATE_ID).
+				//append(DBTableName.USER_APP).append(".").append(DBTableColName.USER_APP.TEMPLATE_ID).
 				
 				append(" LEFT JOIN ").
 				append(DBTableName.VM_IMAGE_TYPE).

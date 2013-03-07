@@ -54,7 +54,10 @@ public class DBTableColName {
 		public final String KEYPAIR = "ua_keypair";
 		public final String SECURITY_GROUP = "ua_security_group";
 		public final String USER_ID = "user_id";
-		public final String TEMPLATE_ID = "template_id";
+		public final String NCPUS = "ua_ncpus";
+		public final String MEM = "ua_mem";
+		public final String DISK = "ua_disk";
+		public final String BW = "ua_bw";
 		public final String VM_IMAGE_TYPE_ID = "vit_id";
 		public final String EUCA_VI_KEY = "euca_vi_key";
 	}	
