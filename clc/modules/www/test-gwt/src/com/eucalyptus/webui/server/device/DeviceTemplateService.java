@@ -278,16 +278,16 @@ public class DeviceTemplateService {
         }
     }
     
-    public AppResources createApp(String desc, int cpu_id, int cs_size, int mem_id, long ms_size, int disk_id, long ds_size, int user_id, Date starttime, Date endtime) throws EucalyptusServiceException {
+    public AppResources createApp(String desc, TemplateInfo info, int server_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
-            conn = DBProcWrapper.getConnection();
-            conn.setAutoCommit(false);
-            int cs_id = DeviceCPUService.getInstance().createCPUService(true, conn, desc, cs_size, CPUState.STOP, starttime, endtime, cpu_id, user_id);
-            int ms_id = DeviceMemoryService.getInstance().createMemoryService(true, conn, desc, ms_size, MemoryState.STOP, starttime, endtime, mem_id, user_id);
-            int ds_id = DeviceDiskService.getInstance().createDiskService(true, conn, desc, ds_size, DiskState.STOP, starttime, endtime, disk_id, user_id);
-            conn.commit();
-            return new AppResources(cs_id, ms_id, ds_id);
+//            conn = DBProcWrapper.getConnection();
+//            conn.setAutoCommit(false);
+//            int cs_id = DeviceCPUService.getInstance().createCPUService(true, conn, desc, cs_size, CPUState.STOP, starttime, endtime, cpu_id, user_id);
+//            int ms_id = DeviceMemoryService.getInstance().createMemoryService(true, conn, desc, ms_size, MemoryState.STOP, starttime, endtime, mem_id, user_id);
+//            int ds_id = DeviceDiskService.getInstance().createDiskService(true, conn, desc, ds_size, DiskState.STOP, starttime, endtime, disk_id, user_id);
+//            conn.commit();
+            return new AppResources(-1, -1, -1);
         }
         catch (Exception e) {
             e.printStackTrace();
