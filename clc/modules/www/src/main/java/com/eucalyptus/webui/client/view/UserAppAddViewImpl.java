@@ -134,6 +134,14 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView, Cha
 			
 			this.TemplateList.addItem(name, id.toString());
 		}
+		
+		int selectedIndex = this.TemplateList.getSelectedIndex();
+		if (selectedIndex < 0)
+			 return;
+		 
+		 int id = Integer.parseInt(this.TemplateList.getValue(selectedIndex));
+		 
+		 updateTemplateInfo(id);
 	}
 	
 	@Override
@@ -193,7 +201,11 @@ public class UserAppAddViewImpl extends DialogBox implements UserAppAddView, Cha
 		 
 		 int id = Integer.parseInt(this.TemplateList.getValue(selectedIndex));
 		 
-		 clientFactory.getBackendService().lookupDeviceTemplateInfoByID(clientFactory.getLocalSession().getSession(), id, new AsyncCallback<TemplateInfo>() {
+		 updateTemplateInfo(id);
+	}
+	
+	private void updateTemplateInfo(int templateId) {
+		clientFactory.getBackendService().lookupDeviceTemplateInfoByID(clientFactory.getLocalSession().getSession(), templateId, new AsyncCallback<TemplateInfo>() {
 
 			@Override
 			public void onFailure(Throwable caught) {

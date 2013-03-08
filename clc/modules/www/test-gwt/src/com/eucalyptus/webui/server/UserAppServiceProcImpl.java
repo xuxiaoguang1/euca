@@ -15,6 +15,7 @@ import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.server.config.ViewSearchTableServerConfig;
 import com.eucalyptus.webui.server.db.ResultSetWrapper;
+import com.eucalyptus.webui.server.device.DeviceTemplateService;
 import com.eucalyptus.webui.server.user.UserAppDBProcWrapper;
 import com.eucalyptus.webui.server.user.UserAppSyncException;
 import com.eucalyptus.webui.server.vm.VITDBProcWrapper;
@@ -134,11 +135,19 @@ public class UserAppServiceProcImpl {
 				  String euca_intance_id = EucaServiceWrapper.getInstance().runVM(session, userId, template, keyPair, securityGroup, euca_vit_id);
 				  
 				  if (euca_intance_id != null) {
+					  //!!!! for debug only !!!
+					  euca_intance_id = "i-C13C43CC";
 					  //obtain the server id where the resources are allocated
-					  int serverId = EucaServiceWrapper.getInstance().getServerID(session, userId, euca_intance_id); 
+					  int serverId = EucaServiceWrapper.getInstance().getServerID(session, userId, euca_intance_id);
 					  
-					  //!!! call createApp function
+					  //!!!! for debug only !!!
+					  serverId = 1;
 					  
+					  if (serverId < 0)
+						  throw new EucalyptusServiceException("Server id error!");
+				  
+					  //synch resources
+					  DeviceTemplateService.getInstance().createApp(null, userApp.getNcpus(), userApp.getMem(), userApp.getDisk(), serverId, userId);
 					  return euca_intance_id;
 				  }
 				  else
