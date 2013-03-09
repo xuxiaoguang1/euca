@@ -214,28 +214,6 @@ done
 
 exit
 
-for ((i=0;i<5;i++)) do
-    let d="10+$i%10";
-    id=`getvalue template template_id template_name name$i`
-    command insert into template_price \( \
-        template_price_desc, \
-        template_price_cpu, \
-        template_price_mem, \
-        template_price_disk, \
-        template_price_bw, \
-        template_price_creationtime, \
-        template_id\) \
-        values \( \
-        \"desc$i\", \
-        \"12.$i\", \
-        \"23.$i\", \
-        \"34.$i\", \
-        \"45.$i\", \
-        \"2012-07-$d\", \
-        \"$id\" \
-        \)
-done
-
 # inser history
 for ((i=0;i<10;i++)) do
     let d="10+$i%10";
