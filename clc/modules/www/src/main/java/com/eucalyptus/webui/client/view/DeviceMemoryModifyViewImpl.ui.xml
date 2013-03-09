@@ -93,7 +93,7 @@
                         <g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">容量(MB)</g:Anchor>
                     </g:at>
                     <g:at left="120" top="77">
-                        <g:LongBox ui:field="memSize" maxLength="50" height="1.4EM" width="14EM" alignment="RIGHT"/>
+                        <g:LongBox ui:field="memTotal" maxLength="50" height="1.4EM" width="14EM" alignment="RIGHT"/>
                     </g:at>
                     <g:at left="400" top="90" style="font-size:90%;">
                         <g:Anchor styleName="{global.buttonCss.button}"

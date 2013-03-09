@@ -17,44 +17,42 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.LongBox;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddView {
-	
-	private static DeviceDiskAddViewImplUiBinder uiBinder = GWT.create(DeviceDiskAddViewImplUiBinder.class);
-	
-	interface DeviceDiskAddViewImplUiBinder extends UiBinder<Widget, DeviceDiskAddViewImpl> {
-	}
-	
-	@UiField ListBox areaNameList;
-	@UiField ListBox roomNameList;
-	@UiField ListBox cabinetNameList;
-	@UiField ListBox serverNameList;
-	
-	@UiField TextBox diskName;
-	@UiField TextArea diskDesc;
-	@UiField LongBox diskSize;
-	
-	private Map<String, Integer> areaMap = new HashMap<String, Integer>();
+    
+    private static DeviceDiskAddViewImplUiBinder uiBinder = GWT.create(DeviceDiskAddViewImplUiBinder.class);
+    
+    interface DeviceDiskAddViewImplUiBinder extends UiBinder<Widget, DeviceDiskAddViewImpl> {
+    }
+    
+    @UiField ListBox areaNameList;
+    @UiField ListBox roomNameList;
+    @UiField ListBox cabinetNameList;
+    @UiField ListBox serverNameList;
+    
+    @UiField TextArea diskDesc;
+    @UiField LongBox diskTotal;
+    
+    private Map<String, Integer> areaMap = new HashMap<String, Integer>();
     private Map<String, Integer> roomMap = new HashMap<String, Integer>();
     private Map<String, Integer> cabinetMap = new HashMap<String, Integer>();
     private Map<String, Integer> serverMap = new HashMap<String, Integer>();
-		
-	public DeviceDiskAddViewImpl() {
-		super(false);
-		setWidget(uiBinder.createAndBindUi(this));
-		areaNameList.addChangeHandler(new ChangeHandler() {
+        
+    public DeviceDiskAddViewImpl() {
+        super(false);
+        setWidget(uiBinder.createAndBindUi(this));
+        areaNameList.addChangeHandler(new ChangeHandler() {
 
-			@Override
-			public void onChange(ChangeEvent event) {
-			    int area_id = getAreaID();
+            @Override
+            public void onChange(ChangeEvent event) {
+                int area_id = getAreaID();
                 if (area_id != -1) {
                     presenter.lookupRoomNamesByAreaID(area_id);
                 }
-			}
-			
-		});
+            }
+            
+        });
         roomNameList.addChangeHandler(new ChangeHandler() {
 
             @Override
@@ -77,11 +75,11 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
             }
             
         });
-		center();
-		hide();
-	}
-	
-	@Override
+        center();
+        hide();
+    }
+    
+    @Override
     public void setAreaNames(Map<String, Integer> area_map) {
         areaNameList.clear();
         roomNameList.clear();
@@ -171,18 +169,14 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
         }
     }
 
-	private String getDiskName() {
-		return getInputText(diskName);
-	}
-	
-	private String getDiskDesc() {
-		return getInputText(diskDesc);
-	}
-	
-	private long getDiskSize() {
-		return diskSize.getValue();
-	}
-	
+    private String getDiskDesc() {
+        return getInputText(diskDesc);
+    }
+    
+    private long getDiskSize() {
+        return diskTotal.getValue();
+    }
+    
     private int getID(Map<String, Integer> map, String name) {
         if (name == null || name.isEmpty()) {
             return -1;
@@ -209,61 +203,52 @@ public class DeviceDiskAddViewImpl extends DialogBox implements DeviceDiskAddVie
     private int getServerID() {
         return getID(serverMap, getSelectedText(serverNameList));
     }
-	
-	private String getInputText(TextBox textbox) {
-		String text = textbox.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
-	private String getInputText(TextArea textarea) {
-		String text = textarea.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
-	private String getSelectedText(ListBox listbox) {
-	    int index = listbox.getSelectedIndex();
-	    if (index == -1) {
-	    	return "";
-	    }
-	    return listbox.getItemText(index);
-	}
-	
-	private DeviceDiskAddView.Presenter presenter;
-	
-	@Override
-    public void setPresenter(Presenter presenter) {
-		this.presenter = presenter;
+    
+    private String getInputText(TextArea textarea) {
+        String text = textarea.getText();
+        if (text == null) {
+            return "";
+        }
+        return text;
     }
-	
-	@Override
+    
+    private String getSelectedText(ListBox listbox) {
+        int index = listbox.getSelectedIndex();
+        if (index == -1) {
+            return "";
+        }
+        return listbox.getItemText(index);
+    }
+    
+    private DeviceDiskAddView.Presenter presenter;
+    
+    @Override
+    public void setPresenter(Presenter presenter) {
+        this.presenter = presenter;
+    }
+    
+    @Override
     public void popup() {
-		diskName.setValue("");
-		diskDesc.setValue("");
-		diskSize.setValue(0L);
-		areaNameList.clear();
-		roomNameList.clear();
-		cabinetNameList.clear();
-		serverNameList.clear();
-		presenter.lookupAreaNames();
-		show();
+        diskDesc.setValue("");
+        diskTotal.setValue(0L);
+        areaNameList.clear();
+        roomNameList.clear();
+        cabinetNameList.clear();
+        serverNameList.clear();
+        presenter.lookupAreaNames();
+        show();
     }
 
-	@UiHandler("buttonOK")
-	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(getDiskName(), getDiskDesc(), getDiskSize(), getServerID())) {
-			hide();
-		}
-	}
-	
-	@UiHandler("buttonCancel")
-	void handleButtonCancel(ClickEvent event) {
-		hide();
-	}
+    @UiHandler("buttonOK")
+    void handleButtonOK(ClickEvent event) {
+        if (presenter.onOK(getDiskDesc(), getDiskSize(), getServerID())) {
+            hide();
+        }
+    }
+    
+    @UiHandler("buttonCancel")
+    void handleButtonCancel(ClickEvent event) {
+        hide();
+    }
 
 }

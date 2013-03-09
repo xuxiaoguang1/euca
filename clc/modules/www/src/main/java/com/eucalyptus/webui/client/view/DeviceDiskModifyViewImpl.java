@@ -12,71 +12,69 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DeviceDiskModifyViewImpl extends DialogBox implements DeviceDiskModifyView {
-	
-	private static DeviceDiskModifyViewImplUiBinder uiBinder = GWT.create(DeviceDiskModifyViewImplUiBinder.class);
-	
-	interface DeviceDiskModifyViewImplUiBinder extends UiBinder<Widget, DeviceDiskModifyViewImpl> {
-	}
-	
-	@UiField TextBox serverName;
-	@UiField TextBox diskName;
-	@UiField TextArea diskDesc;
-	@UiField LongBox diskSize;
-
-	public DeviceDiskModifyViewImpl() {
-		super(false);
-		setWidget(uiBinder.createAndBindUi(this));
-		center();
-		hide();
-	}
-	
-	private String getDiskDesc() {
-		return getInputText(diskDesc);
-	}
-	
-	private long getDiskSize() {
-		return diskSize.getValue();
-	}
-	
-	private String getInputText(TextArea textarea) {
-		String text = textarea.getText();
-		if (text == null) {
-			return "";
-		}
-		return text;
-	}
-	
-	private DeviceDiskModifyView.Presenter presenter;
-	
-	@Override
-    public void setPresenter(Presenter presenter) {
-		this.presenter = presenter;
+    
+    private static DeviceDiskModifyViewImplUiBinder uiBinder = GWT.create(DeviceDiskModifyViewImplUiBinder.class);
+    
+    interface DeviceDiskModifyViewImplUiBinder extends UiBinder<Widget, DeviceDiskModifyViewImpl> {
     }
-	
-	private int disk_id;
-	private long ds_used;
+    
+    @UiField TextBox serverName;
+    @UiField TextArea diskDesc;
+    @UiField LongBox diskTotal;
 
-	@Override
-	public void popup(int disk_id, String disk_name, String disk_desc, long disk_size, long ds_used, String server_name) {
-		this.disk_id = disk_id;
-		this.ds_used = ds_used;
-		diskName.setValue(disk_name);
-		diskDesc.setValue(disk_desc);
-		diskSize.setValue(disk_size);
-		serverName.setValue(server_name);
-		show();
-	}
-	
-	@UiHandler("buttonOK")
-	void handleButtonOK(ClickEvent event) {
-		if (presenter.onOK(disk_id, getDiskDesc(), getDiskSize(), ds_used)) {
-			hide();
-		}
-	}
-	
-	@UiHandler("buttonCancel")
-	void handleButtonCancel(ClickEvent event) {
-		hide();
-	}
+    public DeviceDiskModifyViewImpl() {
+        super(false);
+        setWidget(uiBinder.createAndBindUi(this));
+        center();
+        hide();
+    }
+    
+    private String getDiskDesc() {
+        return getInputText(diskDesc);
+    }
+    
+    private long getDiskSize() {
+        return diskTotal.getValue();
+    }
+    
+    private String getInputText(TextArea textarea) {
+        String text = textarea.getText();
+        if (text == null) {
+            return "";
+        }
+        return text;
+    }
+    
+    private DeviceDiskModifyView.Presenter presenter;
+    
+    @Override
+    public void setPresenter(Presenter presenter) {
+        this.presenter = presenter;
+    }
+    
+    private int disk_id;
+    private long ds_used;
+
+    @Override
+    public void popup(int disk_id, String disk_desc, long disk_total, long ds_used, String server_name) {
+        this.disk_id = disk_id;
+        this.ds_used = ds_used;
+        diskDesc.setValue(disk_desc);
+        diskTotal.setValue(disk_total);
+        serverName.setValue(server_name);
+        show();
+    }
+    
+    @UiHandler("buttonOK")
+    void handleButtonOK(ClickEvent event) {
+        if (presenter.onOK(disk_id, getDiskDesc(), getDiskSize(), ds_used)) {
+            hide();
+        }
+    }
+    
+    @UiHandler("buttonCancel")
+    void handleButtonCancel(ClickEvent event) {
+        hide();
+    }
     
 }

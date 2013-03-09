@@ -1,6 +1,5 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.Date;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.service.SearchResultRow;
@@ -30,7 +29,7 @@ public interface DeviceDiskView extends IsWidget, CanDisplaySearchResult, Cleara
         
         public boolean canModifyDisk();
         
-        public void updateSearchResult(Date dateBegin, Date dateEnd);
+        public void updateSearchResult();
         
         public DiskState getQueryState();
         

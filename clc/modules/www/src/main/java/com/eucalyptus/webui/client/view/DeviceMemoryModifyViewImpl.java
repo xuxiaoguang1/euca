@@ -20,7 +20,7 @@ public class DeviceMemoryModifyViewImpl extends DialogBox implements DeviceMemor
     
     @UiField TextBox serverName;
     @UiField TextArea memDesc;
-    @UiField LongBox memSize;
+    @UiField LongBox memTotal;
 
     public DeviceMemoryModifyViewImpl() {
         super(false);
@@ -34,7 +34,7 @@ public class DeviceMemoryModifyViewImpl extends DialogBox implements DeviceMemor
     }
     
     private long getMemorySize() {
-        return memSize.getValue();
+        return memTotal.getValue();
     }
     
     private String getInputText(TextArea textarea) {
@@ -56,11 +56,11 @@ public class DeviceMemoryModifyViewImpl extends DialogBox implements DeviceMemor
     private long ms_used;
 
     @Override
-    public void popup(int mem_id, String mem_desc, long mem_size, long ms_used, String server_name) {
+    public void popup(int mem_id, String mem_desc, long mem_total, long ms_used, String server_name) {
         this.mem_id = mem_id;
         this.ms_used = ms_used;
         memDesc.setValue(mem_desc);
-        memSize.setValue(mem_size);
+        memTotal.setValue(mem_total);
         serverName.setValue(server_name);
         show();
     }

@@ -34,9 +34,9 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
 	@UiField TextArea templatePriceDesc;
 	@UiField IntegerBox cpuSize;
 	@UiField DoubleBox cpuPrice;
-	@UiField LongBox memSize;
+	@UiField LongBox memTotal;
 	@UiField DoubleBox memPrice;
-	@UiField LongBox diskSize;
+	@UiField LongBox diskTotal;
 	@UiField DoubleBox diskPrice;
 	@UiField IntegerBox bwSize;
 	@UiField DoubleBox bwPrice;
@@ -83,8 +83,8 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
 	
 	private int template_id;
 	private int ncpus;
-	private double mem_size;
-	private double disk_size;
+	private double mem_total;
+	private double disk_total;
 	private double bw_size;
 	
 	private int getID(Map<String, Integer> map, String name) {
@@ -119,16 +119,16 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
 	            return;
 	        }
 	        sum += value * ncpus;
-	        if ((value = memPrice.getValue()) < 0 || mem_size < 0) {
+	        if ((value = memPrice.getValue()) < 0 || mem_total < 0) {
 	            totalPrice.setText("INVALID VALUE");
                 return;
 	        }
-	        sum += value * mem_size;
-	        if ((value = diskPrice.getValue()) < 0 || disk_size < 0) {
+	        sum += value * mem_total;
+	        if ((value = diskPrice.getValue()) < 0 || disk_total < 0) {
 	            totalPrice.setText("INVALID VALUE");
                 return;
 	        }
-	        sum += value * disk_size;
+	        sum += value * disk_total;
 	        if ((value = bwPrice.getValue()) < 0 || bw_size < 0) {
 	            totalPrice.setText("INVALID VALUE");
                 return;
@@ -142,8 +142,8 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
 	}
 	
 	private void resetTemplateDetail(boolean all) {
-		memSize.setText("");
-		diskSize.setText("");
+		memTotal.setText("");
+		diskTotal.setText("");
 		bwSize.setText("");
 		if (all) {
 			templatePriceDesc.setText("");
@@ -183,16 +183,16 @@ public class DeviceTemplatePriceAddViewImpl extends DialogBox implements DeviceT
     }
 
     @Override
-    public void setTemplate(int template_id, String template_name, int ncpus, double tp_cpu, long mem_size, double tp_mem, long disk_size, double tp_disk, int bw_size, double tp_bw) {
+    public void setTemplate(int template_id, String template_name, int ncpus, double tp_cpu, long mem_total, double tp_mem, long disk_total, double tp_disk, int bw_size, double tp_bw) {
         if (getTemplateID() == template_id) {
 			this.template_id = template_id;
 			this.ncpus = ncpus;
-			this.mem_size = mem_size;
-			this.disk_size = disk_size;
+			this.mem_total = mem_total;
+			this.disk_total = disk_total;
 			this.bw_size = bw_size;
 	        cpuSize.setValue(ncpus);
-			memSize.setValue(mem_size);
-			diskSize.setValue(disk_size);
+			memTotal.setValue(mem_total);
+			diskTotal.setValue(disk_total);
 			bwSize.setValue(bw_size);
 			cpuPrice.setValue(tp_cpu);
             memPrice.setValue(tp_mem);

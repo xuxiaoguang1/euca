@@ -9,7 +9,7 @@ public class MemoryInfo implements Serializable {
     
     public int mem_id;
     public String mem_desc;
-    public long mem_size;
+    public long mem_total;
     public long ms_reserved;
     public Date mem_creationtime;
     public Date mem_modifiedtime;
@@ -21,7 +21,7 @@ public class MemoryInfo implements Serializable {
     public MemoryInfo(int mem_id, String mem_desc, long mem_total, long ms_reserved, Date mem_creationtime, Date mem_modifiedtime, int server_id) {
         this.mem_id = mem_id;
         this.mem_desc = mem_desc;
-        this.mem_size = mem_total;
+        this.mem_total = mem_total;
         this.ms_reserved = ms_reserved;
         this.mem_creationtime = mem_creationtime;
         this.mem_modifiedtime = mem_modifiedtime;

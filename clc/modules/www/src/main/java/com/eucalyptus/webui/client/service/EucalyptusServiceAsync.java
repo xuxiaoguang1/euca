@@ -216,15 +216,15 @@ public interface EucalyptusServiceAsync {
     
     void lookupDeviceMemory(Session session, SearchRange range, MemoryState ms_state, AsyncCallback<SearchResult> callback);
     void lookupDeviceMemoryCounts(Session session, AsyncCallback<Map<Integer, Long>> callback);
-    void createDeviceMemory(Session session, String mem_desc, long mem_size, int server_id, AsyncCallback<Void> callback);
-    void modifyDeviceMemory(Session session, int mem_id, String mem_desc, long mem_size, AsyncCallback<Void> callback);
+    void createDeviceMemory(Session session, String mem_desc, long mem_total, int server_id, AsyncCallback<Void> callback);
+    void modifyDeviceMemory(Session session, int mem_id, String mem_desc, long mem_total, AsyncCallback<Void> callback);
     void deleteDeviceMemory(Session session, List<Integer> mem_ids, AsyncCallback<Void> callback);
     void lookupDeviceMemoryByID(Session session, int mem_id, AsyncCallback<MemoryInfo> callback);
     
-    void lookupDeviceDiskByDate(Session session, SearchRange range, DiskState disk_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
+    void lookupDeviceDisk(Session session, SearchRange range, DiskState disk_state, AsyncCallback<SearchResult> callback);
     void lookupDeviceDiskCounts(Session session, AsyncCallback<Map<Integer, Long>> callback);
-    void createDeviceDisk(Session session, String disk_name, String disk_desc, long disk_size, int server_id, AsyncCallback<Void> callback);
-    void modifyDeviceDisk(Session session, int disk_id, String disk_desc, long disk_size, AsyncCallback<Void> callback);
+    void createDeviceDisk(Session session, String disk_desc, long disk_total, int server_id, AsyncCallback<Void> callback);
+    void modifyDeviceDisk(Session session, int disk_id, String disk_desc, long disk_total, AsyncCallback<Void> callback);
     void deleteDeviceDisk(Session session, List<Integer> disk_ids, AsyncCallback<Void> callback);
     void lookupDeviceDiskByID(Session session, int disk_id, AsyncCallback<DiskInfo> callback);
 
@@ -246,7 +246,7 @@ public interface EucalyptusServiceAsync {
 	void lookupDeviceBWServiceByID(Session session, int bs_id, AsyncCallback<BWServiceInfo> callback);
 	void lookupDeviceIPsWihtoutBWService(Session session, int account_id, int user_id, AsyncCallback<Map<String, Integer>> callback);
 	
-	void lookupDeviceTemplateByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
+	void lookupDeviceTemplate(Session session, SearchRange range, AsyncCallback<SearchResult> callback);
 	void createDeviceTemplateService(Session session, String template_name, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw, AsyncCallback<Void> callback);
 	void modifyDeviceTemplateService(Session session, int template_id, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw, AsyncCallback<Void> callback);
 	void deleteDeviceTemplateService(Session session, List<Integer> template_ids, AsyncCallback<Void> callback);

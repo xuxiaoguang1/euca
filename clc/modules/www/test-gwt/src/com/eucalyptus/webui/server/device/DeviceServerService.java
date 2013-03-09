@@ -194,6 +194,8 @@ public class DeviceServerService {
             conn.setAutoCommit(false);
             int server_id = DeviceServerDBProcWrapper.createServer(conn, server_name, server_desc, server_ip, server_bw, server_state, cabinet_id);
             DeviceCPUService.createCPUByServerID(conn, server_desc, server_id);
+            DeviceMemoryService.createMemoryByServerID(conn, server_desc, server_id);
+            DeviceDiskService.createDiskByServerID(conn, server_desc, server_id);
             conn.commit();
         }
         catch (Exception e) {
@@ -217,6 +219,8 @@ public class DeviceServerService {
                 conn.setAutoCommit(false);
                 for (int server_id : server_ids) {
                     DeviceCPUService.deleteCPUByServerID(conn, server_id);
+                    DeviceMemoryService.deleteMemoryByServerID(conn, server_id);
+                    DeviceDiskService.deleteDiskByServerID(conn, server_id);
                     DeviceServerDBProcWrapper.lookupServerByID(conn, true, server_id).deleteRow();
                 }
                 conn.commit();
@@ -286,7 +290,7 @@ public class DeviceServerService {
             if (server_state != ServerState.INUSE) {
                 DeviceCPUService.stopCPUServiceByServerID(conn, server_id);
                 DeviceMemoryService.stopMemoryServiceByServerID(conn, server_id);
-                DeviceDiskService.getInstance().stopDiskServiceByServerID(force, session, server_id);
+                DeviceDiskService.stopDiskServiceByServerID(conn, server_id);
             }
             conn.commit();
         }
