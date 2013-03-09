@@ -136,8 +136,8 @@ done
 
 for ((i=0;i<20;i++)) do
     server_id=`getvalue server server_id server_name name$i`
-    command insert into cpu \(cpu_name, cpu_desc, cpu_total, cpu_creationtime, cpu_modifiedtime, server_id\) \
-        values \(\"cpu$i\", \"\", \"10\", \"2012-02-0$j\", \"\", \"$server_id\"\)
+    command insert into cpu \(cpu_desc, cpu_total, cpu_creationtime, cpu_modifiedtime, server_id\) \
+        values \(\"cpu$i\", \"10\", \"2012-02-0$j\", \"\", \"$server_id\"\)
     cpu_id=`getvalue cpu cpu_id server_id $server_id`
     command insert into cpu_service \(cs_desc, cs_used, cs_state, cpu_id\) \
         values \(\"\", \"10\", \"2\", \"$cpu_id\"\)
@@ -150,15 +150,15 @@ for ((i=0;i<20;i++)) do
     let x="$i%3";
     let size="($i + 1) * 2 * 1024 * 1024 * 1024";
     id=`getvalue server server_id server_name name$x`
-    command insert into memory \(mem_name, mem_desc, mem_total, mem_creationtime, server_id\) \
-        values \(\"memory$i\", \"desc$i\", $size, \"2012-07-9\", \"$id\"\)
+    command insert into memory \(mem_desc, mem_total, mem_creationtime, mem_modifiedtime, server_id\) \
+        values \(\"desc$i\", $size, \"2012-07-9\", \"2013-03-09\", \"$id\"\)
 done
 
 # insert mem_service
 
 for ((i=0;i<20;i++)) do
-    memid=`getvalue memory mem_id mem_name memory$i`
-    total=`getvalue memory mem_total mem_name memory$i`
+    memid=`getvalue memory mem_id memory$i`
+    total=`getvalue memory mem_total memory$i`
     userid=`getvalue user user_id user_name admin`
     let used="($i + 1) * 1024 * 1024 * 1024"
     let remain="$total - $used"
