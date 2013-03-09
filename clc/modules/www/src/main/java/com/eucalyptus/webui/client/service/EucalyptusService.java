@@ -807,7 +807,7 @@ public interface EucalyptusService extends RemoteService {
     BWServiceInfo lookupDeviceBWServiceByID(Session session, int bs_id) throws EucalyptusServiceException;
     public Map<String, Integer> lookupDeviceIPsWihtoutBWService(Session session, int account_id, int user_id) throws EucalyptusServiceException;
     
-    SearchResult lookupDeviceTemplateByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException;
+    SearchResult lookupDeviceTemplate(Session session, SearchRange range) throws EucalyptusServiceException;
     void createDeviceTemplateService(Session session, String template_name, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw) throws EucalyptusServiceException;
     void modifyDeviceTemplateService(Session session, int template_id, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw) throws EucalyptusServiceException;
     void deleteDeviceTemplateService(Session session, List<Integer> template_ids) throws EucalyptusServiceException;

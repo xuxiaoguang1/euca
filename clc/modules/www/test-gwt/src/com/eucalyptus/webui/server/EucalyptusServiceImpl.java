@@ -715,12 +715,12 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	
 	@Override
 	public Map<String, Integer> lookupDeviceAccountNames(Session session) throws EucalyptusServiceException {
-	    return DeviceAccountService.getInstance().lookupAccountNames();
+	    return DeviceAccountService.lookupAccountNames();
 	}
 	
 	@Override
 	public Map<String, Integer> lookupDeviceUserNamesByAccountID(Session session, int account_id) throws EucalyptusServiceException {
-	    return DeviceAccountService.getInstance().lookupUserNamesByAccountID(account_id);
+	    return DeviceAccountService.lookupUserNamesByAccountID(account_id);
 	}
 	
 	@Override
@@ -1024,33 +1024,33 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	}
 	
 	@Override
-	public SearchResult lookupDeviceTemplateByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
-		return DeviceTemplateService.getInstance().lookupTemplateByDate(session, range, dateBegin, dateEnd);
+	public SearchResult lookupDeviceTemplate(Session session, SearchRange range) throws EucalyptusServiceException {
+		return DeviceTemplateService.lookupTemplate(session, range);
 	}
 	
 	@Override
     public void createDeviceTemplateService(Session session, String template_name, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw) throws EucalyptusServiceException {
-		DeviceTemplateService.getInstance().createTemplate(session, template_name, template_desc, template_ncpus, template_mem, template_disk, template_bw);
+		DeviceTemplateService.createTemplate(session, template_name, template_desc, template_ncpus, template_mem, template_disk, template_bw);
     }
 	
 	@Override
 	public void modifyDeviceTemplateService(Session session, int template_id, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw) throws EucalyptusServiceException {
-		DeviceTemplateService.getInstance().modifyTempalte(session, template_id, template_desc, template_ncpus, template_mem, template_disk, template_bw);
+		DeviceTemplateService.modifyTempalte(session, template_id, template_desc, template_ncpus, template_mem, template_disk, template_bw);
 	}
 	
 	@Override
 	public void deleteDeviceTemplateService(Session session, List<Integer> template_ids) throws EucalyptusServiceException {
-		DeviceTemplateService.getInstance().deleteTemplate(session, template_ids);
+		DeviceTemplateService.deleteTemplate(session, template_ids);
 	}
 	
 	@Override
 	public Map<String, Integer> lookupDeviceTemplates(Session session) throws EucalyptusServiceException {
-	    return DeviceTemplateService.getInstance().lookupTemplates(session);
+	    return DeviceTemplateService.lookupTemplates(session);
 	}
 	
 	@Override
 	public TemplateInfo lookupDeviceTemplateInfoByID(Session session, int template_id) throws EucalyptusServiceException {
-		return DeviceTemplateService.getInstance().lookupTemplateInfoByID(template_id);
+		return DeviceTemplateService.lookupTemplateInfoByID(template_id);
 	}
 	
 	@Override
@@ -1095,32 +1095,32 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 	
 	@Override
 	public SearchResult lookupDeviceTemplatePriceByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
-	    return DeviceTemplatePriceService.getInstance().lookupTemplatePriceByDate(session, range, dateBegin, dateEnd);
+	    return DeviceTemplatePriceService.lookupTemplatePriceByDate(session, range, dateBegin, dateEnd);
 	}
 	
 	@Override
 	public void createDeviceTemplatePriceByID(Session session, int template_id, String tp_desc, double tp_cpu, double tp_mem, double tp_disk, double tp_bw) throws EucalyptusServiceException {
-	    DeviceTemplatePriceService.getInstance().createTemplatePriceByID(session, template_id, tp_desc, tp_cpu, tp_mem, tp_disk, tp_bw);
+	    DeviceTemplatePriceService.createTemplatePriceByID(session, template_id, tp_desc, tp_cpu, tp_mem, tp_disk, tp_bw);
     }
 	
 	@Override
 	public void modifyDeviceTemplatePrice(Session session, int tp_id, String tp_desc, double tp_cpu, double tp_mem, double tp_disk, double tp_bw) throws EucalyptusServiceException {
-	    DeviceTemplatePriceService.getInstance().modifyTemplatePrice(session, tp_id, tp_desc, tp_cpu, tp_mem, tp_disk, tp_bw);
+	    DeviceTemplatePriceService.modifyTemplatePrice(session, tp_id, tp_desc, tp_cpu, tp_mem, tp_disk, tp_bw);
 	}
 	
 	@Override
 	public void deleteDeviceTemplatePrice(Session session, List<Integer> tp_ids) throws EucalyptusServiceException {
-	    DeviceTemplatePriceService.getInstance().deleteTemplatePrice(session, tp_ids);
+	    DeviceTemplatePriceService.deleteTemplatePrice(session, tp_ids);
 	}
 	
 	@Override
 	public TemplatePriceInfo lookupDeviceTemplatePriceByID(Session session, int tp_id) throws EucalyptusServiceException {
-	    return DeviceTemplatePriceService.getInstance().lookupTemplatePriceByID(tp_id);
+	    return DeviceTemplatePriceService.lookupTemplatePriceByID(tp_id);
 	}
 	
 	@Override
 	public Map<String, Integer> lookupDeviceTemplatesWithoutPrice(Session session) throws EucalyptusServiceException {
-	    return DeviceTemplatePriceService.getInstance().lookupTemplatesWithoutPrice(session);
+	    return DeviceTemplatePriceService.lookupTemplatesWithoutPrice(session);
 	}
 				
 	@Override

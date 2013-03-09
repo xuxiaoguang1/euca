@@ -1,12 +1,13 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.Date;
 import java.util.Set;
 
+import com.eucalyptus.webui.client.activity.device.DevicePageSize;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -14,25 +15,24 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 
 public class DeviceTemplateViewImpl extends Composite implements DeviceTemplateView {
 
-	private static TemplateViewImplUiBinder uiBinder = GWT.create(TemplateViewImplUiBinder.class);
+    private static TemplateViewImplUiBinder uiBinder = GWT.create(TemplateViewImplUiBinder.class);
 
-	interface TemplateViewImplUiBinder extends UiBinder<Widget, DeviceTemplateViewImpl> {
-	}
-	
-	@UiField LayoutPanel resultPanel;
+    interface TemplateViewImplUiBinder extends UiBinder<Widget, DeviceTemplateViewImpl> {
+    }
+    
+    @UiField LayoutPanel resultPanel;
     @UiField Anchor buttonAddTemplate;
     @UiField Anchor buttonDeleteTemplate;
     @UiField Anchor buttonModifyTemplate;
     @UiField Anchor buttonClearSelection;
-    @UiField DeviceDateBox dateBegin;
-    @UiField DeviceDateBox dateEnd;
-    @UiField Anchor buttonClearDate;
+    @UiField ListBox pageSizeList;
     
     private Presenter presenter;
     private MultiSelectionModel<SearchResultRow> selection;
@@ -41,6 +41,23 @@ public class DeviceTemplateViewImpl extends Composite implements DeviceTemplateV
     
     public DeviceTemplateViewImpl() {
         initWidget(uiBinder.createAndBindUi(this));
+        
+        for (String pageSize : DevicePageSize.getPageSizeList()) {
+            pageSizeList.addItem(pageSize);
+        }
+        pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
+        pageSizeList.addChangeHandler(new ChangeHandler() {
+
+            @Override
+            public void onChange(ChangeEvent event) {
+                DevicePageSize.setPageSizeSelectedIndex(pageSizeList.getSelectedIndex());
+                if (table != null) {
+                    table.setPageSize(DevicePageSize.getPageSize());
+                }
+            }
+            
+        });
+        
         selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
         selection.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
 
@@ -54,40 +71,6 @@ public class DeviceTemplateViewImpl extends Composite implements DeviceTemplateV
         updateSearchResultButtonStatus();
         
         popup.setAutoHideEnabled(true);
-        
-        for (final DeviceDateBox dateBox : new DeviceDateBox[]{dateBegin, dateEnd}) {
-            dateBox.setErrorHandler(new Handler() {
-
-                @Override
-                public void onErrorHappens() {
-                    updateDateButtonStatus();
-                    int x = dateBox.getAbsoluteLeft();
-                    int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
-                    popup.setHTML(x, y, "30EM", "3EM", DeviceDateBox.getDateErrorHTML(dateBox));
-                }
-
-                @Override
-                public void onValueChanged() {
-                    updateDateButtonStatus();
-                    int x = dateBox.getAbsoluteLeft();
-                    int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
-                    DeviceDateBox pair;
-                    pair = (dateBox != dateBegin ? dateBegin : dateEnd);
-                    if (!pair.hasError()) {
-                        Date date0 = dateBegin.getValue(), date1 = dateEnd.getValue();
-                        if (date0 != null && date1 != null) {
-                            if (date0.getTime() > date1.getTime()) {
-                                popup.setHTML(x, y, "20EM", "2EM", DeviceDateBox.getDateErrorHTML(dateBegin, dateEnd));
-                                return;
-                            }
-                        }
-                        updateSearchRange();
-                    }
-                }
-            });
-        }
-        
-        updateDateButtonStatus();
     }
     
     private void updateSearchResultButtonStatus() {
@@ -98,23 +81,8 @@ public class DeviceTemplateViewImpl extends Composite implements DeviceTemplateV
         buttonClearSelection.setEnabled(size != 0);
     }
     
-    private void updateDateButtonStatus() {
-        if (isEmpty(dateBegin.getText()) && isEmpty(dateEnd.getText())) {
-            buttonClearDate.setEnabled(false);
-        }
-        else {
-            buttonClearDate.setEnabled(true);
-        }
-    }
-    
     public boolean isEmpty(String s) {
         return s == null || s.length() == 0;
-    }
-    
-    private void updateSearchRange() {
-        if (!dateBegin.hasError() && !dateEnd.hasError()) {
-            presenter.updateSearchResult(dateBegin.getValue(), dateEnd.getValue());
-        }
     }
     
     public Set<SearchResultRow> getSelectedSet() {
@@ -140,6 +108,10 @@ public class DeviceTemplateViewImpl extends Composite implements DeviceTemplateV
             resultPanel.add(table);
         }
         table.setData(result);
+        if (table.getPageSize() != DevicePageSize.getPageSize()) {
+            table.setPageSize(DevicePageSize.getPageSize());
+            pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
+        }
     }
     
     @Override
@@ -188,16 +160,6 @@ public class DeviceTemplateViewImpl extends Composite implements DeviceTemplateV
     void handleButtonClearSelection(ClickEvent event) {
         if (buttonClearSelection.isEnabled()) {
             clearSelection();
-        }
-    }
-    
-    @UiHandler("buttonClearDate")
-    void handleButtonClearDate(ClickEvent event) {
-        if (buttonClearDate.isEnabled()) {
-            dateBegin.setValue(null);
-            dateEnd.setValue(null);
-            updateDateButtonStatus();
-            updateSearchRange();
         }
     }
     

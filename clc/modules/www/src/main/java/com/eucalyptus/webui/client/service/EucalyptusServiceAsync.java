@@ -246,7 +246,7 @@ public interface EucalyptusServiceAsync {
 	void lookupDeviceBWServiceByID(Session session, int bs_id, AsyncCallback<BWServiceInfo> callback);
 	void lookupDeviceIPsWihtoutBWService(Session session, int account_id, int user_id, AsyncCallback<Map<String, Integer>> callback);
 	
-	void lookupDeviceTemplateByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
+	void lookupDeviceTemplate(Session session, SearchRange range, AsyncCallback<SearchResult> callback);
 	void createDeviceTemplateService(Session session, String template_name, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw, AsyncCallback<Void> callback);
 	void modifyDeviceTemplateService(Session session, int template_id, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw, AsyncCallback<Void> callback);
 	void deleteDeviceTemplateService(Session session, List<Integer> template_ids, AsyncCallback<Void> callback);

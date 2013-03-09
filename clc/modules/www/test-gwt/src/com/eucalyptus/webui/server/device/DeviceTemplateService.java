@@ -33,17 +33,7 @@ import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
 public class DeviceTemplateService {
     
-    private static DeviceTemplateService instance = new DeviceTemplateService();
-
-    public static DeviceTemplateService getInstance() {
-        return instance;
-    }
-    
-    private DeviceTemplateService() {
-        /* do nothing */
-    }
-    
-    private LoginUserProfile getUser(Session session) {
+    private static LoginUserProfile getUser(Session session) {
         return LoginUserProfileStorer.instance().get(session.getId());
     }
     
@@ -69,7 +59,7 @@ public class DeviceTemplateService {
             new SearchResultFieldDesc(true, "8%", new ClientMessage("Modify", "修改时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false));
     
-    private DBTableColumn getSortColumn(SearchRange range) {
+    private static DBTableColumn getSortColumn(SearchRange range) {
         switch (range.getSortField()) {
         case CellTableColumns.TEMPLATE.TEMPLATE_NAME: return DBTable.TEMPLATE.TEMPLATE_NAME;
         case CellTableColumns.TEMPLATE.TEMPLATE_NCPUS: return DBTable.TEMPLATE.TEMPLATE_NCPUS;
@@ -82,11 +72,11 @@ public class DeviceTemplateService {
         return null;
     }
     
-    public SearchResult lookupTemplateByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
+    public static SearchResult lookupTemplate(Session session, SearchRange range) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
-            ResultSet rs = DeviceTemplateDBProcWrapper.lookupTempateByDate(conn, dateBegin, dateEnd, getSortColumn(range), range.isAscending());
+            ResultSet rs = DeviceTemplateDBProcWrapper.lookupTempate(conn, getSortColumn(range), range.isAscending());
             ArrayList<SearchResultRow> rows = new ArrayList<SearchResultRow>();
             DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
             int index, start = range.getStart(), end = start + range.getLength();
@@ -131,7 +121,7 @@ public class DeviceTemplateService {
         }
     }
     
-    public TemplateInfo lookupTemplateInfoByID(int template_id) throws EucalyptusServiceException {
+    public static TemplateInfo lookupTemplateInfoByID(int template_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -160,7 +150,7 @@ public class DeviceTemplateService {
         throw new EucalyptusServiceException(new ClientMessage("Cannot find the corresponding Template.", "找不到指定的模板"));
     }
     
-    public void createTemplate(Session session, String template_name, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw) throws EucalyptusServiceException {
+    public static void createTemplate(Session session, String template_name, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw) throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -196,7 +186,7 @@ public class DeviceTemplateService {
         }
     }
     
-    public void deleteTemplate(Session session, List<Integer> template_ids) throws EucalyptusServiceException {
+    public static void deleteTemplate(Session session, List<Integer> template_ids) throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -216,7 +206,7 @@ public class DeviceTemplateService {
         }
     }
     
-    public void modifyTempalte(Session session, int template_id, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw) throws EucalyptusServiceException {
+    public static void modifyTempalte(Session session, int template_id, String template_desc, int template_ncpus, long template_mem, long template_disk, int template_bw) throws EucalyptusServiceException {
         if (!getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -262,7 +252,7 @@ public class DeviceTemplateService {
         }
     }
     
-    public Map<String, Integer> lookupTemplates(Session session) throws EucalyptusServiceException {
+    public static Map<String, Integer> lookupTemplates(Session session) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -277,7 +267,7 @@ public class DeviceTemplateService {
         }
     }
     
-    public AppResources createApp(String desc, int ncpus, long mem_total, long disk_total, int server_id, int user_id) throws EucalyptusServiceException {
+    public static AppResources createApp(String desc, int ncpus, long mem_total, long disk_total, int server_id, int user_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -298,7 +288,7 @@ public class DeviceTemplateService {
         }
     }
     
-    public void startApp(AppResources app) throws EucalyptusServiceException {
+    public static void startApp(AppResources app) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -318,7 +308,7 @@ public class DeviceTemplateService {
         }
     }
     
-    public void stopApp(AppResources app) throws EucalyptusServiceException {
+    public static void stopApp(AppResources app) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -338,7 +328,7 @@ public class DeviceTemplateService {
         }
     }
     
-    public void deleteApp(AppResources app) throws EucalyptusServiceException {
+    public static void deleteApp(AppResources app) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -358,91 +348,83 @@ public class DeviceTemplateService {
         }
     }
     
-}
-
-class DeviceTemplateDBProcWrapper {
-    
-    private static final Logger log = Logger.getLogger(DeviceTemplateDBProcWrapper.class.getName());
-    
-    public static Map<String, Integer> lookupTemplates(Connection conn) throws Exception {
-        DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT ");
-        sb.append(TEMPLATE.TEMPLATE_NAME).append(", ").append(TEMPLATE.TEMPLATE_ID);
-        sb.append(" FROM ").append(TEMPLATE).append(" WHERE 1=1");
-        ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-        Map<String, Integer> result = new HashMap<String, Integer>();
-        while (rs.next()) {
-            result.put(rs.getString(1), rs.getInt(2));
+    static class DeviceTemplateDBProcWrapper {
+        
+        private static final Logger log = Logger.getLogger(DeviceTemplateDBProcWrapper.class.getName());
+        
+        public static Map<String, Integer> lookupTemplates(Connection conn) throws Exception {
+            DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT ");
+            sb.append(TEMPLATE.TEMPLATE_NAME).append(", ").append(TEMPLATE.TEMPLATE_ID);
+            sb.append(" FROM ").append(TEMPLATE).append(" WHERE 1=1");
+            ResultSet rs = DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+            Map<String, Integer> result = new HashMap<String, Integer>();
+            while (rs.next()) {
+                result.put(rs.getString(1), rs.getInt(2));
+            }
+            return result;
         }
-        return result;
-    }
-    
-    public static ResultSet lookupTemplateByID(Connection conn, boolean updatable, int template_id) throws Exception {
-        DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT * FROM ").append(TEMPLATE);
-        sb.append(" WHERE ").append(TEMPLATE.TEMPLATE_ID).append(" = ").append(template_id);
-        return DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
-    }
-    
-    public static ResultSet lookupTempateByDate(Connection conn, Date beg, Date end, DBTableColumn sorted, boolean isAscending) throws Exception {
-        DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("SELECT * FROM ").append(TEMPLATE).append(" WHERE 1=1");
-        if (beg != null || end != null) {
-            sb.append(" AND ("); {
-                sb.appendDateBound(TEMPLATE.TEMPLATE_CREATIONTIME, beg, end);
-                sb.append(" OR ");
-                sb.appendDateBound(TEMPLATE.TEMPLATE_MODIFIEDTIME, beg, end);
+        
+        public static ResultSet lookupTemplateByID(Connection conn, boolean updatable, int template_id) throws Exception {
+            DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT * FROM ").append(TEMPLATE);
+            sb.append(" WHERE ").append(TEMPLATE.TEMPLATE_ID).append(" = ").append(template_id);
+            return DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
+        }
+        
+        public static ResultSet lookupTempate(Connection conn, DBTableColumn sorted, boolean isAscending) throws Exception {
+            DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("SELECT * FROM ").append(TEMPLATE).append(" WHERE 1=1");
+            if (sorted != null) {
+                sb.append(" ORDER BY ").append(sorted).append(isAscending ? " ASC" : " DESC");
+            }
+            return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
+        }
+        
+        public static int createTempate(Connection conn, String template_name, String template_desc, int template_ncpus,
+                long template_mem, long template_disk, int template_bw) throws Exception {
+            DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("INSERT INTO ").append(TEMPLATE).append(" ("); {
+                sb.append(TEMPLATE.TEMPLATE_NAME).append(", ");
+                sb.append(TEMPLATE.TEMPLATE_DESC).append(", ");
+                sb.append(TEMPLATE.TEMPLATE_NCPUS).append(", ");
+                sb.append(TEMPLATE.TEMPLATE_MEM).append(", ");
+                sb.append(TEMPLATE.TEMPLATE_DISK).append(", ");
+                sb.append(TEMPLATE.TEMPLATE_BW).append(", ");
+                sb.append(TEMPLATE.TEMPLATE_CREATIONTIME).append(", ");
+                sb.append(TEMPLATE.TEMPLATE_MODIFIEDTIME);
+            }
+            sb.append(") VALUES ("); {
+                sb.appendString(template_name).append(", ");
+                sb.appendString(template_desc).append(", ");
+                sb.append(template_ncpus).append(", ");
+                sb.append(template_mem).append(", ");
+                sb.append(template_disk).append(", ");
+                sb.append(template_bw).append(", ");
+                sb.appendDate().append(", ");
+                sb.appendNull();
             }
             sb.append(")");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(sb.toSql(log), new String[]{TEMPLATE.TEMPLATE_ID.toString()});
+            ResultSet rs = stat.getGeneratedKeys();
+            rs.next();
+            return rs.getInt(1);
         }
-        if (sorted != null) {
-            sb.append(" ORDER BY ").append(sorted).append(isAscending ? " ASC" : " DESC");
+        
+        public static void deleteTemplate(Connection conn, List<Integer> template_ids) throws Exception {
+            DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
+            DBStringBuilder sb = new DBStringBuilder();
+            sb.append("DELETE FROM ").append(TEMPLATE).append(" WHERE ");
+            sb.append(TEMPLATE.TEMPLATE_ID).append(" IN (").append(DBStringBuilder.listToString(template_ids)).append(")");
+            Statement stat = conn.createStatement();
+            stat.executeUpdate(sb.toSql(log));
         }
-        return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
-    }
-    
-    public static int createTempate(Connection conn, String template_name, String template_desc, int template_ncpus,
-            long template_mem, long template_disk, int template_bw) throws Exception {
-        DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("INSERT INTO ").append(TEMPLATE).append(" ("); {
-            sb.append(TEMPLATE.TEMPLATE_NAME).append(", ");
-            sb.append(TEMPLATE.TEMPLATE_DESC).append(", ");
-            sb.append(TEMPLATE.TEMPLATE_NCPUS).append(", ");
-            sb.append(TEMPLATE.TEMPLATE_MEM).append(", ");
-            sb.append(TEMPLATE.TEMPLATE_DISK).append(", ");
-            sb.append(TEMPLATE.TEMPLATE_BW).append(", ");
-            sb.append(TEMPLATE.TEMPLATE_CREATIONTIME).append(", ");
-            sb.append(TEMPLATE.TEMPLATE_MODIFIEDTIME);
-        }
-        sb.append(") VALUES ("); {
-            sb.appendString(template_name).append(", ");
-            sb.appendString(template_desc).append(", ");
-            sb.append(template_ncpus).append(", ");
-            sb.append(template_mem).append(", ");
-            sb.append(template_disk).append(", ");
-            sb.append(template_bw).append(", ");
-            sb.appendDate().append(", ");
-            sb.appendNull();
-        }
-        sb.append(")");
-        Statement stat = conn.createStatement();
-        stat.executeUpdate(sb.toSql(log), new String[]{TEMPLATE.TEMPLATE_ID.toString()});
-        ResultSet rs = stat.getGeneratedKeys();
-        rs.next();
-        return rs.getInt(1);
-    }
-    
-    public static void deleteTemplate(Connection conn, List<Integer> template_ids) throws Exception {
-        DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
-        DBStringBuilder sb = new DBStringBuilder();
-        sb.append("DELETE FROM ").append(TEMPLATE).append(" WHERE ");
-        sb.append(TEMPLATE.TEMPLATE_ID).append(" IN (").append(DBStringBuilder.listToString(template_ids)).append(")");
-        Statement stat = conn.createStatement();
-        stat.executeUpdate(sb.toSql(log));
+        
     }
     
 }

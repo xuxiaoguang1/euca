@@ -188,11 +188,9 @@ for ((i=0;i<32;i++)) do
         values \(\"192.168.0.$i\", 1, \"2012-10-01\", 2\);
 done
 
-exit
-
 # insert template
 for ((i=0;i<10;i++)) do
-    let mem="($i + 1) * 1024"
+    let mem="1024"
     let disk="($i + 10) * 1000"
     command insert into template \( \
         template_name, \
@@ -202,7 +200,7 @@ for ((i=0;i<10;i++)) do
         template_disk, \
         template_bw, \
         template_creationtime, \
-        template_modifiedtime\)
+        template_modifiedtime\) \
         values \( \
         \"name$i\", \
         \"\", \
@@ -210,7 +208,8 @@ for ((i=0;i<10;i++)) do
         $mem, \
         $disk, \
         32, \
-        \"2012-07-10\"\)
+        \"2012-07-10\", \
+        \"\"\)
 done
 
 exit
