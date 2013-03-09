@@ -1,188 +1,160 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui"
-	xmlns:euca="urn:import:com.eucalyptus.webui.client.view"
-	xmlns:d="urn:import:com.eucalyptus.webui.client.view">
+    xmlns:g="urn:import:com.google.gwt.user.client.ui"
+    xmlns:euca="urn:import:com.eucalyptus.webui.client.view"
+    xmlns:d="urn:import:com.eucalyptus.webui.client.view">
 
-	<ui:style>
-		.top {
-			font-size: 120%;
-		}
-		.topContent {
-			color: gray;
-			font-size: 95%;
-			border-top: 1px solid #AAAAAA;
-			border-bottom: 1px solid #AAAAAA;
-			border-left: 1px solid #AAAAAA;
-			border-right: 1px solid #AAAAAA;
-			margin-left: auto;
-			margin-right: auto;
-		}
-		.topLinks {
-			cursor: pointer;
-			cursor: hand;
-		}
-		.bottom {
-			font-size: 80%;
-			border-top: 1px solid #AAAAAA;
-		}
-	</ui:style>
+    <ui:style>
+        .top {
+            font-size: 120%;
+        }
+        .topContent {
+            color: gray;
+            font-size: 95%;
+            border-top: 1px solid #AAAAAA;
+            border-bottom: 1px solid #AAAAAA;
+            border-left: 1px solid #AAAAAA;
+            border-right: 1px solid #AAAAAA;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .topLinks {
+            cursor: pointer;
+            cursor: hand;
+        }
+        .bottom {
+            font-size: 80%;
+            border-top: 1px solid #AAAAAA;
+        }
+    </ui:style>
 
-	<ui:with field="global"
-		type="com.eucalyptus.webui.client.view.GlobalResources" />
-		
-	<g:DockLayoutPanel unit="EM">
-		<g:north size="11.3">
-			<g:DockLayoutPanel unit="EM">
-				<g:north size="2">
-					<g:DockLayoutPanel unit="EM">
-						<g:west size="2">
-							<g:HTMLPanel>
-								<table/>
-							</g:HTMLPanel>
-						</g:west>
-						<g:center>
-							<g:HTMLPanel>
-								<table>
-									<tr class="{style.top}">
-										<td>硬盘管理</td>
-									</tr>
-								</table>
-							</g:HTMLPanel>
-						</g:center>
-					</g:DockLayoutPanel>
-				</g:north>
-				<g:center>
-					<g:DockLayoutPanel unit="EM">
-						<g:west size="3">
-							<g:HTMLPanel>
-								<table/>
-							</g:HTMLPanel>
-						</g:west>
-						<g:center>
-							<g:HTMLPanel>
-								<table width="800px">
-									<colgroup width="3%" />
-									<colgroup width="27%" />
-									<colgroup width="20%" />
-									<colgroup width="3%" />
-									<colgroup width="27%" />
-									<colgroup width="20%" />
-									<tbody class="{style.topContent}">
-										<tr>
-											<td>&nbsp;</td>
-											<td>
-												<div height="10px">&nbsp;</div>
-												<div>
-													<g:Anchor styleName="{style.topLinks}" ui:field="labelAll">全部硬盘数量：0
-														GB</g:Anchor>
-												</div>
-												<div height="10px">&nbsp;</div>
-												<div>
-													<g:Anchor styleName="{style.topLinks}" ui:field="labelReserved">预留硬盘数量：0
-														GB</g:Anchor>
-												</div>
-												<div height="10px">&nbsp;</div>
-											</td>
-											<td>&nbsp;</td>
-											<td>&nbsp;</td>
-											<td>
-												<div height="10px">&nbsp;</div>
-												<div>
-													<g:Anchor styleName="{style.topLinks}" ui:field="labelInuse">使用中硬盘数量：0
-														GB</g:Anchor>
-												</div>
-												<div height="10px">&nbsp;</div>
-												<div>
-													<g:Anchor styleName="{style.topLinks}" ui:field="labelStop">未使用硬盘数量：0
-														GB</g:Anchor>
-												</div>
-												<div height="10px">&nbsp;</div>
-											</td>
-											<td>&nbsp;</td>
-										</tr>
-									</tbody>
-								</table>
-							</g:HTMLPanel>
-						</g:center>
-						<g:south size="1.8">
-							<g:HTMLPanel styleName="border-top:1px solid #AAAAAA;">
-								<table class="style.topContent">
-									<tbody>
-										<tr>
-											<td style="font-size:80%;">
-												<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" ui:field="columnButton" height="0.9EM" width="30px" text="查看"/>
-											</td>
-											<td width="10px">&nbsp;</td>
-											<td style="font-size:80%;">
-												<g:ListBox ui:field="pageSizeList" height="1.4EM" width="50px"/>
-											</td>
-											<td width="10px">&nbsp;</td>
-											<td>
-												<g:Anchor horizontalAlignment="ALIGN_CENTER" width="6EM">日期过滤：</g:Anchor>
-											</td>
-											<td width="10px">&nbsp;</td>
-											<td>
-												<d:DeviceDateBox width="6EM" ui:field="dateBegin"/>
-											</td>
-											<td width="8px">&nbsp;</td>
-											<td>
-												<g:Anchor horizontalAlignment="ALIGN_CENTER">至</g:Anchor>
-											</td>
-											<td width="8px">&nbsp;</td>
-											<td>
-												<d:DeviceDateBox width="6EM" ui:field="dateEnd"/>
-											</td>
-											<td width="40px">&nbsp;</td>
-											<td>
-												<d:DeviceButton styleName="{global.buttonCss.button}"
-													horizontalAlignment="ALIGN_CENTER" width="5EM" ui:field="buttonClearDate" text="清空日期"/>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</g:HTMLPanel>
-						</g:south>
-					</g:DockLayoutPanel>
-				</g:center>
-				<g:south size="2.5">
-					<g:HTMLPanel styleName="border-top:1px solid #AAAAAA;">
-						<table class="{style.bottom}">
-							<tbody>
-								<tr height="6px">
-									<td width="20px" />
-									<td width="80px" />
-									<td width="80px" />
-									<td width="80px" />
-									<td width="40px" />
-									<td width="360px" />
-								</tr>
-								<tr>
-									<td />
-									<td>
-										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonAddDisk" text="添加硬盘"/>
-									</td>
-									<td>
-										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonDeleteDisk" text="删除硬盘"/>
-									</td>
-									<td>
-										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonModifyDisk" text="编辑硬盘"/>
-									</td>
-									<td />
-									<td>
-										<d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonClearSelection" text="清空选择"/>
-									</td>
-									<td />
-								</tr>
-							</tbody>
-						</table>
-					</g:HTMLPanel>
-				</g:south>
-			</g:DockLayoutPanel>
-		</g:north>
-		<g:center>
-			<g:LayoutPanel ui:field="resultPanel"/>
-		</g:center>
-	</g:DockLayoutPanel>
+    <ui:with field="global"
+        type="com.eucalyptus.webui.client.view.GlobalResources" />
+        
+    <g:DockLayoutPanel unit="EM">
+        <g:north size="10.3">
+            <g:DockLayoutPanel unit="EM">
+                <g:north size="2">
+                    <g:DockLayoutPanel unit="EM">
+                        <g:west size="2">
+                            <g:HTMLPanel>
+                                <table/>
+                            </g:HTMLPanel>
+                        </g:west>
+                        <g:center>
+                            <g:HTMLPanel>
+                                <table>
+                                    <tr class="{style.top}">
+                                        <td>硬盘管理</td>
+                                    </tr>
+                                </table>
+                            </g:HTMLPanel>
+                        </g:center>
+                    </g:DockLayoutPanel>
+                </g:north>
+                <g:center>
+                    <g:DockLayoutPanel unit="EM">
+                        <g:west size="3">
+                            <g:HTMLPanel>
+                                <table/>
+                            </g:HTMLPanel>
+                        </g:west>
+                        <g:center>
+                            <g:HTMLPanel>
+                                <table width="800px">
+                                    <colgroup width="3%" />
+                                    <colgroup width="27%" />
+                                    <colgroup width="20%" />
+                                    <colgroup width="3%" />
+                                    <colgroup width="27%" />
+                                    <colgroup width="20%" />
+                                    <tbody class="{style.topContent}">
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>
+                                                <div height="10px">&nbsp;</div>
+                                                <div>
+                                                    <g:Anchor styleName="{style.topLinks}" ui:field="labelAll">全部硬盘数量：0
+                                                        GB</g:Anchor>
+                                                </div>
+                                                <div height="10px">&nbsp;</div>
+                                                <div>
+                                                    <g:Anchor styleName="{style.topLinks}" ui:field="labelReserved">预留硬盘数量：0
+                                                        GB</g:Anchor>
+                                                </div>
+                                                <div height="10px">&nbsp;</div>
+                                            </td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>
+                                                <div height="10px">&nbsp;</div>
+                                                <div>
+                                                    <g:Anchor styleName="{style.topLinks}" ui:field="labelInuse">使用中硬盘数量：0
+                                                        GB</g:Anchor>
+                                                </div>
+                                                <div height="10px">&nbsp;</div>
+                                                <div>
+                                                    <g:Anchor styleName="{style.topLinks}" ui:field="labelStop">未使用硬盘数量：0
+                                                        GB</g:Anchor>
+                                                </div>
+                                                <div height="10px">&nbsp;</div>
+                                            </td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </g:HTMLPanel>
+                        </g:center>
+                    </g:DockLayoutPanel>
+                </g:center>
+                <g:south size="2.5">
+                    <g:HTMLPanel styleName="border-top:1px solid #AAAAAA;">
+                        <table class="{style.bottom}">
+                            <tbody>
+                                <tr height="6px">
+                                    <td width="20px" />
+                                    <td width="60px" />
+                                    <td width="40px" />
+                                    <td width="20px" />
+                                    <td width="80px" />
+                                    <td width="80px" />
+                                    <td width="80px" />
+                                    <td width="40px" />
+                                    <td width="360px" />
+                                </tr>
+                                <tr>
+                                    <td />
+                                    <td style="font-size:80%;">
+                                        <d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" ui:field="columnButton" height="0.9EM" width="30px" text="查看"/>
+                                    </td>
+                                    <td style="font-size:80%;">
+                                        <g:ListBox ui:field="pageSizeList" height="1.4EM" width="50px"/>
+                                    </td>
+                                    <td />
+                                    <td>
+                                        <d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonAddDisk" text="添加硬盘"/>
+                                    </td>
+                                    <td>
+                                        <d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonDeleteDisk" text="删除硬盘"/>
+                                    </td>
+                                    <td>
+                                        <d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonModifyDisk" text="编辑硬盘"/>
+                                    </td>
+                                    <td />
+                                    <td>
+                                        <d:DeviceButton styleName="{global.buttonCss.button}" horizontalAlignment="ALIGN_CENTER" width="64px" ui:field="buttonClearSelection" text="清空选择"/>
+                                    </td>
+                                    <td />
+                                </tr>
+                            </tbody>
+                        </table>
+                    </g:HTMLPanel>
+                </g:south>
+            </g:DockLayoutPanel>
+        </g:north>
+        <g:center>
+            <g:LayoutPanel ui:field="resultPanel"/>
+        </g:center>
+    </g:DockLayoutPanel>
 
 </ui:UiBinder> 

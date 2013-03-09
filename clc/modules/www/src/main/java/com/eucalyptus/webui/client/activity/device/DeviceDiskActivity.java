@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.client.activity.device;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,37 +24,35 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class DeviceDiskActivity extends DeviceActivity implements DeviceDiskView.Presenter {
-	
-	private static final ClientMessage title = new ClientMessage("Disk", "硬盘");
-	
-	private Date dateBegin;
-	private Date dateEnd;
-	private DiskState queryState = null;
-	private Map<Integer, Long> diskCounts = new HashMap<Integer, Long>();
-	
-	private DeviceDiskAddView diskAddView;
-	private DeviceDiskModifyView diskModifyView;
-	
-	public DeviceDiskActivity(SearchPlace place, ClientFactory clientFactory) {
-		super(place, clientFactory);
-		super.pageSize = DevicePageSize.getPageSize();
-	}
-	
-	private DeviceDiskView getView() {
-		DeviceDiskView view = (DeviceDiskView)this.view;
-		if (view == null) {
-			view = clientFactory.getDeviceDiskView();
-			view.setPresenter(this);
-			container.setWidget(view);
-			view.clear();
-			this.view = view;
-		}
-		return view;
-	}
-	
-	@Override
-	protected void doSearch(String query, SearchRange range) {
-		getBackendService().lookupDeviceDiskByDate(getSession(), range, queryState, dateBegin, dateEnd, new AsyncCallback<SearchResult>() {
+    
+    private static final ClientMessage title = new ClientMessage("Disk", "硬盘");
+    
+    private DiskState queryState = null;
+    private Map<Integer, Long> diskCounts = new HashMap<Integer, Long>();
+    
+    private DeviceDiskAddView diskAddView;
+    private DeviceDiskModifyView diskModifyView;
+    
+    public DeviceDiskActivity(SearchPlace place, ClientFactory clientFactory) {
+        super(place, clientFactory);
+        super.pageSize = DevicePageSize.getPageSize();
+    }
+    
+    private DeviceDiskView getView() {
+        DeviceDiskView view = (DeviceDiskView)this.view;
+        if (view == null) {
+            view = clientFactory.getDeviceDiskView();
+            view.setPresenter(this);
+            container.setWidget(view);
+            view.clear();
+            this.view = view;
+        }
+        return view;
+    }
+    
+    @Override
+    protected void doSearch(String query, SearchRange range) {
+        getBackendService().lookupDeviceDisk(getSession(), range, queryState, new AsyncCallback<SearchResult>() {
 
             @Override
             public void onFailure(Throwable caught) {
@@ -68,55 +65,55 @@ public class DeviceDiskActivity extends DeviceActivity implements DeviceDiskView
                 onBackendServiceFinished();
                 displayData(result);
             }
-			
-		});
-		getBackendService().lookupDeviceDiskCounts(getSession(), new AsyncCallback<Map<Integer, Long>>() {
+            
+        });
+        getBackendService().lookupDeviceDiskCounts(getSession(), new AsyncCallback<Map<Integer, Long>>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-			    onBackendServiceFailure(caught);
-			}
+            @Override
+            public void onFailure(Throwable caught) {
+                onBackendServiceFailure(caught);
+            }
 
-			@Override
-			public void onSuccess(Map<Integer, Long> result) {
-			    onBackendServiceFinished();
-				diskCounts = result;
-				getView().updateLabels();
-			}
-			
-		});
-	}
-	
-	@Override
-	protected String getTitle() {
-		return title.toString();
-	}
-	
-	@Override
-	protected void showView(SearchResult result) {
-		getView().showSearchResult(result);
-	}
-	
-	@Override
-	public void onSelectionChange(Set<SearchResultRow> selection) {
-		/* do nothing */
-	}
+            @Override
+            public void onSuccess(Map<Integer, Long> result) {
+                onBackendServiceFinished();
+                diskCounts = result;
+                getView().updateLabels();
+            }
+            
+        });
+    }
+    
+    @Override
+    protected String getTitle() {
+        return title.toString();
+    }
+    
+    @Override
+    protected void showView(SearchResult result) {
+        getView().showSearchResult(result);
+    }
+    
+    @Override
+    public void onSelectionChange(Set<SearchResultRow> selection) {
+        /* do nothing */
+    }
 
-	@Override
-	public void onClick(SearchResultRow row, int row_index, int column_index) {
-		/* do nothing */
-	}
+    @Override
+    public void onClick(SearchResultRow row, int row_index, int column_index) {
+        /* do nothing */
+    }
 
-	@Override
-	public void onHover(SearchResultRow row, int row_index, int columin_index) {
-		/* do nothing */
-	}
-	
-	@Override
-	public void onDoubleClick(SearchResultRow row, int row_index, int column_index) {
-		getView().setSelectedRow(row);
-	}
-	
+    @Override
+    public void onHover(SearchResultRow row, int row_index, int columin_index) {
+        /* do nothing */
+    }
+    
+    @Override
+    public void onDoubleClick(SearchResultRow row, int row_index, int column_index) {
+        getView().setSelectedRow(row);
+    }
+    
     @Override
     public void onAddDisk() {
         try {
@@ -126,17 +123,10 @@ public class DeviceDiskActivity extends DeviceActivity implements DeviceDiskView
                     diskAddView.setPresenter(new DeviceDiskAddView.Presenter() {
                         
                         @Override
-                        public boolean onOK(String disk_name, String disk_desc, long disk_size, int server_id) {
-                            if (disk_name == null || disk_name.isEmpty()) {
+                        public boolean onOK(String disk_desc, long disk_total, int server_id) {
+                            if (disk_total <= 0) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("Invalid Disk Name: ", "硬盘名称非法")).append(" = (null).").append("\n");
-                                sb.append(new ClientMessage("Please try again.", "请重试."));
-                                Window.alert(sb.toString());
-                                return false;
-                            }
-                            if (disk_size <= 0) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("Invalid Disk Size: ", "硬盘大小非法")).append(" = ").append(disk_size).append(".").append("\n");
+                                sb.append(new ClientMessage("Invalid Disk Size: ", "硬盘大小非法")).append(" = ").append(disk_total).append(".").append("\n");
                                 sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
@@ -148,7 +138,7 @@ public class DeviceDiskActivity extends DeviceActivity implements DeviceDiskView
                                 Window.alert(sb.toString());
                                 return false;
                             }
-                            getBackendService().createDeviceDisk(getSession(), disk_name, disk_desc, disk_size, server_id, new AsyncCallback<Void>() {
+                            getBackendService().createDeviceDisk(getSession(), disk_desc, disk_total, server_id, new AsyncCallback<Void>() {
 
                                 @Override
                                 public void onFailure(Throwable caught) {
@@ -282,15 +272,15 @@ public class DeviceDiskActivity extends DeviceActivity implements DeviceDiskView
                     diskModifyView.setPresenter(new DeviceDiskModifyView.Presenter() {
                         
                         @Override
-                        public boolean onOK(int disk_id, String disk_desc, long disk_size, long ds_used) {
-                            if (disk_size <= 0 || disk_size < ds_used) {
+                        public boolean onOK(int disk_id, String disk_desc, long disk_total, long ds_used) {
+                            if (disk_total <= 0 || disk_total < ds_used) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("Invalid Disk Size: ", "硬盘大小非法")).append(" = ").append(disk_size).append(".").append("\n");
+                                sb.append(new ClientMessage("Invalid Disk Size: ", "硬盘大小非法")).append(" = ").append(disk_total).append(".").append("\n");
                                 sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
                             }
-                            getBackendService().modifyDeviceDisk(getSession(), disk_id, disk_desc, disk_size, new AsyncCallback<Void> () {
+                            getBackendService().modifyDeviceDisk(getSession(), disk_id, disk_desc, disk_total, new AsyncCallback<Void> () {
 
                                 @Override
                                 public void onFailure(Throwable caught) {
@@ -324,7 +314,7 @@ public class DeviceDiskActivity extends DeviceActivity implements DeviceDiskView
 
                     @Override
                     public void onSuccess(DiskInfo info) {
-                        diskModifyView.popup(disk_id, info.disk_name, info.disk_desc, info.disk_size, info.disk_size - info.ds_reserved, server_name);
+                        diskModifyView.popup(disk_id, info.disk_desc, info.disk_total, info.disk_total - info.ds_reserved, server_name);
                     }
                     
                 });
@@ -373,72 +363,65 @@ public class DeviceDiskActivity extends DeviceActivity implements DeviceDiskView
         }
     }
 
-	@Override
-	public DiskState getQueryState() {
-		return queryState;
-	}
+    @Override
+    public DiskState getQueryState() {
+        return queryState;
+    }
 
-	@Override
-	public void setQueryState(DiskState queryState) {
-		if (this.queryState != queryState) {
-	    	getView().clearSelection();
-			this.queryState = queryState;
-	    	range = new SearchRange(0, DevicePageSize.getPageSize(), -1, true);
-	    	reloadCurrentRange();
-		}
-	}
-	
-	@Override
-	public long getCounts(DiskState state) {
-		Long count = diskCounts.get(state == null ? -1 : state.getValue());
-		if (count == null) {
-			return 0;
-		}
-		return count;
-	}
-	
-	@Override
-	public void updateSearchResult(Date dateBegin, Date dateEnd) {
-    	getView().clearSelection();
-    	this.dateBegin = dateBegin;
-    	this.dateEnd = dateEnd;
-    	range = new SearchRange(0, DevicePageSize.getPageSize(), -1, true);
-    	reloadCurrentRange();
-	}
+    @Override
+    public void setQueryState(DiskState queryState) {
+        if (this.queryState != queryState) {
+            getView().clearSelection();
+            this.queryState = queryState;
+            range = new SearchRange(0, DevicePageSize.getPageSize(), -1, true);
+            reloadCurrentRange();
+        }
+    }
+    
+    @Override
+    public long getCounts(DiskState state) {
+        Long count = diskCounts.get(state == null ? -1 : state.getValue());
+        if (count == null) {
+            return 0;
+        }
+        return count;
+    }
+    
+    @Override
+    public void updateSearchResult() {
+        getView().clearSelection();
+        range = new SearchRange(0, DevicePageSize.getPageSize(), -1, true);
+        reloadCurrentRange();
+    }
 
-	@Override
-	public boolean canDeleteDisk() {
-		Set<SearchResultRow> set = getView().getSelectedSet();
-		if (!set.isEmpty()) {
-			for (SearchResultRow row : set) {
-				try {
-					DiskState ds_state = DiskState.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STATE));
-					if (ds_state != DiskState.RESERVED) {
-						return false;
-					}
-					long disk_total = Long.parseLong(row.getField(CellTableColumns.DISK.DISK_TOTAL));
-					long ds_used = Long.parseLong(row.getField(CellTableColumns.DISK.DISK_SERVICE_USED));
-					if (disk_total != ds_used) {
-						return false;
-					}
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-					return false;
-				}
-			}
-			return true;
-		}
-		return false;
-	}
-	
-	@Override
-	public boolean canModifyDisk() {
-		Set<SearchResultRow> set = getView().getSelectedSet();
-		if (set.size() == 1) {
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public boolean canDeleteDisk() {
+        Set<SearchResultRow> set = getView().getSelectedSet();
+        if (!set.isEmpty()) {
+            for (SearchResultRow row : set) {
+                try {
+                    DiskState ds_state = DiskState.parse(row.getField(CellTableColumns.DISK.DISK_SERVICE_STATE));
+                    if (ds_state != DiskState.RESERVED) {
+                        return false;
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean canModifyDisk() {
+        Set<SearchResultRow> set = getView().getSelectedSet();
+        if (set.size() == 1) {
+            return true;
+        }
+        return false;
+    }
 
 }

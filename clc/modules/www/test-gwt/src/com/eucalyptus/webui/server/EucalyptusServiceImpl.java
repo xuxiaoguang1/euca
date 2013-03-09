@@ -865,7 +865,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     
     @Override
     public void createDeviceCPU(Session session, String cpu_desc, int cpu_total, int server_id) throws EucalyptusServiceException {
-        DeviceCPUService.addCPU(false, session, cpu_desc, cpu_total, server_id);
+        DeviceCPUService.incCPUTotal(false, session, cpu_desc, cpu_total, server_id);
     }
     
     @Override
@@ -875,7 +875,7 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     
     @Override
     public void deleteDeviceCPU(Session session, List<Integer> cpu_ids) throws EucalyptusServiceException {
-        DeviceCPUService.delCPU(false, session, cpu_ids);
+        DeviceCPUService.decCPUTotal(false, session, cpu_ids);
     }
     
     @Override
@@ -894,18 +894,18 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     }
     
     @Override
-    public void createDeviceMemory(Session session, String mem_desc, long mem_size, int server_id) throws EucalyptusServiceException {
-    	DeviceMemoryService.addMemory(false, session, mem_desc, mem_size, server_id);
+    public void createDeviceMemory(Session session, String mem_desc, long mem_total, int server_id) throws EucalyptusServiceException {
+    	DeviceMemoryService.incMemoryTotal(false, session, mem_desc, mem_total, server_id);
     }
     
     @Override
-    public void modifyDeviceMemory(Session session, int mem_id, String mem_desc, long mem_size) throws EucalyptusServiceException {
-    	DeviceMemoryService.modifyMemory(false, session, mem_id, mem_desc, mem_size);
+    public void modifyDeviceMemory(Session session, int mem_id, String mem_desc, long mem_total) throws EucalyptusServiceException {
+    	DeviceMemoryService.modifyMemory(false, session, mem_id, mem_desc, mem_total);
     }
     
     @Override
     public void deleteDeviceMemory(Session session, List<Integer> mem_ids) throws EucalyptusServiceException {
-    	DeviceMemoryService.delMemory(false, session, mem_ids);
+    	DeviceMemoryService.decMemoryTotal(false, session, mem_ids);
     }
     
     @Override
@@ -914,33 +914,33 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     }
     
     @Override
-    public SearchResult lookupDeviceDiskByDate(Session session, SearchRange range, DiskState disk_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
-        return DeviceDiskService.getInstance().lookupDiskByDate(session, range, disk_state, dateBegin, dateEnd);
+    public SearchResult lookupDeviceDisk(Session session, SearchRange range, DiskState disk_state) throws EucalyptusServiceException {
+        return DeviceDiskService.lookupDisk(session, range, disk_state);
     }
     
     @Override
     public Map<Integer, Long> lookupDeviceDiskCounts(Session session) throws EucalyptusServiceException {
-        return DeviceDiskService.getInstance().lookupDiskCounts(session);
+        return DeviceDiskService.lookupDiskCounts(session);
     }
     
     @Override
-    public void createDeviceDisk(Session session, String disk_name, String disk_desc, long disk_size, int server_id) throws EucalyptusServiceException {
-        DeviceDiskService.getInstance().createDisk(false, session, disk_name, disk_desc, disk_size, server_id);
+    public void createDeviceDisk(Session session, String disk_desc, long disk_total, int server_id) throws EucalyptusServiceException {
+        DeviceDiskService.incDiskTotal(false, session, disk_desc, disk_total, server_id);
     }
     
     @Override
-    public void modifyDeviceDisk(Session session, int disk_id, String disk_desc, long disk_size) throws EucalyptusServiceException {
-        DeviceDiskService.getInstance().modifyDisk(false, session, disk_id, disk_desc, disk_size);
+    public void modifyDeviceDisk(Session session, int disk_id, String disk_desc, long disk_total) throws EucalyptusServiceException {
+        DeviceDiskService.modifyDisk(false, session, disk_id, disk_desc, disk_total);
     }
     
     @Override
     public void deleteDeviceDisk(Session session, List<Integer> disk_ids) throws EucalyptusServiceException {
-        DeviceDiskService.getInstance().deleteDisk(false, session, disk_ids);
+        DeviceDiskService.decDiskTotal(false, session, disk_ids);
     }
     
     @Override
     public DiskInfo lookupDeviceDiskByID(Session session, int disk_id) throws EucalyptusServiceException {
-        return DeviceDiskService.getInstance().lookupDiskInfoByID(disk_id);
+        return DeviceDiskService.lookupDiskInfoByID(disk_id);
     }
     
     @Override

@@ -123,10 +123,10 @@ public class DeviceMemoryActivity extends DeviceActivity implements DeviceMemory
                     memAddView.setPresenter(new DeviceMemoryAddView.Presenter() {
 
                         @Override
-                        public boolean onOK(String mem_desc, long mem_size, int server_id) {
-                            if (mem_size <= 0) {
+                        public boolean onOK(String mem_desc, long mem_total, int server_id) {
+                            if (mem_total <= 0) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("Invalid Memory Size: ", "内存大小非法")).append(" = ").append(mem_size).append(".").append("\n");
+                                sb.append(new ClientMessage("Invalid Memory Size: ", "内存大小非法")).append(" = ").append(mem_total).append(".").append("\n");
                                 sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
@@ -138,7 +138,7 @@ public class DeviceMemoryActivity extends DeviceActivity implements DeviceMemory
                                 Window.alert(sb.toString());
                                 return false;
                             }
-                            getBackendService().createDeviceMemory(getSession(), mem_desc, mem_size, server_id, new AsyncCallback<Void>() {
+                            getBackendService().createDeviceMemory(getSession(), mem_desc, mem_total, server_id, new AsyncCallback<Void>() {
                                 
                                 @Override
                                 public void onFailure(Throwable caught) {
@@ -273,15 +273,15 @@ public class DeviceMemoryActivity extends DeviceActivity implements DeviceMemory
                     memModifyView.setPresenter(new DeviceMemoryModifyView.Presenter() {
 
                         @Override
-                        public boolean onOK(int mem_id, String mem_desc, long mem_size, long ms_used) {
-                            if (mem_size <= 0 || mem_size < ms_used) {
+                        public boolean onOK(int mem_id, String mem_desc, long mem_total, long ms_used) {
+                            if (mem_total <= 0 || mem_total < ms_used) {
                                 StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("Invalid Memory Size: ", "内存大小非法")).append(" = ").append(mem_size).append(".").append("\n");
+                                sb.append(new ClientMessage("Invalid Memory Size: ", "内存大小非法")).append(" = ").append(mem_total).append(".").append("\n");
                                 sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
                             }
-                            getBackendService().modifyDeviceMemory(getSession(), mem_id, mem_desc, mem_size, new AsyncCallback<Void>() {
+                            getBackendService().modifyDeviceMemory(getSession(), mem_id, mem_desc, mem_total, new AsyncCallback<Void>() {
 
                                 @Override
                                 public void onFailure(Throwable caught) {
@@ -315,7 +315,7 @@ public class DeviceMemoryActivity extends DeviceActivity implements DeviceMemory
 
                     @Override
                     public void onSuccess(MemoryInfo info) {
-                        memModifyView.popup(mem_id, info.mem_desc, info.mem_size, info.mem_size - info.ms_reserved, server_name);
+                        memModifyView.popup(mem_id, info.mem_desc, info.mem_total, info.mem_total - info.ms_reserved, server_name);
                     }
                     
                 });

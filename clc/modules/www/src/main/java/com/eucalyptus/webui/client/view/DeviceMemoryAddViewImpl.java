@@ -32,7 +32,7 @@ public class DeviceMemoryAddViewImpl extends DialogBox implements DeviceMemoryAd
     @UiField ListBox serverNameList;
     
     @UiField TextArea memDesc;
-    @UiField LongBox memSize;
+    @UiField LongBox memTotal;
     
     private Map<String, Integer> areaMap = new HashMap<String, Integer>();
     private Map<String, Integer> roomMap = new HashMap<String, Integer>();
@@ -174,7 +174,7 @@ public class DeviceMemoryAddViewImpl extends DialogBox implements DeviceMemoryAd
     }
     
     private long getMemorySize() {
-        return memSize.getValue();
+        return memTotal.getValue();
     }
     
     private int getID(Map<String, Integer> map, String name) {
@@ -230,7 +230,7 @@ public class DeviceMemoryAddViewImpl extends DialogBox implements DeviceMemoryAd
     @Override
     public void popup() {
         memDesc.setValue("");
-        memSize.setValue(0L);
+        memTotal.setValue(0L);
         areaNameList.clear();
         roomNameList.clear();
         cabinetNameList.clear();

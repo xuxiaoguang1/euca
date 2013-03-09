@@ -270,7 +270,7 @@ public class DeviceMemoryService {
         }
     }
     
-    public static void addMemory(boolean force, Session session, String mem_desc, long mem_total, int server_id) throws EucalyptusServiceException {
+    public static void incMemoryTotal(boolean force, Session session, String mem_desc, long mem_total, int server_id) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -309,7 +309,7 @@ public class DeviceMemoryService {
         }
     }
     
-    public static void delMemory(boolean force, Session session, List<Integer> mem_ids) throws EucalyptusServiceException {
+    public static void decMemoryTotal(boolean force, Session session, List<Integer> mem_ids) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -400,7 +400,7 @@ public class DeviceMemoryService {
         DeviceMemoryDBProcWrapper.lookupMemoryByID(conn, true, mem_id).deleteRow();
     }
     
-    static int createMemoryService(Connection conn, long ms_used, MemoryState ms_state, int user_id, int server_id) throws Exception {
+    static int createMemoryService(Connection conn, String ms_desc, long ms_used, MemoryState ms_state, int user_id, int server_id) throws Exception {
         if (ms_used <= 0) {
             throw new EucalyptusServiceException(ClientMessage.invalidValue("Memory Size", "内存大小"));
         }
@@ -416,7 +416,7 @@ public class DeviceMemoryService {
         ResultSet rs = DeviceMemoryDBProcWrapper.lookupMemoryServiceReservedByID(conn, true, mem_id);
         long reserved = rs.getLong(MEMORY_SERVICE.MEMORY_SERVICE_USED.toString());
         if (reserved >= ms_used) {
-            rs.updateLong(MEMORY_SERVICE.MEMORY_SERVICE_USED.toString(), rs.getLong(MEMORY_SERVICE.MEMORY_SERVICE_USED.toString()) - ms_used);
+            rs.updateLong(MEMORY_SERVICE.MEMORY_SERVICE_USED.toString(), reserved - ms_used);
             rs.updateRow();
         }
         else {
@@ -426,7 +426,7 @@ public class DeviceMemoryService {
             rs.updateLong(MEMORY.MEMORY_TOTAL.toString(), rs.getLong(MEMORY.MEMORY_TOTAL.toString()) + ms_used - reserved);
             rs.updateRow();
         }
-        return DeviceMemoryDBProcWrapper.createMemoryService(conn, null, ms_used, null, null, ms_state, mem_id, user_id);
+        return DeviceMemoryDBProcWrapper.createMemoryService(conn, ms_desc, ms_used, null, null, ms_state, mem_id, user_id);
     }
     
     static void deleteMemoryService(Connection conn, int ms_id) throws Exception {

@@ -20,7 +20,7 @@ public interface DeviceDiskAddView extends IsWidget {
 	
 	public interface Presenter {
 		
-		public boolean onOK(String disk_name, String disk_desc, long disk_size, int server_id);
+		public boolean onOK(String disk_desc, long disk_total, int server_id);
 		
         public void lookupAreaNames();
         

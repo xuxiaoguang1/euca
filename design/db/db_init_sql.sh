@@ -136,8 +136,8 @@ done
 
 for ((i=0;i<20;i++)) do
     server_id=`getvalue server server_id server_name name$i`
-    command insert into cpu \(cpu_name, cpu_desc, cpu_total, cpu_creationtime, cpu_modifiedtime, server_id\) \
-        values \(\"cpu$i\", \"\", \"10\", \"2012-02-0$j\", \"\", \"$server_id\"\)
+    command insert into cpu \(cpu_desc, cpu_total, cpu_creationtime, cpu_modifiedtime, server_id\) \
+        values \(\"\", \"10\", \"2012-02-0$j\", \"\", \"$server_id\"\)
     cpu_id=`getvalue cpu cpu_id server_id $server_id`
     command insert into cpu_service \(cs_desc, cs_used, cs_state, cpu_id\) \
         values \(\"\", \"10\", \"2\", \"$cpu_id\"\)
@@ -146,55 +146,25 @@ done
 # insert memory
 
 for ((i=0;i<20;i++)) do
-    let j="$i%5";
-    let x="$i%3";
-    let size="($i + 1) * 2 * 1024 * 1024 * 1024";
-    id=`getvalue server server_id server_name name$x`
-    command insert into memory \(mem_name, mem_desc, mem_total, mem_creationtime, server_id\) \
-        values \(\"memory$i\", \"desc$i\", $size, \"2012-07-9\", \"$id\"\)
-done
-
-# insert mem_service
-
-for ((i=0;i<20;i++)) do
-    memid=`getvalue memory mem_id mem_name memory$i`
-    total=`getvalue memory mem_total mem_name memory$i`
-    userid=`getvalue user user_id user_name admin`
-    let used="($i + 1) * 1024 * 1024 * 1024"
-    let remain="$total - $used"
-    let d="10+$i%20";
-    command insert into mem_service \(ms_desc, ms_used, ms_starttime, ms_endtime, ms_state, \
-        ms_creationtime, ms_modifiedtime, mem_id, user_id\) \
-        values \(\"\", \"$used\", \"2012-07-$d\", \"2012-08-$d\", \"0\", \"2012-07-9\", \"\", \"$memid\", \"$userid\"\)
+    let size="($i + 1) * 1024"
+    server_id=`getvalue server server_id server_name name$i`
+    command insert into memory \(mem_desc, mem_total, mem_creationtime, server_id\) \
+        values \(\"desc$i\", $size, \"2012-07-9\", \"$server_id\"\)
+    mem_id=`getvalue memory mem_id server_id $server_id`
     command insert into mem_service \(ms_desc, ms_used, ms_state, mem_id\) \
-        values \(\"\", \"$remain\", \"2\", \"$memid\"\)
+        values \(\"\", \"$size\", \"2\", \"$mem_id\"\)
 done
 
 # insert disk
 
 for ((i=0;i<20;i++)) do
-    let j="$i%5";
-    let x="$i%3";
-    let size="($i + 1) * 2 * 1000 * 1000 * 1000";
-    id=`getvalue server server_id server_name name$x`
-    command insert into disk \(disk_name, disk_desc, disk_total, disk_creationtime, server_id\) \
-        values \(\"disk$i\", \"desc$i\", $size, \"2012-08-9\", \"$id\"\)
-done
-
-# insert disk_service
-
-for ((i=0;i<20;i++)) do
-    diskid=`getvalue disk disk_id disk_name disk$i`
-    total=`getvalue disk disk_total disk_name disk$i`
-    userid=`getvalue user user_id user_name admin`
-    let used="($i + 1) * 1000 * 1000 * 1000"
-    let remain="$total - $used"
-    let d="10+$i%20";
-    command insert into disk_service \(ds_desc, ds_used, ds_starttime, ds_endtime, ds_state, \
-        ds_creationtime, ds_modifiedtime, disk_id, user_id\) \
-        values \(\"\", \"$used\", \"2012-08-$d\", \"2012-09-$d\", \"0\", \"2012-08-9\", \"\", \"$diskid\", \"$userid\"\)
+    let size="($i + 1) * 1000"
+    server_id=`getvalue server server_id server_name name$i`
+    command insert into disk \(disk_desc, disk_total, disk_creationtime, server_id\) \
+        values \(\"desc$i\", $size, \"2012-08-9\", \"$server_id\"\)
+    disk_id=`getvalue disk disk_id server_id $server_id`
     command insert into disk_service \(ds_desc, ds_used, ds_state, disk_id\) \
-        values \(\"\", \"$remain\", \"2\", \"$diskid\"\)
+        values \(\"\", \"$size\", \"2\", \"$disk_id\"\)
 done
 
 # insert vm/vm_service

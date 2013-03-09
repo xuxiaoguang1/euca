@@ -270,7 +270,7 @@ public class DeviceCPUService {
         }
     }
     
-    public static void addCPU(boolean force, Session session, String cpu_desc, int cpu_total, int server_id) throws EucalyptusServiceException {
+    public static void incCPUTotal(boolean force, Session session, String cpu_desc, int cpu_total, int server_id) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -309,7 +309,7 @@ public class DeviceCPUService {
         }
     }
     
-    public static void delCPU(boolean force, Session session, List<Integer> cpu_ids) throws EucalyptusServiceException {
+    public static void decCPUTotal(boolean force, Session session, List<Integer> cpu_ids) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -400,7 +400,7 @@ public class DeviceCPUService {
         DeviceCPUDBProcWrapper.lookupCPUByID(conn, true, cpu_id).deleteRow();
     }
     
-    static int createCPUService(Connection conn, int cs_used, CPUState cs_state, int user_id, int server_id) throws Exception {
+    static int createCPUService(Connection conn, String cs_desc, int cs_used, CPUState cs_state, int user_id, int server_id) throws Exception {
         if (cs_used <= 0) {
             throw new EucalyptusServiceException(ClientMessage.invalidValue("CPU Size", "CPU大小"));
         }
@@ -426,7 +426,7 @@ public class DeviceCPUService {
             rs.updateInt(CPU.CPU_TOTAL.toString(), rs.getInt(CPU.CPU_TOTAL.toString()) + cs_used - reserved);
             rs.updateRow();
         }
-        return DeviceCPUDBProcWrapper.createCPUService(conn, null, cs_used, null, null, cs_state, cpu_id, user_id);
+        return DeviceCPUDBProcWrapper.createCPUService(conn, cs_desc, cs_used, null, null, cs_state, cpu_id, user_id);
     }
     
     static void deleteCPUService(Connection conn, int cs_id) throws Exception {

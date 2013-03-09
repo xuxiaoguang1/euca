@@ -20,7 +20,7 @@ public interface DeviceMemoryAddView extends IsWidget {
     
     public interface Presenter {
         
-        public boolean onOK(String mem_desc, long mem_size, int server_id);
+        public boolean onOK(String mem_desc, long mem_total, int server_id);
         
         public void lookupAreaNames();
         

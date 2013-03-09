@@ -229,7 +229,6 @@ class DBTableDisk extends DBTable {
     }
     
     public final DBTableColumn DISK_ID = new DBTableColumn(this, "disk_id");
-    public final DBTableColumn DISK_NAME = new DBTableColumn(this, "disk_name");
     public final DBTableColumn DISK_DESC = new DBTableColumn(this, "disk_desc");
     public final DBTableColumn DISK_TOTAL = new DBTableColumn(this, "disk_total");
     public final DBTableColumn DISK_CREATIONTIME = new DBTableColumn(this, "disk_creationtime");

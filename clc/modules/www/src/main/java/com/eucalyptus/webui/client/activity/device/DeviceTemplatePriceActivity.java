@@ -326,8 +326,8 @@ public class DeviceTemplatePriceActivity extends DeviceActivity implements Devic
                     final int tp_id = Integer.parseInt(row.getField(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_PRICE_ID));
                     final String template_name = row.getField(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_NAME);
                     final int ncpus = Integer.parseInt(row.getField(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_CPU_NCPUS));
-                    final long mem_size = Long.parseLong(row.getField(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_MEM_TOTAL));
-                    final long disk_size = Long.parseLong(row.getField(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_DISK_TOTAL));
+                    final long mem_total = Long.parseLong(row.getField(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_MEM_TOTAL));
+                    final long disk_total = Long.parseLong(row.getField(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_DISK_TOTAL));
                     final int bw_size = Integer.parseInt(row.getField(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_BW_TOTAL));
                     System.out.println(row.getField(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_MEM_TOTAL));
                     System.out.println(Long.parseLong(row.getField(CellTableColumns.TEMPLATE_PRICE.TEMPLATE_MEM_TOTAL)));
@@ -341,7 +341,7 @@ public class DeviceTemplatePriceActivity extends DeviceActivity implements Devic
 
                         @Override
                         public void onSuccess(TemplatePriceInfo info) {
-                            templatePriceModifyView.popup(tp_id, template_name, info.tp_desc, ncpus, info.tp_cpu, mem_size, info.tp_mem, disk_size, info.tp_disk, bw_size, info.tp_bw);
+                            templatePriceModifyView.popup(tp_id, template_name, info.tp_desc, ncpus, info.tp_cpu, mem_total, info.tp_mem, disk_total, info.tp_disk, bw_size, info.tp_bw);
                         }
                         
                     });

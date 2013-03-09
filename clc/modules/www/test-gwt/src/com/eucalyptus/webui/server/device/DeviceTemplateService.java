@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -40,35 +39,35 @@ public class DeviceTemplateService {
         return instance;
     }
     
-	private DeviceTemplateService() {
-	    /* do nothing */
+    private DeviceTemplateService() {
+        /* do nothing */
     }
-	
-	private LoginUserProfile getUser(Session session) {
+    
+    private LoginUserProfile getUser(Session session) {
         return LoginUserProfileStorer.instance().get(session.getId());
     }
-	
+    
     private static final List<SearchResultFieldDesc> FIELDS_DESC = Arrays.asList(
-		    new SearchResultFieldDesc(null, "0%",false),
-		    new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
-		    new SearchResultFieldDesc(false, "3EM", new ClientMessage("Index", "序号"),
-		            TableDisplay.MANDATORY, Type.TEXT, false, false),
-		    new SearchResultFieldDesc(true, "8%", new ClientMessage("Name", "名称"),
-		            TableDisplay.MANDATORY, Type.TEXT, false, false),
-		    new SearchResultFieldDesc(false, "8%", new ClientMessage("Desc", "描述"),
-		            TableDisplay.MANDATORY, Type.TEXT, false, false),
-		    new SearchResultFieldDesc(true, "8%", new ClientMessage("NCPU", "CPU数量"),
-		            TableDisplay.MANDATORY, Type.TEXT, false, false),                    
-		    new SearchResultFieldDesc(true, "8%", new ClientMessage("Memory(MB)", "内存容量(MB)"),
-		            TableDisplay.MANDATORY, Type.TEXT, false, false),
-		    new SearchResultFieldDesc(true, "8%", new ClientMessage("Disk(MB)", "硬盘容量(MB)"),
-		            TableDisplay.MANDATORY, Type.TEXT, false, false),
-		    new SearchResultFieldDesc(true, "8%", new ClientMessage("Bandwidth(KB)", "带宽(KB)"),
-		            TableDisplay.MANDATORY, Type.TEXT, false, false),
-		    new SearchResultFieldDesc(true, "8%", new ClientMessage("Create", "创建时间"),
-		            TableDisplay.MANDATORY, Type.TEXT, false, false),
-		    new SearchResultFieldDesc(true, "8%", new ClientMessage("Modify", "修改时间"),
-		            TableDisplay.MANDATORY, Type.TEXT, false, false));
+            new SearchResultFieldDesc(null, "0%",false),
+            new SearchResultFieldDesc("2EM", false, new ClientMessage("", "")),
+            new SearchResultFieldDesc(false, "3EM", new ClientMessage("Index", "序号"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Name", "名称"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(false, "8%", new ClientMessage("Desc", "描述"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("NCPU", "CPU数量"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),                    
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Memory(MB)", "内存容量(MB)"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Disk(MB)", "硬盘容量(MB)"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Bandwidth(KB)", "带宽(KB)"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Create", "创建时间"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false),
+            new SearchResultFieldDesc(true, "8%", new ClientMessage("Modify", "修改时间"),
+                    TableDisplay.MANDATORY, Type.TEXT, false, false));
     
     private DBTableColumn getSortColumn(SearchRange range) {
         switch (range.getSortField()) {
@@ -88,34 +87,34 @@ public class DeviceTemplateService {
         try {
             conn = DBProcWrapper.getConnection();
             ResultSet rs = DeviceTemplateDBProcWrapper.lookupTempateByDate(conn, dateBegin, dateEnd, getSortColumn(range), range.isAscending());
-        	ArrayList<SearchResultRow> rows = new ArrayList<SearchResultRow>();
-        	DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
-        	int index, start = range.getStart(), end = start + range.getLength();
+            ArrayList<SearchResultRow> rows = new ArrayList<SearchResultRow>();
+            DBTableTemplate TEMPLATE = DBTable.TEMPLATE;
+            int index, start = range.getStart(), end = start + range.getLength();
             for (index = 0; rs.next(); index ++) {
-            	if (start <= index && index < end) {
-	        		int template_id = DBData.getInt(rs, TEMPLATE.TEMPLATE_ID);
-	        		String template_name = DBData.getString(rs, TEMPLATE.TEMPLATE_NAME);
-	        		String template_desc = DBData.getString(rs, TEMPLATE.TEMPLATE_DESC);
-	        		int template_ncpus = DBData.getInt(rs, TEMPLATE.TEMPLATE_NCPUS);
-	        		long template_mem = DBData.getLong(rs, TEMPLATE.TEMPLATE_MEM);
-	        		long template_disk = DBData.getLong(rs, TEMPLATE.TEMPLATE_DISK);
-	        		int template_bw = DBData.getInt(rs, TEMPLATE.TEMPLATE_BW);
-	        		Date template_creationtime = DBData.getDate(rs, TEMPLATE.TEMPLATE_CREATIONTIME);
-	        		Date template_modifiedtime = DBData.getDate(rs, TEMPLATE.TEMPLATE_MODIFIEDTIME);
-	            	CellTableColumnsRow row = new CellTableColumnsRow(CellTableColumns.TEMPLATE.COLUMN_SIZE);
-	            	row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_ID, template_id);
-	            	row.setColumn(CellTableColumns.TEMPLATE.RESERVED_CHECKBOX, "");
-	            	row.setColumn(CellTableColumns.TEMPLATE.RESERVED_INDEX, index + 1);
-	            	row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_NAME, template_name);
-	            	row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_DESC, template_desc);
-	            	row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_NCPUS, template_ncpus);
-	            	row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_MEM, template_mem);
-	            	row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_DISK, template_disk);
-	            	row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_BW, template_bw);
-	            	row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_CREATIONTIME, template_creationtime);
-	            	row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_MODIFIEDTIME, template_modifiedtime);
-	                rows.add(new SearchResultRow(row.toList()));
-            	}
+                if (start <= index && index < end) {
+                    int template_id = DBData.getInt(rs, TEMPLATE.TEMPLATE_ID);
+                    String template_name = DBData.getString(rs, TEMPLATE.TEMPLATE_NAME);
+                    String template_desc = DBData.getString(rs, TEMPLATE.TEMPLATE_DESC);
+                    int template_ncpus = DBData.getInt(rs, TEMPLATE.TEMPLATE_NCPUS);
+                    long template_mem = DBData.getLong(rs, TEMPLATE.TEMPLATE_MEM);
+                    long template_disk = DBData.getLong(rs, TEMPLATE.TEMPLATE_DISK);
+                    int template_bw = DBData.getInt(rs, TEMPLATE.TEMPLATE_BW);
+                    Date template_creationtime = DBData.getDate(rs, TEMPLATE.TEMPLATE_CREATIONTIME);
+                    Date template_modifiedtime = DBData.getDate(rs, TEMPLATE.TEMPLATE_MODIFIEDTIME);
+                    CellTableColumnsRow row = new CellTableColumnsRow(CellTableColumns.TEMPLATE.COLUMN_SIZE);
+                    row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_ID, template_id);
+                    row.setColumn(CellTableColumns.TEMPLATE.RESERVED_CHECKBOX, "");
+                    row.setColumn(CellTableColumns.TEMPLATE.RESERVED_INDEX, index + 1);
+                    row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_NAME, template_name);
+                    row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_DESC, template_desc);
+                    row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_NCPUS, template_ncpus);
+                    row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_MEM, template_mem);
+                    row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_DISK, template_disk);
+                    row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_BW, template_bw);
+                    row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_CREATIONTIME, template_creationtime);
+                    row.setColumn(CellTableColumns.TEMPLATE.TEMPLATE_MODIFIEDTIME, template_modifiedtime);
+                    rows.add(new SearchResultRow(row.toList()));
+                }
             }
             for (SearchResultRow row : rows) {
                 System.out.println(row);
@@ -170,20 +169,20 @@ public class DeviceTemplateService {
         }
         if (template_ncpus <= 0) {
             throw new EucalyptusServiceException(ClientMessage.invalidValue("Number of CPU", "CPU数量"));
-    	}
-    	if (template_mem <= 0) {
-    	    throw new EucalyptusServiceException(ClientMessage.invalidValue("Capacity of Memory", "内存数量"));
-    	}
-    	if (template_disk <= 0) {
-    	    throw new EucalyptusServiceException(ClientMessage.invalidValue("Capacity of Disk", "硬盘数量"));
-    	}
-    	if (template_bw < 0) {
-    	    throw new EucalyptusServiceException(ClientMessage.invalidValue("Capacity of Bandwidth", "带宽数量"));
-    	}
-    	if (template_desc == null) {
-    		template_desc = "";
-    	}
-    	Connection conn = null;
+        }
+        if (template_mem <= 0) {
+            throw new EucalyptusServiceException(ClientMessage.invalidValue("Capacity of Memory", "内存数量"));
+        }
+        if (template_disk <= 0) {
+            throw new EucalyptusServiceException(ClientMessage.invalidValue("Capacity of Disk", "硬盘数量"));
+        }
+        if (template_bw < 0) {
+            throw new EucalyptusServiceException(ClientMessage.invalidValue("Capacity of Bandwidth", "带宽数量"));
+        }
+        if (template_desc == null) {
+            template_desc = "";
+        }
+        Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
             DeviceTemplateDBProcWrapper.createTempate(conn, template_name, template_desc, template_ncpus, template_mem, template_disk, template_bw);
@@ -278,16 +277,16 @@ public class DeviceTemplateService {
         }
     }
     
-    public AppResources createApp(String desc, int ncpus, long mem_size, long disk_size, int server_id, int user_id) throws EucalyptusServiceException {
+    public AppResources createApp(String desc, int ncpus, long mem_total, long disk_total, int server_id, int user_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
             conn.setAutoCommit(false);
-            int cs_id = DeviceCPUService.createCPUService(conn, ncpus, CPUState.STOP, user_id, server_id);
-            int ms_id = DeviceMemoryService.createMemoryService(conn, mem_size, MemoryState.STOP, user_id, server_id);
-//            int ds_id = DeviceDiskService.getInstance().createDiskService(true, conn, desc, ds_size, DiskState.STOP, starttime, endtime, disk_id, user_id);
+            int cs_id = DeviceCPUService.createCPUService(conn, desc, ncpus, CPUState.STOP, user_id, server_id);
+            int ms_id = DeviceMemoryService.createMemoryService(conn, desc, mem_total, MemoryState.STOP, user_id, server_id);
+            int ds_id = DeviceDiskService.createDiskService(conn, desc, disk_total, DiskState.STOP, user_id, server_id);
             conn.commit();
-            return new AppResources(cs_id, ms_id, -1);
+            return new AppResources(cs_id, ms_id, ds_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -306,7 +305,7 @@ public class DeviceTemplateService {
             conn.setAutoCommit(false);
             DeviceCPUService.modifyCPUServiceState(conn, app.cs_id, CPUState.INUSE);
             DeviceMemoryService.modifyMemoryServiceState(conn, app.ms_id, MemoryState.INUSE);
-            DeviceDiskService.getInstance().modifyDiskServiceState(true, null, app.ds_id, DiskState.INUSE);
+            DeviceDiskService.modifyDiskServiceState(conn, app.ds_id, DiskState.INUSE);
             conn.commit();
         }
         catch (Exception e) {
@@ -326,7 +325,7 @@ public class DeviceTemplateService {
             conn.setAutoCommit(false);
             DeviceCPUService.modifyCPUServiceState(conn, app.cs_id, CPUState.STOP);
             DeviceMemoryService.modifyMemoryServiceState(conn, app.ms_id, MemoryState.STOP);
-            DeviceDiskService.getInstance().modifyDiskServiceState(true, null, app.ds_id, DiskState.STOP);
+            DeviceDiskService.modifyDiskServiceState(conn, app.ds_id, DiskState.STOP);
             conn.commit();
         }
         catch (Exception e) {
@@ -339,12 +338,6 @@ public class DeviceTemplateService {
         }
     }
     
-    private List<Integer> toList(int id) {
-        List<Integer> list = new LinkedList<Integer>();
-        list.add(id);
-        return list;
-    }
-    
     public void deleteApp(AppResources app) throws EucalyptusServiceException {
         Connection conn = null;
         try {
@@ -352,7 +345,7 @@ public class DeviceTemplateService {
             conn.setAutoCommit(false);
             DeviceCPUService.deleteCPUService(conn, app.cs_id);
             DeviceMemoryService.deleteMemoryService(conn, app.ms_id);
-            DeviceDiskService.getInstance().deleteDiskService(true, null, toList(app.ds_id));
+            DeviceDiskService.deleteDiskService(conn, app.ds_id);
             conn.commit();
         }
         catch (Exception e) {
