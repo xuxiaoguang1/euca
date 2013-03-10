@@ -824,8 +824,8 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     }
    
     @Override
-    public void createDeviceServer(Session session, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws EucalyptusServiceException {
-        DeviceServerService.createServer(false, session, server_name, server_desc, server_ip, server_bw, server_state, cabinet_id);
+    public void createDeviceServer(Session session, String server_name, String server_desc, String server_euca, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws EucalyptusServiceException {
+        DeviceServerService.createServer(false, session, server_name, server_desc, server_euca, server_ip, server_bw, server_state, cabinet_id);
     }
     
     @Override

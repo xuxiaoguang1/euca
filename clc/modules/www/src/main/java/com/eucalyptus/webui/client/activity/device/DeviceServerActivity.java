@@ -127,10 +127,17 @@ public class DeviceServerActivity extends DeviceActivity implements DeviceServer
                     serverAddView.setPresenter(new DeviceServerAddView.Presenter() {
                         
                         @Override
-                        public boolean onOK(String server_name, String server_desc, String server_ip, String bandwidth, ServerState server_state, int cabinet_id) {
+                        public boolean onOK(String server_name, String server_desc, String server_euca, String server_ip, String bandwidth, ServerState server_state, int cabinet_id) {
                             if (server_name == null || server_name.isEmpty()) {
                                 StringBuilder sb = new StringBuilder();
                                 sb.append(new ClientMessage("Invalid Server Name: ", "服务器名称非法")).append(" = (null).").append("\n");
+                                sb.append(new ClientMessage("Please try again.", "请重试."));
+                                Window.alert(sb.toString());
+                                return false;
+                            }
+                            if (server_euca == null || server_euca.isEmpty()) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(new ClientMessage("Invalid Server Euca: ", "服务器映射非法")).append(" = (null).").append("\n");
                                 sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
@@ -155,7 +162,7 @@ public class DeviceServerActivity extends DeviceActivity implements DeviceServer
                                 Window.alert(sb.toString());
                                 return false;
                             }
-                            getBackendService().createDeviceServer(getSession(), server_name, server_desc, server_ip, server_bw, server_state, cabinet_id, new AsyncCallback<Void>() {
+                            getBackendService().createDeviceServer(getSession(), server_name, server_desc, server_euca, server_ip, server_bw, server_state, cabinet_id, new AsyncCallback<Void>() {
 
                                 @Override
                                 public void onFailure(Throwable caught) {
@@ -313,7 +320,7 @@ public class DeviceServerActivity extends DeviceActivity implements DeviceServer
 
                         @Override
                         public void onSuccess(ServerInfo info) {
-                            serverModifyView.popup(info.server_id, info.server_name, info.server_desc, info.server_ip, info.server_bw, info.server_state);
+                            serverModifyView.popup(info.server_id, info.server_name, info.server_desc, info.server_euca, info.server_ip, info.server_bw, info.server_state);
                         }
                         
                     });

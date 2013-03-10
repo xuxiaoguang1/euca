@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -20,6 +19,7 @@ import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.TableDisplay;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc.Type;
 import com.eucalyptus.webui.client.session.Session;
+import com.eucalyptus.webui.server.EucaServiceWrapper;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.shared.message.ClientMessage;
@@ -64,7 +64,6 @@ public class DeviceIPService {
             new SearchResultFieldDesc(true, "0%", new ClientMessage("Modify", "修改时间"),
                     TableDisplay.MANDATORY, Type.TEXT, false, false));
     
-    
     private static DBTableColumn getSortColumn(SearchRange range) {
         switch (range.getSortField()) {
         case CellTableColumns.IP.ACCOUNT_NAME: return DBTable.ACCOUNT.ACCOUNT_NAME;
@@ -98,6 +97,27 @@ public class DeviceIPService {
             else {
                 account_id = user.getAccountId();
                 user_id = user.getUserId();
+            }
+            try {
+                DBTableIPService IP_SERVICE = DBTable.IP_SERVICE;
+                List<IPServiceInfo> infos = EucaServiceWrapper.getInstance().getIPServices(account_id, user_id);
+                conn = DBProcWrapper.getConnection();
+                conn.setAutoCommit(false);
+                for (IPServiceInfo info : infos) {
+                    ResultSet rs = DeviceIPDBProcWrapper.lookupIPByID(conn, true, info.ip_id);
+                    rs.updateString(IP_SERVICE.IP_ADDR.toString(), info.ip_addr);
+                    rs.updateInt(IP_SERVICE.IP_TYPE.toString(), info.ip_type.getValue());
+                    rs.updateInt(IP_SERVICE.IP_SERVICE_STATE.toString(), info.is_state.getValue());
+                }
+                conn.commit();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                throw new EucalyptusServiceException(e);
+            }
+            finally {
+                DBProcWrapper.close(conn);
+                conn = null;
             }
             conn = DBProcWrapper.getConnection();
             DBTableAccount ACCOUNT = DBTable.ACCOUNT;
@@ -220,16 +240,6 @@ public class DeviceIPService {
         }
     }
     
-    private static int ip = 0;
-    private static List<String> allocateAddress(int user_id, IPType ip_type, int count) {
-        List<String> list = new LinkedList<String>();
-        for (int i = 0; i < count; i ++) {
-            list.add("166.111." + user_id + "." + ip++);
-        }
-        // EucaServiceWrapper.getInstance().allocateAddress(user_id, type, count)
-        return list;
-    }
-    
     static int createIPService(Connection conn, String is_desc, IPType ip_type, IPState is_state, int user_id) throws Exception {
         if (ip_type == null) {
             throw new EucalyptusServiceException(ClientMessage.invalidValue("IP Address Type", "IP地址类型"));
@@ -240,8 +250,7 @@ public class DeviceIPService {
         if (is_desc == null) {
             is_desc = "";
         }
-        String ip_addr = allocateAddress(user_id, ip_type, 1).get(0);
-        return DeviceIPDBProcWrapper.createIPService(conn, ip_addr, ip_type, is_state, is_desc, null, null, user_id);
+        return DeviceIPDBProcWrapper.createIPService(conn, null, ip_type, is_state, is_desc, null, null, user_id);
     }
     
     
@@ -274,7 +283,7 @@ public class DeviceIPService {
         try {
             conn = DBProcWrapper.getConnection();
             conn.setAutoCommit(false);
-            for (String ip_addr : allocateAddress(user_id, ip_type, count)) {
+            for (String ip_addr : EucaServiceWrapper.getInstance().allocateAddress(user_id, ip_type, count)) {
                 DeviceIPDBProcWrapper.createIPService(conn, ip_addr, ip_type, IPState.RESERVED, is_desc, is_starttime, is_endtime, user_id);
             }
             conn.commit();

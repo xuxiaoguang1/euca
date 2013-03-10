@@ -128,8 +128,8 @@ id=`getvalue cabinet cabinet_id cabinet_name cabinet0`
 for ((i=0;i<20;i++)) do
     let x="$i%3";
     let j="$i%10";
-    command insert into server \(server_name, server_desc, server_ip, server_bw, server_state, server_creationtime, server_modifiedtime, cabinet_id\) \
-        values \(\"name$i\", \"desc$i\", \"192.168.134.$i\", \"$i\", \"$x\", \"2011-01-0$j\", \"\", \"$id\"\)
+    command insert into server \(server_name, server_desc, server_euca_zone, server_ip, server_bw, server_state, server_creationtime, server_modifiedtime, cabinet_id\) \
+        values \(\"name$i\", \"desc$i\", \"zone$i\", \"192.168.134.$i\", \"$i\", \"$x\", \"2011-01-0$j\", \"\", \"$id\"\)
 done
 
 # insert cpu
