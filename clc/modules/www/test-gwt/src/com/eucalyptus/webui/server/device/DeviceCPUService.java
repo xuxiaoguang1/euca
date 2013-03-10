@@ -252,14 +252,12 @@ public class DeviceCPUService {
             ResultSet rs = DeviceCPUDBProcWrapper.lookupCPUServiceByID(conn, false, cs_id);
             String cs_desc = DBData.getString(rs, CPU_SERVICE.CPU_SERVICE_DESC);
             int cs_used = DBData.getInt(rs, CPU_SERVICE.CPU_SERVICE_USED);
-            Date cs_starttime = DBData.getDate(rs, CPU_SERVICE.CPU_SERVICE_STARTTIME);
-            Date cs_endtime = DBData.getDate(rs, CPU_SERVICE.CPU_SERVICE_ENDTIME);
             CPUState cpu_state = CPUState.getCPUState(DBData.getInt(rs, CPU_SERVICE.CPU_SERVICE_STATE));
             Date cs_creationtime = DBData.getDate(rs, CPU_SERVICE.CPU_SERVICE_CREATIONTIME);
             Date cs_modifiedtime = DBData.getDate(rs, CPU_SERVICE.CPU_SERVICE_MODIFIEDTIME);
             int cpu_id = DBData.getInt(rs, CPU_SERVICE.CPU_ID);
             int user_id = DBData.getInt(rs, CPU_SERVICE.USER_ID);
-            return new CPUServiceInfo(cs_id, cs_desc, cs_used, cs_starttime, cs_endtime, cpu_state, cs_creationtime, cs_modifiedtime, cpu_id, user_id);
+            return new CPUServiceInfo(cs_id, cs_desc, cs_used, cpu_state, cs_creationtime, cs_modifiedtime, cpu_id, user_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -391,7 +389,7 @@ public class DeviceCPUService {
     
     static void createCPUByServerID(Connection conn, String server_desc, int server_id) throws Exception {
         int cpu_id = DeviceCPUDBProcWrapper.createCPU(conn, server_desc, 0, server_id);
-        DeviceCPUDBProcWrapper.createCPUService(conn, null, 0, null, null, CPUState.RESERVED, cpu_id, -1);
+        DeviceCPUDBProcWrapper.createCPUService(conn, null, 0, CPUState.RESERVED, cpu_id, -1);
     }
     
     static void deleteCPUByServerID(Connection conn, int server_id) throws Exception {
@@ -426,7 +424,7 @@ public class DeviceCPUService {
             rs.updateInt(CPU.CPU_TOTAL.toString(), rs.getInt(CPU.CPU_TOTAL.toString()) + cs_used - reserved);
             rs.updateRow();
         }
-        return DeviceCPUDBProcWrapper.createCPUService(conn, cs_desc, cs_used, null, null, cs_state, cpu_id, user_id);
+        return DeviceCPUDBProcWrapper.createCPUService(conn, cs_desc, cs_used, cs_state, cpu_id, user_id);
     }
     
     static void deleteCPUService(Connection conn, int cs_id) throws Exception {
@@ -524,17 +522,21 @@ public class DeviceCPUService {
             DBTableAccount ACCOUNT = DBTable.ACCOUNT;
             DBTableUser USER = DBTable.USER;
             DBTableServer SERVER = DBTable.SERVER;
+            DBTableUserApp USER_APP = DBTable.USER_APP;
             DBTableCPU CPU = DBTable.CPU;
             DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
             DBStringBuilder sb = new DBStringBuilder();
             sb.append("SELECT ").append(CPU.ANY).append(", ").append(CPU_SERVICE.ANY).append(", ");
             sb.append(SERVER.SERVER_NAME).append(", ").append(ACCOUNT.ACCOUNT_NAME).append(", ").append(USER.USER_NAME).append(", ");
-            sb.appendDateLifeRemains(CPU_SERVICE.CPU_SERVICE_STARTTIME, CPU_SERVICE.CPU_SERVICE_ENDTIME, CPU_SERVICE.CPU_SERVICE_LIFE).append(" FROM "); {
+            sb.append(USER_APP.SERVICE_STARTTIME).append(" AS ").append(CPU_SERVICE.CPU_SERVICE_STARTTIME).append(", ");
+            sb.append(USER_APP.SERVICE_ENDTIME).append(" AS ").append(CPU_SERVICE.CPU_SERVICE_ENDTIME).append(", ");
+            sb.appendDateLifeRemains(USER_APP.SERVICE_STARTTIME, USER_APP.SERVICE_ENDTIME, CPU_SERVICE.CPU_SERVICE_LIFE).append(" FROM "); {
                 sb.append(CPU_SERVICE);
                 sb.append(" LEFT JOIN ").append(USER).append(" ON ").append(CPU_SERVICE.USER_ID).append(" = ").append(USER.USER_ID);
                 sb.append(" LEFT JOIN ").append(ACCOUNT).append(" ON ").append(USER.ACCOUNT_ID).append(" = ").append(ACCOUNT.ACCOUNT_ID);
                 sb.append(" LEFT JOIN ").append(CPU).append(" ON ").append(CPU_SERVICE.CPU_ID).append(" = ").append(CPU.CPU_ID);
                 sb.append(" LEFT JOIN ").append(SERVER).append(" ON ").append(CPU.SERVER_ID).append(" = ").append(SERVER.SERVER_ID);
+                sb.append(" LEFT JOIN ").append(USER_APP).append(" ON ").append(CPU_SERVICE.CPU_SERVICE_ID).append(" = ").append(USER_APP.CPU_SERVICE_ID);
             }
             sb.append(" WHERE ").append(CPU_SERVICE.CPU_SERVICE_USED).append(" != ").append(0);
             if (state != null) {
@@ -577,14 +579,12 @@ public class DeviceCPUService {
             return rs.getInt(1);
         }
         
-        public static int createCPUService(Connection conn, String cs_desc, int cs_used, Date cs_starttime, Date cs_endtime, CPUState state, int cpu_id, int user_id) throws Exception {
+        public static int createCPUService(Connection conn, String cs_desc, int cs_used, CPUState state, int cpu_id, int user_id) throws Exception {
             DBTableCPUService CPU_SERVICE = DBTable.CPU_SERVICE;
             DBStringBuilder sb = new DBStringBuilder();
             sb.append("INSERT INTO ").append(CPU_SERVICE).append(" ("); {
                 sb.append(CPU_SERVICE.CPU_SERVICE_DESC).append(", ");
                 sb.append(CPU_SERVICE.CPU_SERVICE_USED).append(", ");
-                sb.append(CPU_SERVICE.CPU_SERVICE_STARTTIME).append(", ");
-                sb.append(CPU_SERVICE.CPU_SERVICE_ENDTIME).append(", ");
                 sb.append(CPU_SERVICE.CPU_SERVICE_STATE).append(", ");
                 sb.append(CPU_SERVICE.CPU_SERVICE_CREATIONTIME).append(", ");
                 sb.append(CPU_SERVICE.CPU_SERVICE_MODIFIEDTIME).append(", ");
@@ -594,8 +594,6 @@ public class DeviceCPUService {
             sb.append(") VALUES ("); {
                 sb.appendString(cs_desc).append(", ");
                 sb.append(cs_used).append(", ");
-                sb.appendDate(cs_starttime).append(", ");
-                sb.appendDate(cs_endtime).append(", ");
                 sb.append(state.getValue()).append(", ");
                 sb.appendDate().append(", ");
                 sb.appendNull().append(", ");

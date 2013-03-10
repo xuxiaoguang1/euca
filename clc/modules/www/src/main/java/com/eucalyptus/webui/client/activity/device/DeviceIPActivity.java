@@ -314,18 +314,6 @@ public class DeviceIPActivity extends DeviceActivity implements DeviceIPView.Pre
     public boolean canDeleteIPService() {
         Set<SearchResultRow> set = getView().getSelectedSet();
         if (!set.isEmpty()) {
-            for (SearchResultRow row : set) {
-                try {
-                    IPState ip_state = IPState.parse(row.getField(CellTableColumns.IP.IP_SERVICE_STATE));
-                    if (ip_state != IPState.RESERVED) {
-                        return false;
-                    }
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                    return false;
-                }
-            }
             return true;
         }
         return false;

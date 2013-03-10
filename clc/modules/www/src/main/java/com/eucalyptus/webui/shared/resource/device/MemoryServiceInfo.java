@@ -12,8 +12,6 @@ public class MemoryServiceInfo implements Serializable {
     public int ms_id;
     public String ms_desc;
     public long ms_used;
-    public Date ms_starttime;
-    public Date ms_endtime;
     public MemoryState memory_state;
     public Date ms_creationtime;
     public Date ms_modifiedtime;
@@ -23,12 +21,10 @@ public class MemoryServiceInfo implements Serializable {
     public MemoryServiceInfo() {
     }
     
-    public MemoryServiceInfo(int ms_id, String ms_desc, long ms_used, Date ms_starttime, Date ms_endtime, MemoryState memory_state, Date ms_creationtime, Date ms_modifiedtime, int memory_id, int user_id) {
+    public MemoryServiceInfo(int ms_id, String ms_desc, long ms_used, MemoryState memory_state, Date ms_creationtime, Date ms_modifiedtime, int memory_id, int user_id) {
         this.ms_id = ms_id;
         this.ms_desc = ms_desc;
         this.ms_used = ms_used;
-        this.ms_starttime = ms_starttime;
-        this.ms_endtime = ms_endtime;
         this.memory_state = memory_state;
         this.ms_creationtime = ms_creationtime;
         this.ms_modifiedtime = ms_modifiedtime;
