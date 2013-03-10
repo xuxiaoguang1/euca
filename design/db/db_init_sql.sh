@@ -178,15 +178,6 @@ for ((i=0;i<10;i++)) do
 done
 
 vmid=`getvalue vm vm_id vm_mark vmware0`
- 
-# insert ip/ip_service/bw_service
-
-for ((i=0;i<32;i++)) do
-    command insert into ip_service \(ip_addr, ip_type, ip_creationtime, is_state\) \
-        values \(\"166.111.0.$i\", 0, \"2012-10-01\", 2\);
-    command insert into ip_service \(ip_addr, ip_type, ip_creationtime, is_state\) \
-        values \(\"192.168.0.$i\", 1, \"2012-10-01\", 2\);
-done
 
 # insert template
 for ((i=0;i<10;i++)) do

@@ -164,11 +164,8 @@ public class CellTableColumns {
         public static final int IP_SERVICE_LIFE = 11;
         public static final int IP_SERVICE_CREATIONTIME = 12;
         public static final int IP_SERVICE_MODIFIEDTIME = 13;
-        public static final int IP_DESC = 14;
-        public static final int IP_CREATIONTIME = 15;
-        public static final int IP_MODIFIEDTIME = 16;
         
-        public static final int COLUMN_SIZE = 17;
+        public static final int COLUMN_SIZE = 14;
     	
     }
     

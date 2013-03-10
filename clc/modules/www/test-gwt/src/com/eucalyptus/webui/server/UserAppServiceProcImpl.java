@@ -147,7 +147,7 @@ public class UserAppServiceProcImpl {
 						  throw new EucalyptusServiceException("Server id error!");
 				  
 					  //synch resources
-					  DeviceTemplateService.createApp(null, userApp.getNcpus(), userApp.getMem(), userApp.getDisk(), serverId, userId);
+					  DeviceTemplateService.createApp(null, userApp.getNcpus(), userApp.getMem(), userApp.getDisk(), userApp.getBw(), serverId, userId);
 					  return euca_intance_id;
 				  }
 				  else

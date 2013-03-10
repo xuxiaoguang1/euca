@@ -228,18 +228,13 @@ public interface EucalyptusServiceAsync {
     void deleteDeviceDisk(Session session, List<Integer> disk_ids, AsyncCallback<Void> callback);
     void lookupDeviceDiskByID(Session session, int disk_id, AsyncCallback<DiskInfo> callback);
 
-    void lookupDeviceIPByDate(Session session, SearchRange range, IPType ip_type, IPState ip_state, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
+    void lookupDeviceIP(Session session, SearchRange range, IPType ip_type, IPState ip_state, AsyncCallback<SearchResult> callback);
 	void lookupDeviceIPCounts(Session session, IPType ip_type, AsyncCallback<Map<Integer, Integer>> callback);
-	void createDeviceIP(Session session, String ip_addr, String ip_desc, IPType ip_type, AsyncCallback<Void> callback);
-	void createDeviceIPService(Session session, String is_desc, IPState is_state, Date is_starttime, Date is_endtime, int ip_id, int user_id, AsyncCallback<Void> callback);
-	void modifyDeviceIPService(Session session, int ip_id, String is_desc, Date is_starttime, Date is_endtime, AsyncCallback<Void> callback);
-	void modifyDeviceIP(Session session, int ip_id, String ip_desc, IPType ip_type, AsyncCallback<Void> callback);
-	void deleteDeviceIP(Session session, List<Integer> ip_ids, AsyncCallback<Void> callback);
+	void createDeviceIPService(Session session, IPType ip_type, String is_desc, Date is_starttime, Date is_endtime, int count, int user_id, AsyncCallback<Void> callback);
 	void deleteDeviceIPService(Session session, List<Integer> ip_ids, AsyncCallback<Void> callback);
-	void lookupDeviceIPUnusedByIPType(Session session, IPType ip_type, AsyncCallback<Map<String, Integer>> callback);
     void lookupDeviceIPServiceByID(Session session, int ip_id, AsyncCallback<IPServiceInfo> callback);
 	
-	void lookupDeviceBWByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd, AsyncCallback<SearchResult> callback);
+	void lookupDeviceBW(Session session, SearchRange range, AsyncCallback<SearchResult> callback);
 	void createDeviceBWService(Session session, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, int ip_id, AsyncCallback<Void> callback);
 	void modifyDeviceBWService(Session session, int bs_id, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, AsyncCallback<Void> callback);
 	void deleteDeviceBWService(Session session, List<Integer> bs_ids, AsyncCallback<Void> callback);

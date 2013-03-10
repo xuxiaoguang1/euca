@@ -28,6 +28,8 @@ import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns.CellTableColumnsRow;
 import com.eucalyptus.webui.shared.resource.device.status.CPUState;
 import com.eucalyptus.webui.shared.resource.device.status.DiskState;
+import com.eucalyptus.webui.shared.resource.device.status.IPState;
+import com.eucalyptus.webui.shared.resource.device.status.IPType;
 import com.eucalyptus.webui.shared.resource.device.status.MemoryState;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
@@ -267,7 +269,7 @@ public class DeviceTemplateService {
         }
     }
     
-    public static AppResources createApp(String desc, int ncpus, long mem_total, long disk_total, int server_id, int user_id) throws EucalyptusServiceException {
+    public static AppResources createApp(String desc, int ncpus, long mem_total, long disk_total, int bw_max, int server_id, int user_id) throws EucalyptusServiceException {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
@@ -275,8 +277,11 @@ public class DeviceTemplateService {
             int cs_id = DeviceCPUService.createCPUService(conn, desc, ncpus, CPUState.STOP, user_id, server_id);
             int ms_id = DeviceMemoryService.createMemoryService(conn, desc, mem_total, MemoryState.STOP, user_id, server_id);
             int ds_id = DeviceDiskService.createDiskService(conn, desc, disk_total, DiskState.STOP, user_id, server_id);
+            int ip_id_public = DeviceIPService.createIPService(conn, desc, IPType.PUBLIC, IPState.STOP, user_id);
+            int bs_id_public = DeviceBWService.createBWService(conn, desc, bw_max, ip_id_public);
+            int ip_id_private = DeviceIPService.createIPService(conn, desc, IPType.PRIVATE, IPState.STOP, user_id);
             conn.commit();
-            return new AppResources(cs_id, ms_id, ds_id);
+            return new AppResources(cs_id, ms_id, ds_id, ip_id_public, bs_id_public, ip_id_private);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -296,6 +301,8 @@ public class DeviceTemplateService {
             DeviceCPUService.modifyCPUServiceState(conn, app.cs_id, CPUState.INUSE);
             DeviceMemoryService.modifyMemoryServiceState(conn, app.ms_id, MemoryState.INUSE);
             DeviceDiskService.modifyDiskServiceState(conn, app.ds_id, DiskState.INUSE);
+            DeviceIPService.modifyIPServiceState(conn, app.ip_id_public, IPState.INUSE);
+            DeviceIPService.modifyIPServiceState(conn, app.ip_id_private, IPState.INUSE);
             conn.commit();
         }
         catch (Exception e) {
@@ -316,6 +323,8 @@ public class DeviceTemplateService {
             DeviceCPUService.modifyCPUServiceState(conn, app.cs_id, CPUState.STOP);
             DeviceMemoryService.modifyMemoryServiceState(conn, app.ms_id, MemoryState.STOP);
             DeviceDiskService.modifyDiskServiceState(conn, app.ds_id, DiskState.STOP);
+            DeviceIPService.modifyIPServiceState(conn, app.ip_id_public, IPState.STOP);
+            DeviceIPService.modifyIPServiceState(conn, app.ip_id_private, IPState.STOP);
             conn.commit();
         }
         catch (Exception e) {
@@ -336,6 +345,9 @@ public class DeviceTemplateService {
             DeviceCPUService.deleteCPUService(conn, app.cs_id);
             DeviceMemoryService.deleteMemoryService(conn, app.ms_id);
             DeviceDiskService.deleteDiskService(conn, app.ds_id);
+            DeviceIPService.deleteIPService(conn, app.ip_id_private);
+            DeviceBWService.deleteBWService(conn, app.bs_id_public);
+            DeviceIPService.deleteIPService(conn, app.ip_id_public);
             conn.commit();
         }
         catch (Exception e) {

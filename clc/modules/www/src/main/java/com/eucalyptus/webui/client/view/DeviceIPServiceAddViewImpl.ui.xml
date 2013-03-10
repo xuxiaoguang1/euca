@@ -80,18 +80,24 @@
 				</g:HTMLPanel>
 				<g:AbsolutePanel height="178px" width="610px">
 					<g:at left="30" top="5">
-						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">IP地址</g:Anchor>
+						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">添加数量</g:Anchor>
 					</g:at>
 					<g:at left="120" top="2">
-						<g:TextBox ui:field="ipAddr" maxLength="50" height="1.4EM" width="32EM" readOnly="true" styleName="{style.textBoxStyle-readonly}"/>
-					</g:at>
+					    <g:ListBox ui:field="ipCount" height="1.8EM" width="12EM"/>
+				    </g:at>
+					<g:at left="325" top="5">
+                        <g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">地址类型</g:Anchor>
+                    </g:at>
+                    <g:at left="405" top="2">
+                        <g:ListBox ui:field="ipType" height="1.8EM" width="12EM"/>
+                    </g:at>
 					<g:at left="30" top="35">
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">账户</g:Anchor>
 					</g:at>
 					<g:at left="120" top="30">
 						<g:ListBox ui:field="accountNameList" height="1.8EM" width="12EM"/>
 					</g:at>
-					<g:at left="335" top="35">
+					<g:at left="325" top="35">
 						<g:Anchor horizontalAlignment="ALIGN_LEFT" width="140px">用户</g:Anchor>
 					</g:at>
 					<g:at left="405" top="30">

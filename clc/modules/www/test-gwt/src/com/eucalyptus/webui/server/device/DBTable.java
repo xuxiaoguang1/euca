@@ -266,9 +266,6 @@ class DBTableIPService extends DBTable {
     public final DBTableColumn IP_ID = new DBTableColumn(this, "ip_id");
     public final DBTableColumn IP_ADDR = new DBTableColumn(this, "ip_addr");
     public final DBTableColumn IP_TYPE = new DBTableColumn(this, "ip_type");
-    public final DBTableColumn IP_DESC = new DBTableColumn(this, "ip_desc");
-    public final DBTableColumn IP_CREATIONTIME = new DBTableColumn(this, "ip_creationtime");
-    public final DBTableColumn IP_MODIFIEDTIME = new DBTableColumn(this, "ip_modifiedtime");
     public final DBTableColumn IP_SERVICE_DESC = new DBTableColumn(this, "is_desc");
     public final DBTableColumn IP_SERVICE_STARTTIME = new DBTableColumn(this, "is_starttime");
     public final DBTableColumn IP_SERVICE_ENDTIME = new DBTableColumn(this, "is_endtime");
