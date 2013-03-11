@@ -26,13 +26,18 @@ public class UserApp implements java.io.Serializable {
 	
 	private String euca_vm_instance_key;
 	
+	private int cpu_srv_id;
+	private int mem_srv_id;
+	private int disk_srv_id;
+	
 	public UserApp() {
 		
 	}
 	
 	public UserApp(int id, Date apptime, EnumUserAppStatus status, int del, String comment,
 					int ncpus, int mem, int disk, int bw,
-					String keyPair, String securityGroup, int userId, int vmImageTypeId, Date srvStartingTime, Date srvEndingTime, String euca_vm_instance_key) {
+					String keyPair, String securityGroup, int userId, int vmImageTypeId, Date srvStartingTime, Date srvEndingTime, String euca_vm_instance_key,
+					int cpu_srv_id, int mem_srv_id, int disk_srv_id) {
 		this.setUAId(id);
 		this.setAppTime(apptime);
 		this.setSrvStartingTime(srvStartingTime);
@@ -47,6 +52,9 @@ public class UserApp implements java.io.Serializable {
 		this.setUserId(userId);
 		this.setVmImageTypeId(vmImageTypeId);
 		this.setEucaVMInstanceKey(euca_vm_instance_key);
+		this.setCPUSrvId(cpu_srv_id);
+		this.setMemSrvId(mem_srv_id);
+		this.setDiskSrvId(disk_srv_id);
 	}
 	
 	public void setUAId(int ua_id) {
@@ -152,5 +160,26 @@ public class UserApp implements java.io.Serializable {
 	}
 	public String getEucaVMInstanceKey() {
 		return this.euca_vm_instance_key;
+	}
+	
+	public void setCPUSrvId(int cpu_srv_id) {
+		this.cpu_srv_id = cpu_srv_id;
+	}
+	public int getCPUSrvId() {
+		return this.cpu_srv_id;
+	}
+	
+	public void setMemSrvId(int mem_srv_id) {
+		this.mem_srv_id = mem_srv_id;
+	}
+	public int getMemSrvId() {
+		return this.mem_srv_id;
+	}
+	
+	public void setDiskSrvId(int disk_srv_id) {
+		this.disk_srv_id = disk_srv_id;
+	}
+	public int getDiskSrvId() {
+		return this.disk_srv_id;
 	}
 }

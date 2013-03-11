@@ -1185,18 +1185,18 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 		verifySession(session);
 		
 		for (String userAppId : userAppIdList) {
-			String euca_instance_id = null;
 			//When approving user application, run relative VM instance
 			//we must do it firstly, becuase we need obtain vm instance key (id) by runVMInstance function 
+			UserApp userApp = null;
 			if (userAppStatus == EnumUserAppStatus.APPROVED) {
-				euca_instance_id = userAppServiceProc.runVMInstance(session, Integer.parseInt(userAppId));
+				userApp = userAppServiceProc.runVMInstance(session, Integer.parseInt(userAppId));
+			}
+			else {
+				userApp = new UserApp();	
+				userApp.setUAId(Integer.parseInt(userAppId));
+				userApp.setStatus(userAppStatus);
 			}
 			
-			UserApp userApp = new UserApp();	
-			userApp.setUAId(Integer.parseInt(userAppId));
-			userApp.setStatus(userAppStatus);
-			userApp.setEucaVMInstanceKey(euca_instance_id);
-			  
 			userAppServiceProc.updateUserApp(userApp);
 		}
 	}	

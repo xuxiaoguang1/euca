@@ -92,6 +92,10 @@ public class UserAppDBProcWrapper {
 					int vitId = rs.getInt(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID);
 					String euca_vi_key = rs.getString(DBTableColName.USER_APP.EUCA_VI_KEY);
 					
+					int cs_id = rs.getInt(DBTableColName.USER_APP.CPU_SRV_ID);
+					int ms_id = rs.getInt(DBTableColName.USER_APP.MEM_SRV_ID);
+					int ds_id = rs.getInt(DBTableColName.USER_APP.DISK_SRV_ID);
+					
 					EnumUserAppStatus userAppRegStatus = EnumUserAppStatus.NONE;
 					if (!Strings.isNullOrEmpty(state))
 						userAppRegStatus = EnumUserAppStatus.values()[Integer.valueOf(state)];
@@ -100,7 +104,8 @@ public class UserAppDBProcWrapper {
 					
 					UserApp userApp = new UserApp(id, appTime, userAppRegStatus, del, comment,
 										ncpus, mem, disk, bw,
-										keyPair, securityGroup, userId, vitId, startingTime, endingTime, euca_vi_key);
+										keyPair, securityGroup, userId, vitId, startingTime, endingTime, euca_vi_key,
+										cs_id, ms_id, ds_id);
 					
 					return userApp; 
 				}
@@ -273,6 +278,9 @@ public class UserAppDBProcWrapper {
 		append(DBTableColName.USER_APP.BW).append(", ").
 		append(DBTableColName.USER_APP.USER_ID).append(", ").
 		append(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID).
+		append(DBTableColName.USER_APP.CPU_SRV_ID).
+		append(DBTableColName.USER_APP.MEM_SRV_ID).
+		append(DBTableColName.USER_APP.DISK_SRV_ID).
 		append(") VALUES (null, ");
 		
 		str.append("'");
@@ -331,6 +339,15 @@ public class UserAppDBProcWrapper {
 		str.append(", ");
 		
 		str.append(userApp.getVmIdImageTypeId());
+		str.append(", ");
+		
+		str.append(userApp.getCPUSrvId());
+		str.append(", ");
+		
+		str.append(userApp.getMemSrvId());
+		str.append(", ");
+		
+		str.append(userApp.getDiskSrvId());
 		
 		str.append(")");
 		
@@ -407,7 +424,7 @@ public class UserAppDBProcWrapper {
 		}
 		
 		if (userApp.getVmIdImageTypeId() != 0) {
-			str.append(DBTableColName.USER_APP.USER_ID).append(" = ").
+			str.append(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID).append(" = ").
 			append(userApp.getVmIdImageTypeId()).
 			append(", ");
 		}
@@ -417,6 +434,25 @@ public class UserAppDBProcWrapper {
 			append(userApp.getEucaVMInstanceKey()).
 			append("', ");
 		}
+		
+		if (userApp.getCPUSrvId() != 0) {
+			str.append(DBTableColName.USER_APP.CPU_SRV_ID).append(" = ").
+			append(userApp.getCPUSrvId()).
+			append(", ");
+		}
+		
+		if (userApp.getMemSrvId() != 0) {
+			str.append(DBTableColName.USER_APP.MEM_SRV_ID).append(" = ").
+			append(userApp.getMemSrvId()).
+			append(", ");
+		}
+		
+		if (userApp.getDiskSrvId() != 0) {
+			str.append(DBTableColName.USER_APP.DISK_SRV_ID).append(" = ").
+			append(userApp.getDiskSrvId()).
+			append(", ");
+		}
+		
 		
 		if (str.length() > 2)
 			str.delete(str.length() -2, str.length());

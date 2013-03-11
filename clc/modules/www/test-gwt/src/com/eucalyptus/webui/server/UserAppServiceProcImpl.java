@@ -26,6 +26,7 @@ import com.eucalyptus.webui.shared.config.LanguageSelection;
 import com.eucalyptus.webui.shared.config.SearchTableCol;
 import com.eucalyptus.webui.shared.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.dictionary.Enum2String;
+import com.eucalyptus.webui.shared.resource.AppResources;
 import com.eucalyptus.webui.shared.resource.device.TemplateInfo;
 import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
@@ -114,10 +115,10 @@ public class UserAppServiceProcImpl {
 	   * 
 	   * @param session
 	   * @param userAppId
-	   * @return eucalyptus vm instance key
+	   * @return UserApp with instance_id and cs, ms, ds id
 	   * @throws EucalyptusServiceException
 	   */
-	  public String runVMInstance(Session session, int userAppId) throws EucalyptusServiceException {
+	  public UserApp runVMInstance(Session session, int userAppId) throws EucalyptusServiceException {
 		  try {
 			  UserApp userApp = this.userAppDBProc.lookupUserApp(userAppId);
 			  			  
@@ -133,6 +134,7 @@ public class UserAppServiceProcImpl {
 			  if (keyPair != null && securityGroup != null && euca_vit_id != null) {
 				  TemplateInfo template = null;
 				  String euca_intance_id = EucaServiceWrapper.getInstance().runVM(session, userId, template, keyPair, securityGroup, euca_vit_id);
+				  userApp.setEucaVMInstanceKey(euca_intance_id);
 				  
 				  if (euca_intance_id != null) {
 					  //!!!! for debug only !!!
@@ -147,8 +149,13 @@ public class UserAppServiceProcImpl {
 						  throw new EucalyptusServiceException("Server id error!");
 				  
 					  //synch resources
-					  DeviceTemplateService.createApp(null, userApp.getNcpus(), userApp.getMem(), userApp.getDisk(), serverId, userId);
-					  return euca_intance_id;
+					  AppResources appRes = DeviceTemplateService.createApp(null, userApp.getNcpus(), userApp.getMem(), userApp.getDisk(), serverId, userId);
+					  
+					  userApp.setCPUSrvId(appRes.cs_id);
+					  userApp.setMemSrvId(appRes.ms_id);
+					  userApp.setDiskSrvId(appRes.ds_id);
+						  
+					  return userApp;
 				  }
 				  else
 					  throw new EucalyptusServiceException("Failed to get eucalyptus vm instance key");

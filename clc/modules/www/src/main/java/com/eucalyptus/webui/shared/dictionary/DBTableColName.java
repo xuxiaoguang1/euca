@@ -60,6 +60,9 @@ public class DBTableColName {
 		public final String BW = "ua_bw";
 		public final String VM_IMAGE_TYPE_ID = "vit_id";
 		public final String EUCA_VI_KEY = "euca_vi_key";
+		public final String CPU_SRV_ID = "cs_id";
+		public final String MEM_SRV_ID = "ms_id";
+		public final String DISK_SRV_ID = "ds_id";
 	}	
 
 	public interface USER_POLICY {
