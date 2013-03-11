@@ -1169,9 +1169,9 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
 			else {
 				userApp = new UserApp();	
 				userApp.setUAId(Integer.parseInt(userAppId));
-				userApp.setStatus(userAppStatus);
+				
 			}
-			
+			userApp.setStatus(userAppStatus);
 			userAppServiceProc.updateUserApp(userApp);
 		}
 	}	

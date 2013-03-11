@@ -44,6 +44,7 @@ public class UserApp implements java.io.Serializable {
 					int cpu_srv_id, int mem_srv_id, int disk_srv_id, int bw_srv_id, int public_ip_srv_id, int private_ip_srv_id) {
 		this.setUAId(id);
 		this.setAppTime(apptime);
+		this.setStatus(status);
 		this.setSrvStartingTime(srvStartingTime);
 		this.setSrvEndingingTime(srvEndingTime);
 		this.setComment(comment);
