@@ -93,9 +93,9 @@ public class EucaWSAdapter {
 	 * @throws EucaWSException
 	 */
 	public String createUser(String accountId, String userName, String userPath) throws EucaWSException {
-		CreateUserRequest request = new CreateUserRequest(userName);
-		request.setPath(userPath);
-		this.AIMC.createUser(request);
+//		CreateUserRequest request = new CreateUserRequest(userName);
+//		request.setPath(userPath);
+//		this.AIMC.createUser(request);
 		
 		return null;
 	}
@@ -108,12 +108,12 @@ public class EucaWSAdapter {
 	 * @throws EucaWSException
 	 */
 	public String updateUser(String accountId, String userName, String userPath) throws EucaWSException {
-		UpdateUserRequest request = new UpdateUserRequest(userName);
-		
-		if (!Strings.isNullOrEmpty(userPath))
-			request.setNewPath(userPath);
-		
-		this.AIMC.updateUser(request);
+//		UpdateUserRequest request = new UpdateUserRequest(userName);
+//		
+//		if (!Strings.isNullOrEmpty(userPath))
+//			request.setNewPath(userPath);
+//		
+//		this.AIMC.updateUser(request);
 		
 		return null;
 	}
@@ -123,8 +123,8 @@ public class EucaWSAdapter {
 	 * @throws EucaWSException
 	 */
 	void deleteUser(String userName) throws EucaWSException {
-		DeleteUserRequest request = new DeleteUserRequest(userName);
-		this.AIMC.deleteUser(request);
+//		DeleteUserRequest request = new DeleteUserRequest(userName);
+//		this.AIMC.deleteUser(request);
 	}
 	
 	/**
@@ -133,8 +133,8 @@ public class EucaWSAdapter {
 	 * @throws EucaWSException
 	 */
 	void addUserToGroup(String userName, String groupName) throws EucaWSException {
-		AddUserToGroupRequest request = new AddUserToGroupRequest(groupName, userName);
-		this.AIMC.addUserToGroup(request);
+//		AddUserToGroupRequest request = new AddUserToGroupRequest(groupName, userName);
+//		this.AIMC.addUserToGroup(request);
 	}
 	
 	/**
@@ -143,8 +143,8 @@ public class EucaWSAdapter {
 	 * @throws EucaWSException
 	 */
 	void removeUserFromGroup(String userName, String groupName) throws EucaWSException {
-		RemoveUserFromGroupRequest request = new RemoveUserFromGroupRequest();
-		this.AIMC.removeUserFromGroup(request);
+//		RemoveUserFromGroupRequest request = new RemoveUserFromGroupRequest();
+//		this.AIMC.removeUserFromGroup(request);
 	}
 	
 	/**
@@ -155,10 +155,10 @@ public class EucaWSAdapter {
 	 * @throws EucaWSException
 	 */
 	String createGroup(String accountId, String groupName, String groupPath) throws EucaWSException {
-		CreateGroupRequest request = new CreateGroupRequest(groupName);
-		request.setPath(groupPath);
-		
-		this.AIMC.createGroup(request);
+//		CreateGroupRequest request = new CreateGroupRequest(groupName);
+//		request.setPath(groupPath);
+//		
+//		this.AIMC.createGroup(request);
 		return null;
 	}
 	
@@ -167,8 +167,8 @@ public class EucaWSAdapter {
 	 * @throws EucaWSException
 	 */
 	void deleteGroup(String groupName) throws EucaWSException {
-		DeleteGroupRequest request = new DeleteGroupRequest(groupName);
-		this.AIMC.deleteGroup(request);
+//		DeleteGroupRequest request = new DeleteGroupRequest(groupName);
+//		this.AIMC.deleteGroup(request);
 	}
 	
 	/**
@@ -190,8 +190,8 @@ public class EucaWSAdapter {
 	 * @throws EucaWSException
 	 */
 	String addGroupPolicy(String groupName, String policyName, String policyDoc) throws EucaWSException {
-		PutGroupPolicyRequest request = new PutGroupPolicyRequest(groupName, policyName, policyDoc);
-		this.AIMC.putGroupPolicy(request);
+//		PutGroupPolicyRequest request = new PutGroupPolicyRequest(groupName, policyName, policyDoc);
+//		this.AIMC.putGroupPolicy(request);
 		
 		return null;
 	}
@@ -204,8 +204,8 @@ public class EucaWSAdapter {
 	 * @throws EucaWSException
 	 */
 	String addUserPolicy(String userName, String policyName, String policyDoc) throws EucaWSException {
-		PutUserPolicyRequest request = new PutUserPolicyRequest(userName, policyName, policyDoc);
-		this.AIMC.putUserPolicy(request);
+//		PutUserPolicyRequest request = new PutUserPolicyRequest(userName, policyName, policyDoc);
+//		this.AIMC.putUserPolicy(request);
 		return null;
 	}
 	
@@ -219,14 +219,14 @@ public class EucaWSAdapter {
 	 */
 	void deletePolicy(String policyId, String policyName, String accountName, String groupName, String userName) throws EucaWSException {
 		
-		if (groupName != null && userName == null) {
-			DeleteGroupPolicyRequest request = new DeleteGroupPolicyRequest(groupName, policyName);
-			this.AIMC.deleteGroupPolicy(request);
-		}
-		else if (groupName == null && userName != null) {
-			DeleteUserPolicyRequest request = new DeleteUserPolicyRequest(userName, policyName);
-			this.AIMC.deleteUserPolicy(request);
-		}
+//		if (groupName != null && userName == null) {
+//			DeleteGroupPolicyRequest request = new DeleteGroupPolicyRequest(groupName, policyName);
+//			this.AIMC.deleteGroupPolicy(request);
+//		}
+//		else if (groupName == null && userName != null) {
+//			DeleteUserPolicyRequest request = new DeleteUserPolicyRequest(userName, policyName);
+//			this.AIMC.deleteUserPolicy(request);
+//		}
 	}
 	
 	/**
@@ -235,12 +235,13 @@ public class EucaWSAdapter {
 	 * @throws EucaWSException
 	 */
 	String[] createAccessKey(String userName) throws EucaWSException {
-		CreateAccessKeyRequest request = new CreateAccessKeyRequest();
-		request.setUserName(userName);
-		AccessKey accessKey = this.AIMC.createAccessKey(request).getAccessKey();
+//		CreateAccessKeyRequest request = new CreateAccessKeyRequest();
+//		request.setUserName(userName);
+//		AccessKey accessKey = this.AIMC.createAccessKey(request).getAccessKey();
 		
-		String[] keys = new String[] {accessKey.getAccessKeyId(), accessKey.getSecretAccessKey()};
-		return keys;
+//		String[] keys = new String[] {accessKey.getAccessKeyId(), accessKey.getSecretAccessKey()};
+//		return keys;
+		return null;
 	}
 	
 	/**
@@ -248,8 +249,8 @@ public class EucaWSAdapter {
 	 * @throws EucaWSException
 	 */
 	void deleteAccessKey(String keyId) throws EucaWSException {
-		DeleteAccessKeyRequest request = new DeleteAccessKeyRequest(keyId);
-		this.AIMC.deleteAccessKey(request);
+//		DeleteAccessKeyRequest request = new DeleteAccessKeyRequest(keyId);
+//		this.AIMC.deleteAccessKey(request);
 	}
 	
 	/**
