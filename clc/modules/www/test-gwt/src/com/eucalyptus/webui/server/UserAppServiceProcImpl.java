@@ -137,14 +137,9 @@ public class UserAppServiceProcImpl {
 				  String euca_intance_id = EucaServiceWrapper.getInstance().runVM(session, userId, template, keyPair, securityGroup, euca_vit_id);
 				  userApp.setEucaVMInstanceKey(euca_intance_id);
 				  
-				  //!!!! for debug only !!!
-				  euca_intance_id = "i-C13C43CC";
 				  if (!Strings.isNullOrEmpty(euca_intance_id)) {
 					  //obtain the server id where the resources are allocated
 					  int serverId = EucaServiceWrapper.getInstance().getServerID(session, userId, euca_intance_id);
-					  
-					  //!!!! for debug only !!!
-					  serverId = 1;
 					  
 					  if (serverId < 0)
 						  throw new EucalyptusServiceException("Server id error!");
