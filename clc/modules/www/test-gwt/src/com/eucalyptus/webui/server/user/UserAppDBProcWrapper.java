@@ -95,6 +95,9 @@ public class UserAppDBProcWrapper {
 					int cs_id = rs.getInt(DBTableColName.USER_APP.CPU_SRV_ID);
 					int ms_id = rs.getInt(DBTableColName.USER_APP.MEM_SRV_ID);
 					int ds_id = rs.getInt(DBTableColName.USER_APP.DISK_SRV_ID);
+					int bs_id = rs.getInt(DBTableColName.USER_APP.BW_SRV_ID);
+					int pub_is_id = rs.getInt(DBTableColName.USER_APP.PUB_IP_SRV_ID);
+					int pri_is_id = rs.getInt(DBTableColName.USER_APP.PRI_IP_SRV_ID);
 					
 					EnumUserAppStatus userAppRegStatus = EnumUserAppStatus.NONE;
 					if (!Strings.isNullOrEmpty(state))
@@ -105,7 +108,7 @@ public class UserAppDBProcWrapper {
 					UserApp userApp = new UserApp(id, appTime, userAppRegStatus, del, comment,
 										ncpus, mem, disk, bw,
 										keyPair, securityGroup, userId, vitId, startingTime, endingTime, euca_vi_key,
-										cs_id, ms_id, ds_id);
+										cs_id, ms_id, ds_id, bs_id, pub_is_id, pri_is_id);
 					
 					return userApp; 
 				}
@@ -277,10 +280,13 @@ public class UserAppDBProcWrapper {
 		append(DBTableColName.USER_APP.DISK).append(", ").
 		append(DBTableColName.USER_APP.BW).append(", ").
 		append(DBTableColName.USER_APP.USER_ID).append(", ").
-		append(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID).
-		append(DBTableColName.USER_APP.CPU_SRV_ID).
-		append(DBTableColName.USER_APP.MEM_SRV_ID).
-		append(DBTableColName.USER_APP.DISK_SRV_ID).
+		append(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID).append(", ").
+		append(DBTableColName.USER_APP.CPU_SRV_ID).append(", ").
+		append(DBTableColName.USER_APP.MEM_SRV_ID).append(", ").
+		append(DBTableColName.USER_APP.DISK_SRV_ID).append(", ").
+		append(DBTableColName.USER_APP.BW_SRV_ID).append(", ").
+		append(DBTableColName.USER_APP.PUB_IP_SRV_ID).append(", ").
+		append(DBTableColName.USER_APP.PRI_IP_SRV_ID).
 		append(") VALUES (null, ");
 		
 		str.append("'");
@@ -341,13 +347,40 @@ public class UserAppDBProcWrapper {
 		str.append(userApp.getVmIdImageTypeId());
 		str.append(", ");
 		
-		str.append(userApp.getCPUSrvId());
+		if (userApp.getCPUSrvId() == 0)
+			str.append("null");
+		else
+			str.append(userApp.getCPUSrvId());
 		str.append(", ");
 		
-		str.append(userApp.getMemSrvId());
+		if (userApp.getMemSrvId() == 0)
+			str.append("null");
+		else
+			str.append(userApp.getMemSrvId());
 		str.append(", ");
 		
-		str.append(userApp.getDiskSrvId());
+		if (userApp.getDiskSrvId() == 0)
+			str.append("null");
+		else
+			str.append(userApp.getDiskSrvId());
+		str.append(", ");
+		
+		if (userApp.getBwSrvId() == 0)
+			str.append("null");
+		else
+			str.append(userApp.getBwSrvId());
+		str.append(", ");
+		
+		if (userApp.getPubIpSrvId() == 0)
+			str.append("null");
+		else
+			str.append(userApp.getPubIpSrvId());
+		str.append(", ");
+		
+		if (userApp.getPriIpSrvId() == 0)
+			str.append("null");
+		else
+			str.append(userApp.getPriIpSrvId());
 		
 		str.append(")");
 		
@@ -453,6 +486,23 @@ public class UserAppDBProcWrapper {
 			append(", ");
 		}
 		
+		if (userApp.getCPUSrvId() != 0) {
+			str.append(DBTableColName.USER_APP.BW_SRV_ID).append(" = ").
+			append(userApp.getBwSrvId()).
+			append(", ");
+		}
+		
+		if (userApp.getMemSrvId() != 0) {
+			str.append(DBTableColName.USER_APP.PUB_IP_SRV_ID).append(" = ").
+			append(userApp.getPubIpSrvId()).
+			append(", ");
+		}
+		
+		if (userApp.getDiskSrvId() != 0) {
+			str.append(DBTableColName.USER_APP.PRI_IP_SRV_ID).append(" = ").
+			append(userApp.getPriIpSrvId()).
+			append(", ");
+		}
 		
 		if (str.length() > 2)
 			str.delete(str.length() -2, str.length());

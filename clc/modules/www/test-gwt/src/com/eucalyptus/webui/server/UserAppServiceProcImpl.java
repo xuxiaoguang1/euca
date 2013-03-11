@@ -32,6 +32,7 @@ import com.eucalyptus.webui.shared.user.EnumUserAppStatus;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 import com.eucalyptus.webui.shared.user.UserApp;
 import com.eucalyptus.webui.shared.user.UserAppStateCount;
+import com.google.common.base.Strings;
 
 public class UserAppServiceProcImpl {
 	  
@@ -136,9 +137,9 @@ public class UserAppServiceProcImpl {
 				  String euca_intance_id = EucaServiceWrapper.getInstance().runVM(session, userId, template, keyPair, securityGroup, euca_vit_id);
 				  userApp.setEucaVMInstanceKey(euca_intance_id);
 				  
-				  if (euca_intance_id != null) {
-					  //!!!! for debug only !!!
-					  euca_intance_id = "i-C13C43CC";
+				  //!!!! for debug only !!!
+				  euca_intance_id = "i-C13C43CC";
+				  if (!Strings.isNullOrEmpty(euca_intance_id)) {
 					  //obtain the server id where the resources are allocated
 					  int serverId = EucaServiceWrapper.getInstance().getServerID(session, userId, euca_intance_id);
 					  
@@ -153,6 +154,9 @@ public class UserAppServiceProcImpl {
 					  userApp.setCPUSrvId(appRes.cs_id);
 					  userApp.setMemSrvId(appRes.ms_id);
 					  userApp.setDiskSrvId(appRes.ds_id);
+					  userApp.setBwSrvId(appRes.bs_id_public);
+					  userApp.setPubIpSrvId(appRes.ip_id_public);
+					  userApp.setPriIpSrvId(appRes.ip_id_private);
 						  
 					  return userApp;
 				  }

@@ -30,6 +30,10 @@ public class UserApp implements java.io.Serializable {
 	private int mem_srv_id;
 	private int disk_srv_id;
 	
+	private int bw_srv_id;
+	private int public_ip_srv_id;
+	private int private_ip_srv_id;
+	
 	public UserApp() {
 		
 	}
@@ -37,7 +41,7 @@ public class UserApp implements java.io.Serializable {
 	public UserApp(int id, Date apptime, EnumUserAppStatus status, int del, String comment,
 					int ncpus, int mem, int disk, int bw,
 					String keyPair, String securityGroup, int userId, int vmImageTypeId, Date srvStartingTime, Date srvEndingTime, String euca_vm_instance_key,
-					int cpu_srv_id, int mem_srv_id, int disk_srv_id) {
+					int cpu_srv_id, int mem_srv_id, int disk_srv_id, int bw_srv_id, int public_ip_srv_id, int private_ip_srv_id) {
 		this.setUAId(id);
 		this.setAppTime(apptime);
 		this.setSrvStartingTime(srvStartingTime);
@@ -55,6 +59,9 @@ public class UserApp implements java.io.Serializable {
 		this.setCPUSrvId(cpu_srv_id);
 		this.setMemSrvId(mem_srv_id);
 		this.setDiskSrvId(disk_srv_id);
+		this.setBwSrvId(bw_srv_id);
+		this.setPubIpSrvId(public_ip_srv_id);
+		this.setPriIpSrvId(private_ip_srv_id);
 	}
 	
 	public void setUAId(int ua_id) {
@@ -181,5 +188,26 @@ public class UserApp implements java.io.Serializable {
 	}
 	public int getDiskSrvId() {
 		return this.disk_srv_id;
+	}
+	
+	public void setBwSrvId(int bw_srv_id) {
+		this.bw_srv_id = bw_srv_id;
+	}
+	public int getBwSrvId() {
+		return this.bw_srv_id;
+	}
+	
+	public void setPubIpSrvId(int public_ip_srv_id) {
+		this.public_ip_srv_id = public_ip_srv_id;
+	}
+	public int getPubIpSrvId() {
+		return this.public_ip_srv_id;
+	}
+	
+	public void setPriIpSrvId(int private_ip_srv_id) {
+		this.private_ip_srv_id = private_ip_srv_id;
+	}
+	public int getPriIpSrvId() {
+		return this.private_ip_srv_id;
 	}
 }

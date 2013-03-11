@@ -63,6 +63,9 @@ public class DBTableColName {
 		public final String CPU_SRV_ID = "cs_id";
 		public final String MEM_SRV_ID = "ms_id";
 		public final String DISK_SRV_ID = "ds_id";
+		public final String BW_SRV_ID = "bs_id";
+		public final String PUB_IP_SRV_ID = "public_is_id";
+		public final String PRI_IP_SRV_ID = "private_is_id";
 	}	
 
 	public interface USER_POLICY {
