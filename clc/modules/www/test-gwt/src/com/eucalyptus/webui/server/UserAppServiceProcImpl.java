@@ -149,8 +149,7 @@ public class UserAppServiceProcImpl {
 						  throw new EucalyptusServiceException("Server id error!");
 				  
 					  //synch resources
-					  AppResources appRes = DeviceTemplateService.createApp(null, userApp.getNcpus(), userApp.getMem(), userApp.getDisk(), serverId, userId);
-					  
+					  AppResources appRes = DeviceTemplateService.createApp(null, userApp.getNcpus(), userApp.getMem(), userApp.getDisk(), userApp.getBw(), serverId, userId);
 					  userApp.setCPUSrvId(appRes.cs_id);
 					  userApp.setMemSrvId(appRes.ms_id);
 					  userApp.setDiskSrvId(appRes.ds_id);

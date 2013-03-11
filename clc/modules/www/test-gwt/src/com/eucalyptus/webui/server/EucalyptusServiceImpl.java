@@ -824,8 +824,8 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     }
    
     @Override
-    public void createDeviceServer(Session session, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws EucalyptusServiceException {
-        DeviceServerService.createServer(false, session, server_name, server_desc, server_ip, server_bw, server_state, cabinet_id);
+    public void createDeviceServer(Session session, String server_name, String server_desc, String server_euca, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws EucalyptusServiceException {
+        DeviceServerService.createServer(false, session, server_name, server_desc, server_euca, server_ip, server_bw, server_state, cabinet_id);
     }
     
     @Override
@@ -944,83 +944,58 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     }
     
     @Override
-    public SearchResult lookupDeviceIPByDate(Session session, SearchRange range, IPType ip_type, IPState is_state, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
-    	return DeviceIPService.getInstance().lookupIPByDate(session, range, ip_type, is_state, dateBegin, dateEnd);
+    public SearchResult lookupDeviceIP(Session session, SearchRange range, IPType ip_type, IPState is_state) throws EucalyptusServiceException {
+    	return DeviceIPService.lookupIP(session, range, ip_type, is_state);
     }
     
     @Override
     public Map<Integer, Integer> lookupDeviceIPCounts(Session session, IPType ip_type) throws EucalyptusServiceException {
-    	return DeviceIPService.getInstance().lookupIPCountsByState(session, ip_type);
+    	return DeviceIPService.lookupIPCountsByType(session, ip_type);
     }
     
     @Override
-    public void createDeviceIP(Session session, String ip_addr, String ip_desc, IPType ip_type) throws EucalyptusServiceException {
-    	DeviceIPService.getInstance().createIP(false, session, ip_addr, ip_desc, ip_type);
-    }
-    
-    @Override
-    public void createDeviceIPService(Session session, String is_desc, IPState is_state, Date is_starttime, Date is_endtime, int ip_id, int user_id) throws EucalyptusServiceException {
-    	DeviceIPService.getInstance().createIPService(false, session, is_desc, is_state, is_starttime, is_endtime, ip_id, user_id);
-    }
-    
-    @Override
-    public void modifyDeviceIP(Session session, int ip_id, String ip_desc, IPType ip_type) throws EucalyptusServiceException {
-    	DeviceIPService.getInstance().modifyIP(false, session, ip_id, ip_desc, ip_type);
-    }
-    
-    @Override
-    public void modifyDeviceIPService(Session session, int ip_id, String is_desc, Date is_starttime, Date is_endtime) throws EucalyptusServiceException {
-    	DeviceIPService.getInstance().modifyIPService(false, session, ip_id, is_desc, is_starttime, is_endtime);
-    }
-    
-    @Override
-    public void deleteDeviceIP(Session session, List<Integer> ip_ids) throws EucalyptusServiceException {
-    	DeviceIPService.getInstance().deleteIP(false, session, ip_ids);
+    public void createDeviceIPService(Session session, IPType ip_type, String is_desc, Date is_starttime, Date is_endtime, int count, int user_id) throws EucalyptusServiceException {
+    	DeviceIPService.createIPService(false, session, ip_type, is_desc, is_starttime, is_endtime, count, user_id);
     }
     
     @Override
     public void deleteDeviceIPService(Session session, List<Integer> ip_ids) throws EucalyptusServiceException {
-    	DeviceIPService.getInstance().deleteIPService(false, session, ip_ids);
-    }
-    
-    @Override
-    public Map<String, Integer> lookupDeviceIPUnusedByIPType(Session session, IPType ip_type) throws EucalyptusServiceException {
-    	return DeviceIPService.getInstance().lookupIPReservedByIPType(session, ip_type);
+    	DeviceIPService.deleteIPService(false, session, ip_ids);
     }
     
     @Override
     public IPServiceInfo lookupDeviceIPServiceByID(Session session, int ip_id) throws EucalyptusServiceException {
-    	return DeviceIPService.getInstance().lookupIPServiceInfoByID(ip_id);
+    	return DeviceIPService.lookupIPServiceInfoByID(ip_id);
     }
     
 	@Override
-    public SearchResult lookupDeviceBWByDate(Session session, SearchRange range, Date dateBegin, Date dateEnd) throws EucalyptusServiceException {
-		return DeviceBWService.getInstance().lookupBWServiceByDate(session, range, dateBegin, dateEnd);
+    public SearchResult lookupDeviceBW(Session session, SearchRange range) throws EucalyptusServiceException {
+		return DeviceBWService.lookupBWService(session, range);
     }
 	
 	@Override
     public void createDeviceBWService(Session session, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, int ip_id) throws EucalyptusServiceException {
-		DeviceBWService.getInstance().createBWService(false, session, bs_desc, bs_bw_max, bs_starttime, bs_endtime, ip_id);
+		DeviceBWService.createBWService(false, session, bs_desc, bs_bw_max, bs_starttime, bs_endtime, ip_id);
     }
 	
 	@Override
     public void modifyDeviceBWService(Session session, int bs_id, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime) throws EucalyptusServiceException {
-		DeviceBWService.getInstance().modifyBWService(false, session, bs_id, bs_desc, bs_bw_max, bs_starttime, bs_endtime);
+		DeviceBWService.modifyBWService(false, session, bs_id, bs_desc, bs_bw_max, bs_starttime, bs_endtime);
     }
 	
 	@Override
     public void deleteDeviceBWService(Session session, List<Integer> bs_ids) throws EucalyptusServiceException {
-		DeviceBWService.getInstance().deleteBWService(false, session, bs_ids);
+		DeviceBWService.deleteBWService(false, session, bs_ids);
     }
 	
 	@Override
     public BWServiceInfo lookupDeviceBWServiceByID(Session session, int bs_id) throws EucalyptusServiceException {
-		return DeviceBWService.getInstance().lookupBWServiceInfoByID(bs_id);
+		return DeviceBWService.lookupBWServiceInfoByID(bs_id);
     }
 	
 	@Override
 	public Map<String, Integer> lookupDeviceIPsWihtoutBWService(Session session, int account_id, int user_id) throws EucalyptusServiceException {
-		return DeviceBWService.getInstance().lookupIPsWithoutBWService(false, session, null, account_id, user_id);
+		return DeviceBWService.lookupIPsWithoutBWService(false, session, null, account_id, user_id);
 	}
 	
 	@Override

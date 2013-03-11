@@ -252,14 +252,12 @@ public class DeviceDiskService {
             ResultSet rs = DeviceDiskDBProcWrapper.lookupDiskServiceByID(conn, false, ds_id);
             String ds_desc = DBData.getString(rs, DISK_SERVICE.DISK_SERVICE_DESC);
             long ds_used = DBData.getLong(rs, DISK_SERVICE.DISK_SERVICE_USED);
-            Date ds_starttime = DBData.getDate(rs, DISK_SERVICE.DISK_SERVICE_STARTTIME);
-            Date ds_endtime = DBData.getDate(rs, DISK_SERVICE.DISK_SERVICE_ENDTIME);
             DiskState disk_state = DiskState.getDiskState(DBData.getInt(rs, DISK_SERVICE.DISK_SERVICE_STATE));
             Date ds_creationtime = DBData.getDate(rs, DISK_SERVICE.DISK_SERVICE_CREATIONTIME);
             Date ds_modifiedtime = DBData.getDate(rs, DISK_SERVICE.DISK_SERVICE_MODIFIEDTIME);
             int disk_id = DBData.getInt(rs, DISK_SERVICE.DISK_ID);
             int user_id = DBData.getInt(rs, DISK_SERVICE.USER_ID);
-            return new DiskServiceInfo(ds_id, ds_desc, ds_used, ds_starttime, ds_endtime, disk_state, ds_creationtime, ds_modifiedtime, disk_id, user_id);
+            return new DiskServiceInfo(ds_id, ds_desc, ds_used, disk_state, ds_creationtime, ds_modifiedtime, disk_id, user_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -391,7 +389,7 @@ public class DeviceDiskService {
     
     static void createDiskByServerID(Connection conn, String server_desc, int server_id) throws Exception {
         int disk_id = DeviceDiskDBProcWrapper.createDisk(conn, server_desc, 0, server_id);
-        DeviceDiskDBProcWrapper.createDiskService(conn, null, 0, null, null, DiskState.RESERVED, disk_id, -1);
+        DeviceDiskDBProcWrapper.createDiskService(conn, null, 0, DiskState.RESERVED, disk_id, -1);
     }
     
     static void deleteDiskByServerID(Connection conn, int server_id) throws Exception {
@@ -426,7 +424,7 @@ public class DeviceDiskService {
             rs.updateLong(DISK.DISK_TOTAL.toString(), rs.getLong(DISK.DISK_TOTAL.toString()) + ds_used - reserved);
             rs.updateRow();
         }
-        return DeviceDiskDBProcWrapper.createDiskService(conn, ds_desc, ds_used, null, null, ds_state, disk_id, user_id);
+        return DeviceDiskDBProcWrapper.createDiskService(conn, ds_desc, ds_used, ds_state, disk_id, user_id);
     }
     
     static void deleteDiskService(Connection conn, int ds_id) throws Exception {
@@ -524,17 +522,21 @@ public class DeviceDiskService {
             DBTableAccount ACCOUNT = DBTable.ACCOUNT;
             DBTableUser USER = DBTable.USER;
             DBTableServer SERVER = DBTable.SERVER;
+            DBTableUserApp USER_APP = DBTable.USER_APP;
             DBTableDisk DISK = DBTable.DISK;
             DBTableDiskService DISK_SERVICE = DBTable.DISK_SERVICE;
             DBStringBuilder sb = new DBStringBuilder();
             sb.append("SELECT ").append(DISK.ANY).append(", ").append(DISK_SERVICE.ANY).append(", ");
             sb.append(SERVER.SERVER_NAME).append(", ").append(ACCOUNT.ACCOUNT_NAME).append(", ").append(USER.USER_NAME).append(", ");
-            sb.appendDateLifeRemains(DISK_SERVICE.DISK_SERVICE_STARTTIME, DISK_SERVICE.DISK_SERVICE_ENDTIME, DISK_SERVICE.DISK_SERVICE_LIFE).append(" FROM "); {
+            sb.append(USER_APP.SERVICE_STARTTIME).append(" AS ").append(DISK_SERVICE.DISK_SERVICE_STARTTIME).append(", ");
+            sb.append(USER_APP.SERVICE_ENDTIME).append(" AS ").append(DISK_SERVICE.DISK_SERVICE_ENDTIME).append(", ");
+            sb.appendDateLifeRemains(USER_APP.SERVICE_STARTTIME, USER_APP.SERVICE_ENDTIME, DISK_SERVICE.DISK_SERVICE_LIFE).append(" FROM "); {
                 sb.append(DISK_SERVICE);
                 sb.append(" LEFT JOIN ").append(USER).append(" ON ").append(DISK_SERVICE.USER_ID).append(" = ").append(USER.USER_ID);
                 sb.append(" LEFT JOIN ").append(ACCOUNT).append(" ON ").append(USER.ACCOUNT_ID).append(" = ").append(ACCOUNT.ACCOUNT_ID);
                 sb.append(" LEFT JOIN ").append(DISK).append(" ON ").append(DISK_SERVICE.DISK_ID).append(" = ").append(DISK.DISK_ID);
                 sb.append(" LEFT JOIN ").append(SERVER).append(" ON ").append(DISK.SERVER_ID).append(" = ").append(SERVER.SERVER_ID);
+                sb.append(" LEFT JOIN ").append(USER_APP).append(" ON ").append(DISK_SERVICE.DISK_SERVICE_ID).append(" = ").append(USER_APP.DISK_SERVICE_ID);
             }
             sb.append(" WHERE ").append(DISK_SERVICE.DISK_SERVICE_USED).append(" != ").append(0);
             if (state != null) {
@@ -577,14 +579,12 @@ public class DeviceDiskService {
             return rs.getInt(1);
         }
         
-        public static int createDiskService(Connection conn, String ds_desc, long ds_used, Date ds_starttime, Date ds_endtime, DiskState state, int disk_id, int user_id) throws Exception {
+        public static int createDiskService(Connection conn, String ds_desc, long ds_used, DiskState state, int disk_id, int user_id) throws Exception {
             DBTableDiskService DISK_SERVICE = DBTable.DISK_SERVICE;
             DBStringBuilder sb = new DBStringBuilder();
             sb.append("INSERT INTO ").append(DISK_SERVICE).append(" ("); {
                 sb.append(DISK_SERVICE.DISK_SERVICE_DESC).append(", ");
                 sb.append(DISK_SERVICE.DISK_SERVICE_USED).append(", ");
-                sb.append(DISK_SERVICE.DISK_SERVICE_STARTTIME).append(", ");
-                sb.append(DISK_SERVICE.DISK_SERVICE_ENDTIME).append(", ");
                 sb.append(DISK_SERVICE.DISK_SERVICE_STATE).append(", ");
                 sb.append(DISK_SERVICE.DISK_SERVICE_CREATIONTIME).append(", ");
                 sb.append(DISK_SERVICE.DISK_SERVICE_MODIFIEDTIME).append(", ");
@@ -594,8 +594,6 @@ public class DeviceDiskService {
             sb.append(") VALUES ("); {
                 sb.appendString(ds_desc).append(", ");
                 sb.append(ds_used).append(", ");
-                sb.appendDate(ds_starttime).append(", ");
-                sb.appendDate(ds_endtime).append(", ");
                 sb.append(state.getValue()).append(", ");
                 sb.appendDate().append(", ");
                 sb.appendNull().append(", ");

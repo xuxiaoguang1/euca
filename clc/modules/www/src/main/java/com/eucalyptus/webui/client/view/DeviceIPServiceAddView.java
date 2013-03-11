@@ -3,13 +3,14 @@ package com.eucalyptus.webui.client.view;
 import java.util.Date;
 import java.util.Map;
 
+import com.eucalyptus.webui.shared.resource.device.status.IPType;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface DeviceIPServiceAddView extends IsWidget {
 	
 	public void setPresenter(Presenter presenter);
 	
-	public void popup(int ip_id, String ip_addr);
+	public void popup();
 	
 	public void setAccountNames(Map<String, Integer> account_map);
     
@@ -17,7 +18,7 @@ public interface DeviceIPServiceAddView extends IsWidget {
 	
 	public interface Presenter {
 		
-		public boolean onOK(int ip_id, String is_desc, Date is_starttime, Date is_endtime, int user_id);
+		public boolean onOK(String is_desc, Date is_starttime, Date is_endtime, IPType ip_type, int count, int user_id);
 		
 		public void lookupAccountNames();
 		

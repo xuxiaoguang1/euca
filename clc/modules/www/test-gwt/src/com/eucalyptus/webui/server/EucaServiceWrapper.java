@@ -121,7 +121,7 @@ public class EucaServiceWrapper {
     return aws.lookupInstanceForIp(userID, instanceID);
   }
     
-  public List<IPServiceInfo> getIPServices(int userID) throws EucalyptusServiceException {
+  public List<IPServiceInfo> getIPServices(int accountID, int userID) throws EucalyptusServiceException {
     List<IPServiceInfo> ret = new ArrayList<IPServiceInfo>();
     List<Address> addrs = aws.lookupPublicAddress(userID);
     for (Address a : addrs) {

@@ -65,27 +65,27 @@ public class DBStringBuilder {
     }
     
     public DBStringBuilder appendDateBound(DBTableColumn column, Date beg, Date end) {
-    	append(column).append(" != ").appendString("0000-00-00");
+        append(column).append(" != ").appendString("0000-00-00");
         if (beg != null) {
             append(" AND ").append(column).append(" >= ").appendDate(beg);
         }
         if (end != null) {
             append(" AND ").append(column).append(" <= ").appendDate(end);
         }
-    	return this;
+        return this;
     }
     
     public DBStringBuilder appendDateLifeRemains(DBTableColumn beg, DBTableColumn end, DBTableColumn alias) {
-    	append(" IF (");
-		append("DATEDIFF(").append(end).append(", ").append(beg).append(")");
-		append(" < ");
-		append("DATEDIFF(").append(end).append(", now())");
-		append(", ");
-		append("DATEDIFF(").append(end).append(", ").append(beg).append(")");
-		append(", ");
-		append("DATEDIFF(").append(end).append(", now())");
-		append(") AS ").append(alias);
-		return this;
+        append(" IF (");
+        append("DATEDIFF(").append(end).append(", ").append(beg).append(")");
+        append(" < ");
+        append("DATEDIFF(").append(end).append(", now())");
+        append(", ");
+        append("DATEDIFF(").append(end).append(", ").append(beg).append(")");
+        append(", ");
+        append("DATEDIFF(").append(end).append(", now())");
+        append(") AS ").append(alias);
+        return this;
     }
     
     @Override
@@ -118,7 +118,7 @@ public class DBStringBuilder {
     }
     
     public static String getDate(Date date) {
-    	return DBData.format(date);
+        return DBData.format(date);
     }
     
 }

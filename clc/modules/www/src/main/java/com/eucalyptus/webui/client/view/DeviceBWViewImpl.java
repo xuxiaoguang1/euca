@@ -1,14 +1,12 @@
 package com.eucalyptus.webui.client.view;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.activity.device.DevicePageSize;
 import com.eucalyptus.webui.client.service.SearchResult;
 import com.eucalyptus.webui.client.service.SearchResultFieldDesc;
 import com.eucalyptus.webui.client.service.SearchResultRow;
-import com.eucalyptus.webui.client.view.DeviceDateBox.Handler;
 import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
 import com.google.gwt.core.client.GWT;
@@ -29,21 +27,18 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 
 public class DeviceBWViewImpl extends Composite implements DeviceBWView {
 
-	private static BWViewImplUiBinder uiBinder = GWT.create(BWViewImplUiBinder.class);
+    private static BWViewImplUiBinder uiBinder = GWT.create(BWViewImplUiBinder.class);
 
-	interface BWViewImplUiBinder extends UiBinder<Widget, DeviceBWViewImpl> {
-	}
+    interface BWViewImplUiBinder extends UiBinder<Widget, DeviceBWViewImpl> {
+    }
 
-	@UiField LayoutPanel resultPanel;
+    @UiField LayoutPanel resultPanel;
     @UiField Anchor buttonAddBWService;
     @UiField Anchor buttonDeleteBWService;
     @UiField Anchor buttonModifyBWService;
     @UiField Anchor buttonClearSelection;
-    @UiField DeviceDateBox dateBegin;
-    @UiField DeviceDateBox dateEnd;
-    @UiField Anchor buttonClearDate;
     @UiField Anchor columnButton;
-	@UiField ListBox pageSizeList;
+    @UiField ListBox pageSizeList;
     
     private Presenter presenter;
     private MultiSelectionModel<SearchResultRow> selection;
@@ -54,21 +49,21 @@ public class DeviceBWViewImpl extends Composite implements DeviceBWView {
         initWidget(uiBinder.createAndBindUi(this));
         
         for (String pageSize : DevicePageSize.getPageSizeList()) {
-			pageSizeList.addItem(pageSize);
-		}
-		pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
-		pageSizeList.addChangeHandler(new ChangeHandler() {
+            pageSizeList.addItem(pageSize);
+        }
+        pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
+        pageSizeList.addChangeHandler(new ChangeHandler() {
 
-			@Override
-			public void onChange(ChangeEvent event) {
-				DevicePageSize.setPageSizeSelectedIndex(pageSizeList.getSelectedIndex());
-				if (table != null) {
-					table.setPageSize(DevicePageSize.getPageSize());
-				}
-			}
-			
-		});
-		
+            @Override
+            public void onChange(ChangeEvent event) {
+                DevicePageSize.setPageSizeSelectedIndex(pageSizeList.getSelectedIndex());
+                if (table != null) {
+                    table.setPageSize(DevicePageSize.getPageSize());
+                }
+            }
+            
+        });
+        
         selection = new MultiSelectionModel<SearchResultRow>(SearchResultRow.KEY_PROVIDER);
         selection.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
 
@@ -82,40 +77,6 @@ public class DeviceBWViewImpl extends Composite implements DeviceBWView {
         updateSearchResultButtonStatus();
         
         popup.setAutoHideEnabled(true);
-        
-        for (final DeviceDateBox dateBox : new DeviceDateBox[]{dateBegin, dateEnd}) {
-            dateBox.setErrorHandler(new Handler() {
-
-                @Override
-                public void onErrorHappens() {
-                    updateDateButtonStatus();
-                    int x = dateBox.getAbsoluteLeft();
-                    int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
-                    popup.setHTML(x, y, "30EM", "3EM", DeviceDateBox.getDateErrorHTML(dateBox));
-                }
-
-                @Override
-                public void onValueChanged() {
-                    updateDateButtonStatus();
-                    int x = dateBox.getAbsoluteLeft();
-                    int y = dateBox.getAbsoluteTop() + dateBox.getOffsetHeight();
-                    DeviceDateBox pair;
-                    pair = (dateBox != dateBegin ? dateBegin : dateEnd);
-                    if (!pair.hasError()) {
-                        Date date0 = dateBegin.getValue(), date1 = dateEnd.getValue();
-                        if (date0 != null && date1 != null) {
-                            if (date0.getTime() > date1.getTime()) {
-                                popup.setHTML(x, y, "20EM", "2EM", DeviceDateBox.getDateErrorHTML(dateBegin, dateEnd));
-                                return;
-                            }
-                        }
-                        updateSearchRange();
-                    }
-                }
-            });
-        }
-        
-        updateDateButtonStatus();
     }
     
     private void updateSearchResultButtonStatus() {
@@ -126,23 +87,8 @@ public class DeviceBWViewImpl extends Composite implements DeviceBWView {
         buttonClearSelection.setEnabled(size != 0);
     }
     
-    private void updateDateButtonStatus() {
-        if (isEmpty(dateBegin.getText()) && isEmpty(dateEnd.getText())) {
-            buttonClearDate.setEnabled(false);
-        }
-        else {
-            buttonClearDate.setEnabled(true);
-        }
-    }
-    
     public boolean isEmpty(String s) {
         return s == null || s.length() == 0;
-    }
-    
-    private void updateSearchRange() {
-        if (!dateBegin.hasError() && !dateEnd.hasError()) {
-            presenter.updateSearchResult(dateBegin.getValue(), dateEnd.getValue());
-        }
     }
     
     public Set<SearchResultRow> getSelectedSet() {
@@ -151,21 +97,21 @@ public class DeviceBWViewImpl extends Composite implements DeviceBWView {
     
     @Override
     public void setSelectedRow(SearchResultRow row) {
-    	boolean selected = true;
-		Set<SearchResultRow> set = selection.getSelectedSet();
-		if (set != null && set.contains(row)) {
-			selected = false;
-		}
-		clearSelection();
-		selection.setSelected(row, selected);
-		updateSearchResultButtonStatus();
+        boolean selected = true;
+        Set<SearchResultRow> set = selection.getSelectedSet();
+        if (set != null && set.contains(row)) {
+            selected = false;
+        }
+        clearSelection();
+        selection.setSelected(row, selected);
+        updateSearchResultButtonStatus();
     }
     
-	private DeviceColumnPopupPanel.Node addNode(ArrayList<SearchResultFieldDesc> descs, DeviceColumnPopupPanel.Node parent, ClientMessage msg, int column) {
-	    return parent.addNode(msg, column, DeviceSearchResultTable.isVisible(descs.get(column).getWidth()));
-	}
-	
-	private void initColumnPanel(ArrayList<SearchResultFieldDesc> descs, DeviceColumnPopupPanel panel) {
+    private DeviceColumnPopupPanel.Node addNode(ArrayList<SearchResultFieldDesc> descs, DeviceColumnPopupPanel.Node parent, ClientMessage msg, int column) {
+        return parent.addNode(msg, column, DeviceSearchResultTable.isVisible(descs.get(column).getWidth()));
+    }
+    
+    private void initColumnPanel(ArrayList<SearchResultFieldDesc> descs, DeviceColumnPopupPanel panel) {
         DeviceColumnPopupPanel.Node account = panel.addNode(new ClientMessage("", "账户信息"));
         addNode(descs, account, new ClientMessage("", "账户名称"), CellTableColumns.BW.ACCOUNT_NAME);
         addNode(descs, account, new ClientMessage("", "用户名称"), CellTableColumns.BW.USER_NAME);
@@ -191,17 +137,17 @@ public class DeviceBWViewImpl extends Composite implements DeviceBWView {
             table.setClickHandler(presenter);
             table.load();
             resultPanel.add(table);
-			final DeviceColumnPopupPanel panel = new DeviceColumnPopupPanel(new DeviceColumnPopupPanel.Presenter() {
-	            
-	            @Override
-	            public void onValueChange(int column, boolean value) {
-	            	if (table != null) {
-	            		table.setVisible(column, value);
-	            	}
-	            }
-	            
-	        });
-			columnButton.addClickHandler(new ClickHandler() {
+            final DeviceColumnPopupPanel panel = new DeviceColumnPopupPanel(new DeviceColumnPopupPanel.Presenter() {
+                
+                @Override
+                public void onValueChange(int column, boolean value) {
+                    if (table != null) {
+                        table.setVisible(column, value);
+                    }
+                }
+                
+            });
+            columnButton.addClickHandler(new ClickHandler() {
 
                 @Override
                 public void onClick(ClickEvent event) {
@@ -209,13 +155,13 @@ public class DeviceBWViewImpl extends Composite implements DeviceBWView {
                 }
                 
             });
-			initColumnPanel(result.getDescs(), panel);
+            initColumnPanel(result.getDescs(), panel);
         }
         table.setData(result);
         if (table.getPageSize() != DevicePageSize.getPageSize()) {
-			table.setPageSize(DevicePageSize.getPageSize());
-			pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
-		}
+            table.setPageSize(DevicePageSize.getPageSize());
+            pageSizeList.setSelectedIndex(DevicePageSize.getPageSizeSelectedIndex());
+        }
     }
     
     @Override
@@ -259,16 +205,6 @@ public class DeviceBWViewImpl extends Composite implements DeviceBWView {
     void handleButtonClearSelection(ClickEvent event) {
         if (buttonClearSelection.isEnabled()) {
             clearSelection();
-        }
-    }
-    
-    @UiHandler("buttonClearDate")
-    void handleButtonClearDate(ClickEvent event) {
-        if (buttonClearDate.isEnabled()) {
-            dateBegin.setValue(null);
-            dateEnd.setValue(null);
-            updateDateButtonStatus();
-            updateSearchRange();
         }
     }
     

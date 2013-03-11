@@ -164,13 +164,14 @@ public class DeviceServerService {
             ResultSet rs = DeviceServerDBProcWrapper.lookupServerByID(conn, false, server_id);
             String server_name = DBData.getString(rs, SERVER.SERVER_NAME);
             String server_desc = DBData.getString(rs, SERVER.SERVER_DESC);
+            String server_euca = DBData.getString(rs, SERVER.SERVER_EUCA);
             String server_ip = DBData.getString(rs, SERVER.SERVER_IP);
             int server_bw = DBData.getInt(rs, SERVER.SERVER_BW);
             ServerState server_state = ServerState.getServerState(DBData.getInt(rs, SERVER.SERVER_STATE));
             Date server_creationtime = DBData.getDate(rs, SERVER.SERVER_CREATIONTIME);
             Date server_modifiedtime = DBData.getDate(rs, SERVER.SERVER_MODIFIEDTIME);
             int cabinet_id = DBData.getInt(rs, SERVER.CABINET_ID);
-            return new ServerInfo(server_id, server_name, server_desc, server_ip, server_bw, server_state, server_creationtime, server_modifiedtime, cabinet_id);
+            return new ServerInfo(server_id, server_name, server_desc, server_euca, server_ip, server_bw, server_state, server_creationtime, server_modifiedtime, cabinet_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -181,18 +182,21 @@ public class DeviceServerService {
         }
     }
     
-    public static void createServer(boolean force, Session session, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws EucalyptusServiceException {
+    public static void createServer(boolean force, Session session, String server_name, String server_desc, String server_euca, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
         if (server_name == null || server_name.isEmpty()) {
             throw new EucalyptusServiceException(ClientMessage.invalidValue("Server Name", "服务器名称"));
         }
+        if (server_euca == null || server_euca.isEmpty()) {
+            throw new EucalyptusServiceException(ClientMessage.invalidValue("Server Euca", "服务器映射"));
+        }
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
             conn.setAutoCommit(false);
-            int server_id = DeviceServerDBProcWrapper.createServer(conn, server_name, server_desc, server_ip, server_bw, server_state, cabinet_id);
+            int server_id = DeviceServerDBProcWrapper.createServer(conn, server_name, server_desc, server_euca, server_ip, server_bw, server_state, cabinet_id);
             DeviceCPUService.createCPUByServerID(conn, server_desc, server_id);
             DeviceMemoryService.createMemoryByServerID(conn, server_desc, server_id);
             DeviceDiskService.createDiskByServerID(conn, server_desc, server_id);
@@ -351,12 +355,13 @@ public class DeviceServerService {
             return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
         }
         
-        public static int createServer(Connection conn, String server_name, String server_desc, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws Exception {
+        public static int createServer(Connection conn, String server_name, String server_desc, String server_euca, String server_ip, int server_bw, ServerState server_state, int cabinet_id) throws Exception {
             DBTableServer SERVER = DBTable.SERVER;
             DBStringBuilder sb = new DBStringBuilder();
             sb.append("INSERT INTO ").append(SERVER).append(" ("); {
                 sb.append(SERVER.SERVER_NAME).append(", ");
                 sb.append(SERVER.SERVER_DESC).append(", ");
+                sb.append(SERVER.SERVER_EUCA).append(", ");
                 sb.append(SERVER.SERVER_IP).append(", ");
                 sb.append(SERVER.SERVER_BW).append(", ");
                 sb.append(SERVER.SERVER_STATE).append(", ");
@@ -367,6 +372,7 @@ public class DeviceServerService {
             sb.append(") VALUES ("); {
                 sb.appendString(server_name).append(", ");
                 sb.appendString(server_desc).append(", ");
+                sb.appendString(server_euca).append(", ");
                 sb.appendString(server_ip).append(", ");
                 sb.append(Math.max(0, server_bw)).append(", ");
                 sb.append(server_state != null ? server_state.getValue() : ServerState.STOP.getValue()).append(", ");

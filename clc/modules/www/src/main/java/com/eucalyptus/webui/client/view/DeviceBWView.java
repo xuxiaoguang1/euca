@@ -1,6 +1,5 @@
 package com.eucalyptus.webui.client.view;
 
-import java.util.Date;
 import java.util.Set;
 
 import com.eucalyptus.webui.client.service.SearchResultRow;
@@ -27,7 +26,7 @@ public interface DeviceBWView extends IsWidget, CanDisplaySearchResult, Clearabl
         
         public boolean canModifyBWService();
         
-        public void updateSearchResult(Date dateBegin, Date dateEnd);
+        public void updateSearchResult();
         
 	}
 

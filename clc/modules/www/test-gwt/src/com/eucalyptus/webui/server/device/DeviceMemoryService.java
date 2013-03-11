@@ -252,14 +252,12 @@ public class DeviceMemoryService {
             ResultSet rs = DeviceMemoryDBProcWrapper.lookupMemoryServiceByID(conn, false, ms_id);
             String ms_desc = DBData.getString(rs, MEMORY_SERVICE.MEMORY_SERVICE_DESC);
             long ms_used = DBData.getLong(rs, MEMORY_SERVICE.MEMORY_SERVICE_USED);
-            Date ms_starttime = DBData.getDate(rs, MEMORY_SERVICE.MEMORY_SERVICE_STARTTIME);
-            Date ms_endtime = DBData.getDate(rs, MEMORY_SERVICE.MEMORY_SERVICE_ENDTIME);
             MemoryState ms_state = MemoryState.getMemoryState(DBData.getInt(rs, MEMORY_SERVICE.MEMORY_SERVICE_STATE));
             Date ms_creationtime = DBData.getDate(rs, MEMORY_SERVICE.MEMORY_SERVICE_CREATIONTIME);
             Date ms_modifiedtime = DBData.getDate(rs, MEMORY_SERVICE.MEMORY_SERVICE_MODIFIEDTIME);
             int mem_id = DBData.getInt(rs, MEMORY_SERVICE.MEMORY_ID);
             int user_id = DBData.getInt(rs, MEMORY_SERVICE.USER_ID);
-            return new MemoryServiceInfo(ms_id, ms_desc, ms_used, ms_starttime, ms_endtime, ms_state, ms_creationtime, ms_modifiedtime, mem_id, user_id);
+            return new MemoryServiceInfo(ms_id, ms_desc, ms_used, ms_state, ms_creationtime, ms_modifiedtime, mem_id, user_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -391,7 +389,7 @@ public class DeviceMemoryService {
     
     static void createMemoryByServerID(Connection conn, String server_desc, int server_id) throws Exception {
         int mem_id = DeviceMemoryDBProcWrapper.createMemory(conn, server_desc, 0, server_id);
-        DeviceMemoryDBProcWrapper.createMemoryService(conn, null, 0, null, null, MemoryState.RESERVED, mem_id, -1);
+        DeviceMemoryDBProcWrapper.createMemoryService(conn, null, 0, MemoryState.RESERVED, mem_id, -1);
     }
     
     static void deleteMemoryByServerID(Connection conn, int server_id) throws Exception {
@@ -426,7 +424,7 @@ public class DeviceMemoryService {
             rs.updateLong(MEMORY.MEMORY_TOTAL.toString(), rs.getLong(MEMORY.MEMORY_TOTAL.toString()) + ms_used - reserved);
             rs.updateRow();
         }
-        return DeviceMemoryDBProcWrapper.createMemoryService(conn, ms_desc, ms_used, null, null, ms_state, mem_id, user_id);
+        return DeviceMemoryDBProcWrapper.createMemoryService(conn, ms_desc, ms_used, ms_state, mem_id, user_id);
     }
     
     static void deleteMemoryService(Connection conn, int ms_id) throws Exception {
@@ -524,17 +522,21 @@ public class DeviceMemoryService {
             DBTableAccount ACCOUNT = DBTable.ACCOUNT;
             DBTableUser USER = DBTable.USER;
             DBTableServer SERVER = DBTable.SERVER;
+            DBTableUserApp USER_APP = DBTable.USER_APP;
             DBTableMemory MEMORY = DBTable.MEMORY;
             DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
             DBStringBuilder sb = new DBStringBuilder();
             sb.append("SELECT ").append(MEMORY.ANY).append(", ").append(MEMORY_SERVICE.ANY).append(", ");
             sb.append(SERVER.SERVER_NAME).append(", ").append(ACCOUNT.ACCOUNT_NAME).append(", ").append(USER.USER_NAME).append(", ");
-            sb.appendDateLifeRemains(MEMORY_SERVICE.MEMORY_SERVICE_STARTTIME, MEMORY_SERVICE.MEMORY_SERVICE_ENDTIME, MEMORY_SERVICE.MEMORY_SERVICE_LIFE).append(" FROM "); {
+            sb.append(USER_APP.SERVICE_STARTTIME).append(" AS ").append(MEMORY_SERVICE.MEMORY_SERVICE_STARTTIME).append(", ");
+            sb.append(USER_APP.SERVICE_ENDTIME).append(" AS ").append(MEMORY_SERVICE.MEMORY_SERVICE_ENDTIME).append(", ");
+            sb.appendDateLifeRemains(USER_APP.SERVICE_STARTTIME, USER_APP.SERVICE_ENDTIME, MEMORY_SERVICE.MEMORY_SERVICE_LIFE).append(" FROM "); {
                 sb.append(MEMORY_SERVICE);
                 sb.append(" LEFT JOIN ").append(USER).append(" ON ").append(MEMORY_SERVICE.USER_ID).append(" = ").append(USER.USER_ID);
                 sb.append(" LEFT JOIN ").append(ACCOUNT).append(" ON ").append(USER.ACCOUNT_ID).append(" = ").append(ACCOUNT.ACCOUNT_ID);
                 sb.append(" LEFT JOIN ").append(MEMORY).append(" ON ").append(MEMORY_SERVICE.MEMORY_ID).append(" = ").append(MEMORY.MEMORY_ID);
                 sb.append(" LEFT JOIN ").append(SERVER).append(" ON ").append(MEMORY.SERVER_ID).append(" = ").append(SERVER.SERVER_ID);
+                sb.append(" LEFT JOIN ").append(USER_APP).append(" ON ").append(MEMORY_SERVICE.MEMORY_SERVICE_ID).append(" = ").append(USER_APP.MEMORY_SERVICE_ID);
             }
             sb.append(" WHERE ").append(MEMORY_SERVICE.MEMORY_SERVICE_USED).append(" != ").append(0);
             if (state != null) {
@@ -577,14 +579,12 @@ public class DeviceMemoryService {
             return rs.getInt(1);
         }
         
-        public static int createMemoryService(Connection conn, String ms_desc, long ms_used, Date ms_starttime, Date ms_endtime, MemoryState state, int mem_id, int user_id) throws Exception {
+        public static int createMemoryService(Connection conn, String ms_desc, long ms_used, MemoryState state, int mem_id, int user_id) throws Exception {
             DBTableMemoryService MEMORY_SERVICE = DBTable.MEMORY_SERVICE;
             DBStringBuilder sb = new DBStringBuilder();
             sb.append("INSERT INTO ").append(MEMORY_SERVICE).append(" ("); {
                 sb.append(MEMORY_SERVICE.MEMORY_SERVICE_DESC).append(", ");
                 sb.append(MEMORY_SERVICE.MEMORY_SERVICE_USED).append(", ");
-                sb.append(MEMORY_SERVICE.MEMORY_SERVICE_STARTTIME).append(", ");
-                sb.append(MEMORY_SERVICE.MEMORY_SERVICE_ENDTIME).append(", ");
                 sb.append(MEMORY_SERVICE.MEMORY_SERVICE_STATE).append(", ");
                 sb.append(MEMORY_SERVICE.MEMORY_SERVICE_CREATIONTIME).append(", ");
                 sb.append(MEMORY_SERVICE.MEMORY_SERVICE_MODIFIEDTIME).append(", ");
@@ -594,8 +594,6 @@ public class DeviceMemoryService {
             sb.append(") VALUES ("); {
                 sb.appendString(ms_desc).append(", ");
                 sb.append(ms_used).append(", ");
-                sb.appendDate(ms_starttime).append(", ");
-                sb.appendDate(ms_endtime).append(", ");
                 sb.append(state.getValue()).append(", ");
                 sb.appendDate().append(", ");
                 sb.appendNull().append(", ");
