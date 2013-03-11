@@ -3,6 +3,7 @@ package com.eucalyptus.webui.server;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -12,6 +13,9 @@ import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
+import com.eucalyptus.webui.server.stat.HistoryAction;
+
+import com.eucalyptus.webui.server.stat.HistoryDBProcWrapper;
 import com.eucalyptus.webui.shared.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.dictionary.DBTableName;
 import com.eucalyptus.webui.shared.resource.device.IPServiceInfo;
@@ -25,9 +29,11 @@ public class EucaServiceWrapper {
   private static final Logger LOG = Logger.getLogger(EucaServiceWrapper.class);
   
   private AwsServiceImpl aws = null;
+  private HistoryDBProcWrapper history = null;
   
   private EucaServiceWrapper() {
     aws = new AwsServiceImpl();
+    history = new HistoryDBProcWrapper();
   }
   
   static public EucaServiceWrapper getInstance() {
@@ -51,6 +57,11 @@ public class EucaServiceWrapper {
     return aws.runInstance(session, userID, image, keypair, "c1.xlarge", group);
   }
   
+  public void terminateVM(Session session, int userID, String instanceID) throws EucalyptusServiceException {
+    List<String> ids = new ArrayList<String>();
+    ids.add(instanceID);
+    aws.terminateInstances(session, userID, ids);    
+  }
   
   /**
    * get all keypairs' name owned by user
@@ -122,30 +133,79 @@ public class EucaServiceWrapper {
   }
     
   public List<IPServiceInfo> getIPServices(int accountID, int userID) throws EucalyptusServiceException {
+    List<Integer> ids = new ArrayList<Integer>();
+    if (userID > 0) {
+      ids.add(userID);
+    } else {
+      StringBuilder sb = new StringBuilder();
+      sb.append("SELECT ").append(DBTableColName.USER.ID).append(" FROM ")
+        .append(DBTableName.USER);
+      if (accountID > 0) {
+        sb.append(" WHERE ").append(DBTableColName.USER.ACCOUNT_ID).append(" = '")
+          .append(accountID).append("'");
+      }
+      try {
+        ResultSet r = DBProcWrapper.Instance().query(sb.toString()).getResultSet();
+        while (r.next()) {
+          ids.add(r.getInt(DBTableColName.USER.ID));
+        }
+      } catch (Exception e) {
+        throw new EucalyptusServiceException("db error");
+      }        
+    }
+    LOG.debug("ip service: user ids = " + ids.toString());
+    
     List<IPServiceInfo> ret = new ArrayList<IPServiceInfo>();
-    List<Address> addrs = aws.lookupPublicAddress(userID);
+    List<Address> addrs = aws.lookupPublicAddress(ids.get(0));
     for (Address a : addrs) {
-      IPServiceInfo e = new IPServiceInfo();
-      e.ip_addr = a.getPublicIp();
       String id = a.getInstanceId();
-      if (id.startsWith("nobody")) { 
-        e.is_state = IPState.STOP;
-      } else if (id.startsWith("available")) {
+      if (id.startsWith("nobody") ||
+          false) {
+          //!ids.contains(aws.getUserID(id))) { 
+        continue;
+      }
+      IPServiceInfo e = new IPServiceInfo();
+      e.ip_addr = a.getPublicIp();      
+      if (id.startsWith("available")) {   
         e.is_state = IPState.RESERVED;
       } else {
         e.is_state = IPState.INUSE;
         IPServiceInfo _e = new IPServiceInfo();
         String _id = id.substring(0, id.indexOf(' '));
+        e.ip_id = getIPID(_id, IPType.PUBLIC);
         String _ip = getServerIp(userID, _id);
         _e.is_state = IPState.INUSE;
         _e.ip_type = IPType.PRIVATE;
         _e.ip_addr = _ip;
+        _e.ip_id = getIPID(_id, IPType.PRIVATE);
         ret.add(_e);
       }            
       e.ip_type = IPType.PUBLIC;
       ret.add(e);
     }
     return ret;
+  }
+  
+  public int getIPID(String instanceID, IPType t) throws EucalyptusServiceException{
+    StringBuilder sb = new StringBuilder();
+    sb.append("SELECT ");
+    String col = null;
+    if (t == IPType.PRIVATE)
+      col = DBTableColName.USER_APP.PRI_IP_SRV_ID;
+    else
+      col = DBTableColName.USER_APP.PUB_IP_SRV_ID;
+      sb.append(col);
+    sb.append(" FROM ").append(DBTableName.USER_APP)
+      .append(" WHERE ").append(DBTableColName.USER_APP.EUCA_VI_KEY).append(" = '")
+      .append(instanceID).append("'");
+    try {
+      ResultSet r = DBProcWrapper.Instance().query(sb.toString()).getResultSet();
+      if (r.first())
+        return r.getInt(col);
+    } catch (Exception e) {
+      throw new EucalyptusServiceException("db error");
+    }
+    return 0;
   }
   
   public List<String> allocateAddress(int userID, IPType type, int count) throws EucalyptusServiceException {
@@ -155,14 +215,5 @@ public class EucaServiceWrapper {
   public void releaseAddress(int userID, IPType type, String addr) throws EucalyptusServiceException {
     aws.releaseAddress(userID, type, addr);
   }
-  
-  
-  public void acquireResource(int serverID, TemplateInfo t) {
     
-  }
-  
-  public void releaseResource(int serverID, TemplateInfo t) {
-    
-  }
-  
 }
