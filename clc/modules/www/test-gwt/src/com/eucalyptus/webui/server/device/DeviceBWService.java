@@ -185,14 +185,12 @@ public class DeviceBWService {
             ResultSet rs = DeviceBWDBProcWrapper.lookupBWServiceByID(conn, false, bs_id);
             DBTableBWService BW_SERVICE = DBTable.BW_SERVICE;
             String bs_desc = DBData.getString(rs, BW_SERVICE.BW_SERVICE_DESC);
-            Date bs_starttime = DBData.getDate(rs, BW_SERVICE.BW_SERVICE_STARTTIME);
-            Date bs_endtime = DBData.getDate(rs, BW_SERVICE.BW_SERVICE_ENDTIME);
             int bs_bw = DBData.getInt(rs, BW_SERVICE.BW_SERVICE_BW);
             int bs_bw_max = DBData.getInt(rs, BW_SERVICE.BW_SERVICE_BW_MAX);
             Date bs_creationtime = DBData.getDate(rs, BW_SERVICE.BW_SERVICE_CREATIONTIME);
             Date bs_modifiedtime = DBData.getDate(rs, BW_SERVICE.BW_SERVICE_MODIFIEDTIME);
             int ip_id = DBData.getInt(rs, BW_SERVICE.IP_ID);
-            return new BWServiceInfo(bs_id, bs_desc, bs_starttime, bs_endtime, bs_bw, bs_bw_max, bs_creationtime, bs_modifiedtime, ip_id);
+            return new BWServiceInfo(bs_id, bs_desc, bs_bw, bs_bw_max, bs_creationtime, bs_modifiedtime, ip_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -204,14 +202,14 @@ public class DeviceBWService {
     }
     
     static int createBWService(Connection conn, String bs_desc, int bs_bw_max, int ip_id) throws Exception {
-        return DeviceBWDBProcWrapper.createBWService(conn, bs_desc, bs_bw_max, null, null, ip_id);
+        return DeviceBWDBProcWrapper.createBWService(conn, bs_desc, bs_bw_max, ip_id);
     }
     
     static void deleteBWService(Connection conn, int bs_id) throws Exception {
         DeviceBWDBProcWrapper.lookupBWServiceByID(conn, true, bs_id).deleteRow();
     }
     
-    public static void createBWService(boolean force, Session session, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, int ip_id) throws EucalyptusServiceException {
+    public static void createBWService(boolean force, Session session, String bs_desc, int bs_bw_max, int ip_id) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
@@ -219,7 +217,7 @@ public class DeviceBWService {
         Connection conn = null;
         try {
             conn = DBProcWrapper.getConnection();
-            DeviceBWDBProcWrapper.createBWService(conn, bs_desc, bs_bw_max, bs_starttime, bs_endtime, ip_id);
+            DeviceBWDBProcWrapper.createBWService(conn, bs_desc, bs_bw_max, ip_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -255,18 +253,9 @@ public class DeviceBWService {
         }
     }
     
-    public static void modifyBWService(boolean force, Session session, int bs_id, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime) throws EucalyptusServiceException {
+    public static void modifyBWService(boolean force, Session session, int bs_id, String bs_desc, int bs_bw_max) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
-        }
-        if (bs_starttime == null) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("Start Time", "开始日期"));
-        }
-        if (bs_endtime == null) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("End Time", "结束日期"));
-        }
-        if (DBData.calcLife(bs_endtime, bs_starttime) <= 0) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("Date Value", "服务日期"));
         }
         if (bs_desc == null) {
             bs_desc = "";
@@ -280,8 +269,6 @@ public class DeviceBWService {
             ResultSet rs = DeviceBWDBProcWrapper.lookupBWServiceByID(conn, true, bs_id);
             rs.updateString(BW_SERVICE.BW_SERVICE_DESC.toString(), bs_desc);
             rs.updateInt(BW_SERVICE.BW_SERVICE_BW_MAX.toString(), bs_bw_max);
-            rs.updateString(BW_SERVICE.BW_SERVICE_STARTTIME.toString(), DBStringBuilder.getDate(bs_starttime));
-            rs.updateString(BW_SERVICE.BW_SERVICE_ENDTIME.toString(), DBStringBuilder.getDate(bs_endtime));
             rs.updateString(BW_SERVICE.BW_SERVICE_MODIFIEDTIME.toString(), DBStringBuilder.getDate());
             rs.updateRow();
             conn.commit();
@@ -366,16 +353,20 @@ public class DeviceBWService {
         public static ResultSet lookupBWService(Connection conn, DBTableColumn sorted, boolean isAscending, int account_id, int user_id) throws Exception {
             DBTableAccount ACCOUNT = DBTable.ACCOUNT;
             DBTableUser USER = DBTable.USER;
+            DBTableUserApp USER_APP = DBTable.USER_APP;
             DBTableIPService IP_SERVICE = DBTable.IP_SERVICE;
             DBTableBWService BW_SERVICE = DBTable.BW_SERVICE;
             DBStringBuilder sb = new DBStringBuilder();
             sb.append("SELECT ").append(BW_SERVICE.ANY).append(", ").append(IP_SERVICE.IP_ADDR).append(", ").append(IP_SERVICE.IP_TYPE).append(", ");
             sb.append(ACCOUNT.ACCOUNT_NAME).append(", ").append(USER.USER_NAME).append(", ");
-            sb.appendDateLifeRemains(BW_SERVICE.BW_SERVICE_STARTTIME, BW_SERVICE.BW_SERVICE_ENDTIME, BW_SERVICE.BW_SERVICE_LIFE).append(" FROM "); {
+            sb.append(USER_APP.SERVICE_STARTTIME).append(" AS ").append(BW_SERVICE.BW_SERVICE_STARTTIME).append(", ");
+            sb.append(USER_APP.SERVICE_ENDTIME).append(" AS ").append(BW_SERVICE.BW_SERVICE_ENDTIME).append(", ");
+            sb.appendDateLifeRemains(USER_APP.SERVICE_STARTTIME, USER_APP.SERVICE_ENDTIME, BW_SERVICE.BW_SERVICE_LIFE).append(" FROM "); {
                 sb.append(BW_SERVICE);
                 sb.append(" LEFT JOIN ").append(IP_SERVICE).append(" ON ").append(BW_SERVICE.IP_ID).append(" = ").append(IP_SERVICE.IP_ID);
                 sb.append(" LEFT JOIN ").append(USER).append(" ON ").append(IP_SERVICE.USER_ID).append(" = ").append(USER.USER_ID);
                 sb.append(" LEFT JOIN ").append(ACCOUNT).append(" ON ").append(USER.ACCOUNT_ID).append(" = ").append(ACCOUNT.ACCOUNT_ID);
+                sb.append(" LEFT JOIN ").append(USER_APP).append(" ON ").append(BW_SERVICE.BW_SERVICE_ID).append(" = ").append(USER_APP.PUBLIC_BW_SERVICE_ID);
             }
             sb.append(" WHERE 1=1");
             if (user_id >= 0) {
@@ -390,13 +381,11 @@ public class DeviceBWService {
             return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
         }
         
-        public static int createBWService(Connection conn, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, int ip_id) throws Exception {
+        public static int createBWService(Connection conn, String bs_desc, int bs_bw_max, int ip_id) throws Exception {
             DBTableBWService BW_SERVICE = DBTable.BW_SERVICE;
             DBStringBuilder sb = new DBStringBuilder();
             sb.append("INSERT INTO ").append(BW_SERVICE).append(" ("); {
                 sb.append(BW_SERVICE.BW_SERVICE_DESC).append(", ");
-                sb.append(BW_SERVICE.BW_SERVICE_STARTTIME).append(", ");
-                sb.append(BW_SERVICE.BW_SERVICE_ENDTIME).append(", ");
                 sb.append(BW_SERVICE.BW_SERVICE_BW).append(", ");
                 sb.append(BW_SERVICE.BW_SERVICE_BW_MAX).append(", ");
                 sb.append(BW_SERVICE.BW_SERVICE_CREATIONTIME).append(", ");
@@ -405,8 +394,6 @@ public class DeviceBWService {
             }
             sb.append(") VALUES ("); {
                 sb.appendString(bs_desc).append(", ");
-                sb.appendDate(bs_starttime).append(", ");
-                sb.appendDate(bs_endtime).append(", ");
                 sb.append(0).append(", ");
                 sb.append(bs_bw_max).append(", ");
                 sb.appendDate().append(", ");

@@ -954,8 +954,8 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     }
     
     @Override
-    public void createDeviceIPService(Session session, IPType ip_type, String is_desc, Date is_starttime, Date is_endtime, int count, int user_id) throws EucalyptusServiceException {
-    	DeviceIPService.createIPService(false, session, ip_type, is_desc, is_starttime, is_endtime, count, user_id);
+    public void createDeviceIPService(Session session, IPType ip_type, String is_desc, int count, int user_id) throws EucalyptusServiceException {
+    	DeviceIPService.createIPService(false, session, ip_type, is_desc, count, user_id);
     }
     
     @Override
@@ -974,13 +974,13 @@ public class EucalyptusServiceImpl extends RemoteServiceServlet implements Eucal
     }
 	
 	@Override
-    public void createDeviceBWService(Session session, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, int ip_id) throws EucalyptusServiceException {
-		DeviceBWService.createBWService(false, session, bs_desc, bs_bw_max, bs_starttime, bs_endtime, ip_id);
+    public void createDeviceBWService(Session session, String bs_desc, int bs_bw_max, int ip_id) throws EucalyptusServiceException {
+		DeviceBWService.createBWService(false, session, bs_desc, bs_bw_max, ip_id);
     }
 	
 	@Override
-    public void modifyDeviceBWService(Session session, int bs_id, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime) throws EucalyptusServiceException {
-		DeviceBWService.modifyBWService(false, session, bs_id, bs_desc, bs_bw_max, bs_starttime, bs_endtime);
+    public void modifyDeviceBWService(Session session, int bs_id, String bs_desc, int bs_bw_max) throws EucalyptusServiceException {
+		DeviceBWService.modifyBWService(false, session, bs_id, bs_desc, bs_bw_max);
     }
 	
 	@Override

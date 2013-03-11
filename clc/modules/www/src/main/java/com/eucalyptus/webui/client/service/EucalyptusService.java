@@ -791,13 +791,13 @@ public interface EucalyptusService extends RemoteService {
     
     SearchResult lookupDeviceIP(Session session, SearchRange range, IPType ip_type, IPState ip_state) throws EucalyptusServiceException;
     Map<Integer, Integer> lookupDeviceIPCounts(Session session, IPType ip_type) throws EucalyptusServiceException;
-    void createDeviceIPService(Session session, IPType ip_type, String is_desc, Date is_starttime, Date is_endtime, int count, int user_id) throws EucalyptusServiceException;
+    void createDeviceIPService(Session session, IPType ip_type, String is_desc, int count, int user_id) throws EucalyptusServiceException;
     void deleteDeviceIPService(Session session, List<Integer> ip_ids) throws EucalyptusServiceException;
     IPServiceInfo lookupDeviceIPServiceByID(Session session, int ip_id) throws EucalyptusServiceException;
     
     SearchResult lookupDeviceBW(Session session, SearchRange range) throws EucalyptusServiceException;
-    void createDeviceBWService(Session session, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, int ip_id) throws EucalyptusServiceException;
-    void modifyDeviceBWService(Session session, int bs_id, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime) throws EucalyptusServiceException;
+    void createDeviceBWService(Session session, String bs_desc, int bs_bw_max, int ip_id) throws EucalyptusServiceException;
+    void modifyDeviceBWService(Session session, int bs_id, String bs_desc, int bs_bw_max) throws EucalyptusServiceException;
     void deleteDeviceBWService(Session session, List<Integer> bs_ids) throws EucalyptusServiceException;
     BWServiceInfo lookupDeviceBWServiceByID(Session session, int bs_id) throws EucalyptusServiceException;
     public Map<String, Integer> lookupDeviceIPsWihtoutBWService(Session session, int account_id, int user_id) throws EucalyptusServiceException;
