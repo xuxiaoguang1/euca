@@ -104,10 +104,14 @@ public class DeviceIPService {
                 conn = DBProcWrapper.getConnection();
                 conn.setAutoCommit(false);
                 for (IPServiceInfo info : infos) {
-                    ResultSet rs = DeviceIPDBProcWrapper.lookupIPByID(conn, true, info.ip_id);
-                    rs.updateString(IP_SERVICE.IP_ADDR.toString(), info.ip_addr);
-                    rs.updateInt(IP_SERVICE.IP_TYPE.toString(), info.ip_type.getValue());
-                    rs.updateInt(IP_SERVICE.IP_SERVICE_STATE.toString(), info.is_state.getValue());
+                    if (info.ip_id > 0) {
+                        ResultSet rs = DeviceIPDBProcWrapper.lookupIPByID(conn, true, info.ip_id, false);
+                        if (rs.next()) {
+                            rs.updateString(IP_SERVICE.IP_ADDR.toString(), info.ip_addr);
+                            rs.updateInt(IP_SERVICE.IP_TYPE.toString(), info.ip_type.getValue());
+                            rs.updateInt(IP_SERVICE.IP_SERVICE_STATE.toString(), info.is_state.getValue());
+                        }
+                    }
                 }
                 conn.commit();
             }
@@ -211,25 +215,21 @@ public class DeviceIPService {
         try {
             conn = DBProcWrapper.getConnection();
             DBTableIPService IP_SERVICE = DBTable.IP_SERVICE;
-            ResultSet rs = DeviceIPDBProcWrapper.lookupIPByID(conn, false, ip_id);
+            ResultSet rs = DeviceIPDBProcWrapper.lookupIPByID(conn, false, ip_id, true);
             String ip_addr = DBData.getString(rs, IP_SERVICE.IP_ADDR);
             IPType ip_type = IPType.getIPType(DBData.getInt(rs, IP_SERVICE.IP_TYPE));
             IPState is_state = IPState.getIPState(DBData.getInt(rs, IP_SERVICE.IP_SERVICE_STATE));
             String is_desc = null;
-            Date is_starttime = null;
-            Date is_endtime = null;
             Date is_creationtime = null;
             Date is_modifiedtime = null;
             int user_id = -1;
             if (is_state != IPState.RESERVED) {
                 is_desc = DBData.getString(rs, IP_SERVICE.IP_SERVICE_DESC);
-                is_starttime = DBData.getDate(rs, IP_SERVICE.IP_SERVICE_STARTTIME);
-                is_endtime = DBData.getDate(rs, IP_SERVICE.IP_SERVICE_ENDTIME);
                 is_creationtime = DBData.getDate(rs, IP_SERVICE.IP_SERVICE_CREATIONTIME);
                 is_modifiedtime = DBData.getDate(rs, IP_SERVICE.IP_SERVICE_MODIFIEDTIME);
                 user_id = DBData.getInt(rs, IP_SERVICE.USER_ID);
             }
-            return new IPServiceInfo(ip_id, ip_addr, ip_type, is_desc, is_starttime, is_endtime, is_state, is_creationtime, is_modifiedtime, user_id);
+            return new IPServiceInfo(ip_id, ip_addr, ip_type, is_desc, is_state, is_creationtime, is_modifiedtime, user_id);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -250,25 +250,16 @@ public class DeviceIPService {
         if (is_desc == null) {
             is_desc = "";
         }
-        return DeviceIPDBProcWrapper.createIPService(conn, null, ip_type, is_state, is_desc, null, null, user_id);
+        return DeviceIPDBProcWrapper.createIPService(conn, null, ip_type, is_state, is_desc, user_id);
     }
     
     
-    public static void createIPService(boolean force, Session session, IPType ip_type, String is_desc, Date is_starttime, Date is_endtime, int count, int user_id) throws EucalyptusServiceException {
+    public static void createIPService(boolean force, Session session, IPType ip_type, String is_desc, int count, int user_id) throws EucalyptusServiceException {
         if (!force && !getUser(session).isSystemAdmin()) {
             throw new EucalyptusServiceException(ClientMessage.PERMISSION_DENIED);
         }
         if (ip_type == null) {
             throw new EucalyptusServiceException(ClientMessage.invalidValue("IP Address Type", "IP地址类型"));
-        }
-        if (is_starttime == null) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("Start Time", "开始日期"));
-        }
-        if (is_endtime == null) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("End Time", "结束日期"));
-        }
-        if (DBData.calcLife(is_endtime, is_starttime) <= 0) {
-            throw new EucalyptusServiceException(ClientMessage.invalidValue("Date Value", "服务日期"));
         }
         if (count <= 0) {
             throw new EucalyptusServiceException(ClientMessage.invalidValue("IP Address Count", "IP地址数量"));
@@ -284,7 +275,7 @@ public class DeviceIPService {
             conn = DBProcWrapper.getConnection();
             conn.setAutoCommit(false);
             for (String ip_addr : EucaServiceWrapper.getInstance().allocateAddress(user_id, ip_type, count)) {
-                DeviceIPDBProcWrapper.createIPService(conn, ip_addr, ip_type, IPState.RESERVED, is_desc, is_starttime, is_endtime, user_id);
+                DeviceIPDBProcWrapper.createIPService(conn, ip_addr, ip_type, IPState.RESERVED, is_desc, user_id);
             }
             conn.commit();
         }
@@ -299,7 +290,7 @@ public class DeviceIPService {
     }
     
     static void deleteIPService(Connection conn, int ip_id) throws Exception {
-        DeviceIPDBProcWrapper.lookupIPByID(conn, true, ip_id).deleteRow();
+        DeviceIPDBProcWrapper.lookupIPByID(conn, true, ip_id, true).deleteRow();
     }
     
     public static void deleteIPService(boolean force, Session session, List<Integer> ip_ids) throws EucalyptusServiceException {
@@ -313,7 +304,7 @@ public class DeviceIPService {
                 conn.setAutoCommit(false);
                 DBTableIPService IP_SERVICE = DBTable.IP_SERVICE;
                 for (int ip_id : ip_ids) {
-                    ResultSet rs = DeviceIPDBProcWrapper.lookupIPByID(conn, true, ip_id);
+                    ResultSet rs = DeviceIPDBProcWrapper.lookupIPByID(conn, true, ip_id, true);
                     if (rs.getInt(IP_SERVICE.IP_SERVICE_STATE.toString()) == IPState.RESERVED.getValue()) {
                         rs.deleteRow();
                     }
@@ -339,7 +330,7 @@ public class DeviceIPService {
             throw new EucalyptusServiceException(ClientMessage.invalidValue("IP Service State", "IP服务状态"));
         }
         DBTableIPService IP_SERVICE = DBTable.IP_SERVICE;
-        ResultSet rs = DeviceIPDBProcWrapper.lookupIPByID(conn, true, ip_id);
+        ResultSet rs = DeviceIPDBProcWrapper.lookupIPByID(conn, true, ip_id, true);
         rs.updateInt(IP_SERVICE.IP_SERVICE_STATE.toString(), is_state.getValue());
         rs.updateRow();
     }
@@ -348,27 +339,34 @@ public class DeviceIPService {
         
         private static final Logger log = Logger.getLogger(DeviceIPDBProcWrapper.class.getName());
         
-        public static ResultSet lookupIPByID(Connection conn, boolean updatable, int ip_id) throws Exception {
+        public static ResultSet lookupIPByID(Connection conn, boolean updatable, int ip_id, boolean move) throws Exception {
             DBTableIPService IP_SERVICE = DBTable.IP_SERVICE;
             DBStringBuilder sb = new DBStringBuilder();
             sb.append("SELECT * FROM ").append(IP_SERVICE);
             sb.append(" WHERE ").append(IP_SERVICE.IP_ID).append(" = ").append(ip_id);
             ResultSet rs = DBProcWrapper.queryResultSet(conn, updatable, sb.toSql(log));
-            rs.next();
+            if (move) {
+                rs.next();
+            }
             return rs;
         }
         
         public static ResultSet lookupIPService(Connection conn, IPType type, IPState state, DBTableColumn sorted, boolean isAscending, int account_id, int user_id) throws Exception {
             DBTableAccount ACCOUNT = DBTable.ACCOUNT;
             DBTableUser USER = DBTable.USER;
+            DBTableUserApp USER_APP = DBTable.USER_APP;
             DBTableIPService IP_SERVICE = DBTable.IP_SERVICE;
             DBStringBuilder sb = new DBStringBuilder();
             sb.append("SELECT ").append(IP_SERVICE.ANY).append(", ");
             sb.append(ACCOUNT.ACCOUNT_NAME).append(", ").append(USER.USER_NAME).append(", ");
-            sb.appendDateLifeRemains(IP_SERVICE.IP_SERVICE_STARTTIME, IP_SERVICE.IP_SERVICE_ENDTIME, IP_SERVICE.IP_SERVICE_LIFE).append(" FROM "); {
+            sb.append(USER_APP.SERVICE_STARTTIME).append(" AS ").append(IP_SERVICE.IP_SERVICE_STARTTIME).append(", ");
+            sb.append(USER_APP.SERVICE_ENDTIME).append(" AS ").append(IP_SERVICE.IP_SERVICE_ENDTIME).append(", ");
+            sb.appendDateLifeRemains(USER_APP.SERVICE_STARTTIME, USER_APP.SERVICE_ENDTIME, IP_SERVICE.IP_SERVICE_LIFE).append(" FROM "); {
                 sb.append(IP_SERVICE);
                 sb.append(" LEFT JOIN ").append(USER).append(" ON ").append(IP_SERVICE.USER_ID).append(" = ").append(USER.USER_ID);
                 sb.append(" LEFT JOIN ").append(ACCOUNT).append(" ON ").append(USER.ACCOUNT_ID).append(" = ").append(ACCOUNT.ACCOUNT_ID);
+                sb.append(" LEFT JOIN ").append(USER_APP).append(" ON ").append(IP_SERVICE.IP_ID).append(" = ").append(USER_APP.PUBLIC_IP_ID);
+                sb.append(" OR ").append(IP_SERVICE.IP_ID).append(" = ").append(USER_APP.PRIVATE_IP_ID);
             }
             sb.append(" WHERE 1=1");
             if (type != null) {
@@ -389,15 +387,13 @@ public class DeviceIPService {
             return DBProcWrapper.queryResultSet(conn, false, sb.toSql(log));
         }
         
-        public static int createIPService(Connection conn, String ip_addr, IPType type, IPState state, String is_desc, Date is_starttime, Date is_endtime, int user_id) throws Exception {
+        public static int createIPService(Connection conn, String ip_addr, IPType type, IPState state, String is_desc, int user_id) throws Exception {
             DBTableIPService IP_SERVICE = DBTable.IP_SERVICE;
             DBStringBuilder sb = new DBStringBuilder();
             sb.append("INSERT INTO ").append(IP_SERVICE).append(" ("); {
                 sb.append(IP_SERVICE.IP_ADDR).append(", ");
                 sb.append(IP_SERVICE.IP_TYPE).append(", ");
                 sb.append(IP_SERVICE.IP_SERVICE_DESC).append(", ");
-                sb.append(IP_SERVICE.IP_SERVICE_STARTTIME).append(", ");
-                sb.append(IP_SERVICE.IP_SERVICE_ENDTIME).append(", ");
                 sb.append(IP_SERVICE.IP_SERVICE_STATE).append(", ");
                 sb.append(IP_SERVICE.IP_SERVICE_CREATIONTIME).append(", ");
                 sb.append(IP_SERVICE.IP_SERVICE_MODIFIEDTIME).append(", ");
@@ -407,8 +403,6 @@ public class DeviceIPService {
                 sb.appendString(ip_addr).append(", ");
                 sb.append(type.getValue()).append(", ");
                 sb.appendString(is_desc).append(", ");
-                sb.appendDate(is_starttime).append(", ");
-                sb.appendDate(is_endtime).append(", ");
                 sb.append(state.getValue()).append(", ");
                 sb.appendDate().append(", ");
                 sb.appendNull().append(", ");

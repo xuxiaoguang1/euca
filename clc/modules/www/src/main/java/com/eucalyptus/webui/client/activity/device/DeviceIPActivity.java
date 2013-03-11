@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.client.activity.device;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,32 +121,10 @@ public class DeviceIPActivity extends DeviceActivity implements DeviceIPView.Pre
                     ipServiceAddView.setPresenter(new DeviceIPServiceAddView.Presenter() {
                         
                         @Override
-                        public boolean onOK(String is_desc, Date is_starttime, Date is_endtime, IPType ip_type, int count, int user_id) {
+                        public boolean onOK(String is_desc, IPType ip_type, int count, int user_id) {
                             if (ip_type == null) {
                                 StringBuilder sb = new StringBuilder();
                                 sb.append(new ClientMessage("Invalid IP Address Type: ", "IP地址类型非法")).append(" = (null).").append("\n");
-                                sb.append(new ClientMessage("Please try again.", "请重试."));
-                                Window.alert(sb.toString());
-                                return false;
-                            }
-                            if (is_starttime == null) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("Invalid Start Time: ", "开始时间非法")).append(" = (null).").append("\n");
-                                sb.append(new ClientMessage("Please try again.", "请重试."));
-                                Window.alert(sb.toString());
-                                return false;
-                            }
-                            if (is_endtime == null) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("Invalid End Time: ", "结束时间非法")).append(" = (null).").append("\n");
-                                sb.append(new ClientMessage("Please try again.", "请重试."));
-                                Window.alert(sb.toString());
-                                return false;
-                            }
-                            int is_life = DeviceDate.calcLife(is_endtime, is_starttime);
-                            if (is_life <= 0) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("Invalid Service Life Time: ", "服务期限非法")).append(" = ").append(is_life).append(".").append("\n");
                                 sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
@@ -159,7 +136,7 @@ public class DeviceIPActivity extends DeviceActivity implements DeviceIPView.Pre
                                 Window.alert(sb.toString());
                                 return false;
                             }
-                            getBackendService().createDeviceIPService(getSession(), ip_type, is_desc, is_starttime, is_endtime, count, user_id, new AsyncCallback<Void>() {
+                            getBackendService().createDeviceIPService(getSession(), ip_type, is_desc, count, user_id, new AsyncCallback<Void>() {
 
                                 @Override
                                 public void onFailure(Throwable caught) {

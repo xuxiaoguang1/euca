@@ -149,12 +149,12 @@ public class CellTableColumns {
     }
     
     public class IP {
-    	
+        
         public static final int IP_ID = 0;
         public static final int RESERVED_CHECKBOX = 1;
         public static final int RESERVED_INDEX = 2;
-    	public static final int IP_ADDR = 3;
-    	public static final int IP_TYPE = 4;
+        public static final int IP_ADDR = 3;
+        public static final int IP_TYPE = 4;
         public static final int IP_SERVICE_STATE = 5;
         public static final int ACCOUNT_NAME = 6;
         public static final int USER_NAME = 7;
@@ -166,47 +166,47 @@ public class CellTableColumns {
         public static final int IP_SERVICE_MODIFIEDTIME = 13;
         
         public static final int COLUMN_SIZE = 14;
-    	
+        
     }
     
     public class BW {
-    	
-    	public static final int BW_SERVICE_ID = 0;
+        
+        public static final int BW_SERVICE_ID = 0;
         public static final int RESERVED_CHECKBOX = 1;
         public static final int RESERVED_INDEX = 2;
-    	public static final int IP_ADDR = 3;
-    	public static final int IP_TYPE = 4;
-    	public static final int BW_SERVICE_BW_MAX = 5;
-    	public static final int BW_SERVICE_BW = 6;
-    	public static final int ACCOUNT_NAME = 7;
-    	public static final int USER_NAME = 8;
-    	public static final int BW_SERVICE_DESC = 9;
-    	public static final int BW_SERVICE_STARTTIME = 10;
-    	public static final int BW_SERVICE_ENDTIME = 11;
-    	public static final int BW_SERVICE_LIFE = 12;
-    	public static final int BW_SERVICE_CREATIONTIME = 13;
-    	public static final int BW_SERVICE_MODIFIEDTIME = 14;
-    	
-    	public static final int COLUMN_SIZE = 15;
-    	
+        public static final int IP_ADDR = 3;
+        public static final int IP_TYPE = 4;
+        public static final int BW_SERVICE_BW_MAX = 5;
+        public static final int BW_SERVICE_BW = 6;
+        public static final int ACCOUNT_NAME = 7;
+        public static final int USER_NAME = 8;
+        public static final int BW_SERVICE_DESC = 9;
+        public static final int BW_SERVICE_STARTTIME = 10;
+        public static final int BW_SERVICE_ENDTIME = 11;
+        public static final int BW_SERVICE_LIFE = 12;
+        public static final int BW_SERVICE_CREATIONTIME = 13;
+        public static final int BW_SERVICE_MODIFIEDTIME = 14;
+        
+        public static final int COLUMN_SIZE = 15;
+        
     }
     
     public class TEMPLATE {
-    	
-    	public static final int TEMPLATE_ID = 0;
-    	public static final int RESERVED_CHECKBOX = 1;
+        
+        public static final int TEMPLATE_ID = 0;
+        public static final int RESERVED_CHECKBOX = 1;
         public static final int RESERVED_INDEX = 2;
-    	public static final int TEMPLATE_NAME = 3;
-    	public static final int TEMPLATE_DESC = 4;
-    	public static final int TEMPLATE_NCPUS = 5;
-    	public static final int TEMPLATE_MEM = 6;
-    	public static final int TEMPLATE_DISK = 7;
-    	public static final int TEMPLATE_BW = 8;
-    	public static final int TEMPLATE_CREATIONTIME = 9;
-    	public static final int TEMPLATE_MODIFIEDTIME = 10;
-    	
-    	public static final int COLUMN_SIZE = 11;
-    	
+        public static final int TEMPLATE_NAME = 3;
+        public static final int TEMPLATE_DESC = 4;
+        public static final int TEMPLATE_NCPUS = 5;
+        public static final int TEMPLATE_MEM = 6;
+        public static final int TEMPLATE_DISK = 7;
+        public static final int TEMPLATE_BW = 8;
+        public static final int TEMPLATE_CREATIONTIME = 9;
+        public static final int TEMPLATE_MODIFIEDTIME = 10;
+        
+        public static final int COLUMN_SIZE = 11;
+        
     }
     
     public class CPU_PRICE {
@@ -225,8 +225,8 @@ public class CellTableColumns {
     }
     
     public class TEMPLATE_PRICE {
-    	
-    	public static final int TEMPLATE_PRICE_ID = 0;
+        
+        public static final int TEMPLATE_PRICE_ID = 0;
         public static final int RESERVED_CHECKBOX = 1;
         public static final int RESERVED_INDEX = 2;
         public static final int TEMPLATE_NAME = 3;
@@ -248,62 +248,62 @@ public class CellTableColumns {
     }
     
     public static class CellTableColumnsRow {
-    	
-    	private String[] array;
-    	
-    	public CellTableColumnsRow(int size) {
-    		array = new String[size];
-    	}
-    	
-    	public void setColumn(int index, Integer value) {
-    		if (value != null) {
-    			array[index] = Integer.toString(value);
-    		}
-    		else {
-        		array[index] = "";
-    		}
-    	}
-    	
-    	public void setColumn(int index, Long value) {
-    		if (value != null) {
-    			array[index] = Long.toString(value);
-    		}
-    		else {
-        		array[index] = "";
-    		}
-    	}
-    	
-    	public void setColumn(int index, Double value) {
-    		if (value != null) {
-    			array[index] = Double.toString(value);
-    		}
-    		else {
-        		array[index] = "";
-    		}
-    	}
-    	
-    	public void setColumn(int index, String value) {
-    		if (value != null) {
-    			array[index] = value;
-    		}
-    		else {
-    			array[index] = "";
-    		}
-    	}
-    	
-    	public void setColumn(int index, Date date) {
-    		if (date != null) {
-    			array[index] = DBData.format(date);
-    		}
-    		else {
-    			array[index] = "";
-    		}
-    	}
-    	
-    	public List<String> toList() {
-    		return Arrays.asList(array);
-    	}
-    	
+        
+        private String[] array;
+        
+        public CellTableColumnsRow(int size) {
+            array = new String[size];
+        }
+        
+        public void setColumn(int index, Integer value) {
+            if (value != null) {
+                array[index] = Integer.toString(value);
+            }
+            else {
+                array[index] = "";
+            }
+        }
+        
+        public void setColumn(int index, Long value) {
+            if (value != null) {
+                array[index] = Long.toString(value);
+            }
+            else {
+                array[index] = "";
+            }
+        }
+        
+        public void setColumn(int index, Double value) {
+            if (value != null) {
+                array[index] = Double.toString(value);
+            }
+            else {
+                array[index] = "";
+            }
+        }
+        
+        public void setColumn(int index, String value) {
+            if (value != null) {
+                array[index] = value;
+            }
+            else {
+                array[index] = "";
+            }
+        }
+        
+        public void setColumn(int index, Date date) {
+            if (date != null) {
+                array[index] = DBData.format(date);
+            }
+            else {
+                array[index] = "";
+            }
+        }
+        
+        public List<String> toList() {
+            return Arrays.asList(array);
+        }
+        
     }
     
 }

@@ -230,13 +230,13 @@ public interface EucalyptusServiceAsync {
 
     void lookupDeviceIP(Session session, SearchRange range, IPType ip_type, IPState ip_state, AsyncCallback<SearchResult> callback);
 	void lookupDeviceIPCounts(Session session, IPType ip_type, AsyncCallback<Map<Integer, Integer>> callback);
-	void createDeviceIPService(Session session, IPType ip_type, String is_desc, Date is_starttime, Date is_endtime, int count, int user_id, AsyncCallback<Void> callback);
+	void createDeviceIPService(Session session, IPType ip_type, String is_desc, int count, int user_id, AsyncCallback<Void> callback);
 	void deleteDeviceIPService(Session session, List<Integer> ip_ids, AsyncCallback<Void> callback);
     void lookupDeviceIPServiceByID(Session session, int ip_id, AsyncCallback<IPServiceInfo> callback);
 	
 	void lookupDeviceBW(Session session, SearchRange range, AsyncCallback<SearchResult> callback);
-	void createDeviceBWService(Session session, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, int ip_id, AsyncCallback<Void> callback);
-	void modifyDeviceBWService(Session session, int bs_id, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, AsyncCallback<Void> callback);
+	void createDeviceBWService(Session session, String bs_desc, int bs_bw_max, int ip_id, AsyncCallback<Void> callback);
+	void modifyDeviceBWService(Session session, int bs_id, String bs_desc, int bs_bw_max, AsyncCallback<Void> callback);
 	void deleteDeviceBWService(Session session, List<Integer> bs_ids, AsyncCallback<Void> callback);
 	void lookupDeviceBWServiceByID(Session session, int bs_id, AsyncCallback<BWServiceInfo> callback);
 	void lookupDeviceIPsWihtoutBWService(Session session, int account_id, int user_id, AsyncCallback<Map<String, Integer>> callback);

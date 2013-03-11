@@ -270,8 +270,8 @@ class DBTableIPService extends DBTable {
     public final DBTableColumn IP_ADDR = new DBTableColumn(this, "ip_addr");
     public final DBTableColumn IP_TYPE = new DBTableColumn(this, "ip_type");
     public final DBTableColumn IP_SERVICE_DESC = new DBTableColumn(this, "is_desc");
-    public final DBTableColumn IP_SERVICE_STARTTIME = new DBTableColumn(this, "is_starttime");
-    public final DBTableColumn IP_SERVICE_ENDTIME = new DBTableColumn(this, "is_endtime");
+    public final DBTableColumn IP_SERVICE_STARTTIME = new DBTableColumn(null, "is_starttime");
+    public final DBTableColumn IP_SERVICE_ENDTIME = new DBTableColumn(null, "is_endtime");
     public final DBTableColumn IP_SERVICE_LIFE = new DBTableColumn(null, "is_life");
     public final DBTableColumn IP_SERVICE_STATE = new DBTableColumn(this, "is_state");
     public final DBTableColumn IP_SERVICE_CREATIONTIME = new DBTableColumn(this, "is_creationtime");
@@ -288,8 +288,8 @@ class DBTableBWService extends DBTable {
     
     public final DBTableColumn BW_SERVICE_ID = new DBTableColumn(this, "bs_id");
     public final DBTableColumn BW_SERVICE_DESC = new DBTableColumn(this, "bs_desc");
-    public final DBTableColumn BW_SERVICE_STARTTIME = new DBTableColumn(this, "bs_starttime");
-    public final DBTableColumn BW_SERVICE_ENDTIME = new DBTableColumn(this, "bs_endtime");
+    public final DBTableColumn BW_SERVICE_STARTTIME = new DBTableColumn(null, "bs_starttime");
+    public final DBTableColumn BW_SERVICE_ENDTIME = new DBTableColumn(null, "bs_endtime");
     public final DBTableColumn BW_SERVICE_LIFE = new DBTableColumn(null, "bs_life");
     public final DBTableColumn BW_SERVICE_BW = new DBTableColumn(this, "bs_bw");
     public final DBTableColumn BW_SERVICE_BW_MAX = new DBTableColumn(this, "bs_bw_max");
@@ -357,6 +357,9 @@ class DBTableUserApp extends DBTable {
     public final DBTableColumn CPU_SERVICE_ID = new DBTableColumn(this, "cs_id");
     public final DBTableColumn MEMORY_SERVICE_ID = new DBTableColumn(this, "ms_id");
     public final DBTableColumn DISK_SERVICE_ID = new DBTableColumn(this, "ds_id");
+    public final DBTableColumn PUBLIC_IP_ID = new DBTableColumn(this, "public_is_id");
+    public final DBTableColumn PUBLIC_BW_SERVICE_ID = new DBTableColumn(this, "bs_id");
+    public final DBTableColumn PRIVATE_IP_ID = new DBTableColumn(this, "private_is_id");
     public final DBTableColumn SERVICE_STARTTIME = new DBTableColumn(this, "ua_srv_startingtime");
     public final DBTableColumn SERVICE_ENDTIME = new DBTableColumn(this, "ua_srv_endingtime");
 

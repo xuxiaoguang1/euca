@@ -1,7 +1,6 @@
 package com.eucalyptus.webui.client.activity.device;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -104,32 +103,10 @@ public class DeviceBWActivity extends DeviceActivity implements DeviceBWView.Pre
                     bwServiceAddView.setPresenter(new DeviceBWServiceAddView.Presenter() {
                         
                         @Override
-                        public boolean onOK(String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime, int ip_id) {
+                        public boolean onOK(String bs_desc, int bs_bw_max, int ip_id) {
                             if (bs_bw_max < 0) {
                                 StringBuilder sb = new StringBuilder();
                                 sb.append(new ClientMessage("Invalid Bandwidth Value: ", "带宽数值非法")).append(" = ").append(bs_bw_max).append(".").append("\n");
-                                sb.append(new ClientMessage("Please try again.", "请重试."));
-                                Window.alert(sb.toString());
-                                return false;
-                            }
-                            if (bs_starttime == null) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("Invalid Start Time: ", "开始时间非法")).append(" = (null).").append("\n");
-                                sb.append(new ClientMessage("Please try again.", "请重试."));
-                                Window.alert(sb.toString());
-                                return false;
-                            }
-                            if (bs_endtime == null) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("Invalid End Time: ", "结束时间非法")).append(" = (null).").append("\n");
-                                sb.append(new ClientMessage("Please try again.", "请重试."));
-                                Window.alert(sb.toString());
-                                return false;
-                            }
-                            int bs_life = DeviceDate.calcLife(bs_endtime, bs_starttime);
-                            if (bs_life <= 0) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(new ClientMessage("Invalid Service Life Time: ", "服务期限非法")).append(" = ").append(bs_life).append(".").append("\n");
                                 sb.append(new ClientMessage("Please try again.", "请重试."));
                                 Window.alert(sb.toString());
                                 return false;
@@ -141,7 +118,7 @@ public class DeviceBWActivity extends DeviceActivity implements DeviceBWView.Pre
                                 Window.alert(sb.toString());
                                 return false;
                             }
-                            getBackendService().createDeviceBWService(getSession(), bs_desc, bs_bw_max, bs_starttime, bs_endtime, ip_id, new AsyncCallback<Void>() {
+                            getBackendService().createDeviceBWService(getSession(), bs_desc, bs_bw_max, ip_id, new AsyncCallback<Void>() {
 
                                 @Override
                                 public void onFailure(Throwable caught) {
@@ -243,7 +220,7 @@ public class DeviceBWActivity extends DeviceActivity implements DeviceBWView.Pre
                         bwServiceModifyView.setPresenter(new DeviceBWServiceModifyView.Presenter() {
                             
                             @Override
-                            public boolean onOK(int bs_id, String bs_desc, int bs_bw_max, Date bs_starttime, Date bs_endtime) {
+                            public boolean onOK(int bs_id, String bs_desc, int bs_bw_max) {
                                 if (bs_bw_max < 0) {
                                     StringBuilder sb = new StringBuilder();
                                     sb.append(new ClientMessage("Invalid Bandwidth Value: ", "带宽数值非法")).append(" = ").append(bs_bw_max).append(".").append("\n");
@@ -251,29 +228,7 @@ public class DeviceBWActivity extends DeviceActivity implements DeviceBWView.Pre
                                     Window.alert(sb.toString());
                                     return false;
                                 }
-                                if (bs_starttime == null) {
-                                    StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("Invalid Start Time: ", "开始时间非法")).append(" = (null).").append("\n");
-                                    sb.append(new ClientMessage("Please try again.", "请重试."));
-                                    Window.alert(sb.toString());
-                                    return false;
-                                }
-                                if (bs_endtime == null) {
-                                    StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("Invalid End Time: ", "结束时间非法")).append(" = (null).").append("\n");
-                                    sb.append(new ClientMessage("Please try again.", "请重试."));
-                                    Window.alert(sb.toString());
-                                    return false;
-                                }
-                                int bs_life = DeviceDate.calcLife(bs_endtime, bs_starttime);
-                                if (bs_life <= 0) {
-                                    StringBuilder sb = new StringBuilder();
-                                    sb.append(new ClientMessage("Invalid Service Life Time: ", "服务期限非法")).append(" = ").append(bs_life).append(".").append("\n");
-                                    sb.append(new ClientMessage("Please try again.", "请重试."));
-                                    Window.alert(sb.toString());
-                                    return false;
-                                }
-                                getBackendService().modifyDeviceBWService(getSession(), bs_id, bs_desc, bs_bw_max, bs_starttime, bs_endtime, new AsyncCallback<Void>() {
+                                getBackendService().modifyDeviceBWService(getSession(), bs_id, bs_desc, bs_bw_max, new AsyncCallback<Void>() {
 
                                     @Override
                                     public void onFailure(Throwable caught) {
@@ -309,7 +264,7 @@ public class DeviceBWActivity extends DeviceActivity implements DeviceBWView.Pre
 
                         @Override
                         public void onSuccess(BWServiceInfo info) {
-                            bwServiceModifyView.popup(bs_id, ip_addr, info.bs_desc, info.bs_bw_max, info.bs_starttime, info.bs_endtime, account_name, user_name);
+                            bwServiceModifyView.popup(bs_id, ip_addr, info.bs_desc, info.bs_bw_max, account_name, user_name);
                         }
                         
                     });
