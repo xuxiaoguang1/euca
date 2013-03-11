@@ -457,9 +457,12 @@ public class UserAppDBProcWrapper {
 		}
 		
 		if (userApp.getVmIdImageTypeId() != 0) {
-			str.append(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID).append(" = ").
-			append(userApp.getVmIdImageTypeId()).
-			append(", ");
+			str.append(DBTableColName.USER_APP.VM_IMAGE_TYPE_ID).append(" = ");
+			
+			if (userApp.getVmIdImageTypeId() != -1)
+				str.append(userApp.getVmIdImageTypeId()).append(", ");
+			else
+				str.append("null").append(", ");
 		}
 		
 		if (userApp.getEucaVMInstanceKey() != null) {
@@ -469,39 +472,57 @@ public class UserAppDBProcWrapper {
 		}
 		
 		if (userApp.getCPUSrvId() != 0) {
-			str.append(DBTableColName.USER_APP.CPU_SRV_ID).append(" = ").
-			append(userApp.getCPUSrvId()).
-			append(", ");
+			str.append(DBTableColName.USER_APP.CPU_SRV_ID).append(" = ");
+			
+			if (userApp.getCPUSrvId() != -1)
+				str.append(userApp.getCPUSrvId()).append(", ");
+			else
+				str.append("null").append(", ");
 		}
 		
 		if (userApp.getMemSrvId() != 0) {
-			str.append(DBTableColName.USER_APP.MEM_SRV_ID).append(" = ").
-			append(userApp.getMemSrvId()).
-			append(", ");
+			str.append(DBTableColName.USER_APP.MEM_SRV_ID).append(" = ");
+			
+			if (userApp.getMemSrvId() != -1)
+				str.append(userApp.getMemSrvId()).append(", ");
+			else
+				str.append("null").append(", ");
 		}
 		
 		if (userApp.getDiskSrvId() != 0) {
-			str.append(DBTableColName.USER_APP.DISK_SRV_ID).append(" = ").
-			append(userApp.getDiskSrvId()).
-			append(", ");
+			str.append(DBTableColName.USER_APP.DISK_SRV_ID).append(" = ");
+			
+			if (userApp.getDiskSrvId() != -1)
+				str.append(userApp.getDiskSrvId()).append(", ");
+			else
+				str.append("null").append(", ");
 		}
 		
-		if (userApp.getCPUSrvId() != 0) {
-			str.append(DBTableColName.USER_APP.BW_SRV_ID).append(" = ").
-			append(userApp.getBwSrvId()).
-			append(", ");
+		if (userApp.getBwSrvId() != 0) {
+			str.append(DBTableColName.USER_APP.BW_SRV_ID).append(" = ");
+			
+			if (userApp.getBwSrvId() != -1)
+				str.append(userApp.getBwSrvId()).append(", ");
+			else
+				str.append("null").append(", ");
 		}
 		
-		if (userApp.getMemSrvId() != 0) {
-			str.append(DBTableColName.USER_APP.PUB_IP_SRV_ID).append(" = ").
-			append(userApp.getPubIpSrvId()).
-			append(", ");
+		if (userApp.getPubIpSrvId() != 0) {
+			str.append(DBTableColName.USER_APP.PUB_IP_SRV_ID).append(" = ");
+			
+			if (userApp.getPubIpSrvId() != -1)
+				str.append(userApp.getPubIpSrvId()).append(", ");
+			else
+				str.append("null").append(", ");
 		}
 		
-		if (userApp.getDiskSrvId() != 0) {
-			str.append(DBTableColName.USER_APP.PRI_IP_SRV_ID).append(" = ").
-			append(userApp.getPriIpSrvId()).
-			append(", ");
+		if (userApp.getPriIpSrvId() != 0) {
+			str.append(DBTableColName.USER_APP.PRI_IP_SRV_ID).append(" = ");
+			
+			if (userApp.getPriIpSrvId() != -1)
+				str.append(userApp.getPriIpSrvId()).append(", ");
+			else
+				str.append("null").append(", ");
 		}
 		
 		if (str.length() > 2)
