@@ -785,7 +785,6 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     }
     cmd.add(image);
     String ret = runWithKey(keys, cmd);
-    System.out.println("ret: " + ret);
     {
       String[] tmp  = ret.split("\n");
       for (String t : tmp) {
@@ -794,6 +793,7 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
         }
       }    
     }
+    LOG.error("run instance: " + ret);
     return ret;
   }
 

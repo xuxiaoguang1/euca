@@ -108,7 +108,9 @@ public class EucaServiceWrapper {
   }
   
   public int getServerID(Session session, int userID, String instanceID) throws EucalyptusServiceException {
+    LOG.error("in getServerID: i-id = " + instanceID);
     String zone = aws.lookupZoneWithInstanceId(session, userID, instanceID);
+    LOG.error("in getServerID: zone = " + zone);
     StringBuilder sb = new StringBuilder();
     sb.append("SELECT ").append(DBTableColName.SERVER.ID)
       .append(" FROM ").append(DBTableName.SERVER)
@@ -120,8 +122,7 @@ public class EucaServiceWrapper {
         return r.getInt(DBTableColName.SERVER.ID);
       }
     } catch (SQLException e) {
-      //TODO
-    	e.printStackTrace();
+      LOG.error("sql error in getServerID: " + e.toString());
     }
     return -1;
   }
