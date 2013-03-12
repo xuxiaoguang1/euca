@@ -133,7 +133,12 @@ public class UserAppServiceProcImpl {
 				  euca_vit_id = vit.getEucaVITId();
 			  
 			  if (keyPair != null && securityGroup != null && euca_vit_id != null) {
-				  TemplateInfo template = null;
+				  TemplateInfo template = new TemplateInfo();
+				  template.template_ncpus = userApp.getNcpus();
+				  template.template_mem = userApp.getMem();
+				  template.template_disk = userApp.getDisk();
+				  template.template_bw = userApp.getBw();
+				  
 				  String euca_intance_id = EucaServiceWrapper.getInstance().runVM(session, userId, template, keyPair, securityGroup, euca_vit_id);
 				  userApp.setEucaVMInstanceKey(euca_intance_id);
 				  
