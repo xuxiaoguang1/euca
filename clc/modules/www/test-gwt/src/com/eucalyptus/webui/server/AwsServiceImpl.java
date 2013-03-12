@@ -998,6 +998,13 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     return ret;
   }
 
+  public int getUserID(String instanceID) {
+    String account = getEucaAccountID(instanceID);
+    String user = getUserName(instanceID);
+    int ret = getUserID(account, user);
+    LOG.debug("get user id: " + account + ", " + user + ", " + ret);
+    return ret; 
+  }
   private int getUserID(String eucaAccountID, String user) {
     StringBuilder sb = new StringBuilder();
     sb.append("SELECT " + DBTableColName.USER.ID + " FROM ")
@@ -1017,23 +1024,19 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
   }
   private String getEucaAccountID(String addr) {
     String ret = "";
-    if (addr.startsWith("available")) {
-      try {
-        ret = addr.split(":+")[3];        
-      } catch (Exception e) { }
-    }
+    try {
+      ret = addr.split(":+")[3];        
+    } catch (Exception e) { }
     return ret;
   }
   
   private String getUserName(String addr) {
     String ret = "";
-    if (addr.startsWith("available")) {
-      try {
-        ret = addr.split("/")[1];
-        //trim last char ')'
-        ret = ret.substring(0, ret.length() - 1);
-      } catch (Exception e) { }
-    }
+    try {
+      ret = addr.split("/")[1];
+      //trim last char ')'
+      ret = ret.substring(0, ret.length() - 1);
+    } catch (Exception e) { }
     return ret;
   }
 }
