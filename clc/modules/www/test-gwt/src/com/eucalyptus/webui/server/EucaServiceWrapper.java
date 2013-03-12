@@ -3,7 +3,6 @@ package com.eucalyptus.webui.server;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -13,8 +12,6 @@ import com.eucalyptus.webui.client.service.SearchResultRow;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.server.db.DBProcWrapper;
-import com.eucalyptus.webui.server.stat.HistoryAction;
-
 import com.eucalyptus.webui.server.stat.HistoryDBProcWrapper;
 import com.eucalyptus.webui.shared.dictionary.DBTableColName;
 import com.eucalyptus.webui.shared.dictionary.DBTableName;
@@ -124,6 +121,7 @@ public class EucaServiceWrapper {
       }
     } catch (SQLException e) {
       //TODO
+    	e.printStackTrace();
     }
     return -1;
   }

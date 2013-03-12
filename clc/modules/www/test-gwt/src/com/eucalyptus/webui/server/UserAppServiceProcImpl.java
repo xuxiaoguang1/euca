@@ -146,6 +146,7 @@ public class UserAppServiceProcImpl {
 					  //obtain the server id where the resources are allocated
 					  int serverId = EucaServiceWrapper.getInstance().getServerID(session, userId, euca_intance_id);
 					  
+					  System.out.println("EucaServiceWrapper.getInstance().getServerID " + serverId);
 					  if (serverId < 0)
 						  throw new EucalyptusServiceException("Server id error!");
 				  
