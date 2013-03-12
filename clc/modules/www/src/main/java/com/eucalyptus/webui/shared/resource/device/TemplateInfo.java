@@ -11,8 +11,11 @@ public class TemplateInfo implements Serializable {
 	public String template_name;
 	public String template_desc;
 	public int template_ncpus;
+	// MB
 	public long template_mem;
+	// MB
 	public long template_disk;
+	// MB/s
 	public int template_bw;
 	public Date template_creationtime;
 	public Date template_modifiedtime;
