@@ -170,7 +170,10 @@ public class EucaServiceWrapper {
       e.ip_addr = a.getPublicIp();      
       if (id.startsWith("available")) {   
         e.is_state = IPState.RESERVED;
+        e.ip_type = IPType.PUBLIC;
+        ret.add(e);
       } else {
+        /*
         e.is_state = IPState.INUSE;
         IPServiceInfo _e = new IPServiceInfo();
         String _id = id.substring(0, id.indexOf(' '));
@@ -182,10 +185,31 @@ public class EucaServiceWrapper {
         _e.ip_addr = _ip;
         _e.ip_id = getIPID(_id, IPType.PRIVATE);
         ret.add(_e);
+        */
       }            
-      e.ip_type = IPType.PUBLIC;
-      ret.add(e);
     }
+    for (Integer user_id: ids) {
+      try {
+        for (String[] ip: aws.lookupAddresses(user_id)) {
+          IPServiceInfo e = new IPServiceInfo();
+          e.is_state = IPState.INUSE;
+          e.ip_addr = ip[1];
+          e.ip_type = IPType.PUBLIC;
+          e.ip_id = getIPID(ip[0], IPType.PUBLIC);
+          ret.add(e);
+          e = new IPServiceInfo();
+          e.is_state = IPState.INUSE;
+          e.ip_addr = ip[2];
+          e.ip_type = IPType.PRIVATE;
+          e.ip_id = getIPID(ip[0], IPType.PRIVATE);
+          ret.add(e);
+        }
+      } catch (EucalyptusServiceException e) {
+        LOG.error("ip service: " + e.toString());
+      }
+    }
+    
+    
     LOG.info("ip service: result = " + ret);
     return ret;
   }

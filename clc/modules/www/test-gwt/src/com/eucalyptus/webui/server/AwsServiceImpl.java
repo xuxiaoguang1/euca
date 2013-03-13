@@ -997,6 +997,25 @@ public class AwsServiceImpl extends RemoteServiceServlet implements AwsService {
     }
     return ret;
   }
+  
+  public List<String[]> lookupAddresses(int userID) throws EucalyptusServiceException {
+    AmazonEC2 ec2 = getEC2(_getKeys(userID));
+    List<String[]> ret = new ArrayList<String[]>();
+    try {
+      for (Reservation r: ec2.describeInstances().getReservations()) {
+        for (Instance i: r.getInstances()) {
+          String[] ip = new String[3];
+          ip[0] = i.getInstanceId();
+          ip[1] = i.getPublicIpAddress();
+          ip[2] = i.getPrivateIpAddress();
+          ret.add(ip);
+        }
+      }
+    } catch (Exception e) {
+      throw new EucalyptusServiceException(e.toString());      
+    }
+    return ret;
+  }
 
   public int getUserID(String instanceID) {
     String account = getEucaAccountID(instanceID);
