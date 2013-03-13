@@ -103,6 +103,23 @@ public class DeviceIPService {
             try {
                 DBTableIPService IP_SERVICE = DBTable.IP_SERVICE;
                 List<IPServiceInfo> infos = EucaServiceWrapper.getInstance().getIPServices(account_id, user_id);
+                StringBuilder sb = new StringBuilder();
+                if (infos == null) {
+                	sb.append("info is null");
+                }
+                else {
+                	sb.append("info size = " + infos.size());
+                	for (IPServiceInfo info : infos) {
+                		sb.append(info.ip_addr).append("\n");
+                		sb.append(info.ip_id).append("\n");
+                		sb.append(info.user_id).append("\n");
+                		sb.append(info.ip_type.getValue()).append("\n");
+                		sb.append(info.is_state.getValue()).append("\n");
+                	}
+                }
+                Logger log = Logger.getLogger(DeviceIPDBProcWrapper.class.getName());
+                log.info(sb.toString());
+                
                 conn = DBProcWrapper.getConnection();
                 conn.setAutoCommit(false);
                 for (IPServiceInfo info : infos) {
