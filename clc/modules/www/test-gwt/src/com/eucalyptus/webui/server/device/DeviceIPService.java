@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
@@ -103,23 +103,6 @@ public class DeviceIPService {
             try {
                 DBTableIPService IP_SERVICE = DBTable.IP_SERVICE;
                 List<IPServiceInfo> infos = EucaServiceWrapper.getInstance().getIPServices(account_id, user_id);
-                StringBuilder sb = new StringBuilder();
-                if (infos == null) {
-                	sb.append("info is null");
-                }
-                else {
-                	sb.append("info size = " + infos.size());
-                	for (IPServiceInfo info : infos) {
-                		sb.append(info.ip_addr).append("\n");
-                		sb.append(info.ip_id).append("\n");
-                		sb.append(info.user_id).append("\n");
-                		sb.append(info.ip_type.getValue()).append("\n");
-                		sb.append(info.is_state.getValue()).append("\n");
-                	}
-                }
-                Logger log = Logger.getLogger(DeviceIPDBProcWrapper.class.getName());
-                log.info(sb.toString());
-                
                 conn = DBProcWrapper.getConnection();
                 conn.setAutoCommit(false);
                 for (IPServiceInfo info : infos) {
@@ -136,15 +119,7 @@ public class DeviceIPService {
                 conn.commit();
             }
             catch (Exception e) {
-                // e.printStackTrace();
-            	Logger log = Logger.getLogger(DeviceIPDBProcWrapper.class.getName());
-            	StringBuilder sb = new StringBuilder();
-            	sb.append(e).append("\n");
-            	for (StackTraceElement o : e.getStackTrace()) {
-            		sb.append(o).append(" ").append(o.getClassName()).append(" ").append(o.getLineNumber()).append("\n");
-            	}
-            	e.getStackTrace();
-            	log.info(sb.toString());
+            	e.printStackTrace();
                 DBProcWrapper.rollback(conn);
             }
             finally {
@@ -331,9 +306,15 @@ public class DeviceIPService {
                 conn = DBProcWrapper.getConnection();
                 conn.setAutoCommit(false);
                 DBTableIPService IP_SERVICE = DBTable.IP_SERVICE;
+                List<IPServiceInfo> lost = new LinkedList<IPServiceInfo>();
                 for (int ip_id : ip_ids) {
                     ResultSet rs = DeviceIPDBProcWrapper.lookupIPByID(conn, true, ip_id, true);
                     if (rs.getInt(IP_SERVICE.IP_SERVICE_STATE.toString()) == IPState.RESERVED.getValue()) {
+                    	String ip_addr = rs.getString(IP_SERVICE.IP_ADDR.toString());
+                    	IPType ip_type = IPType.getIPType(rs.getInt(IP_SERVICE.IP_TYPE.toString()));
+                    	int user_id = rs.getInt(IP_SERVICE.USER_ID.toString());
+                    	lost.add(new IPServiceInfo(ip_id, ip_addr, ip_type, null, null, null, null, user_id));
+                    	
                         rs.deleteRow();
                     }
                     else {
@@ -341,6 +322,9 @@ public class DeviceIPService {
                     }
                 }
                 conn.commit();
+                for (IPServiceInfo info : lost) {
+                	EucaServiceWrapper.getInstance().releaseAddress(info);
+                }
             }
             catch (Exception e) {
                 e.printStackTrace();
