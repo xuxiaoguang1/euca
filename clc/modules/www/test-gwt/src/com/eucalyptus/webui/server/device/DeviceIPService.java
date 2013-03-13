@@ -118,7 +118,7 @@ public class DeviceIPService {
             }
             catch (Exception e) {
                 e.printStackTrace();
-                throw new EucalyptusServiceException(e);
+                DBProcWrapper.rollback(conn);
             }
             finally {
                 DBProcWrapper.close(conn);

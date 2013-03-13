@@ -1150,6 +1150,12 @@
 				<link>证书管理</link>
 				<link>用户申请管理</link>
 			</tag>
+			<tag name="资源管理">
+				<link>虚拟机管理</link>
+				<link>Keypair管理</link>
+				<link>安全组管理</link>
+				<link>规则管理</link>
+			</tag>
 		</group>
 		
 		<group user_type="user">
