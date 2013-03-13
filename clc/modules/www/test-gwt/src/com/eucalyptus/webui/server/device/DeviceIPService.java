@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 import com.eucalyptus.webui.client.service.EucalyptusServiceException;
 import com.eucalyptus.webui.client.service.SearchRange;
@@ -117,7 +118,15 @@ public class DeviceIPService {
                 conn.commit();
             }
             catch (Exception e) {
-                e.printStackTrace();
+                // e.printStackTrace();
+            	Logger log = Logger.getLogger(DeviceIPDBProcWrapper.class.getName());
+            	StringBuilder sb = new StringBuilder();
+            	sb.append(e).append("\n");
+            	for (StackTraceElement o : e.getStackTrace()) {
+            		sb.append(o).append(" ").append(o.getClassName()).append(" ").append(o.getLineNumber()).append("\n");
+            	}
+            	e.getStackTrace();
+            	log.info(sb.toString());
                 DBProcWrapper.rollback(conn);
             }
             finally {
