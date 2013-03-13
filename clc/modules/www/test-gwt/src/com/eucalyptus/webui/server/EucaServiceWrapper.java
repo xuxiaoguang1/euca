@@ -203,11 +203,12 @@ public class EucaServiceWrapper {
     try {
       ResultSet r = DBProcWrapper.Instance().query(sb.toString()).getResultSet();
       if (r.first())
+        LOG.info("get ipid: instanceID = " + instanceID + ", ret = " + r.getInt(col));
         return r.getInt(col);
     } catch (Exception e) {
-      throw new EucalyptusServiceException("db error");
+      LOG.error("get ipid: db error");
+      return -1;
     }
-    return 0;
   }
   
   public List<String> allocateAddress(int userID, IPType type, int count) throws EucalyptusServiceException {
