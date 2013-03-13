@@ -16,10 +16,10 @@ public class IPState implements Serializable {
     public static final IPState STOP = new IPState(1, new ClientMessage("STOP", "停止"));
     public static final IPState RESERVED = new IPState(2, new ClientMessage("RESERVED", "预留"));
     
-    private IPState() {
+    public IPState() {
     }
     
-    private IPState(int value, ClientMessage message) {
+    public IPState(int value, ClientMessage message) {
         this.value = value;
         this.message = message;
     }

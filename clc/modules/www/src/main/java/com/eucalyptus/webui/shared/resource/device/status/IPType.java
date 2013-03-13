@@ -15,10 +15,10 @@ public class IPType implements Serializable {
     public static final IPType PUBLIC = new IPType(0, new ClientMessage("PUBLIC", "公有"));
     public static final IPType PRIVATE = new IPType(1, new ClientMessage("PRIVATE", "私有"));
     
-    private IPType() {
+    public IPType() {
     }
     
-    private IPType(int value, ClientMessage message) {
+    public IPType(int value, ClientMessage message) {
         this.value = value;
         this.message = message;
     }
