@@ -223,7 +223,7 @@ public class UserAppServiceProcImpl {
 				  while (rs.next()) {
 					  ArrayList<String> rowValue = new ArrayList<String>();
 					  
-					  String bw=null, cpuCount=null, mem=null, disk=null;
+					  int bw = 0, cpuCount = 0, mem = 0, disk = 0;
 					  String os=null, ver=null;
 					  
 					  for (int i=0; i<dbFields.length; i++) {
@@ -241,13 +241,13 @@ public class UserAppServiceProcImpl {
 								  value = rs.getString(dbFields[i]);
 							  
 							  if (dbFields[i].equalsIgnoreCase(DBTableColName.USER_APP.NCPUS))
-								  cpuCount = value;
+								  cpuCount = Integer.parseInt(value);
 							  else if (dbFields[i].equalsIgnoreCase(DBTableColName.USER_APP.MEM))
-								  mem = value;
+								  mem = Integer.parseInt(value);
 							  else if (dbFields[i].equalsIgnoreCase(DBTableColName.USER_APP.DISK))
-								  disk = value;
+								  disk = Integer.parseInt(value);
 							  else if (dbFields[i].equalsIgnoreCase(DBTableColName.USER_APP.BW))
-								  bw = value;
+								  bw = Integer.parseInt(value);
 							  else if (dbFields[i].equalsIgnoreCase(DBTableColName.VM_IMAGE_TYPE.OS))
 								  os = value;
 							  else if (dbFields[i].equalsIgnoreCase(DBTableColName.VM_IMAGE_TYPE.VER))
@@ -278,14 +278,14 @@ public class UserAppServiceProcImpl {
 		  return result;
 	  }
 	  
-	  private String formatTemplateInfo(String cpuCount, String mem, String disk, String bw) {
+	  private String formatTemplateInfo(int cpuCount, int mem, int disk, int bw) {
 		  StringBuilder str = new StringBuilder();
 		  
 		  str.append("模板详细信息：").append("\n");
 		  str.append("    CPU数量： ").append(cpuCount).append("\n");
-		  str.append("    内存： ").append(mem).append("GB").append("\n");
-		  str.append("    磁盘： ").append(disk).append("GB").append("\n");
-		  str.append("    带宽： ").append(bw).append("MB/s");
+		  str.append("    内存： ").append(mem/1024).append("GB").append("\n");
+		  str.append("    磁盘： ").append(disk/1024).append("GB").append("\n");
+		  str.append("    带宽： ").append(bw/1024).append("MB/s");
 		  
 		  return str.toString();
 	  }
