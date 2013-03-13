@@ -129,6 +129,7 @@ public class DeviceIPService {
                             rs.updateString(IP_SERVICE.IP_ADDR.toString(), info.ip_addr);
                             rs.updateInt(IP_SERVICE.IP_TYPE.toString(), info.ip_type.getValue());
                             rs.updateInt(IP_SERVICE.IP_SERVICE_STATE.toString(), info.is_state.getValue());
+                            rs.updateRow();
                         }
                     }
                 }
