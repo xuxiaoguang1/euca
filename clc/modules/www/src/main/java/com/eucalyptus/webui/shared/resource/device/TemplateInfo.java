@@ -15,7 +15,7 @@ public class TemplateInfo implements Serializable {
 	public long template_mem;
 	// MB
 	public long template_disk;
-	// MB/s
+	// KB/s
 	public int template_bw;
 	public Date template_creationtime;
 	public Date template_modifiedtime;
