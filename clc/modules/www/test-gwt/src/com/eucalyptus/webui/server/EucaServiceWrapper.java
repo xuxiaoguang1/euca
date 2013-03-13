@@ -158,6 +158,7 @@ public class EucaServiceWrapper {
     List<Address> addrs = aws.lookupPublicAddress(ids.get(0));
     for (Address a : addrs) {
       String id = a.getInstanceId();
+      int _userID = aws.getUserID(id);
       if (id.startsWith("nobody") ||
           false) {
           //!ids.contains(aws.getUserID(id))) { 
@@ -172,7 +173,7 @@ public class EucaServiceWrapper {
         IPServiceInfo _e = new IPServiceInfo();
         String _id = id.substring(0, id.indexOf(' '));
         e.ip_id = getIPID(_id, IPType.PUBLIC);
-        String _ip = getServerIp(userID, _id);
+        String _ip = getServerIp(_userID, _id);
         _e.is_state = IPState.INUSE;
         _e.ip_type = IPType.PRIVATE;
         _e.ip_addr = _ip;
