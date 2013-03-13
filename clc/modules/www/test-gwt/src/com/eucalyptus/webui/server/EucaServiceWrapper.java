@@ -149,10 +149,11 @@ public class EucaServiceWrapper {
           ids.add(r.getInt(DBTableColName.USER.ID));
         }
       } catch (Exception e) {
+        LOG.error("ip service: db error");
         throw new EucalyptusServiceException("db error");
       }        
     }
-    LOG.debug("ip service: user ids = " + ids.toString());
+    LOG.info("ip service: user ids = " + ids.toString());
     
     List<IPServiceInfo> ret = new ArrayList<IPServiceInfo>();
     List<Address> addrs = aws.lookupPublicAddress(ids.get(0));
@@ -183,6 +184,7 @@ public class EucaServiceWrapper {
       e.ip_type = IPType.PUBLIC;
       ret.add(e);
     }
+    LOG.info("ip service: result = " + ret);
     return ret;
   }
   
