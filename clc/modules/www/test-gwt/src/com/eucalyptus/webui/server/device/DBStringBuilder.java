@@ -2,7 +2,8 @@ package com.eucalyptus.webui.server.device;
 
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
 
 public class DBStringBuilder {
     
