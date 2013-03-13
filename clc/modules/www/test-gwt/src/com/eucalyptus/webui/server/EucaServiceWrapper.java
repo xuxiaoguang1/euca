@@ -196,12 +196,14 @@ public class EucaServiceWrapper {
           e.ip_addr = ip[1];
           e.ip_type = IPType.PUBLIC;
           e.ip_id = getIPID(ip[0], IPType.PUBLIC);
+          e.user_id = user_id;
           ret.add(e);
           e = new IPServiceInfo();
           e.is_state = IPState.INUSE;
           e.ip_addr = ip[2];
           e.ip_type = IPType.PRIVATE;
           e.ip_id = getIPID(ip[0], IPType.PRIVATE);
+          e.user_id = user_id;
           ret.add(e);
         }
       } catch (EucalyptusServiceException e) {
@@ -242,8 +244,8 @@ public class EucaServiceWrapper {
     return aws.allocateAddress(userID, type, count);
   }
   
-  public void releaseAddress(int userID, IPType type, String addr) throws EucalyptusServiceException {
-    aws.releaseAddress(userID, type, addr);
+  public void releaseAddress(IPServiceInfo i) throws EucalyptusServiceException {
+    aws.releaseAddress(i.user_id, i.ip_type, i.ip_addr);
   }
     
 }
