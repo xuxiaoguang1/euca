@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import com.eucalyptus.webui.server.device.DBData;
+import com.google.gwt.i18n.client.DateTimeFormat;
 
 public class CellTableColumns {
     
@@ -249,6 +249,8 @@ public class CellTableColumns {
     
     public static class CellTableColumnsRow {
         
+        private static DateTimeFormat formatter = DateTimeFormat.getFormat("yyyy-MM-dd");
+        
         private String[] array;
         
         public CellTableColumnsRow(int size) {
@@ -293,7 +295,7 @@ public class CellTableColumns {
         
         public void setColumn(int index, Date date) {
             if (date != null) {
-                array[index] = DBData.format(date);
+                array[index] = formatter.format(date);
             }
             else {
                 array[index] = "";
