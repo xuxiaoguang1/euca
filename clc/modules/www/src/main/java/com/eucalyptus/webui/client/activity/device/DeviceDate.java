@@ -1,12 +1,11 @@
 package com.eucalyptus.webui.client.activity.device;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import com.google.gwt.i18n.client.DateTimeFormat;
 
 public class DeviceDate {
 	
-	private static DateTimeFormat formatter = DateTimeFormat.getFormat("yyyy-MM-dd");
+	private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	
 	public static String format(Date date) {
 		return formatter.format(date);

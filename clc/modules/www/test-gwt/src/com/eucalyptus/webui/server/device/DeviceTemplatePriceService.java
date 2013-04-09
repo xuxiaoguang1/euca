@@ -24,8 +24,8 @@ import com.eucalyptus.webui.server.db.DBProcWrapper;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
 import com.eucalyptus.webui.shared.message.ClientMessage;
 import com.eucalyptus.webui.shared.resource.device.CellTableColumns;
-import com.eucalyptus.webui.shared.resource.device.CellTableColumns.CellTableColumnsRow;
 import com.eucalyptus.webui.shared.resource.device.TemplatePriceInfo;
+import com.eucalyptus.webui.shared.resource.device.CellTableColumns.CellTableColumnsRow;
 import com.eucalyptus.webui.shared.user.LoginUserProfile;
 
 public class DeviceTemplatePriceService {

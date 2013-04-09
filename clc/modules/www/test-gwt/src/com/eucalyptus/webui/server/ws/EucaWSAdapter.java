@@ -6,24 +6,9 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
-import com.amazonaws.services.identitymanagement.model.AccessKey;
-import com.amazonaws.services.identitymanagement.model.AddUserToGroupRequest;
-import com.amazonaws.services.identitymanagement.model.CreateAccessKeyRequest;
-import com.amazonaws.services.identitymanagement.model.CreateGroupRequest;
-import com.amazonaws.services.identitymanagement.model.CreateUserRequest;
-import com.amazonaws.services.identitymanagement.model.DeleteAccessKeyRequest;
-import com.amazonaws.services.identitymanagement.model.DeleteGroupPolicyRequest;
-import com.amazonaws.services.identitymanagement.model.DeleteGroupRequest;
-import com.amazonaws.services.identitymanagement.model.DeleteUserPolicyRequest;
-import com.amazonaws.services.identitymanagement.model.DeleteUserRequest;
-import com.amazonaws.services.identitymanagement.model.PutGroupPolicyRequest;
-import com.amazonaws.services.identitymanagement.model.PutUserPolicyRequest;
-import com.amazonaws.services.identitymanagement.model.RemoveUserFromGroupRequest;
-import com.amazonaws.services.identitymanagement.model.UpdateUserRequest;
 import com.eucalyptus.webui.client.session.Session;
 import com.eucalyptus.webui.server.config.WSConfig;
 import com.eucalyptus.webui.server.user.LoginUserProfileStorer;
-import com.google.common.base.Strings;
 
 public class EucaWSAdapter {
 

@@ -27,7 +27,6 @@ import com.eucalyptus.webui.client.view.DeviceIPViewImpl;
 import com.eucalyptus.webui.client.view.DeviceMemoryView;
 import com.eucalyptus.webui.client.view.DeviceMemoryViewImpl;
 import com.eucalyptus.webui.client.view.DeviceDevicePriceView;
-import com.eucalyptus.webui.client.view.DeviceDevicePriceView;
 import com.eucalyptus.webui.client.view.DeviceRoomView;
 import com.eucalyptus.webui.client.view.DeviceRoomViewImpl;
 import com.eucalyptus.webui.client.view.DeviceServerView;

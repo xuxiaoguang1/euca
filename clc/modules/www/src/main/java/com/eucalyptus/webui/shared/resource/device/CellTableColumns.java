@@ -1,10 +1,9 @@
 package com.eucalyptus.webui.shared.resource.device;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import com.google.gwt.i18n.client.DateTimeFormat;
 
 public class CellTableColumns {
     
@@ -249,7 +248,7 @@ public class CellTableColumns {
     
     public static class CellTableColumnsRow {
         
-        private static DateTimeFormat formatter = DateTimeFormat.getFormat("yyyy-MM-dd");
+        private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         
         private String[] array;
         
